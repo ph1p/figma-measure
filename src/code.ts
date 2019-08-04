@@ -13,11 +13,18 @@ async function main() {
     direction = 'horizontal',
     name = 'Group'
   }) => {
+    // needed elements
     const line = figma.createLine();
+    const rect = figma.createRectangle();
+    const label = figma.createText();
+
+    const paddingTopBottom = 5;
+    const paddingLeftRight = 10;
 
     const isHorizontal = direction === 'horizontal';
     const heightOrWidth = isHorizontal ? 'width' : 'height';
 
+    // LINE
     line.rotation = isHorizontal ? 0 : 90;
     line.x =
       left +
@@ -39,10 +46,6 @@ async function main() {
     line.resize(node[heightOrWidth], 0);
     line.strokeCap = 'ARROW_LINES';
 
-    const rect = figma.createRectangle();
-    const label = figma.createText();
-    const paddingTopBottom = 5;
-    const paddingLeftRight = 10;
 
     // LABEL
     label.characters = node[heightOrWidth].toString();
@@ -85,11 +88,12 @@ async function main() {
       }
     ];
 
+    // grouping
     const group = figma.group([line], node.parent);
     group.name = name;
 
     const textGroup = figma.group([label, rect], group);
-    textGroup.name = 'text';
+    textGroup.name = 'label';
 
     return group;
   };
