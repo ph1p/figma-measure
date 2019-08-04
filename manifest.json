@@ -1,0 +1,20 @@
+{
+  "name": "figma-measure",
+  "id": "739918456607459153",
+  "api": "1.0.0",
+  "main": "./dist/code.js",
+  "ui": "./dist/ui.html",
+  "menu": [
+    {
+      "name": "Create lines",
+      "command": "lines"
+    },
+    {
+      "separator": true
+    },
+    {
+      "name": "Settings",
+      "command": "settings"
+    }
+  ]
+}
