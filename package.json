@@ -27,19 +27,6 @@
     "id": "739918456607459153",
     "api": "1.0.0",
     "main": "code.js",
-    "ui": "ui.html",
-    "menu": [
-      {
-        "name": "Create lines",
-        "command": "lines"
-      },
-      {
-        "separator": true
-      },
-      {
-        "name": "Settings",
-        "command": "settings"
-      }
-    ]
+    "ui": "ui.html"
   }
 }
