@@ -19,6 +19,9 @@ This plugin is not official released and **under development**! But if you want 
 - [x] Create boxes with measurement
 - [x] Measure height and width
 - [ ] Name groups
+- [ ] Add a small UI to change some settings
+- [ ] Line alignment
+- [x] Text alignment
 - [ ] Measure external distance
 - [ ] Add dashed help lines
 - [ ] Add multiple files to structure code
