@@ -1,10 +1,18 @@
 # figma-measure
 
-> Currently under development!
-
 ![Screenshot](./screenshot.png)
 
 A plugin to add measurement lines to figma.
+
+### How to use?
+
+This plugin is not official released and **under development**! But if you want to use it, feel free to download the zip from [https://github.com/ph1p/figma-measure/releases](https://github.com/ph1p/figma-measure/releases).
+
+* Unzip it and open figma
+* Go to **Plugins**
+* Click the "+" next to **Development**
+* Choose the manifest.json inside `figma-measure`
+* Ready!
 
 ### Todo
 
@@ -15,6 +23,7 @@ A plugin to add measurement lines to figma.
 - [ ] Add dashed help lines
 - [ ] Add multiple files to structure code
 ...
+
 
 ### Development
 
