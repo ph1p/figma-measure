@@ -13,6 +13,17 @@ enum DirectionHorizontal {
   CENTER = 'CENTER'
 }
 
+interface LineParameterTypes {
+  left: number;
+  top: number;
+  node: SceneNode;
+  direction: string;
+  name: string;
+  verticalAlign: DirectionVertical;
+  horizontalAlign: DirectionHorizontal;
+  strokeCap: StrokeCap;
+}
+
 const solidColor = (r = 255, g = 0, b = 0) => ({
   type: 'SOLID',
   color: {
@@ -34,15 +45,18 @@ async function main() {
   await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
   await figma.loadFontAsync({ family: 'Inter', style: 'Bold' });
 
-  const createLine = async ({
-    left = 0,
-    top = 0,
-    node,
-    direction = 'horizontal',
-    name = 'Group',
-    verticalAlign = DirectionVertical.CENTER,
-    horizontalAlign = DirectionHorizontal.CENTER
-  }) => {
+  const createLine = async (options) => {
+    let {
+      left = 0,
+      top = 0,
+      node,
+      direction = 'horizontal',
+      name = 'Group',
+      verticalAlign = DirectionVertical.CENTER,
+      horizontalAlign = DirectionHorizontal.CENTER,
+      strokeCap = 'NONE'
+    }: LineParameterTypes = options;
+
     const isRectOrEllipse =
       node.type === 'RECTANGLE' || node.type === 'ELLIPSE';
 
@@ -88,7 +102,7 @@ async function main() {
     line.strokes = [].concat(solidColor());
 
     line.resize(node[heightOrWidth], 0);
-    line.strokeCap = 'ROUND';
+    line.strokeCap = strokeCap;
 
     // LABEL
     label.characters = `${node[heightOrWidth]}`;
@@ -201,6 +215,7 @@ async function main() {
         name: 'horizontal line',
         verticalAlign: DirectionVertical.TOP,
         horizontalAlign: DirectionHorizontal.CENTER,
+        strokeCap: 'ARROW_EQUILATERAL', // "NONE" | "ROUND" | "SQUARE" | "ARROW_LINES" | "ARROW_EQUILATERAL"
         node
       });
 
@@ -209,6 +224,7 @@ async function main() {
         direction: 'vertical',
         verticalAlign: DirectionVertical.CENTER,
         horizontalAlign: DirectionHorizontal.RIGHT,
+        strokeCap: 'ARROW_LINES',
         node
       });
 
