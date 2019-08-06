@@ -6,16 +6,7 @@ import './ui.css';
 declare function require(path: string): any;
 
 class App extends React.Component {
-  textbox: HTMLInputElement;
-
-  onCreate = () => {
-    parent.postMessage(
-      {
-        pluginMessage: { type: 'create' }
-      },
-      '*'
-    );
-  };
+  capSelect = React.createRef<HTMLSelectElement>();
 
   onCancel = () => {
     parent.postMessage(
@@ -26,6 +17,26 @@ class App extends React.Component {
     );
   };
 
+  sendMessage = (action = '', options) => {
+    parent.postMessage(
+      {
+        pluginMessage: {
+          options,
+          action: 'line'
+        }
+      },
+      '*'
+    );
+  };
+
+  setLine = (direction, align) => {
+    this.sendMessage('line', {
+      direction,
+      align,
+      strokeCap: this.capSelect.current.value
+    });
+  };
+
   componentDidMount() {
     require('./figma-ui/scripts.min.js');
   }
@@ -33,53 +44,58 @@ class App extends React.Component {
   render() {
     return (
       <div className="main">
-        <label className="checkbox">
+        {/* <label className="checkbox">
           <div className="checkbox__container">
             <input type="checkbox" className="checkbox__box" />
             <span className="checkbox__mark" />
           </div>
           <div className="checkbox__label">Width</div>
-        </label>
+        </label> */}
 
-        <div className="flex">
-          <div className="align-icon horizontal" />
-          <div className="align-icon horizontal top" />
-          <div className="align-icon horizontal bottom" />
-        </div>
+        <div className="content">
+          <h4>Sizes</h4>
+          <div className="grid">
+            <div
+              className="align-icon horizontal top"
+              onClick={() => this.setLine('horizontal', 'TOP')}
+            />
+            <div
+              className="align-icon horizontal"
+              onClick={() => this.setLine('horizontal', 'CENTER')}
+            />
+            <div
+              className="align-icon horizontal bottom"
+              onClick={() => this.setLine('horizontal', 'BOTTOM')}
+            />
 
-        <label className="checkbox">
-          <div className="checkbox__container">
-            <input type="checkbox" className="checkbox__box" />
-            <span className="checkbox__mark" />
+
+            <div
+              className="align-icon vertical left"
+              onClick={() => this.setLine('vertical', 'LEFT')}
+            />
+            <div
+              className="align-icon vertical"
+              onClick={() => this.setLine('vertical', 'CENTER')}
+            />
+            <div
+              className="align-icon vertical right"
+              onClick={() => this.setLine('vertical', 'RIGHT')}
+            />
           </div>
-          <div className="checkbox__label">Height</div>
-        </label>
-        <div className="flex">
-          <div className="align-icon vertical" />
-          <div className="align-icon vertical left" />
-          <div className="align-icon vertical right" />
         </div>
 
         <hr />
 
         <div className="footer">
-          <label htmlFor="select-menu2">
-            Cap
-            <select name="" id="select-menu2" className="select-menu" required>
+          <label htmlFor="select-cap">
+            <h4>Cap</h4>
+            <select id="select-cap" ref={this.capSelect} className="select-menu" required>
+              <option value="STANDARD">Standard</option>
               <option value="NONE">None</option>
-              <option value="ROUND">Round</option>
-              <option value="SQUARE">Square</option>
               <option value="ARROW_LINES">Line Arrow</option>
               <option value="ARROW_EQUILATERAL">Triangle Arrow</option>
             </select>
           </label>
-
-          <button
-            className="button-mark button button--primary"
-            onClick={this.onCreate}
-          >
-            Mark
-          </button>
         </div>
       </div>
     );
