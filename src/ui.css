@@ -1,5 +1,82 @@
 body {
-  font: 12px sans-serif;
-  text-align: center;
-  margin: 20px;
+  font-family: Inter;
+  font-size: 12px;
+  margin: 0;
+}
+
+.main {
+  padding: 7px;
+}
+
+.align-icon {
+  position: relative;
+  width: 37px;
+  height: 37px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+.align-icon.active,
+.align-icon:hover {
+  border-color: #18a0fb;
+  border-width: 2px;
+}
+.align-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 13px;
+  height: 13px;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 2px;
+}
+.align-icon::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 21px;
+  height: 1px;
+  transform: translate(-50%, -50%);
+  background-color: #000;
+}
+
+.align-icon.vertical::before {
+  width: 1px;
+  height: 21px;
+}
+
+.align-icon.horizontal.top::before {
+  transform: translate(-50%, -12px);
+}
+.align-icon.horizontal.bottom::before {
+  transform: translate(-50%, 12px);
+}
+
+.align-icon.vertical.left::before {
+  transform: translate(-12px, -50%);
+}
+.align-icon.vertical.right::before {
+  transform: translate(12px, -50%);
+}
+
+.flex {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px;
+}
+
+hr {
+  border-width: 1px 0 0 0;
+  border-color: rgba(0, 0, 0, 0.1);
+  margin: 22px -7px;
+}
+
+.footer {
+  padding: 0 10px 10px;
+}
+.button-mark {
+  width: 100%;
+  margin-top: 15px;
 }

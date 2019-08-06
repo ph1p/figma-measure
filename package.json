@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/react": "^16.8.23",
+    "@types/react-dom": "^16.8.5",
     "create-file-webpack": "^1.0.2",
     "css-loader": "^3.1.0",
     "html-webpack-inline-source-plugin": "0.0.10",
@@ -28,5 +30,9 @@
     "api": "1.0.0",
     "main": "code.js",
     "ui": "ui.html"
+  },
+  "dependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
   }
 }

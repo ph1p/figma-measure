@@ -1,5 +1,7 @@
 figma.showUI(__html__, {
-  visible: false
+  // visible: false
+  width: 175,
+  height: 370
 });
 
 enum Alignments {
@@ -32,7 +34,9 @@ const solidColor = (r = 255, g = 0, b = 0) => ({
   }
 });
 
-async function main() {
+async function main(message) {
+  console.log(message.type);
+
   await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
   await figma.loadFontAsync({ family: 'Inter', style: 'Bold' });
 
@@ -160,13 +164,16 @@ async function main() {
       }
     }
 
+    // line position
     let transformPosition = node.relativeTransform;
 
     if (isHorizontal) {
-      let newY = transformPosition[1][2] - lineOffset + node.height;
+      let newY = transformPosition[1][2];
 
       if (lineHorizontalAlign === Alignments.CENTER) {
-        newY += lineOffset - (node.height - group.height) / 2;
+        newY += (node.height - group.height) / 2;
+      } else {
+        newY += node.height - group.height - lineOffset;
       }
 
       transformPosition = [[1, 0, transformPosition[0][2]], [0, 1, newY]];
@@ -180,8 +187,8 @@ async function main() {
       transformPosition = [[1, 0, newX], [0, 1, transformPosition[1][2]]];
     }
 
-    group.locked = true;
     group.relativeTransform = transformPosition;
+    group.locked = true;
 
     return group;
   };
@@ -197,27 +204,27 @@ async function main() {
     const isFrame = node.type === 'FRAME';
 
     if (isFrame || isValidShape) {
-      const horizontalLine = await createLine({
-        name: 'horizontal line',
-        verticalAlign: Alignments.CENTER,
-        horizontalAlign: Alignments.CENTER,
-        strokeCap: 'ARROW_LINES', // "NONE" | "ROUND" | "SQUARE" | "ARROW_LINES" | "ARROW_EQUILATERAL"
-        lineHorizontalAlign: Alignments.BOTTOM,
-        node
-      });
-
       const verticalLine = await createLine({
         name: 'vertical line',
         direction: 'vertical',
-        verticalAlign: Alignments.TOP,
+        verticalAlign: Alignments.CENTER,
         horizontalAlign: Alignments.RIGHT,
         strokeCap: 'ARROW_LINES',
         lineVerticalAlign: Alignments.LEFT,
         node
       });
 
+      const horizontalLine = await createLine({
+        name: 'horizontal line',
+        verticalAlign: Alignments.TOP, // text (TOP, BOTTOM, CENTER)
+        horizontalAlign: Alignments.CENTER, // text (LEFT, RIGHT, CENTER)
+        strokeCap: 'ARROW_LINES', // "NONE" | "ROUND" | "SQUARE" | "ARROW_LINES" | "ARROW_EQUILATERAL"
+        lineHorizontalAlign: Alignments.BOTTOM,
+        node
+      });
+
       const measureGroup = figma.group(
-        [horizontalLine, verticalLine],
+        [verticalLine, horizontalLine],
         figma.currentPage
       );
 
@@ -228,7 +235,12 @@ async function main() {
   }
 }
 
-figma;
-main().then(() => {
-  figma.closePlugin();
-});
+figma.ui.onmessage = message => {
+  if (message.type === 'cancel') {
+    figma.closePlugin();
+  } else {
+    main(message).then(() => {
+      figma.closePlugin();
+    });
+  }
+};
