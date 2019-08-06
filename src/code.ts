@@ -34,7 +34,7 @@ const solidColor = (r = 255, g = 0, b = 0) => ({
 });
 
 const getParentFrame = node => {
-  if (node.type === 'FRAME') {
+  if (node.parent.type === 'PAGE') {
     return node;
   } else {
     return getParentFrame(node.parent);
@@ -45,7 +45,7 @@ async function main() {
   await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
   await figma.loadFontAsync({ family: 'Inter', style: 'Bold' });
 
-  const createLine = async (options) => {
+  const createLine = async options => {
     let {
       left = 0,
       top = 0,
@@ -57,8 +57,9 @@ async function main() {
       strokeCap = 'NONE'
     }: LineParameterTypes = options;
 
-    const isRectOrEllipse =
-      node.type === 'RECTANGLE' || node.type === 'ELLIPSE';
+    const isValidShape =
+      node.type === 'RECTANGLE' || node.type === 'ELLIPSE' || node.type === 'GROUP' || node.type === 'FRAME';
+    const isParentPage = node.parent.type === 'PAGE';
 
     // needed elements
     const line = figma.createLine();
@@ -71,7 +72,8 @@ async function main() {
     const isHorizontal = direction === 'horizontal';
     const heightOrWidth = isHorizontal ? 'width' : 'height';
 
-    const parentFrame = getParentFrame(node);
+    const parentFrame = isParentPage ? null : getParentFrame(node);
+
 
     // margin for top and bottom
     const directionMargin = 5;
@@ -83,7 +85,7 @@ async function main() {
     let topNode = node.y;
     let leftNode = node.x;
 
-    if (isRectOrEllipse) {
+    if (isValidShape && parentFrame) {
       topNode += parentFrame.y;
       leftNode += parentFrame.x;
     }
@@ -204,18 +206,20 @@ async function main() {
   };
 
   for (const node of figma.currentPage.selection) {
-    const isRectOrEllipse =
-      node.type === 'RECTANGLE' || node.type === 'ELLIPSE';
+    const isValidShape =
+      node.type === 'RECTANGLE' || node.type === 'ELLIPSE' || node.type === 'GROUP' || node.type === 'FRAME';
     const isFrame = node.type === 'FRAME';
+    const isParentPage = node.parent.type === 'PAGE';
 
-    if (isFrame || isRectOrEllipse) {
-      const parentFrame = getParentFrame(node);
+    if (isFrame || isValidShape) {
+      const mainNode = isParentPage ? node.parent : getParentFrame(node);
+
 
       const horizontalLine = await createLine({
         name: 'horizontal line',
         verticalAlign: DirectionVertical.TOP,
         horizontalAlign: DirectionHorizontal.CENTER,
-        strokeCap: 'ARROW_EQUILATERAL', // "NONE" | "ROUND" | "SQUARE" | "ARROW_LINES" | "ARROW_EQUILATERAL"
+        strokeCap: 'ARROW_LINES', // "NONE" | "ROUND" | "SQUARE" | "ARROW_LINES" | "ARROW_EQUILATERAL"
         node
       });
 
@@ -230,12 +234,12 @@ async function main() {
 
       const measureGroup = figma.group(
         [horizontalLine, verticalLine],
-        parentFrame
+        mainNode
       );
 
       measureGroup.name = 'measurements';
 
-      parentFrame.appendChild(measureGroup);
+      mainNode.appendChild(measureGroup);
     }
   }
 }
