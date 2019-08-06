@@ -33,22 +33,12 @@ const solidColor = (r = 255, g = 0, b = 0) => ({
   }
 });
 
-const getParentFrame = node => {
-  if (node.parent.type === 'PAGE') {
-    return node;
-  } else {
-    return getParentFrame(node.parent);
-  }
-};
-
 async function main() {
   await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
   await figma.loadFontAsync({ family: 'Inter', style: 'Bold' });
 
   const createLine = async options => {
     let {
-      left = 0,
-      top = 0,
       node,
       direction = 'horizontal',
       name = 'Group',
@@ -56,10 +46,6 @@ async function main() {
       horizontalAlign = DirectionHorizontal.CENTER,
       strokeCap = 'NONE'
     }: LineParameterTypes = options;
-
-    const isValidShape =
-      node.type === 'RECTANGLE' || node.type === 'ELLIPSE' || node.type === 'GROUP' || node.type === 'FRAME';
-    const isParentPage = node.parent.type === 'PAGE';
 
     // needed elements
     const line = figma.createLine();
@@ -72,8 +58,10 @@ async function main() {
     const isHorizontal = direction === 'horizontal';
     const heightOrWidth = isHorizontal ? 'width' : 'height';
 
-    const parentFrame = isParentPage ? null : getParentFrame(node);
-
+    // node.relativeTransform = [
+    //   [1, 0, 50], // x
+    //   [0, 1, 100] // y
+    // ];
 
     // margin for top and bottom
     const directionMargin = 5;
@@ -82,24 +70,13 @@ async function main() {
     const txtVerticalAlign: DirectionVertical = verticalAlign;
     const txtHorizontalAlign: DirectionHorizontal = horizontalAlign;
 
-    let topNode = node.y;
-    let leftNode = node.x;
-
-    if (isValidShape && parentFrame) {
-      topNode += parentFrame.y;
-      leftNode += parentFrame.x;
-    }
-
-    top += topNode;
-    left += leftNode;
-
     let lineOffset = 10;
 
     // LINE
     line.rotation = isHorizontal ? 0 : 90;
 
-    line.x = left + (!isHorizontal ? lineOffset : 0);
-    line.y = node.height + top - (isHorizontal ? lineOffset : 0);
+    line.x = !isHorizontal ? lineOffset : 0;
+    line.y = node.height - (isHorizontal ? lineOffset : 0);
 
     line.strokes = [].concat(solidColor());
 
@@ -134,8 +111,8 @@ async function main() {
     textGroup.name = 'label';
 
     // x, y for text box
-    const boxTop = top + paddingTopBottom / 2;
-    const boxLeft = left + paddingLeftRight / 2;
+    const boxTop = paddingTopBottom / 2;
+    const boxLeft = paddingLeftRight / 2;
 
     // place text group
     if (isHorizontal) {
@@ -182,6 +159,20 @@ async function main() {
       }
     }
 
+    let transformPosition = node.relativeTransform;
+
+    if (isHorizontal) {
+      transformPosition = [
+        [1, 0, transformPosition[0][2]],
+        [0, 1, transformPosition[1][2] - lineOffset + node.height]
+      ];
+    } else {
+      transformPosition = [
+        [1, 0, transformPosition[0][2] + lineOffset],
+        [0, 1, transformPosition[1][2]]
+      ];
+    }
+
     // group.locked = true;
 
     // line Positioning
@@ -202,19 +193,20 @@ async function main() {
     //   group.x -= lineOffset - node.width / 2;
     // }
 
+    group.relativeTransform = transformPosition;
+
     return group;
   };
 
   for (const node of figma.currentPage.selection) {
     const isValidShape =
-      node.type === 'RECTANGLE' || node.type === 'ELLIPSE' || node.type === 'GROUP' || node.type === 'FRAME';
+      node.type === 'RECTANGLE' ||
+      node.type === 'ELLIPSE' ||
+      node.type === 'GROUP' ||
+      node.type === 'FRAME';
     const isFrame = node.type === 'FRAME';
-    const isParentPage = node.parent.type === 'PAGE';
 
     if (isFrame || isValidShape) {
-      const mainNode = isParentPage ? node.parent : getParentFrame(node);
-
-
       const horizontalLine = await createLine({
         name: 'horizontal line',
         verticalAlign: DirectionVertical.TOP,
@@ -234,12 +226,12 @@ async function main() {
 
       const measureGroup = figma.group(
         [horizontalLine, verticalLine],
-        mainNode
+        figma.currentPage
       );
 
       measureGroup.name = 'measurements';
 
-      mainNode.appendChild(measureGroup);
+      figma.currentPage.appendChild(measureGroup);
     }
   }
 }
