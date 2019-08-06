@@ -50,7 +50,6 @@ const createLine = options => {
 
   // needed elements
   const line = figma.createLine();
-  // const secondMeasureLine = figma.createLine();
   const rect = figma.createRectangle();
   const label = figma.createText();
 
