@@ -1,6 +1,6 @@
 {
   "name": "figma-measure",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "code.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "terser-webpack-plugin": "^1.4.1"
   },
   "figmaPlugin": {
-    "name": "figma-measure",
+    "name": "Figma Measure",
     "id": "739918456607459153",
     "api": "1.0.0",
     "main": "code.js",
