@@ -2,12 +2,9 @@ figma.showUI(__html__, {
   visible: false
 });
 
-enum DirectionVertical {
+enum Alignments {
   TOP = 'TOP',
   BOTTOM = 'BOTTOM',
-  CENTER = 'CENTER'
-}
-enum DirectionHorizontal {
   LEFT = 'LEFT',
   RIGHT = 'RIGHT',
   CENTER = 'CENTER'
@@ -19,8 +16,10 @@ interface LineParameterTypes {
   node: SceneNode;
   direction: string;
   name: string;
-  verticalAlign: DirectionVertical;
-  horizontalAlign: DirectionHorizontal;
+  verticalAlign: Alignments;
+  horizontalAlign: Alignments;
+  lineVerticalAlign: Alignments;
+  lineHorizontalAlign: Alignments;
   strokeCap: StrokeCap;
 }
 
@@ -42,8 +41,10 @@ async function main() {
       node,
       direction = 'horizontal',
       name = 'Group',
-      verticalAlign = DirectionVertical.CENTER,
-      horizontalAlign = DirectionHorizontal.CENTER,
+      verticalAlign = Alignments.CENTER,
+      horizontalAlign = Alignments.CENTER,
+      lineVerticalAlign = Alignments.LEFT,
+      lineHorizontalAlign = Alignments.BOTTOM,
       strokeCap = 'NONE'
     }: LineParameterTypes = options;
 
@@ -67,8 +68,8 @@ async function main() {
     const directionMargin = 5;
 
     // directions for text box
-    const txtVerticalAlign: DirectionVertical = verticalAlign;
-    const txtHorizontalAlign: DirectionHorizontal = horizontalAlign;
+    const txtVerticalAlign: Alignments = verticalAlign;
+    const txtHorizontalAlign: Alignments = horizontalAlign;
 
     let lineOffset = 10;
 
@@ -120,20 +121,20 @@ async function main() {
       textGroup.y += boxTop + node.height - lineOffset - line.strokeWeight;
 
       // vertical text align
-      if (txtVerticalAlign === DirectionVertical.CENTER) {
+      if (txtVerticalAlign === Alignments.CENTER) {
         textGroup.y -= textGroup.height / 2;
-      } else if (txtVerticalAlign === DirectionVertical.BOTTOM) {
+      } else if (txtVerticalAlign === Alignments.BOTTOM) {
         textGroup.y += directionMargin;
-      } else if (txtVerticalAlign === DirectionVertical.TOP) {
+      } else if (txtVerticalAlign === Alignments.TOP) {
         textGroup.y -= textGroup.height + directionMargin;
       }
 
       // horizontal text align
-      if (txtHorizontalAlign === DirectionHorizontal.CENTER) {
+      if (txtHorizontalAlign === Alignments.CENTER) {
         textGroup.x += 0;
-      } else if (txtHorizontalAlign === DirectionHorizontal.LEFT) {
+      } else if (txtHorizontalAlign === Alignments.LEFT) {
         textGroup.x -= node.width / 2 - textGroup.width / 2 - directionMargin;
-      } else if (txtHorizontalAlign === DirectionHorizontal.RIGHT) {
+      } else if (txtHorizontalAlign === Alignments.RIGHT) {
         textGroup.x += node.width / 2 - textGroup.width / 2 - directionMargin;
       }
     } else {
@@ -141,20 +142,20 @@ async function main() {
       textGroup.y += boxTop;
 
       // vertical text align
-      if (txtVerticalAlign === DirectionVertical.CENTER) {
+      if (txtVerticalAlign === Alignments.CENTER) {
         textGroup.y += node.height / 2 - textGroup.height / 2;
-      } else if (txtVerticalAlign === DirectionVertical.BOTTOM) {
+      } else if (txtVerticalAlign === Alignments.BOTTOM) {
         textGroup.y += node.height - textGroup.height - directionMargin;
-      } else if (txtVerticalAlign === DirectionVertical.TOP) {
+      } else if (txtVerticalAlign === Alignments.TOP) {
         textGroup.y += directionMargin;
       }
 
       // vertical text align
-      if (txtHorizontalAlign === DirectionHorizontal.CENTER) {
+      if (txtHorizontalAlign === Alignments.CENTER) {
         textGroup.x -= textGroup.width / 2;
-      } else if (txtHorizontalAlign === DirectionHorizontal.LEFT) {
+      } else if (txtHorizontalAlign === Alignments.LEFT) {
         textGroup.x -= textGroup.width + directionMargin;
-      } else if (txtHorizontalAlign === DirectionHorizontal.RIGHT) {
+      } else if (txtHorizontalAlign === Alignments.RIGHT) {
         textGroup.x += directionMargin;
       }
     }
@@ -162,37 +163,24 @@ async function main() {
     let transformPosition = node.relativeTransform;
 
     if (isHorizontal) {
-      transformPosition = [
-        [1, 0, transformPosition[0][2]],
-        [0, 1, transformPosition[1][2] - lineOffset + node.height]
-      ];
+      let newY = transformPosition[1][2] - lineOffset + node.height;
+
+      if (lineHorizontalAlign === Alignments.CENTER) {
+        newY += lineOffset - (node.height - group.height) / 2;
+      }
+
+      transformPosition = [[1, 0, transformPosition[0][2]], [0, 1, newY]];
     } else {
-      transformPosition = [
-        [1, 0, transformPosition[0][2] + lineOffset],
-        [0, 1, transformPosition[1][2]]
-      ];
+      let newX = transformPosition[0][2] + lineOffset;
+
+      if (lineVerticalAlign === Alignments.CENTER) {
+        newX -= lineOffset - node.width / 2;
+      }
+
+      transformPosition = [[1, 0, newX], [0, 1, transformPosition[1][2]]];
     }
 
-    // group.locked = true;
-
-    // line Positioning
-    // center horizontal
-    // if (isHorizontal) {
-    //   if (
-    //     txtVerticalAlign === DirectionVertical.BOTTOM ||
-    //     txtVerticalAlign === DirectionVertical.TOP
-    //   ) {
-    //     group.y -= directionMargin * 2;
-    //   }
-    //   group.y += lineOffset - (node.height - group.height) / 2;
-    // }
-
-    // center vertical
-    // if (!isHorizontal) {
-    //   console.log(node.width - group.width);
-    //   group.x -= lineOffset - node.width / 2;
-    // }
-
+    group.locked = true;
     group.relativeTransform = transformPosition;
 
     return group;
@@ -203,24 +191,28 @@ async function main() {
       node.type === 'RECTANGLE' ||
       node.type === 'ELLIPSE' ||
       node.type === 'GROUP' ||
+      node.type === 'TEXT' ||
+      node.type === 'VECTOR' ||
       node.type === 'FRAME';
     const isFrame = node.type === 'FRAME';
 
     if (isFrame || isValidShape) {
       const horizontalLine = await createLine({
         name: 'horizontal line',
-        verticalAlign: DirectionVertical.TOP,
-        horizontalAlign: DirectionHorizontal.CENTER,
+        verticalAlign: Alignments.CENTER,
+        horizontalAlign: Alignments.CENTER,
         strokeCap: 'ARROW_LINES', // "NONE" | "ROUND" | "SQUARE" | "ARROW_LINES" | "ARROW_EQUILATERAL"
+        lineHorizontalAlign: Alignments.BOTTOM,
         node
       });
 
       const verticalLine = await createLine({
         name: 'vertical line',
         direction: 'vertical',
-        verticalAlign: DirectionVertical.CENTER,
-        horizontalAlign: DirectionHorizontal.RIGHT,
+        verticalAlign: Alignments.TOP,
+        horizontalAlign: Alignments.RIGHT,
         strokeCap: 'ARROW_LINES',
+        lineVerticalAlign: Alignments.LEFT,
         node
       });
 
@@ -229,7 +221,7 @@ async function main() {
         figma.currentPage
       );
 
-      measureGroup.name = 'measurements';
+      measureGroup.name = 'measurements-' + node.name;
 
       figma.currentPage.appendChild(measureGroup);
     }

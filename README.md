@@ -1,6 +1,6 @@
-# figma-measure
+ # figma-measure
 
-![Screenshot](./screenshot.png)
+![](./header.png)
 
 A plugin to add measurement lines to figma.
 
