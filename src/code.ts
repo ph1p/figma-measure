@@ -229,8 +229,8 @@ const createLine = async options => {
         }
         // top
         else if (lineHorizontalAlign === Alignments.TOP) {
-          newY -= ySin * (halfGroupHeight - LINE_OFFSET);
-          newX += yCos * (halfGroupHeight - LINE_OFFSET);
+          newY -= ySin * (halfGroupHeight - LINE_OFFSET + line.strokeWeight);
+          newX += yCos * (halfGroupHeight - LINE_OFFSET + line.strokeWeight);
         }
         // bottom
         else {
