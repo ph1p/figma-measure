@@ -5,24 +5,29 @@ import './ui.css';
 
 declare function require(path: string): any;
 
-class App extends React.Component {
+// const isNumberValid = (num: any): boolean => /^-?[0-9]\d*?$/g.test(num);
+
+class App extends React.Component<
+  {},
+  { showSelectionError: boolean; lineOffset: number }
+> {
   capSelect = React.createRef<HTMLSelectElement>();
 
-  onCancel = () => {
-    parent.postMessage(
-      {
-        pluginMessage: { type: 'cancel' }
-      },
-      '*'
-    );
-  };
+  constructor(props) {
+    super(props);
 
-  sendMessage = (action = '', options) => {
+    this.state = {
+      showSelectionError: false,
+      lineOffset: 3
+    };
+  }
+
+  sendMessage = (action, options) => {
     parent.postMessage(
       {
         pluginMessage: {
           options,
-          action: 'line'
+          action
         }
       },
       '*'
@@ -37,13 +42,57 @@ class App extends React.Component {
     });
   };
 
+  // changeOffset = e => {
+  //   const { value } = e.target;
+
+  //   this.setState({
+  //     lineOffset: value
+  //   });
+
+  //   if (isNumberValid(value)) {
+  //     this.sendMessage('line-offset', {
+  //       value
+  //     });
+  //   }
+  // };
+
   componentDidMount() {
     require('./figma-ui/scripts.min.js');
+
+    window.onmessage = event => {
+      if (event.data.pluginMessage.type === 'selection') {
+        this.setState(
+          {
+            showSelectionError: !event.data.pluginMessage.data
+          },
+          () => {
+            if (this.state.showSelectionError) {
+              setTimeout(
+                () =>
+                  this.setState({
+                    showSelectionError: false
+                  }),
+                3000
+              );
+            }
+          }
+        );
+      }
+    };
   }
 
   render() {
     return (
       <div className="main">
+        <div
+          onClick={() => this.setState({ showSelectionError: false })}
+          className={
+            'no-selection' + (this.state.showSelectionError ? ' active' : '')
+          }
+        >
+          ⚠ Please select at least one element
+        </div>
+
         {/* <label className="checkbox">
           <div className="checkbox__container">
             <input type="checkbox" className="checkbox__box" />
@@ -53,7 +102,7 @@ class App extends React.Component {
         </label> */}
 
         <div className="content">
-          <h4>Sizes</h4>
+          <h4>Alignments</h4>
           <div className="grid">
             <div
               className="align-icon horizontal top"
@@ -67,7 +116,6 @@ class App extends React.Component {
               className="align-icon horizontal bottom"
               onClick={() => this.setLine('horizontal', 'BOTTOM')}
             />
-
 
             <div
               className="align-icon vertical left"
@@ -86,10 +134,15 @@ class App extends React.Component {
 
         <hr />
 
-        <div className="footer">
+        <div className="content">
           <label htmlFor="select-cap">
             <h4>Cap</h4>
-            <select id="select-cap" ref={this.capSelect} className="select-menu" required>
+            <select
+              id="select-cap"
+              ref={this.capSelect}
+              className="select-menu"
+              required
+            >
               <option value="STANDARD">Standard</option>
               <option value="NONE">None</option>
               <option value="ARROW_LINES">Line Arrow</option>
@@ -97,6 +150,27 @@ class App extends React.Component {
             </select>
           </label>
         </div>
+        {/* <hr /> */}
+
+        {/* <div className="content">
+          <label htmlFor="line-offset-input">
+            <h4>Offset</h4>
+            <div className="input-icon">
+              <div className="input-icon__icon">
+                <div className="icon icon--adjust icon--black-3" />
+              </div>
+              <input
+                name="line-offset-input"
+                onChange={e => this.changeOffset(e)}
+                value={this.state.lineOffset}
+                placeholder="Value"
+                className={`input-icon__input ${
+                  !isNumberValid(this.state.lineOffset) ? 'error' : ''
+                }`}
+              />
+            </div>
+          </label>
+        </div> */}
       </div>
     );
   }

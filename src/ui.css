@@ -6,10 +6,36 @@ body {
 
 .main {
   padding: 7px;
+  position: relative;
 }
 
 .content {
   padding: 10px;
+}
+
+.no-selection {
+  margin-bottom: 15px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 10px 17px;
+  background-color: #f24822;
+  color: #fff;
+  width: 100%;
+  z-index: 3;
+  transition: all .3s;
+  transform: translateY(-53px);
+  box-shadow: none;
+}
+
+.no-selection.active {
+  transform: translateY(0px);
+  box-shadow: 0 5px 17px rgba(0, 0, 0, 0.2), 0 2px 7px rgba(0, 0, 0, 0.15);
+}
+
+.no-selection .icon {
+  float: left;
+  margin: 0 5px 0 -10px;
 }
 
 .align-icon {
@@ -76,10 +102,14 @@ body {
 
 hr {
   border-width: 1px 0 0 0;
-  border-color: rgba(0, 0, 0, 0.1);
-  margin: 12px -7px;
+  border-color: #e5e5e5;
+  border-style: solid;
+  margin: 17px -7px;
 }
 
+.content:last-child {
+  padding: 0 10px 10px;
+}
 .footer {
   padding: 0 10px 10px;
 }

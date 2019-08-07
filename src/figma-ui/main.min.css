@@ -419,6 +419,12 @@
 .input:disabled:hover {
   border: 1px solid transparent;
 }
+input.error {
+  border: 1px solid #f24821;
+}
+input.error:focus {
+  border: 1px solid #f24821;
+}
 .input-icon {
   position: relative;
   width: 100%;

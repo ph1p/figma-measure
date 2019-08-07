@@ -17,7 +17,7 @@ You can now find this plugin in the **Plugins** section by right-clicking on you
 ![](./assets/context-menu.png)
 
 Clicking **Figma Measure** opens a window.
-Now you can select one or more elements and click on the different measurements to add red lines.
+Now you can select one or more elements and click on the different alignments to add red lines.
 At the bottom you can set the arrow style.
 
 ![](./assets/ui.png)

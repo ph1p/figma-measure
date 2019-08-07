@@ -1,7 +1,6 @@
 figma.showUI(__html__, {
-  // visible: false
   width: 180,
-  height: 255
+  height: 265
 });
 
 const GROUP_NAME = '📐 Measurements';
@@ -36,7 +35,7 @@ const solidColor = (r = 255, g = 0, b = 0) => ({
   }
 });
 
-const createLine = options => {
+const createLine = async options => {
   let {
     node,
     direction = 'horizontal',
@@ -47,6 +46,8 @@ const createLine = options => {
     lineHorizontalAlign = Alignments.BOTTOM,
     strokeCap = 'NONE'
   }: LineParameterTypes = options;
+
+  const LINE_OFFSET = -3;
 
   const isHorizontal = direction === 'horizontal';
 
@@ -66,8 +67,6 @@ const createLine = options => {
 
     // margin for top and bottom
     const DIRECTION_MARGIN = 5;
-
-    const LINE_OFFSET = -3;
 
     const lineNodes = [line];
 
@@ -316,7 +315,7 @@ const isValidShape = node =>
   node.type === 'FRAME' ||
   node.type === 'FRAME';
 
-function createLineFromMessage({
+async function createLineFromMessage({
   direction,
   align = Alignments.CENTER,
   strokeCap = 'ARROW_LINES'
@@ -326,7 +325,7 @@ function createLineFromMessage({
   for (const node of figma.currentPage.selection) {
     if (isValidShape(node)) {
       if (direction === 'vertical') {
-        const verticalLine = createLine({
+        const verticalLine = await createLine({
           node,
           direction,
           strokeCap,
@@ -340,7 +339,7 @@ function createLineFromMessage({
       }
 
       if (direction === 'horizontal') {
-        const horizontalLine = createLine({
+        const horizontalLine = await createLine({
           node,
           direction,
           strokeCap,
@@ -364,8 +363,17 @@ function createLineFromMessage({
 }
 
 main().then(() => {
-  figma.ui.onmessage = message => {
+  figma.ui.onmessage = async message => {
+    if (message.action === 'line-offset') {
+      await figma.clientStorage.setAsync('line-offset', message.options.value);
+    }
+
     if (message.action === 'line') {
+      figma.ui.postMessage({
+        type: 'selection',
+        data: figma.currentPage.selection.length > 0
+      });
+
       createLineFromMessage({
         direction: message.options.direction,
         align: message.options.align,
@@ -375,7 +383,6 @@ main().then(() => {
 
     if (message.type === 'cancel') {
       figma.closePlugin();
-    } else {
     }
   };
 });
