@@ -49,9 +49,13 @@ const createLine = options => {
   }: LineParameterTypes = options;
 
   const isHorizontal = direction === 'horizontal';
-  const heightOrWidth = isHorizontal ? 'width' : 'height';
 
-  if (node[heightOrWidth] > 0.01) {
+  let nodeHeight = node.height;
+  let nodeWidth = node.width;
+
+  const heightOrWidth = isHorizontal ? nodeWidth : nodeHeight;
+
+  if (heightOrWidth > 0.01) {
     // needed elements
     const line = figma.createLine();
     const rect = figma.createRectangle();
@@ -71,11 +75,11 @@ const createLine = options => {
     line.rotation = isHorizontal ? 0 : 90;
 
     line.x = !isHorizontal ? LINE_OFFSET : 0;
-    line.y = node.height - (isHorizontal ? LINE_OFFSET : 0);
+    line.y = nodeHeight - (isHorizontal ? LINE_OFFSET : 0);
 
     line.strokes = [].concat(solidColor());
 
-    line.resize(node[heightOrWidth], 0);
+    line.resize(heightOrWidth, 0);
 
     if (strokeCap === 'STANDARD') {
       const measureLineWidth = Math.abs(LINE_OFFSET) * 2 + line.strokeWeight;
@@ -96,15 +100,15 @@ const createLine = options => {
           firstMeasureLine.y += 1;
 
           secondMeasureLine.x -= measureLineWidth;
-          secondMeasureLine.y += node.height;
+          secondMeasureLine.y += nodeHeight;
         } else {
           firstMeasureLine.rotation = 90;
           firstMeasureLine.x += 1;
-          firstMeasureLine.y += node.height + Math.abs(LINE_OFFSET) * 2;
+          firstMeasureLine.y += nodeHeight + Math.abs(LINE_OFFSET) * 2;
 
           secondMeasureLine.rotation = 90;
-          secondMeasureLine.x += node.width;
-          secondMeasureLine.y += node.height + Math.abs(LINE_OFFSET) * 2;
+          secondMeasureLine.x += nodeWidth;
+          secondMeasureLine.y += nodeHeight + Math.abs(LINE_OFFSET) * 2;
         }
       }
     } else {
@@ -112,7 +116,7 @@ const createLine = options => {
     }
 
     // LABEL
-    label.characters = `${node[heightOrWidth]}`;
+    label.characters = `${parseFloat(heightOrWidth.toString()).toFixed(0)}`;
     label.fontName = {
       family: 'Inter',
       style: 'Bold'
@@ -144,8 +148,8 @@ const createLine = options => {
 
     // place text group
     if (isHorizontal) {
-      textGroup.x += boxLeft + node.width / 2 - textGroup.width / 2;
-      textGroup.y += boxTop + node.height - LINE_OFFSET - line.strokeWeight;
+      textGroup.x += boxLeft + nodeWidth / 2 - textGroup.width / 2;
+      textGroup.y += boxTop + nodeHeight - LINE_OFFSET - line.strokeWeight;
 
       // vertical text align
       if (txtVerticalAlign === Alignments.CENTER) {
@@ -160,9 +164,9 @@ const createLine = options => {
       if (txtHorizontalAlign === Alignments.CENTER) {
         textGroup.x += 0;
       } else if (txtHorizontalAlign === Alignments.LEFT) {
-        textGroup.x -= node.width / 2 - textGroup.width / 2 - DIRECTION_MARGIN;
+        textGroup.x -= nodeWidth / 2 - textGroup.width / 2 - DIRECTION_MARGIN;
       } else if (txtHorizontalAlign === Alignments.RIGHT) {
-        textGroup.x += node.width / 2 - textGroup.width / 2 - DIRECTION_MARGIN;
+        textGroup.x += nodeWidth / 2 - textGroup.width / 2 - DIRECTION_MARGIN;
       }
     } else {
       textGroup.x += boxLeft + LINE_OFFSET;
@@ -170,9 +174,9 @@ const createLine = options => {
 
       // vertical text align
       if (txtVerticalAlign === Alignments.CENTER) {
-        textGroup.y += node.height / 2 - textGroup.height / 2;
+        textGroup.y += nodeHeight / 2 - textGroup.height / 2;
       } else if (txtVerticalAlign === Alignments.BOTTOM) {
-        textGroup.y += node.height - textGroup.height - DIRECTION_MARGIN;
+        textGroup.y += nodeHeight - textGroup.height - DIRECTION_MARGIN;
       } else if (txtVerticalAlign === Alignments.TOP) {
         textGroup.y += DIRECTION_MARGIN;
       }
@@ -188,40 +192,106 @@ const createLine = options => {
     }
 
     // line position
+    const halfGroupHeight = group.height / 2;
+    const halfGroupWidth = group.width / 2;
+
     let transformPosition = node.relativeTransform;
+    let newX = transformPosition[0][2];
+    let newY = transformPosition[1][2];
+
+    const xCos = transformPosition[0][0];
+    const xSin = transformPosition[0][1];
+
+    const yCos = transformPosition[1][0];
+    const ySin = transformPosition[1][1];
 
     // horizonzal line position
     if (isHorizontal) {
-      let newY = transformPosition[1][2];
-
       if (lineHorizontalAlign === Alignments.CENTER) {
-        newY += (node.height - group.height) / 2;
+        newY += (nodeHeight - group.height) / 2;
       } else if (lineHorizontalAlign === Alignments.TOP) {
         newY -= group.height / 2 - LINE_OFFSET + line.strokeWeight;
       }
       // BOTTOM
       else {
-        newY += node.height - group.height / 2 - LINE_OFFSET;
+        newY += nodeHeight - group.height / 2 - LINE_OFFSET;
       }
 
-      transformPosition = [[1, 0, transformPosition[0][2]], [0, 1, newY]];
+      // check if element is rotated
+      if (node.rotation > 0 || node.rotation < 0) {
+        // reset
+        newX = transformPosition[0][2];
+        newY = transformPosition[1][2];
+
+        // center
+        if (lineHorizontalAlign === Alignments.CENTER) {
+          newY += ySin * (nodeHeight / 2 - halfGroupHeight);
+          newX -= yCos * (nodeHeight / 2 - halfGroupHeight);
+        }
+        // top
+        else if (lineHorizontalAlign === Alignments.TOP) {
+          newY -= ySin * (halfGroupHeight - LINE_OFFSET);
+          newX += yCos * (halfGroupHeight - LINE_OFFSET);
+        }
+        // bottom
+        else {
+          newY += ySin * (nodeHeight - halfGroupHeight - LINE_OFFSET);
+          newX -= yCos * (nodeHeight - halfGroupHeight - LINE_OFFSET);
+        }
+      }
     }
     // vertical line position
     else {
-      let newX = transformPosition[0][2];
-
       if (lineVerticalAlign === Alignments.CENTER) {
-        newX += (node.width - group.width) / 2;
+        newX += (nodeWidth - group.width) / 2;
       } else if (lineVerticalAlign === Alignments.RIGHT) {
-        newX += node.width - group.width / 2 - LINE_OFFSET + line.strokeWeight;
+        newX += nodeWidth - group.width / 2 - LINE_OFFSET + line.strokeWeight;
       }
       // LEFT
       else {
         newX -= group.width / 2 - LINE_OFFSET;
       }
 
-      transformPosition = [[1, 0, newX], [0, 1, transformPosition[1][2]]];
+      // check if element is rotated
+      if (node.rotation > 0 || node.rotation < 0) {
+        // reset
+        newX = transformPosition[0][2];
+        newY = transformPosition[1][2];
+
+        // center
+        if (lineVerticalAlign === Alignments.CENTER) {
+          newY -= (xSin * (nodeWidth - group.width)) / 2;
+          newX += (xCos * (nodeWidth - group.width)) / 2;
+        }
+        // right
+        else if (lineVerticalAlign === Alignments.RIGHT) {
+          newY -=
+            xSin *
+            (nodeWidth - halfGroupWidth - LINE_OFFSET + line.strokeWeight);
+          newX +=
+            xCos *
+            (nodeWidth - halfGroupWidth - LINE_OFFSET + line.strokeWeight);
+        }
+        // left
+        else {
+          newY += xSin * (halfGroupWidth - LINE_OFFSET);
+          newX -= xCos * (halfGroupWidth - LINE_OFFSET);
+        }
+      }
     }
+
+    transformPosition = [
+      [
+        xCos, // cos
+        xSin, // sin
+        newX
+      ],
+      [
+        yCos, // -sin
+        ySin, // cos
+        newY
+      ]
+    ];
 
     group.relativeTransform = transformPosition;
     group.locked = true;
