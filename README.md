@@ -1,18 +1,27 @@
  # figma-measure
 
-![](./header.png)
+![](./assets/header.png)
 
 A plugin to add measurement lines to figma.
 
 ### How to use?
 
-This plugin is not official released and **under development**! But if you want to use it, feel free to download the zip from [https://github.com/ph1p/figma-measure/releases](https://github.com/ph1p/figma-measure/releases).
-
-* Unzip it and open figma
+* Open Figma
 * Go to **Plugins**
-* Click the "+" next to **Development**
-* Choose the manifest.json inside `figma-measure`
+* Click on **Browse all plugins**.
+* Search for **Figma Measure** and click install
 * Ready!
+
+You can now find this plugin in the **Plugins** section by right-clicking on your project.
+
+![](./assets/context-menu.png)
+
+Clicking **Figma Measure** opens a window.
+Now you can select one or more elements and click on the different measurements to add red lines.
+At the bottom you can set the arrow style.
+
+![](./assets/ui.png)
+
 
 ### Todo
 
@@ -34,13 +43,22 @@ This plugin is not official released and **under development**! But if you want 
 ### Development
 
 ```bash
+git clone git@github.com:ph1p/figma-measure.git
+cd figma-measure
 npm install
 ```
 
 ```bash
 npm run build
 ```
+or
 
 ```bash
 npm run dev
 ```
+
+* Open figma
+* Go to **Plugins**
+* Click the "+" next to **Development**
+* Choose the manifest.json inside `figma-measure/dist`
+* Ready to develop
