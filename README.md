@@ -19,12 +19,15 @@ This plugin is not official released and **under development**! But if you want 
 - [x] Create boxes with measurement
 - [x] Measure height and width
 - [x] Name groups
-- [x] Add a small UI to change some settings
+- [x] Add a small UI
 - [x] Line alignment
 - [x] Text alignment
 - [ ] Measure external distance
 - [ ] Add dashed help lines
 - [ ] Add multiple files to structure code
+- [ ] Add presets (e. g. top, left)
+- [ ] Save settings in Storage
+
 ...
 
 
