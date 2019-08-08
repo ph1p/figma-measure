@@ -23,7 +23,7 @@ At the bottom you can set the arrow style.
 ![](./assets/ui.png)
 
 
-### Todo
+### Todolist/Featurelist
 
 - [x] Create boxes with measurement
 - [x] Measure height and width
@@ -36,9 +36,12 @@ At the bottom you can set the arrow style.
 - [ ] Add multiple files to structure code
 - [ ] Add presets (e. g. top, left)
 - [ ] Save settings in Storage
+- [ ] Show and hide all measurements
+- [ ] Better resizing
+- [ ] Collapse Groups
+- [ ] Show typo specific informations
 
-...
-
+Feel free to open a feature request: https://github.com/ph1p/figma-measure/issues
 
 ### Development
 
