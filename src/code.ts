@@ -1,6 +1,6 @@
 figma.showUI(__html__, {
   width: 180,
-  height: 265
+  height: 500
 });
 
 const GROUP_NAME = '📐 Measurements';
@@ -133,6 +133,10 @@ const createLine = async options => {
       label.height + paddingTopBottom
     );
     rect.fills = [].concat(solidColor());
+
+    const nodeGroup = figma.currentPage.findOne(
+      currentNode => currentNode.getPluginData('parent') === node.id
+    ) as FrameNode;
 
     // grouping
     const group = figma.group(lineNodes, node.parent);
@@ -313,7 +317,9 @@ const isValidShape = node =>
   node.type === 'TEXT' ||
   node.type === 'VECTOR' ||
   node.type === 'FRAME' ||
-  node.type === 'FRAME';
+  node.type === 'COMPONENT' ||
+  node.type === 'INSTANCE' ||
+  node.type === 'POLYGON';
 
 async function createLineFromMessage({
   direction,
@@ -353,14 +359,34 @@ async function createLineFromMessage({
       }
 
       if (nodes.length > 0) {
-        const measureGroup = figma.group(nodes, figma.currentPage);
-        measureGroup.name = `📐 Measurements | ${nodes.length} Node${
-          nodes.length > 1 ? 's' : ''
-        }`;
+        const nodeGroup = figma.currentPage.findOne(
+          currentNode => currentNode.getPluginData('parent') === node.id
+        ) as FrameNode;
+
+        if (nodeGroup) {
+          nodes.forEach(n => nodeGroup.appendChild(n));
+        } else {
+          const measureGroup = figma.group(nodes, figma.currentPage);
+          measureGroup.name = `📐 Measurements | ${nodes.length} Node${
+            nodes.length > 1 ? 's' : ''
+          }`;
+
+          measureGroup.setPluginData('parent', node.id);
+        }
       }
     }
   }
 }
+
+const setAngleInCanvas = () => {
+  for (const node of figma.currentPage.selection) {
+    const group = figma.currentPage.findOne(
+      currentNode => currentNode.getPluginData('parent') === node.id
+    );
+
+    console.log(group.name);
+  }
+};
 
 main().then(() => {
   figma.ui.onmessage = async message => {
@@ -368,12 +394,16 @@ main().then(() => {
       await figma.clientStorage.setAsync('line-offset', message.options.value);
     }
 
-    if (message.action === 'line') {
-      figma.ui.postMessage({
-        type: 'selection',
-        data: figma.currentPage.selection.length > 0
-      });
+    figma.ui.postMessage({
+      type: 'selection',
+      data: figma.currentPage.selection.length > 0
+    });
 
+    if (message.action === 'angle') {
+      setAngleInCanvas();
+    }
+
+    if (message.action === 'line') {
       createLineFromMessage({
         direction: message.options.direction,
         align: message.options.align,
