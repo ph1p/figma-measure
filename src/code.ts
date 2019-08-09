@@ -35,6 +35,11 @@ const solidColor = (r = 255, g = 0, b = 0) => ({
   }
 });
 
+const nodeGroup = node =>
+  (figma.currentPage.findOne(
+    currentNode => currentNode.getPluginData('parent') === node.id
+  ) as FrameNode) || null;
+
 const createLine = async options => {
   let {
     node,
@@ -134,10 +139,6 @@ const createLine = async options => {
     );
     rect.fills = [].concat(solidColor());
 
-    const nodeGroup = figma.currentPage.findOne(
-      currentNode => currentNode.getPluginData('parent') === node.id
-    ) as FrameNode;
-
     // grouping
     const group = figma.group(lineNodes, node.parent);
     group.name = name;
@@ -198,7 +199,8 @@ const createLine = async options => {
     const halfGroupHeight = group.height / 2;
     const halfGroupWidth = group.width / 2;
 
-    let transformPosition = node.relativeTransform;
+    let transformPosition =
+      node[(nodeGroup(node) ? 'absolute' : 'relative') + 'Transform'];
     let newX = transformPosition[0][2];
     let newY = transformPosition[1][2];
 
@@ -297,8 +299,6 @@ const createLine = async options => {
     ];
 
     group.relativeTransform = transformPosition;
-    group.locked = true;
-    group.name = 'measurements-' + node.name;
 
     return group;
   }
@@ -324,18 +324,19 @@ const isValidShape = node =>
 async function createLineFromMessage({
   direction,
   align = Alignments.CENTER,
-  strokeCap = 'ARROW_LINES'
+  strokeCap = 'ARROW_LINES',
+  alignSecond = null
 }) {
   const nodes = [];
 
   for (const node of figma.currentPage.selection) {
     if (isValidShape(node)) {
-      if (direction === 'vertical') {
+      if (direction === 'vertical' || direction === 'both') {
         const verticalLine = await createLine({
           node,
-          direction,
+          direction: 'vertical',
           strokeCap,
-          name: 'vertical line',
+          name: 'vertical line ' + align.toLowerCase(),
           lineVerticalAlign: Alignments[align]
         });
 
@@ -344,13 +345,15 @@ async function createLineFromMessage({
         }
       }
 
-      if (direction === 'horizontal') {
+      if (direction === 'horizontal' || direction === 'both') {
         const horizontalLine = await createLine({
           node,
-          direction,
+          direction: 'horizontal',
           strokeCap,
-          name: 'horizontal line',
-          lineHorizontalAlign: Alignments[align]
+          name: 'horizontal line ' + align.toLowerCase(),
+          lineHorizontalAlign: alignSecond
+            ? Alignments[alignSecond]
+            : Alignments[align]
         });
 
         if (horizontalLine) {
@@ -359,17 +362,15 @@ async function createLineFromMessage({
       }
 
       if (nodes.length > 0) {
-        const nodeGroup = figma.currentPage.findOne(
-          currentNode => currentNode.getPluginData('parent') === node.id
-        ) as FrameNode;
+        const group = nodeGroup(node);
 
-        if (nodeGroup) {
-          nodes.forEach(n => nodeGroup.appendChild(n));
+        if (group) {
+          nodes.forEach(n => {
+            group.appendChild(n);
+          });
         } else {
           const measureGroup = figma.group(nodes, figma.currentPage);
-          measureGroup.name = `📐 Measurements | ${nodes.length} Node${
-            nodes.length > 1 ? 's' : ''
-          }`;
+          measureGroup.name = `📐 Measurements | ${node.name}`;
 
           measureGroup.setPluginData('parent', node.id);
         }
@@ -380,11 +381,59 @@ async function createLineFromMessage({
 
 const setAngleInCanvas = () => {
   for (const node of figma.currentPage.selection) {
-    const group = figma.currentPage.findOne(
-      currentNode => currentNode.getPluginData('parent') === node.id
-    );
+    if (Math.floor(node.rotation) !== 0) {
+      const ellipse = figma.createEllipse();
+      const text = figma.createText();
+      const angleFrame = figma.createFrame();
 
-    console.log(group.name);
+      angleFrame.appendChild(ellipse);
+      angleFrame.appendChild(text);
+
+      text.fontSize = 10;
+      text.characters = Math.floor(node.rotation) + '°';
+      text.fills = [].concat(solidColor(255, 255, 255));
+      text.textAlignHorizontal = 'CENTER';
+      text.fontName = {
+        family: 'Inter',
+        style: 'Bold'
+      };
+
+      const textWidth = text.width + text.width / 2;
+
+      angleFrame.resize(textWidth, textWidth);
+      angleFrame.backgrounds = [];
+
+      //ellipse
+      ellipse.resize(textWidth, textWidth);
+      ellipse.fills = [].concat(solidColor(255, 0, 0));
+
+      text.resize(ellipse.width, text.height);
+      text.y = ellipse.height / 2 - text.height / 2;
+      text.x += 2;
+
+      let transformPosition = node.absoluteTransform;
+
+      let newX = transformPosition[0][2];
+      let newY = transformPosition[1][2];
+
+      const xCos = transformPosition[0][0];
+      const xSin = transformPosition[0][1];
+
+      const yCos = transformPosition[1][0];
+      const ySin = transformPosition[1][1];
+
+      // group
+      const group = figma.group([angleFrame], figma.currentPage);
+      group.name = `📐 Measurements | ${node.name}`;
+      group.setPluginData('parent', node.id);
+
+      newY -= xSin * node.height - group.width;
+      newX += xCos * node.height - group.width;
+
+      transformPosition = [[xCos, xSin, newX], [yCos, ySin, newY]];
+
+      group.relativeTransform = transformPosition;
+    }
   }
 };
 
@@ -404,11 +453,47 @@ main().then(() => {
     }
 
     if (message.action === 'line') {
+      const { direction, strokeCap, align } = message.options;
+
       createLineFromMessage({
-        direction: message.options.direction,
-        align: message.options.align,
-        strokeCap: message.options.strokeCap
+        direction,
+        strokeCap,
+        align
       });
+    }
+
+    if (message.action === 'line-preset') {
+      const { direction, strokeCap } = message.options;
+
+      if (direction === 'left-bottom') {
+        createLineFromMessage({
+          direction: 'both',
+          strokeCap,
+          align: Alignments.LEFT,
+          alignSecond: Alignments.BOTTOM
+        });
+      } else if (direction === 'left-top') {
+        createLineFromMessage({
+          direction: 'both',
+          strokeCap,
+          align: Alignments.LEFT,
+          alignSecond: Alignments.TOP
+        });
+      } else if (direction === 'right-bottom') {
+        createLineFromMessage({
+          direction: 'both',
+          strokeCap,
+          align: Alignments.RIGHT,
+          alignSecond: Alignments.BOTTOM
+        });
+      } else {
+        createLineFromMessage({
+          direction: 'both',
+          strokeCap,
+          align: Alignments.RIGHT,
+          alignSecond: Alignments.TOP
+        });
+      }
     }
 
     if (message.type === 'cancel') {
