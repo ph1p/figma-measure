@@ -42,6 +42,13 @@ class App extends React.Component<
     });
   };
 
+  setPreset = direction => {
+    this.sendMessage('line-preset', {
+      direction,
+      strokeCap: this.capSelect.current.value
+    });
+  };
+
   // changeOffset = e => {
   //   const { value } = e.target;
 
@@ -143,35 +150,19 @@ class App extends React.Component<
           <div className="grid">
             <div
               className="align-icon left-bottom"
-              onClick={() =>
-                this.sendMessage('line-preset', {
-                  direction: 'left-bottom'
-                })
-              }
+              onClick={() => this.setPreset('left-bottom')}
             />
             <div
               className="align-icon left-top"
-              onClick={() =>
-                this.sendMessage('line-preset', {
-                  direction: 'left-top'
-                })
-              }
+              onClick={() => this.setPreset('left-top')}
             />
             <div
               className="align-icon right-bottom"
-              onClick={() =>
-                this.sendMessage('line-preset', {
-                  direction: 'right-bottom'
-                })
-              }
+              onClick={() => this.setPreset('right-bottom')}
             />
             <div
               className="align-icon right-top"
-              onClick={() =>
-                this.sendMessage('line-preset', {
-                  direction: 'right-top'
-                })
-              }
+              onClick={() => this.setPreset('right-top')}
             />
           </div>
         </div>
