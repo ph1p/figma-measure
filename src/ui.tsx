@@ -22,7 +22,7 @@ class App extends React.Component<
     };
   }
 
-  sendMessage = (action, options) => {
+  sendMessage = (action, options = {}) => {
     parent.postMessage(
       {
         pluginMessage: {
@@ -128,6 +128,50 @@ class App extends React.Component<
             <div
               className="align-icon vertical right"
               onClick={() => this.setLine('vertical', 'RIGHT')}
+            />
+          </div>
+        </div>
+        <div className="content">
+          <h4>Angle</h4>
+          <div
+            className="align-icon angle"
+            onClick={() => this.sendMessage('angle')}
+          />
+        </div>
+        <div className="content">
+          <h4>Presets</h4>
+          <div className="grid">
+            <div
+              className="align-icon left-bottom"
+              onClick={() =>
+                this.sendMessage('line-preset', {
+                  direction: 'left-bottom'
+                })
+              }
+            />
+            <div
+              className="align-icon left-top"
+              onClick={() =>
+                this.sendMessage('line-preset', {
+                  direction: 'left-top'
+                })
+              }
+            />
+            <div
+              className="align-icon right-bottom"
+              onClick={() =>
+                this.sendMessage('line-preset', {
+                  direction: 'right-bottom'
+                })
+              }
+            />
+            <div
+              className="align-icon right-top"
+              onClick={() =>
+                this.sendMessage('line-preset', {
+                  direction: 'right-top'
+                })
+              }
             />
           </div>
         </div>

@@ -23,7 +23,7 @@ body {
   color: #fff;
   width: 100%;
   z-index: 3;
-  transition: all .3s;
+  transition: all 0.3s;
   transform: translateY(-53px);
   box-shadow: none;
 }
@@ -92,6 +92,65 @@ body {
 }
 .align-icon.vertical.right::before {
   transform: translate(12px, -50%);
+}
+
+.align-icon.angle::before {
+  width: 21px;
+  height: 21px;
+  border-width: 0 0 1px 1px;
+  border-color: #000;
+  border-style: solid;
+  background-color: transparent;
+  transform: translate(-50%, -50%);
+}
+
+.align-icon.angle::after {
+  border-width: 1px 1px 0 0;
+  border-color: rgba(0, 0, 0, 0.3);
+  border-style: solid;
+  width: 12px;
+  height: 12px;
+  border-radius: 0 100% 0 0;
+}
+
+.align-icon.left-bottom::before {
+  width: 21px;
+  height: 21px;
+  border-width: 0 0 1px 1px;
+  border-color: #000;
+  border-style: solid;
+  background-color: transparent;
+  transform: translate(-50%, -50%);
+}
+
+.align-icon.left-top::before {
+  width: 21px;
+  height: 21px;
+  border-width: 1px 0 0 1px;
+  border-color: #000;
+  border-style: solid;
+  background-color: transparent;
+  transform: translate(-50%, -50%);
+}
+
+.align-icon.right-top::before {
+  width: 21px;
+  height: 21px;
+  border-width: 1px 1px 0 0;
+  border-color: #000;
+  border-style: solid;
+  background-color: transparent;
+  transform: translate(-50%, -50%);
+}
+
+.align-icon.right-bottom::before {
+  width: 21px;
+  height: 21px;
+  border-width: 0 1px 1px 0;
+  border-color: #000;
+  border-style: solid;
+  background-color: transparent;
+  transform: translate(-50%, -50%);
 }
 
 .grid {
