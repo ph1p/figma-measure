@@ -63,7 +63,7 @@ const createLine = async options => {
 
   if (heightOrWidth > 0.01) {
     // needed elements
-    const line = figma.createLine();
+    const line = figma.createVector();
     const rect = figma.createRectangle();
     const label = figma.createText();
 
@@ -75,50 +75,6 @@ const createLine = async options => {
 
     const lineNodes = [line];
 
-    // LINE
-    line.rotation = isHorizontal ? 0 : 90;
-
-    line.x = !isHorizontal ? LINE_OFFSET : 0;
-    line.y = nodeHeight - (isHorizontal ? LINE_OFFSET : 0);
-
-    line.strokes = [].concat(solidColor());
-
-    line.resize(heightOrWidth, 0);
-
-    if (strokeCap === 'STANDARD') {
-      const measureLineWidth = Math.abs(LINE_OFFSET) * 2 + line.strokeWeight;
-      if (measureLineWidth >= 0.01) {
-        const firstMeasureLine = figma.createLine();
-        const secondMeasureLine = figma.createLine();
-
-        lineNodes.push(firstMeasureLine);
-        lineNodes.push(secondMeasureLine);
-
-        firstMeasureLine.strokes = [].concat(solidColor());
-        secondMeasureLine.strokes = [].concat(solidColor());
-        firstMeasureLine.resize(measureLineWidth, 0);
-        secondMeasureLine.resize(measureLineWidth, 0);
-
-        if (!isHorizontal) {
-          firstMeasureLine.x -= measureLineWidth;
-          firstMeasureLine.y += 1;
-
-          secondMeasureLine.x -= measureLineWidth;
-          secondMeasureLine.y += nodeHeight;
-        } else {
-          firstMeasureLine.rotation = 90;
-          firstMeasureLine.x += 1;
-          firstMeasureLine.y += nodeHeight + Math.abs(LINE_OFFSET) * 2;
-
-          secondMeasureLine.rotation = 90;
-          secondMeasureLine.x += nodeWidth;
-          secondMeasureLine.y += nodeHeight + Math.abs(LINE_OFFSET) * 2;
-        }
-      }
-    } else {
-      line.strokeCap = strokeCap as StrokeCap;
-    }
-
     // LABEL
     label.characters = `${parseFloat(heightOrWidth.toString()).toFixed(0)}`;
     label.fontName = {
@@ -126,25 +82,89 @@ const createLine = async options => {
       style: 'Bold'
     };
     label.fontSize = 10;
-
     label.fills = [].concat(solidColor(255, 255, 255));
 
     // RECTANGLE
-    rect.x = label.x - paddingLeftRight / 2;
-    rect.y = label.y - paddingTopBottom / 2;
     rect.cornerRadius = 3;
     rect.resize(
       label.width + paddingLeftRight,
       label.height + paddingTopBottom
     );
+    rect.x = label.x - paddingLeftRight / 2;
+    rect.y = label.y - paddingTopBottom / 2;
     rect.fills = [].concat(solidColor());
 
-    // grouping
-    const group = figma.group(lineNodes, node.parent);
+    // GROUP
+    const group = figma.createFrame();
     group.name = name;
+    group.resize(
+      isHorizontal ? nodeWidth : rect.width,
+      isHorizontal ? rect.height : nodeHeight
+    );
+    group.backgrounds = [];
+    group.clipsContent = false;
+    lineNodes.forEach(ln => group.appendChild(ln));
+    // const group = figma.group(lineNodes, node.parent);
 
     const textGroup = figma.group([label, rect], group);
     textGroup.name = 'label';
+
+    // LINE
+    line.x = isHorizontal ? 0 : group.width / 2 - line.strokeWeight / 2;
+    line.y = isHorizontal ? group.height / 2 + line.strokeWeight / 2 : 0;
+
+    line.vectorPaths = [
+      {
+        windingRule: 'NONE',
+        // M x y L x y Z is close
+        data: isHorizontal
+          ? `M 0 0 L ${node.height} 0 Z`
+          : `M 0 0 L 0 ${node.width} Z`
+      }
+    ];
+
+    line.strokes = [].concat(solidColor());
+    line.resize(isHorizontal ? node.width : 1, isHorizontal ? 1 : node.height);
+
+    const measureLineWidth = Math.abs(LINE_OFFSET) * 2 + line.strokeWeight;
+
+
+    if (strokeCap === 'STANDARD') {
+      if (measureLineWidth >= 0.01) {
+        const firstMeasureLine = figma.createLine();
+        const secondMeasureLine = figma.createLine();
+
+        group.appendChild(firstMeasureLine);
+        group.appendChild(secondMeasureLine);
+
+        firstMeasureLine.strokes = [].concat(solidColor());
+        secondMeasureLine.strokes = [].concat(solidColor());
+        firstMeasureLine.resize(measureLineWidth, 0);
+        secondMeasureLine.resize(measureLineWidth, 0);
+
+        if (!isHorizontal) {
+          firstMeasureLine.x =
+            group.width / 2 - measureLineWidth / 2 - line.strokeWeight / 2;
+          firstMeasureLine.y += 1;
+
+          secondMeasureLine.x =
+            group.width / 2 - measureLineWidth / 2 - line.strokeWeight / 2;
+          secondMeasureLine.y += nodeHeight;
+        } else {
+          firstMeasureLine.rotation = 90;
+          firstMeasureLine.x += 1;
+          firstMeasureLine.y =
+            group.height - measureLineWidth / 2 - line.strokeWeight;
+
+          secondMeasureLine.rotation = 90;
+          secondMeasureLine.x += nodeWidth;
+          secondMeasureLine.y =
+            group.height - measureLineWidth / 2 - line.strokeWeight;
+        }
+      }
+    } else {
+      line.strokeCap = strokeCap as StrokeCap;
+    }
 
     // x, y for text box
     const boxTop = paddingTopBottom / 2;
@@ -152,12 +172,12 @@ const createLine = async options => {
 
     // place text group
     if (isHorizontal) {
-      textGroup.x += boxLeft + nodeWidth / 2 - textGroup.width / 2;
+      textGroup.x = 0;
       textGroup.y += boxTop + nodeHeight - LINE_OFFSET - line.strokeWeight;
 
       // vertical text align
       if (txtVerticalAlign === Alignments.CENTER) {
-        textGroup.y -= textGroup.height / 2;
+        textGroup.y = 0;
       } else if (txtVerticalAlign === Alignments.BOTTOM) {
         textGroup.y += DIRECTION_MARGIN;
       } else if (txtVerticalAlign === Alignments.TOP) {
@@ -166,14 +186,14 @@ const createLine = async options => {
 
       // horizontal text align
       if (txtHorizontalAlign === Alignments.CENTER) {
-        textGroup.x += 0;
+        textGroup.x = nodeWidth / 2 - textGroup.width / 2;
       } else if (txtHorizontalAlign === Alignments.LEFT) {
         textGroup.x -= nodeWidth / 2 - textGroup.width / 2 - DIRECTION_MARGIN;
       } else if (txtHorizontalAlign === Alignments.RIGHT) {
         textGroup.x += nodeWidth / 2 - textGroup.width / 2 - DIRECTION_MARGIN;
       }
     } else {
-      textGroup.x += boxLeft + LINE_OFFSET;
+      textGroup.x = 0;
       textGroup.y += boxTop;
 
       // vertical text align
@@ -187,7 +207,8 @@ const createLine = async options => {
 
       // vertical text align
       if (txtHorizontalAlign === Alignments.CENTER) {
-        textGroup.x -= textGroup.width / 2;
+        textGroup.x = 0;
+        // textGroup.x = (textGroup.width / 2) + LINE_OFFSET;
       } else if (txtHorizontalAlign === Alignments.LEFT) {
         textGroup.x -= textGroup.width + DIRECTION_MARGIN;
       } else if (txtHorizontalAlign === Alignments.RIGHT) {
@@ -199,8 +220,7 @@ const createLine = async options => {
     const halfGroupHeight = group.height / 2;
     const halfGroupWidth = group.width / 2;
 
-    let transformPosition =
-      node[(nodeGroup(node) ? 'absolute' : 'relative') + 'Transform'];
+    let transformPosition = node.absoluteTransform;
     let newX = transformPosition[0][2];
     let newY = transformPosition[1][2];
 
@@ -213,7 +233,7 @@ const createLine = async options => {
     // horizonzal line position
     if (isHorizontal) {
       if (lineHorizontalAlign === Alignments.CENTER) {
-        newY += (nodeHeight - group.height) / 2;
+        newY += (nodeHeight - group.height) / 2 - line.strokeWeight / 2;
       } else if (lineHorizontalAlign === Alignments.TOP) {
         newY -= group.height / 2 - LINE_OFFSET + line.strokeWeight;
       }
@@ -248,7 +268,7 @@ const createLine = async options => {
     // vertical line position
     else {
       if (lineVerticalAlign === Alignments.CENTER) {
-        newX += (nodeWidth - group.width) / 2;
+        newX += (nodeWidth - group.width) / 2 + line.strokeWeight / 2;
       } else if (lineVerticalAlign === Alignments.RIGHT) {
         newX += nodeWidth - group.width / 2 - LINE_OFFSET + line.strokeWeight;
       }
@@ -382,16 +402,16 @@ async function createLineFromMessage({
 const setAngleInCanvas = () => {
   for (const node of figma.currentPage.selection) {
     if (Math.floor(node.rotation) !== 0) {
-      const ellipse = figma.createEllipse();
+      const rect = figma.createRectangle();
       const text = figma.createText();
       const angleFrame = figma.createFrame();
 
-      angleFrame.appendChild(ellipse);
+      angleFrame.appendChild(rect);
       angleFrame.appendChild(text);
 
       text.fontSize = 10;
       text.characters = Math.floor(node.rotation) + '°';
-      text.fills = [].concat(solidColor(255, 255, 255));
+      text.fills = [].concat(solidColor(255, 0, 0));
       text.textAlignHorizontal = 'CENTER';
       text.fontName = {
         family: 'Inter',
@@ -402,13 +422,20 @@ const setAngleInCanvas = () => {
 
       angleFrame.resize(textWidth, textWidth);
       angleFrame.backgrounds = [];
+      angleFrame.name = 'angle';
 
-      //ellipse
-      ellipse.resize(textWidth, textWidth);
-      ellipse.fills = [].concat(solidColor(255, 0, 0));
+      //rect
+      rect.resize(textWidth, textWidth);
+      rect.strokes = [].concat(solidColor(255, 0, 0));
+      rect.fills = [].concat([
+        {
+          ...solidColor(255, 0, 0),
+          opacity: 0
+        }
+      ]);
 
-      text.resize(ellipse.width, text.height);
-      text.y = ellipse.height / 2 - text.height / 2;
+      text.resize(rect.width, text.height);
+      text.y = rect.height / 2 - text.height / 2;
       text.x += 2;
 
       let transformPosition = node.absoluteTransform;
@@ -423,16 +450,20 @@ const setAngleInCanvas = () => {
       const ySin = transformPosition[1][1];
 
       // group
-      const group = figma.group([angleFrame], figma.currentPage);
-      group.name = `📐 Measurements | ${node.name}`;
-      group.setPluginData('parent', node.id);
 
-      newY -= xSin * node.height - group.width;
-      newX += xCos * node.height - group.width;
+      const group = nodeGroup(node);
+
+      if (group) {
+        group.appendChild(angleFrame);
+      } else {
+        const group = figma.group([angleFrame], figma.currentPage);
+        group.name = `📐 Measurements | ${node.name}`;
+        group.setPluginData('parent', node.id);
+      }
 
       transformPosition = [[xCos, xSin, newX], [yCos, ySin, newY]];
 
-      group.relativeTransform = transformPosition;
+      angleFrame.relativeTransform = transformPosition;
     }
   }
 };
