@@ -139,13 +139,6 @@ class App extends React.Component<
           </div>
         </div>
         <div className="content">
-          <h4>Angle</h4>
-          <div
-            className="align-icon angle"
-            onClick={() => this.sendMessage('angle')}
-          />
-        </div>
-        <div className="content">
           <h4>Presets</h4>
           <div className="grid">
             <div
@@ -165,6 +158,13 @@ class App extends React.Component<
               onClick={() => this.setPreset('right-top')}
             />
           </div>
+        </div>
+        <div className="content">
+          <h4>Angle</h4>
+          <div
+            className="align-icon angle"
+            onClick={() => this.sendMessage('angle')}
+          />
         </div>
 
         <hr />

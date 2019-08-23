@@ -63,5 +63,5 @@ npm run dev
 * Open figma
 * Go to **Plugins**
 * Click the "+" next to **Development**
-* Choose the manifest.json inside `figma-measure/dist`
+* Choose the manifest.json inside `figma-measure/Figma Measure`
 * Ready to develop
