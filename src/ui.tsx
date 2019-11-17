@@ -9,7 +9,7 @@ declare function require(path: string): any;
 
 class App extends React.Component<
   {},
-  { showSelectionError: boolean; lineOffset: number }
+  { hasSelections: boolean; lineOffset: number }
 > {
   capSelect = React.createRef<HTMLSelectElement>();
 
@@ -17,7 +17,7 @@ class App extends React.Component<
     super(props);
 
     this.state = {
-      showSelectionError: false,
+      hasSelections: false,
       lineOffset: 3
     };
   }
@@ -35,18 +35,22 @@ class App extends React.Component<
   };
 
   setLine = (direction, align) => {
-    this.sendMessage('line', {
-      direction,
-      align,
-      strokeCap: this.capSelect.current.value
-    });
+    if (this.state.hasSelections) {
+      this.sendMessage('line', {
+        direction,
+        align,
+        strokeCap: this.capSelect.current.value
+      });
+    }
   };
 
   setPreset = direction => {
-    this.sendMessage('line-preset', {
-      direction,
-      strokeCap: this.capSelect.current.value
-    });
+    if (this.state.hasSelections) {
+      this.sendMessage('line-preset', {
+        direction,
+        strokeCap: this.capSelect.current.value
+      });
+    }
   };
 
   // changeOffset = e => {
@@ -68,38 +72,17 @@ class App extends React.Component<
 
     window.onmessage = event => {
       if (event.data.pluginMessage.type === 'selection') {
-        this.setState(
-          {
-            showSelectionError: !event.data.pluginMessage.data
-          },
-          () => {
-            if (this.state.showSelectionError) {
-              setTimeout(
-                () =>
-                  this.setState({
-                    showSelectionError: false
-                  }),
-                3000
-              );
-            }
-          }
-        );
+        this.setState({
+          hasSelections: event.data.pluginMessage.data
+        });
       }
     };
   }
 
   render() {
+    const { hasSelections } = this.state;
     return (
-      <div className="main">
-        <div
-          onClick={() => this.setState({ showSelectionError: false })}
-          className={
-            'no-selection' + (this.state.showSelectionError ? ' active' : '')
-          }
-        >
-          ⚠ Please select at least one element
-        </div>
-
+      <div className={`main ${hasSelections ? 'selections' : ''}`}>
         {/* <label className="checkbox">
           <div className="checkbox__container">
             <input type="checkbox" className="checkbox__box" />

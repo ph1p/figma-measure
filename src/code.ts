@@ -128,7 +128,6 @@ const createLine = async options => {
 
     const measureLineWidth = Math.abs(LINE_OFFSET) * 2 + line.strokeWeight;
 
-
     if (strokeCap === 'STANDARD') {
       if (measureLineWidth >= 0.01) {
         const firstMeasureLine = figma.createLine();
@@ -461,7 +460,10 @@ const setAngleInCanvas = () => {
         group.setPluginData('parent', node.id);
       }
 
-      transformPosition = [[xCos, xSin, newX], [yCos, ySin, newY]];
+      transformPosition = [
+        [xCos, xSin, newX],
+        [yCos, ySin, newY]
+      ];
 
       angleFrame.relativeTransform = transformPosition;
     }
@@ -469,15 +471,18 @@ const setAngleInCanvas = () => {
 };
 
 main().then(() => {
-  figma.ui.onmessage = async message => {
-    if (message.action === 'line-offset') {
-      await figma.clientStorage.setAsync('line-offset', message.options.value);
-    }
-
+  // events
+  figma.on('selectionchange', () => {
     figma.ui.postMessage({
       type: 'selection',
       data: figma.currentPage.selection.length > 0
     });
+  });
+
+  figma.ui.onmessage = async message => {
+    if (message.action === 'line-offset') {
+      await figma.clientStorage.setAsync('line-offset', message.options.value);
+    }
 
     if (message.action === 'angle') {
       setAngleInCanvas();

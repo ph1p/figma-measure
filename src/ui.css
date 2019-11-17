@@ -9,6 +9,21 @@ body {
   position: relative;
 }
 
+.main .align-icon,
+.main .align-icon::after,
+.main .align-icon::before {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.main.selections .align-icon,
+.main.selections .align-icon::after,
+.main.selections .align-icon::before {
+  pointer-events: all;
+  cursor: pointer;
+  opacity: 1;
+}
+
 .content {
   padding: 10px;
 }
