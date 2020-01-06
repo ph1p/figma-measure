@@ -470,6 +470,60 @@ const setAngleInCanvas = () => {
   }
 };
 
+const setTooltip = () => {
+  if (figma.currentPage.selection.length === 1) {
+    const node = figma.currentPage.selection[0];
+
+    let transformPosition = node.absoluteTransform;
+    let newX = transformPosition[0][2];
+    let newY = transformPosition[1][2];
+
+    const xCos = transformPosition[0][0];
+    const xSin = transformPosition[0][1];
+
+    const yCos = transformPosition[1][0];
+    const ySin = transformPosition[1][1];
+
+    // ----
+
+    const tooltipContent = figma.createText();
+    tooltipContent.textAutoResize = 'WIDTH_AND_HEIGHT';
+    tooltipContent.fontName = {
+      family: 'Inter',
+      style: 'Bold'
+    };
+    tooltipContent.characters = `Height: ${node.height}`;
+
+    // ----
+
+    const tooltipFrame = figma.createFrame();
+    tooltipFrame.appendChild(tooltipContent);
+
+    tooltipFrame.resize(50, 50);
+    tooltipFrame.backgrounds = [].concat(solidColor(255, 255, 255));
+
+    // ----
+    // const tooltipGroup = figma.group([tooltipFrame], figma.currentPage);
+
+    transformPosition = [
+      [
+        xCos, // cos
+        xSin, // sin
+        newX
+      ],
+      [
+        yCos, // -sin
+        ySin, // cos
+        newY
+      ]
+    ];
+
+    tooltipFrame.relativeTransform = transformPosition;
+  } else {
+    figma.notify('Please select only one element');
+  }
+};
+
 main().then(() => {
   // events
   figma.on('selectionchange', () => {
@@ -482,6 +536,10 @@ main().then(() => {
   figma.ui.onmessage = async message => {
     if (message.action === 'line-offset') {
       await figma.clientStorage.setAsync('line-offset', message.options.value);
+    }
+
+    if (message.action === 'tooltip') {
+      setTooltip();
     }
 
     if (message.action === 'angle') {

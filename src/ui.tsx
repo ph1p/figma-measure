@@ -7,6 +7,18 @@ declare function require(path: string): any;
 
 // const isNumberValid = (num: any): boolean => /^-?[0-9]\d*?$/g.test(num);
 
+const sendMessage = (action, options = {}) => {
+  parent.postMessage(
+    {
+      pluginMessage: {
+        options,
+        action
+      }
+    },
+    '*'
+  );
+};
+
 class App extends React.Component<
   {},
   { hasSelections: boolean; lineOffset: number }
@@ -22,33 +34,21 @@ class App extends React.Component<
     };
   }
 
-  sendMessage = (action, options = {}) => {
-    parent.postMessage(
-      {
-        pluginMessage: {
-          options,
-          action
-        }
-      },
-      '*'
-    );
-  };
-
   setLine = (direction, align) => {
     if (this.state.hasSelections) {
-      this.sendMessage('line', {
+      sendMessage('line', {
         direction,
         align,
-        strokeCap: this.capSelect.current.value
+        strokeCap: (this.capSelect.current as any).value
       });
     }
   };
 
   setPreset = direction => {
     if (this.state.hasSelections) {
-      this.sendMessage('line-preset', {
+      sendMessage('line-preset', {
         direction,
-        strokeCap: this.capSelect.current.value
+        strokeCap: (this.capSelect.current as any).value
       });
     }
   };
@@ -61,7 +61,7 @@ class App extends React.Component<
   //   });
 
   //   if (isNumberValid(value)) {
-  //     this.sendMessage('line-offset', {
+  //     sendMessage('line-offset', {
   //       value
   //     });
   //   }
@@ -146,7 +146,15 @@ class App extends React.Component<
           <h4>Angle</h4>
           <div
             className="align-icon angle"
-            onClick={() => this.sendMessage('angle')}
+            onClick={() => sendMessage('angle')}
+          />
+        </div>
+
+        <div className="content">
+          <h4>Tooltip</h4>
+          <div
+            className="align-icon angle"
+            onClick={() => sendMessage('tooltip')}
           />
         </div>
 
