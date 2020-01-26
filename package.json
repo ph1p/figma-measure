@@ -5,7 +5,8 @@
   "main": "code.js",
   "scripts": {
     "build": "webpack --mode=production && zip -r -X  \"Figma Measure.zip\" \"./Figma Measure/\"",
-    "dev": "webpack --watch"
+    "dev": "webpack --watch",
+    "changelog": "conventional-changelog -p karma -i CHANGELOG.md -s -r 0"
   },
   "author": "",
   "license": "ISC",
