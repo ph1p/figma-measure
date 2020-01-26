@@ -168,6 +168,21 @@ body {
   transform: translate(-50%, -50%);
 }
 
+.align-icon.tooltip::after {
+  width: 22px;
+  height: 22px;
+}
+
+.align-icon.tooltip::before {
+  width: 15px;
+  height: 3px;
+  border-width: 1px 0 1px 0;
+  border-color: #000;
+  border-style: solid;
+  background-color: transparent;
+  transform: translate(-50%, -6px);
+}
+
 .grid {
   display: grid;
   grid-gap: 15px;

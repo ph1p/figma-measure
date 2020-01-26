@@ -153,7 +153,7 @@ class App extends React.Component<
         <div className="content">
           <h4>Tooltip</h4>
           <div
-            className="align-icon angle"
+            className="align-icon tooltip"
             onClick={() => sendMessage('tooltip')}
           />
         </div>

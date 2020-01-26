@@ -64,11 +64,10 @@ const createLine = async options => {
   if (heightOrWidth > 0.01) {
     // needed elements
     const line = figma.createVector();
-    const rect = figma.createRectangle();
     const label = figma.createText();
 
-    const paddingTopBottom = 5;
-    const paddingLeftRight = 10;
+    const paddingTopBottom = 3;
+    const paddingLeftRight = 5;
 
     // margin for top and bottom
     const DIRECTION_MARGIN = 5;
@@ -84,30 +83,35 @@ const createLine = async options => {
     label.fontSize = 10;
     label.fills = [].concat(solidColor(255, 255, 255));
 
-    // RECTANGLE
-    rect.cornerRadius = 3;
-    rect.resize(
-      label.width + paddingLeftRight,
-      label.height + paddingTopBottom
-    );
-    rect.x = label.x - paddingLeftRight / 2;
-    rect.y = label.y - paddingTopBottom / 2;
-    rect.fills = [].concat(solidColor());
+    // LABEL RECT
+    const labelFrame = figma.createFrame();
+    labelFrame.cornerRadius = 3;
+
+    labelFrame.layoutMode = 'HORIZONTAL';
+    labelFrame.horizontalPadding = paddingLeftRight;
+    labelFrame.verticalPadding = paddingTopBottom;
+    labelFrame.counterAxisSizingMode = 'AUTO';
+    labelFrame.x = label.x - paddingLeftRight / 2;
+    labelFrame.y = label.y - paddingTopBottom / 2;
+    labelFrame.fills = [].concat(solidColor());
+
+    labelFrame.appendChild(label);
+    labelFrame.name = 'label';
 
     // GROUP
     const group = figma.createFrame();
     group.name = name;
     group.resize(
-      isHorizontal ? nodeWidth : rect.width,
-      isHorizontal ? rect.height : nodeHeight
+      isHorizontal ? nodeWidth : labelFrame.width,
+      isHorizontal ? labelFrame.height : nodeHeight
     );
     group.backgrounds = [];
     group.clipsContent = false;
     lineNodes.forEach(ln => group.appendChild(ln));
     // const group = figma.group(lineNodes, node.parent);
 
-    const textGroup = figma.group([label, rect], group);
-    textGroup.name = 'label';
+    // add label frame
+    group.appendChild(labelFrame);
 
     // LINE
     line.x = isHorizontal ? 0 : group.width / 2 - line.strokeWeight / 2;
@@ -171,47 +175,47 @@ const createLine = async options => {
 
     // place text group
     if (isHorizontal) {
-      textGroup.x = 0;
-      textGroup.y += boxTop + nodeHeight - LINE_OFFSET - line.strokeWeight;
+      labelFrame.x = 0;
+      labelFrame.y += boxTop + nodeHeight - LINE_OFFSET - line.strokeWeight;
 
       // vertical text align
       if (txtVerticalAlign === Alignments.CENTER) {
-        textGroup.y = 0;
+        labelFrame.y = 0;
       } else if (txtVerticalAlign === Alignments.BOTTOM) {
-        textGroup.y += DIRECTION_MARGIN;
+        labelFrame.y += DIRECTION_MARGIN;
       } else if (txtVerticalAlign === Alignments.TOP) {
-        textGroup.y -= textGroup.height + DIRECTION_MARGIN;
+        labelFrame.y -= labelFrame.height + DIRECTION_MARGIN;
       }
 
       // horizontal text align
       if (txtHorizontalAlign === Alignments.CENTER) {
-        textGroup.x = nodeWidth / 2 - textGroup.width / 2;
+        labelFrame.x = nodeWidth / 2 - labelFrame.width / 2;
       } else if (txtHorizontalAlign === Alignments.LEFT) {
-        textGroup.x -= nodeWidth / 2 - textGroup.width / 2 - DIRECTION_MARGIN;
+        labelFrame.x -= nodeWidth / 2 - labelFrame.width / 2 - DIRECTION_MARGIN;
       } else if (txtHorizontalAlign === Alignments.RIGHT) {
-        textGroup.x += nodeWidth / 2 - textGroup.width / 2 - DIRECTION_MARGIN;
+        labelFrame.x += nodeWidth / 2 - labelFrame.width / 2 - DIRECTION_MARGIN;
       }
     } else {
-      textGroup.x = 0;
-      textGroup.y += boxTop;
+      labelFrame.x = 0;
+      labelFrame.y += boxTop;
 
       // vertical text align
       if (txtVerticalAlign === Alignments.CENTER) {
-        textGroup.y += nodeHeight / 2 - textGroup.height / 2;
+        labelFrame.y += nodeHeight / 2 - labelFrame.height / 2;
       } else if (txtVerticalAlign === Alignments.BOTTOM) {
-        textGroup.y += nodeHeight - textGroup.height - DIRECTION_MARGIN;
+        labelFrame.y += nodeHeight - labelFrame.height - DIRECTION_MARGIN;
       } else if (txtVerticalAlign === Alignments.TOP) {
-        textGroup.y += DIRECTION_MARGIN;
+        labelFrame.y += DIRECTION_MARGIN;
       }
 
       // vertical text align
       if (txtHorizontalAlign === Alignments.CENTER) {
-        textGroup.x = 0;
-        // textGroup.x = (textGroup.width / 2) + LINE_OFFSET;
+        labelFrame.x = 0;
+        // labelFrame.x = (labelFrame.width / 2) + LINE_OFFSET;
       } else if (txtHorizontalAlign === Alignments.LEFT) {
-        textGroup.x -= textGroup.width + DIRECTION_MARGIN;
+        labelFrame.x -= labelFrame.width + DIRECTION_MARGIN;
       } else if (txtHorizontalAlign === Alignments.RIGHT) {
-        textGroup.x += DIRECTION_MARGIN;
+        labelFrame.x += DIRECTION_MARGIN;
       }
     }
 
@@ -470,40 +474,153 @@ const setAngleInCanvas = () => {
   }
 };
 
-const setTooltip = () => {
+const createTooltipTextNode = () => {
+  const text = figma.createText();
+
+  text.fontName = {
+    family: 'Inter',
+    style: 'Regular'
+  };
+  text.textAlignHorizontal = 'LEFT';
+  text.fills = [].concat(solidColor(255, 255, 255));
+
+  return text;
+};
+
+const setTooltip = async () => {
   if (figma.currentPage.selection.length === 1) {
+    await figma.loadFontAsync({
+      family: 'Inter',
+      style: 'Regular'
+    });
+
+    const PADDING = 12;
     const node = figma.currentPage.selection[0];
 
+    // ----
+
+    const tooltipFrame = figma.createFrame();
+    tooltipFrame.name = 'Tooltip ' + node.name;
+    tooltipFrame.layoutMode = 'VERTICAL';
+    tooltipFrame.cornerRadius = 3;
+    tooltipFrame.horizontalPadding = PADDING;
+    tooltipFrame.verticalPadding = PADDING;
+    tooltipFrame.itemSpacing = PADDING;
+    tooltipFrame.counterAxisSizingMode = 'AUTO';
+
+    // ----
+
+    const tooltipContent = createTooltipTextNode();
+
+    switch (node.type) {
+      case 'SLICE':
+      case 'FRAME':
+      case 'GROUP':
+      case 'COMPONENT':
+      case 'INSTANCE':
+      case 'BOOLEAN_OPERATION':
+      case 'VECTOR':
+      case 'STAR':
+      case 'LINE':
+      case 'ELLIPSE':
+      case 'POLYGON':
+      case 'RECTANGLE':
+        tooltipContent.characters += `Height: ${node.height}`;
+        tooltipContent.characters += `Width: ${node.width}`;
+
+        tooltipFrame.appendChild(tooltipContent);
+        break;
+      case 'TEXT':
+        console.log(node);
+        const fontFamily = (node.fontName as FontName).family;
+        const fontStyle = (node.fontName as FontName).style;
+        const fontSize = node.fontSize.toString();
+
+        tooltipContent.characters += `Opacity: ${node.opacity}\n`;
+
+        // Font
+        tooltipContent.characters += `Font-Size: ${fontSize}\n`;
+        tooltipContent.characters += `Font-Family: ${fontFamily}\n`;
+        tooltipContent.characters += `Font-Style: ${fontStyle}`;
+
+        let chars = 0;
+        for (const line of tooltipContent.characters.split('\n')) {
+          if (line && ~line.indexOf(':')) {
+            const [label] = line.split(':');
+
+            tooltipContent.setRangeFontName(chars, chars + label.length + 1, {
+              family: 'Inter',
+              style: 'Bold'
+            });
+            chars += line.length + 1;
+          }
+        }
+
+        // Fills
+        const fillsTextNode = createTooltipTextNode();
+
+        if (node.fills) {
+          fillsTextNode.characters += `Fills\n\n`;
+          (node.fills as any[]).map(f => {
+            const opacity = f.opacity === 1 ? 1 : f.opacity.toFixed(2);
+
+            fillsTextNode.characters += `rgb(${f.color.r.toFixed(
+              2
+            )}, ${f.color.g.toFixed(2)}, ${f.color.b.toFixed(2)}, ${opacity})`;
+          });
+        }
+
+        tooltipFrame.appendChild(tooltipContent);
+        tooltipFrame.appendChild(fillsTextNode);
+
+        break;
+    }
+
+    // ----
+
+    // tooltipFrame.resize(50, 50);
+    tooltipFrame.backgrounds = [].concat(solidColor(255, 0, 0));
+
+    // ----
+    // const tooltipGroup = figma.group([tooltipFrame], figma.currentPage);
+
     let transformPosition = node.absoluteTransform;
+
     let newX = transformPosition[0][2];
     let newY = transformPosition[1][2];
+
+    let vertical = 'top'; // top, bottom, center
+    let horizontal = 'left'; // left, right, center
+
+    switch (vertical) {
+      case 'top':
+        newY -= tooltipFrame.height + PADDING;
+        break;
+      case 'center':
+        newY += node.height / 2 - tooltipFrame.height / 2;
+        break;
+      case 'bottom':
+        newY += node.height + PADDING;
+        break;
+    }
+
+    switch (horizontal) {
+      case 'left':
+        newX -= tooltipFrame.width + PADDING;
+        break;
+      case 'center':
+        newX += node.width / 2 - tooltipFrame.width / 2;
+        break;
+      case 'right':
+        newX += node.width + PADDING;
+        break;
+    }
 
     const xCos = transformPosition[0][0];
     const xSin = transformPosition[0][1];
 
     const yCos = transformPosition[1][0];
     const ySin = transformPosition[1][1];
-
-    // ----
-
-    const tooltipContent = figma.createText();
-    tooltipContent.textAutoResize = 'WIDTH_AND_HEIGHT';
-    tooltipContent.fontName = {
-      family: 'Inter',
-      style: 'Bold'
-    };
-    tooltipContent.characters = `Height: ${node.height}`;
-
-    // ----
-
-    const tooltipFrame = figma.createFrame();
-    tooltipFrame.appendChild(tooltipContent);
-
-    tooltipFrame.resize(50, 50);
-    tooltipFrame.backgrounds = [].concat(solidColor(255, 255, 255));
-
-    // ----
-    // const tooltipGroup = figma.group([tooltipFrame], figma.currentPage);
 
     transformPosition = [
       [
@@ -524,14 +641,17 @@ const setTooltip = () => {
   }
 };
 
-main().then(() => {
-  // events
-  figma.on('selectionchange', () => {
-    figma.ui.postMessage({
-      type: 'selection',
-      data: figma.currentPage.selection.length > 0
-    });
+const sendSelection = () =>
+  figma.ui.postMessage({
+    type: 'selection',
+    data: figma.currentPage.selection.length > 0
   });
+
+main().then(() => {
+  sendSelection();
+
+  // events
+  figma.on('selectionchange', sendSelection);
 
   figma.ui.onmessage = async message => {
     if (message.action === 'line-offset') {
