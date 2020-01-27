@@ -331,6 +331,7 @@ const createLine = async options => {
 async function main() {
   await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
   await figma.loadFontAsync({ family: 'Inter', style: 'Bold' });
+  await figma.loadFontAsync({ family: 'Inter', style: 'Regular' });
 }
 
 const isValidShape = node =>
@@ -487,13 +488,8 @@ const createTooltipTextNode = () => {
   return text;
 };
 
-const setTooltip = async () => {
+const setTooltip = () => {
   if (figma.currentPage.selection.length === 1) {
-    await figma.loadFontAsync({
-      family: 'Inter',
-      style: 'Regular'
-    });
-
     const PADDING = 12;
     const node = figma.currentPage.selection[0];
 
@@ -656,6 +652,10 @@ main().then(() => {
   figma.ui.onmessage = async message => {
     if (message.action === 'line-offset') {
       await figma.clientStorage.setAsync('line-offset', message.options.value);
+    }
+
+    if(message.action === 'selection') {
+      sendSelection();
     }
 
     if (message.action === 'tooltip') {
