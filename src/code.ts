@@ -488,7 +488,7 @@ const createTooltipTextNode = () => {
   return text;
 };
 
-const setTooltip = () => {
+const setTooltip = ({ vertical = 'CENTER', horizontal = 'LEFT' }) => {
   if (figma.currentPage.selection.length === 1) {
     const PADDING = 12;
     const node = figma.currentPage.selection[0];
@@ -527,7 +527,6 @@ const setTooltip = () => {
         tooltipFrame.appendChild(tooltipContent);
         break;
       case 'TEXT':
-        console.log(node);
         const fontFamily = (node.fontName as FontName).family;
         const fontStyle = (node.fontName as FontName).style;
         const fontSize = node.fontSize.toString();
@@ -585,29 +584,26 @@ const setTooltip = () => {
     let newX = transformPosition[0][2];
     let newY = transformPosition[1][2];
 
-    let vertical = 'top'; // top, bottom, center
-    let horizontal = 'left'; // left, right, center
-
     switch (vertical) {
-      case 'top':
+      case 'TOP':
         newY -= tooltipFrame.height + PADDING;
         break;
-      case 'center':
+      case 'CENTER':
         newY += node.height / 2 - tooltipFrame.height / 2;
         break;
-      case 'bottom':
+      case 'BOTTOM':
         newY += node.height + PADDING;
         break;
     }
 
     switch (horizontal) {
-      case 'left':
+      case 'LEFT':
         newX -= tooltipFrame.width + PADDING;
         break;
-      case 'center':
+      case 'CENTER':
         newX += node.width / 2 - tooltipFrame.width / 2;
         break;
-      case 'right':
+      case 'RIGHT':
         newX += node.width + PADDING;
         break;
     }
@@ -637,11 +633,17 @@ const setTooltip = () => {
   }
 };
 
-const sendSelection = () =>
+const sendSelection = () => {
   figma.ui.postMessage({
     type: 'selection',
-    data: figma.currentPage.selection.length > 0
+    data: figma.currentPage.selection.map(e => {
+      return {
+        id: e.id,
+        type: e.type
+      };
+    })
   });
+};
 
 main().then(() => {
   sendSelection();
@@ -650,68 +652,75 @@ main().then(() => {
   figma.on('selectionchange', sendSelection);
 
   figma.ui.onmessage = async message => {
-    if (message.action === 'line-offset') {
-      await figma.clientStorage.setAsync('line-offset', message.options.value);
-    }
+    switch (message.action) {
+      case 'resize':
+        const { width = -1, height = -1 } = message.payload;
+        figma.ui.resize(width || 180, height || 500);
+        break;
+      case 'line-offset':
+        await figma.clientStorage.setAsync(
+          'line-offset',
+          message.payload.value
+        );
+        break;
+      case 'selection':
+        sendSelection();
+        break;
+      case 'tooltip':
+        setTooltip(message.payload);
+        break;
+      case 'angle':
+        setAngleInCanvas();
+        break;
+      case 'line':
+        {
+          const { direction, strokeCap, align } = message.payload;
 
-    if(message.action === 'selection') {
-      sendSelection();
-    }
+          createLineFromMessage({
+            direction,
+            strokeCap,
+            align
+          });
+        }
+        break;
+      case 'line-preset':
+        {
+          const { direction, strokeCap } = message.payload;
 
-    if (message.action === 'tooltip') {
-      setTooltip();
-    }
-
-    if (message.action === 'angle') {
-      setAngleInCanvas();
-    }
-
-    if (message.action === 'line') {
-      const { direction, strokeCap, align } = message.options;
-
-      createLineFromMessage({
-        direction,
-        strokeCap,
-        align
-      });
-    }
-
-    if (message.action === 'line-preset') {
-      const { direction, strokeCap } = message.options;
-
-      if (direction === 'left-bottom') {
-        createLineFromMessage({
-          direction: 'both',
-          strokeCap,
-          align: Alignments.LEFT,
-          alignSecond: Alignments.BOTTOM
-        });
-      } else if (direction === 'left-top') {
-        createLineFromMessage({
-          direction: 'both',
-          strokeCap,
-          align: Alignments.LEFT,
-          alignSecond: Alignments.TOP
-        });
-      } else if (direction === 'right-bottom') {
-        createLineFromMessage({
-          direction: 'both',
-          strokeCap,
-          align: Alignments.RIGHT,
-          alignSecond: Alignments.BOTTOM
-        });
-      } else {
-        createLineFromMessage({
-          direction: 'both',
-          strokeCap,
-          align: Alignments.RIGHT,
-          alignSecond: Alignments.TOP
-        });
-      }
-    }
-
-    if (message.type === 'cancel') {
-      figma.closePlugin();
+          if (direction === 'left-bottom') {
+            createLineFromMessage({
+              direction: 'both',
+              strokeCap,
+              align: Alignments.LEFT,
+              alignSecond: Alignments.BOTTOM
+            });
+          } else if (direction === 'left-top') {
+            createLineFromMessage({
+              direction: 'both',
+              strokeCap,
+              align: Alignments.LEFT,
+              alignSecond: Alignments.TOP
+            });
+          } else if (direction === 'right-bottom') {
+            createLineFromMessage({
+              direction: 'both',
+              strokeCap,
+              align: Alignments.RIGHT,
+              alignSecond: Alignments.BOTTOM
+            });
+          } else {
+            createLineFromMessage({
+              direction: 'both',
+              strokeCap,
+              align: Alignments.RIGHT,
+              alignSecond: Alignments.TOP
+            });
+          }
+        }
+        break;
+      case 'cancel':
+        figma.closePlugin();
+        break;
     }
   };
 });

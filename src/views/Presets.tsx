@@ -1,32 +1,31 @@
 import React, {
   FunctionComponent,
   useState,
-  createRef,
   useEffect
 } from 'react';
-import select from '../figma-ui/select.js';
-import { sendMessage } from '../utils';
+import { sendMessage, withAppContext, Content } from '../shared';
+import Header from '../components/Header';
+import Select from '../components/Select';
 
-const Presets: FunctionComponent = () => {
-  const capSelect = createRef<HTMLSelectElement>();
-  const [hasSelections, setHasSelections] = useState<boolean>(false);
+const Presets: FunctionComponent = (props: any) => {
+  const [cap, setCap] = useState<string>('STANDARD');
   // const [lineOffset, setLineOffset] = useState<number>(3);
 
   const setLine = (direction, align) => {
-    if (hasSelections) {
+    if (props.appData.selection) {
       sendMessage('line', {
         direction,
         align,
-        strokeCap: (capSelect.current as any).value
+        strokeCap: cap
       });
     }
   };
 
   const setPreset = direction => {
-    if (hasSelections) {
+    if (props.appData.selection) {
       sendMessage('line-preset', {
         direction,
-        strokeCap: (capSelect.current as any).value
+        strokeCap: cap
       });
     }
   };
@@ -46,23 +45,15 @@ const Presets: FunctionComponent = () => {
   // };
 
   useEffect(() => {
-    // init select field style
-    select.init();
-
-    // check selection
-    sendMessage('selection');
-
-    window.onmessage = event => {
-      if (event.data.pluginMessage.type === 'selection') {
-        setHasSelections(event.data.pluginMessage.data);
-      }
-    };
-
-    return () => select.destroy();
+    sendMessage('resize', {
+      width: 250,
+      height: 400
+    });
   }, []);
 
   return (
-    <div className={`main ${hasSelections ? 'selections' : ''}`}>
+    <>
+      <Header backButton title="Presets" />
       {/* <label className="checkbox">
           <div className="checkbox__container">
             <input type="checkbox" className="checkbox__box" />
@@ -71,7 +62,7 @@ const Presets: FunctionComponent = () => {
           <div className="checkbox__label">Width</div>
         </label> */}
 
-      <div className="content">
+      <Content>
         <h4>Alignments</h4>
         <div className="grid">
           <div
@@ -100,8 +91,8 @@ const Presets: FunctionComponent = () => {
             onClick={() => setLine('vertical', 'RIGHT')}
           />
         </div>
-      </div>
-      <div className="content">
+      </Content>
+      <Content>
         <h4>Presets</h4>
         <div className="grid">
           <div
@@ -121,41 +112,24 @@ const Presets: FunctionComponent = () => {
             onClick={() => setPreset('right-top')}
           />
         </div>
-      </div>
-      <div className="content">
-        <h4>Angle</h4>
-        <div
-          className="align-icon angle"
-          onClick={() => sendMessage('angle')}
-        />
-      </div>
-
-      <div className="content">
-        <h4>Tooltip</h4>
-        <div
-          className="align-icon tooltip"
-          onClick={() => sendMessage('tooltip')}
-        />
-      </div>
+      </Content>
 
       <hr />
 
-      <div className="content">
-        <label htmlFor="select-cap">
-          <h4>Cap</h4>
-          <select
-            id="select-cap"
-            ref={capSelect}
-            className="select-menu"
-            required
-          >
-            <option value="STANDARD">Standard</option>
-            <option value="NONE">None</option>
-            <option value="ARROW_LINES">Line Arrow</option>
-            <option value="ARROW_EQUILATERAL">Triangle Arrow</option>
-          </select>
-        </label>
-      </div>
+      <Content>
+        <h4>Cap</h4>
+
+        <Select
+          value={cap}
+          values={{
+            STANDARD: 'Standard',
+            NONE: 'None',
+            ARROW_LINES: 'Line Arrow',
+            ARROW_EQUILATERAL: 'Triangle Arrow'
+          }}
+          onChange={value => setCap(value)}
+        />
+      </Content>
       {/* <hr /> */}
 
       {/* <div className="content">
@@ -177,8 +151,8 @@ const Presets: FunctionComponent = () => {
             </div>
           </label>
         </div> */}
-    </div>
+    </>
   );
 };
 
-export default Presets;
+export default withAppContext(Presets);
