@@ -2,7 +2,7 @@ import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
 
 export default function ButtonLink({
-  label,
+  children,
   to,
   button = 'primary',
   exact = true,
@@ -16,10 +16,12 @@ export default function ButtonLink({
 
   return (
     <button
-      className={`${className} button button--${button} ${match ? 'active' : ''}`}
+      className={`${className} button button--${button} ${
+        match ? 'active' : ''
+      }`}
       onClick={() => history.push(to)}
     >
-      {label}
+      {children}
     </button>
   );
 }

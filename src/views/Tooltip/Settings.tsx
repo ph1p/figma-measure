@@ -5,9 +5,11 @@ import {
   withAppContext,
   Content,
   useDebounce,
-  setStorage
+  setStorage,
+  TOOLTIP_DEFAULT_SETTINGS
 } from '../../shared';
 import { useHistory } from 'react-router-dom';
+import { Button, Icon } from '../../components/ui';
 
 const fadeIn = keyframes`
   from {
@@ -53,7 +55,6 @@ const Wrapper = styled.div<{ show: boolean }>`
   top: 0;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
   .overlay {
     position: absolute;
     top: 0;
@@ -68,6 +69,7 @@ const Wrapper = styled.div<{ show: boolean }>`
   .window {
     width: 180px;
     position: absolute;
+    overflow: auto;
     top: 0;
     right: 0;
     background-color: #fff;
@@ -78,6 +80,12 @@ const Wrapper = styled.div<{ show: boolean }>`
     h4 {
       margin: 0 0 12px;
     }
+    input[type='range'] {
+      margin-bottom: 12px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
 `;
 
@@ -85,19 +93,27 @@ const Colors = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-  margin: 0 10px;
-  h4 {
-    margin: 0 0 5px !important;
-    p {
-      color: #999;
-      font-size: 12px;
-      margin: 0;
-      font-weight: normal;
+  margin: 10px;
+
+  label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    input {
+      margin-right: 5px;
+    }
+    div {
+      p {
+        color: #999;
+        font-size: 11px;
+        margin: 0;
+        font-weight: normal;
+      }
     }
   }
 `;
 
-const CloseButton = styled.div`
+const CloseButton = styled(Icon)`
   position: absolute;
   top: 0;
   right: 0;
@@ -144,7 +160,8 @@ const Settings: FunctionComponent = (props: any) => {
     delayFontColor,
     delayStrokeColor,
     tooltipSettings.distance,
-    tooltipSettings.padding,
+    tooltipSettings.horizontalPadding,
+    tooltipSettings.verticalPadding,
     tooltipSettings.strokeWidth,
     tooltipSettings.fontSize,
     tooltipSettings.cornerRadius
@@ -163,10 +180,7 @@ const Settings: FunctionComponent = (props: any) => {
     <Wrapper onAnimationEnd={onAnimationEnd} show={show}>
       <div className="overlay" onClick={() => setShow(false)} />
       <div className="window">
-        <CloseButton
-          onClick={() => setShow(false)}
-          className="icon icon--close icon--button"
-        />
+        <CloseButton onClick={() => setShow(false)} icon="close" button />
         <Content>
           <h4>Corner Radius ({tooltipSettings.cornerRadius})</h4>
           <input
@@ -177,8 +191,7 @@ const Settings: FunctionComponent = (props: any) => {
             value={tooltipSettings.cornerRadius}
             onChange={setInput}
           />
-        </Content>
-        <Content>
+
           <h4>Distance ({tooltipSettings.distance})</h4>
           <input
             type="range"
@@ -188,19 +201,27 @@ const Settings: FunctionComponent = (props: any) => {
             value={tooltipSettings.distance}
             onChange={setInput}
           />
-        </Content>
-        <Content>
-          <h4>Padding ({tooltipSettings.padding})</h4>
+
+          <h4>Vertical Padding ({tooltipSettings.verticalPadding})</h4>
           <input
             type="range"
             min="0"
             max="50"
-            name="padding"
-            value={tooltipSettings.padding}
+            name="verticalPadding"
+            value={tooltipSettings.verticalPadding}
             onChange={setInput}
           />
-        </Content>
-        <Content>
+
+          <h4>Horizontal Padding ({tooltipSettings.horizontalPadding})</h4>
+          <input
+            type="range"
+            min="0"
+            max="50"
+            name="horizontalPadding"
+            value={tooltipSettings.horizontalPadding}
+            onChange={setInput}
+          />
+
           <h4>Stroke ({tooltipSettings.strokeWidth})</h4>
           <input
             type="range"
@@ -210,8 +231,7 @@ const Settings: FunctionComponent = (props: any) => {
             value={tooltipSettings.strokeWidth}
             onChange={setInput}
           />
-        </Content>
-        <Content>
+
           <h4>Font-Size ({tooltipSettings.fontSize})</h4>
           <input
             type="range"
@@ -225,39 +245,58 @@ const Settings: FunctionComponent = (props: any) => {
         <hr />
         <Colors>
           <div>
-            <h4>
-              Font <p>{tooltipSettings.fontColor}</p>
-            </h4>
-            <input
-              type="color"
-              name="fontColor"
-              value={tooltipSettings.fontColor}
-              onChange={setInput}
-            />
+            <label htmlFor="fontColor">
+              <input
+                type="color"
+                name="fontColor"
+                id="fontColor"
+                value={tooltipSettings.fontColor}
+                onChange={setInput}
+              />
+              <div>
+                Font <p>{tooltipSettings.fontColor}</p>
+              </div>
+            </label>
           </div>
           <div>
-            <h4>
-              Background<p>{tooltipSettings.backgroundColor}</p>
-            </h4>
-            <input
-              type="color"
-              name="backgroundColor"
-              value={tooltipSettings.backgroundColor}
-              onChange={setInput}
-            />
+            <label htmlFor="backgroundColor">
+              <input
+                type="color"
+                name="backgroundColor"
+                id="backgroundColor"
+                value={tooltipSettings.backgroundColor}
+                onChange={setInput}
+              />
+              <div>
+                Fill<p>{tooltipSettings.backgroundColor}</p>
+              </div>
+            </label>
           </div>
           <div>
-            <h4>
-              Stroke<p>{tooltipSettings.strokeColor}</p>
-            </h4>
-            <input
-              type="color"
-              name="strokeColor"
-              value={tooltipSettings.strokeColor}
-              onChange={setInput}
-            />
+            <label htmlFor="strokeColor">
+              <input
+                type="color"
+                name="strokeColor"
+                id="strokeColor"
+                value={tooltipSettings.strokeColor}
+                onChange={setInput}
+              />
+              <div>
+                Stroke<p>{tooltipSettings.strokeColor}</p>
+              </div>
+            </label>
           </div>
         </Colors>
+        <hr />
+        <Content>
+          <Button
+            full
+            variant="secondary"
+            onClick={() => setTooltipSettings(TOOLTIP_DEFAULT_SETTINGS)}
+          >
+            Reset to default
+          </Button>
+        </Content>
       </div>
     </Wrapper>
   );

@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
+import { Icon } from './ui';
 
 interface Props {
   backButton?: boolean;
@@ -34,10 +35,7 @@ const Header: FunctionComponent<Props> = ({ backButton = false, title }) => {
     <Wrapper>
       <BackButton>
         {backButton ? (
-          <div
-            onClick={() => history.replace('/')}
-            className="icon icon--return icon--button"
-          ></div>
+          <Icon onClick={() => history.replace('/')} icon="return" button />
         ) : (
           ''
         )}

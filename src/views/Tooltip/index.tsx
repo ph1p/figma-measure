@@ -11,6 +11,7 @@ import {
 // components
 import Header from '../../components/Header';
 import ButtonLink from '../../components/ButtonLink';
+
 import Settings from './Settings';
 
 const PreviewWrapper = styled.div<{ hasSelection: boolean }>`
@@ -30,24 +31,19 @@ const PreviewWrapper = styled.div<{ hasSelection: boolean }>`
     text-align: center;
   }
   .box {
+    cursor: pointer;
     height: 40px;
     border-radius: 3px;
     opacity: ${p => (p.hasSelection ? 1 : 0.3)};
-    &.empty {
-      background-color: #efefef;
-      border: 1px dashed #ddd;
-      cursor: pointer;
-      &:hover {
-        background-color: #ddd;
-      }
-    }
-    &.element {
-      /* background-color: #ddd; */
-      /* border: 1px solid #999; */
+    background-color: #efefef;
+    border: 1px dashed #ddd;
+    &:hover {
+      background-color: #ddd;
     }
     &.tooltip {
-      background-color: #17a0fb;
       cursor: pointer;
+      background-color: #17a0fb;
+      border: 0;
     }
   }
 `;
@@ -65,14 +61,15 @@ const Tooltip: FunctionComponent = (props: any) => {
     appData: { selection, tooltipSettings }
   } = props;
 
+  const hasSelection = selection.length > 0;
+  const selectedElement = selection.length === 1 ? selection[0] : undefined;
+
+  // state
   const [directions, setDirections] = useState({
     horizontal: '',
     vertical: ''
   });
   const [area, setArea] = useState(-1);
-
-  const hasSelection = selection.length > 0;
-  const selectedElement = selection.length === 1 ? selection[0] : undefined;
 
   useEffect(() => {
     sendMessage('resize', {
@@ -82,7 +79,7 @@ const Tooltip: FunctionComponent = (props: any) => {
   }, []);
 
   useEffect(() => {
-    if (!hasSelection) {
+    if (!hasSelection || !selectedElement?.tooltipData) {
       setDirections({
         horizontal: '',
         vertical: ''
@@ -90,15 +87,10 @@ const Tooltip: FunctionComponent = (props: any) => {
       setArea(-1);
     } else {
       if (selectedElement?.tooltipData) {
-        const {
-          tooltipData: {
-            directions: { horizontal, vertical }
-          }
-        } = selectedElement;
-
-        setDirections({ horizontal, vertical });
-      } else {
-        setArea(-1);
+        setDirections({
+          horizontal: selectedElement.tooltipData.horizontal,
+          vertical: selectedElement.tooltipData.vertical
+        });
       }
     }
   }, [selection]);
@@ -113,21 +105,6 @@ const Tooltip: FunctionComponent = (props: any) => {
     );
   }, [directions]);
 
-  const generateClassName = areaIndex => {
-    let names = ['box'];
-    if (areaIndex === 4) {
-      names.push('element');
-    }
-
-    if (areaIndex === area) {
-      names.push('tooltip');
-    } else {
-      names.push('empty');
-    }
-
-    return names.join(' ');
-  };
-
   return (
     <Wrapper>
       <Header backButton title="Tooltip" />
@@ -137,7 +114,7 @@ const Tooltip: FunctionComponent = (props: any) => {
           {TOOLTIP_DIRECTIONS.map(([horizontal, vertical], areaIndex) => (
             <div
               key={horizontal + vertical}
-              className={generateClassName(areaIndex)}
+              className={`box ${areaIndex === area ? 'tooltip' : ''}`}
               onClick={() => {
                 setDirections({
                   horizontal,
@@ -153,13 +130,11 @@ const Tooltip: FunctionComponent = (props: any) => {
           ))}
         </PreviewWrapper>
       </Content>
-
+      <hr />
       <Content>
-        <ButtonLink
-          className="settings-link"
-          to="/tooltip/settings"
-          label="Settings"
-        />
+        <ButtonLink className="settings-link" to="/tooltip/settings">
+          Settings
+        </ButtonLink>
       </Content>
 
       <Route path="/tooltip/settings" exact={false}>

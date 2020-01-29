@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import Home from './views/Home';
 import Tooltip from './views/Tooltip';
 import Angle from './views/Angle';
-import Presets from './views/Presets';
+import Lines from './views/Lines';
 
 import {
   sendMessage,
@@ -17,6 +17,7 @@ import {
 
 import './figma-ui/main.min.css';
 import './ui.css';
+import { GlobalStyle } from './style';
 
 const Main = styled.div<{ selection: boolean }>`
   position: relative;
@@ -67,8 +68,8 @@ const App: FunctionComponent<{ appData: AppContextProps }> = props => {
           <Route path="/angle" exact>
             <Angle />
           </Route>
-          <Route path="/presets" exact>
-            <Presets />
+          <Route path="/lines" exact>
+            <Lines />
           </Route>
         </Switch>
       </Main>
@@ -80,6 +81,7 @@ const Component = withAppContext(App);
 
 ReactDOM.render(
   <AppProvider>
+    <GlobalStyle />
     <Component />
   </AppProvider>,
   document.getElementById('app')

@@ -24,7 +24,7 @@ const Home: FunctionComponent = () => {
               <Link to="/angle">Angle</Link>
             </li>
             <li>
-              <Link to="/presets">Presets</Link>
+              <Link to="/lines">Lines</Link>
             </li>
           </ul>
         </nav>

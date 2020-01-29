@@ -1,15 +1,18 @@
-import React, {
-  FunctionComponent,
-  useState,
-  useEffect
-} from 'react';
-import { sendMessage, withAppContext, Content } from '../shared';
+import React, { FunctionComponent, useState, useEffect } from 'react';
+import { sendMessage, withAppContext, Content, Grid } from '../shared';
 import Header from '../components/Header';
 import Select from '../components/Select';
 
-const Presets: FunctionComponent = (props: any) => {
+const Lines: FunctionComponent = (props: any) => {
   const [cap, setCap] = useState<string>('STANDARD');
   // const [lineOffset, setLineOffset] = useState<number>(3);
+
+  useEffect(() => {
+    sendMessage('resize', {
+      width: 155,
+      height: 380
+    });
+  }, []);
 
   const setLine = (direction, align) => {
     if (props.appData.selection) {
@@ -44,13 +47,6 @@ const Presets: FunctionComponent = (props: any) => {
   //   }
   // };
 
-  useEffect(() => {
-    sendMessage('resize', {
-      width: 250,
-      height: 400
-    });
-  }, []);
-
   return (
     <>
       <Header backButton title="Presets" />
@@ -64,7 +60,7 @@ const Presets: FunctionComponent = (props: any) => {
 
       <Content>
         <h4>Alignments</h4>
-        <div className="grid">
+        <Grid>
           <div
             className="align-icon horizontal top"
             onClick={() => setLine('horizontal', 'TOP')}
@@ -90,11 +86,11 @@ const Presets: FunctionComponent = (props: any) => {
             className="align-icon vertical right"
             onClick={() => setLine('vertical', 'RIGHT')}
           />
-        </div>
+        </Grid>
       </Content>
       <Content>
         <h4>Presets</h4>
-        <div className="grid">
+        <Grid>
           <div
             className="align-icon left-bottom"
             onClick={() => setPreset('left-bottom')}
@@ -111,7 +107,7 @@ const Presets: FunctionComponent = (props: any) => {
             className="align-icon right-top"
             onClick={() => setPreset('right-top')}
           />
-        </div>
+        </Grid>
       </Content>
 
       <hr />
@@ -155,4 +151,4 @@ const Presets: FunctionComponent = (props: any) => {
   );
 };
 
-export default withAppContext(Presets);
+export default withAppContext(Lines);

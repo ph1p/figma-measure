@@ -26,7 +26,7 @@ export const AppProvider: FunctionComponent<AppContextProps> = props => {
     });
   }
 
-  const [tooltipState, setTooltipState] = useState(TOOLTIP_DEFAULT_SETTINGS);
+  const [tooltipState, setTooltipState] = useState<TooltipSettings>(TOOLTIP_DEFAULT_SETTINGS);
   const [state, setState] = useState({
     setTooltipSettings,
     setSelection,

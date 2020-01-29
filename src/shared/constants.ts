@@ -15,7 +15,8 @@ export const TOOLTIP_DIRECTIONS = [
 
 export const TOOLTIP_DEFAULT_SETTINGS: TooltipSettings = {
   distance: 6,
-  padding: 12,
+  horizontalPadding: 12,
+  verticalPadding: 12,
   backgroundColor: '#ffffff',
   fontColor: '#000000',
   strokeColor: '#d0d0d0',

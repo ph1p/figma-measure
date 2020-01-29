@@ -301,6 +301,10 @@
   outline: none;
 }
 
+.button--full-width {
+  width: 100%;
+}
+
 .button--primary {
   font-family: 'Inter', sans-serif;
   font-weight: 500;

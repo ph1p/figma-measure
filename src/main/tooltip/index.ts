@@ -98,9 +98,9 @@ export const setTooltip = options => {
     tooltipFrame.name = 'Tooltip ' + node.name;
     tooltipFrame.layoutMode = 'VERTICAL';
     tooltipFrame.cornerRadius = data.settings.cornerRadius;
-    tooltipFrame.horizontalPadding = data.settings.padding;
-    tooltipFrame.verticalPadding = data.settings.padding;
-    tooltipFrame.itemSpacing = data.settings.padding;
+    tooltipFrame.horizontalPadding = data.settings.horizontalPadding;
+    tooltipFrame.verticalPadding = data.settings.verticalPadding;
+    tooltipFrame.itemSpacing = data.settings.verticalPadding;
     tooltipFrame.counterAxisSizingMode = 'AUTO';
 
     const bg = hexToRgb(data.settings.backgroundColor);
