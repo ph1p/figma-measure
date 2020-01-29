@@ -14,7 +14,7 @@ module.exports = (env, argv) => ({
   },
   entry: {
     ui: './src/App.tsx',
-    code: './src/code.ts'
+    code: './src/main/index.ts'
   },
   module: {
     rules: [

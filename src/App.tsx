@@ -35,29 +35,33 @@ const Main = styled.div<{ selection: boolean }>`
 `;
 
 const App: FunctionComponent = () => {
-  const [ selection, setSelection ] = useState<[]>([]);
+  const [selection, setSelection] = useState<[]>([]);
+  const [tooltipSettings, setTooltipSettings] = useState({});
 
   useEffect(() => {
     // check selection
-    sendMessage('selection');
+    sendMessage('init');
 
     window.onmessage = event => {
       if (event.data.pluginMessage.type === 'selection') {
         setSelection(event.data.pluginMessage.data);
+      }
+      if (event.data.pluginMessage.type === 'tooltip-settings') {
+        setTooltipSettings(event.data.pluginMessage.data);
       }
     };
   }, []);
 
   return (
     <Router>
-      <AppProvider selection={selection}>
+      <AppProvider selection={selection} tooltipSettings={tooltipSettings}>
         <Main selection={Boolean(selection.length)}>
           <Switch>
             <Route path="/" exact>
-              <Home />
+              <Tooltip />
             </Route>
             <Route path="/tooltip" exact>
-              <Tooltip />
+              <Home />
             </Route>
             <Route path="/angle" exact>
               <Angle />

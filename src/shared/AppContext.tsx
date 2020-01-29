@@ -5,13 +5,23 @@ const AppContext = React.createContext(null);
 
 interface Props {
   selection: [];
+  tooltipSettings?: {
+    distance?: number;
+    padding?: number;
+    backgroundColor?: string;
+    fontColor?: string;
+    strokeColor?: string;
+    strokeWidth?: number;
+    fontSize?: number;
+  };
 }
 
 export const AppProvider: FunctionComponent<Props> = props => {
   return (
     <AppContext.Provider
       value={{
-        selection: props.selection
+        selection: props.selection,
+        tooltipSettings: props.tooltipSettings,
       }}
     >
       {props.children}

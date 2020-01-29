@@ -1,3 +1,6 @@
+import { getTooltipPluginData, setTooltip } from './tooltip';
+import { solidColor } from './helper';
+
 figma.showUI(__html__, {
   width: 180,
   height: 500
@@ -25,15 +28,6 @@ interface LineParameterTypes {
   lineHorizontalAlign: Alignments;
   strokeCap: string;
 }
-
-const solidColor = (r = 255, g = 0, b = 0) => ({
-  type: 'SOLID',
-  color: {
-    r: r / 255,
-    g: g / 255,
-    b: b / 255
-  }
-});
 
 const nodeGroup = node =>
   (figma.currentPage.findOne(
@@ -475,171 +469,14 @@ const setAngleInCanvas = () => {
   }
 };
 
-const createTooltipTextNode = () => {
-  const text = figma.createText();
-
-  text.fontName = {
-    family: 'Inter',
-    style: 'Regular'
-  };
-  text.textAlignHorizontal = 'LEFT';
-  text.fills = [].concat(solidColor(255, 255, 255));
-
-  return text;
-};
-
-const setTooltip = ({ vertical = 'CENTER', horizontal = 'LEFT' }) => {
-  if (figma.currentPage.selection.length === 1) {
-    const PADDING = 12;
-    const node = figma.currentPage.selection[0];
-
-    // ----
-
-    const tooltipFrame = figma.createFrame();
-    tooltipFrame.name = 'Tooltip ' + node.name;
-    tooltipFrame.layoutMode = 'VERTICAL';
-    tooltipFrame.cornerRadius = 3;
-    tooltipFrame.horizontalPadding = PADDING;
-    tooltipFrame.verticalPadding = PADDING;
-    tooltipFrame.itemSpacing = PADDING;
-    tooltipFrame.counterAxisSizingMode = 'AUTO';
-
-    // ----
-
-    const tooltipContent = createTooltipTextNode();
-
-    switch (node.type) {
-      case 'SLICE':
-      case 'FRAME':
-      case 'GROUP':
-      case 'COMPONENT':
-      case 'INSTANCE':
-      case 'BOOLEAN_OPERATION':
-      case 'VECTOR':
-      case 'STAR':
-      case 'LINE':
-      case 'ELLIPSE':
-      case 'POLYGON':
-      case 'RECTANGLE':
-        tooltipContent.characters += `Height: ${node.height}`;
-        tooltipContent.characters += `Width: ${node.width}`;
-
-        tooltipFrame.appendChild(tooltipContent);
-        break;
-      case 'TEXT':
-        const fontFamily = (node.fontName as FontName).family;
-        const fontStyle = (node.fontName as FontName).style;
-        const fontSize = node.fontSize.toString();
-
-        tooltipContent.characters += `Opacity: ${node.opacity}\n`;
-
-        // Font
-        tooltipContent.characters += `Font-Size: ${fontSize}\n`;
-        tooltipContent.characters += `Font-Family: ${fontFamily}\n`;
-        tooltipContent.characters += `Font-Style: ${fontStyle}`;
-
-        let chars = 0;
-        for (const line of tooltipContent.characters.split('\n')) {
-          if (line && ~line.indexOf(':')) {
-            const [label] = line.split(':');
-
-            tooltipContent.setRangeFontName(chars, chars + label.length + 1, {
-              family: 'Inter',
-              style: 'Bold'
-            });
-            chars += line.length + 1;
-          }
-        }
-
-        // Fills
-        const fillsTextNode = createTooltipTextNode();
-
-        if (node.fills) {
-          fillsTextNode.characters += `Fills\n\n`;
-          (node.fills as any[]).map(f => {
-            const opacity = f.opacity === 1 ? 1 : f.opacity.toFixed(2);
-
-            fillsTextNode.characters += `rgb(${f.color.r.toFixed(
-              2
-            )}, ${f.color.g.toFixed(2)}, ${f.color.b.toFixed(2)}, ${opacity})`;
-          });
-        }
-
-        tooltipFrame.appendChild(tooltipContent);
-        tooltipFrame.appendChild(fillsTextNode);
-
-        break;
-    }
-
-    // ----
-
-    // tooltipFrame.resize(50, 50);
-    tooltipFrame.backgrounds = [].concat(solidColor(255, 0, 0));
-
-    // ----
-    // const tooltipGroup = figma.group([tooltipFrame], figma.currentPage);
-
-    let transformPosition = node.absoluteTransform;
-
-    let newX = transformPosition[0][2];
-    let newY = transformPosition[1][2];
-
-    switch (vertical) {
-      case 'TOP':
-        newY -= tooltipFrame.height + PADDING;
-        break;
-      case 'CENTER':
-        newY += node.height / 2 - tooltipFrame.height / 2;
-        break;
-      case 'BOTTOM':
-        newY += node.height + PADDING;
-        break;
-    }
-
-    switch (horizontal) {
-      case 'LEFT':
-        newX -= tooltipFrame.width + PADDING;
-        break;
-      case 'CENTER':
-        newX += node.width / 2 - tooltipFrame.width / 2;
-        break;
-      case 'RIGHT':
-        newX += node.width + PADDING;
-        break;
-    }
-
-    const xCos = transformPosition[0][0];
-    const xSin = transformPosition[0][1];
-
-    const yCos = transformPosition[1][0];
-    const ySin = transformPosition[1][1];
-
-    transformPosition = [
-      [
-        xCos, // cos
-        xSin, // sin
-        newX
-      ],
-      [
-        yCos, // -sin
-        ySin, // cos
-        newY
-      ]
-    ];
-
-    tooltipFrame.relativeTransform = transformPosition;
-  } else {
-    figma.notify('Please select only one element');
-  }
-};
-
 const sendSelection = () => {
   figma.ui.postMessage({
     type: 'selection',
-    data: figma.currentPage.selection.map(e => {
+    data: figma.currentPage.selection.map(node => {
       return {
-        id: e.id,
-        type: e.type
+        id: node.id,
+        type: node.type,
+        tooltipData: getTooltipPluginData(node)
       };
     })
   });
@@ -653,6 +490,14 @@ main().then(() => {
 
   figma.ui.onmessage = async message => {
     switch (message.action) {
+      case 'init':
+        sendSelection();
+        const data = await figma.clientStorage.getAsync('tooltip-settings');
+
+        figma.ui.postMessage({
+          type: 'tooltip-settings',
+          data
+        });
       case 'resize':
         const { width = -1, height = -1 } = message.payload;
         figma.ui.resize(width || 180, height || 500);

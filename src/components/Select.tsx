@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState, useEffect } from 'react';
+import React, { FunctionComponent, useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 const SelectWrapper = styled.div`
@@ -21,14 +21,31 @@ const Select: FunctionComponent<{
   const [selected, setSelected] = useState<string>(
     props.value || Object.keys(props.values)[0]
   );
+  const node = useRef<HTMLDivElement>();
 
   useEffect(() => {
     setOpen(false);
     props.onChange(selected);
   }, [selected]);
 
+  const handleClick = e => {
+    if (node.current.contains(e.target)) {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClick);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClick);
+    };
+  }, []);
+
   return (
-    <SelectWrapper>
+    <SelectWrapper ref={node}>
       <button className="select-menu__button" onClick={() => setOpen(!open)}>
         <span className="select-menu__button-label">
           {props.values[selected]}

@@ -1,5 +1,8 @@
+import { useState, useEffect } from 'react';
+
 export * from './AppContext';
 export * from './style';
+export * from './constants';
 
 export const sendMessage = (action, payload = {}) => {
   parent.postMessage(
@@ -12,3 +15,19 @@ export const sendMessage = (action, payload = {}) => {
     '*'
   );
 };
+
+export function useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}

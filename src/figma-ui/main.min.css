@@ -401,7 +401,7 @@
   margin: 1px 0 1px 0;
   padding: 8px 4px 8px 7px;
   color: rgba(0, 0, 0, 0.8);
-  border: 1px solid transparent;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 2px;
   outline: none;
   background-color: #ffffff;
