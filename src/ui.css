@@ -180,6 +180,9 @@ hr {
   margin-top: 15px;
 }
 
+button {
+  cursor: pointer;
+}
 /* typo */
 h4 {
   margin-top: 0;

@@ -1,4 +1,5 @@
-import { solidColor, hexToRgb } from './helper';
+import { solidColor, hexToRgb } from '../helper';
+import { TOOLTIP_DEFAULT_SETTINGS } from '../../shared';
 
 function colorString(color, opacity) {
   return `rgba(${Math.round(color.r * 255)}, ${Math.round(
@@ -50,26 +51,24 @@ export const getTooltipPluginData = (node): TooltipPluginData => {
   return null;
 };
 
-export const setTooltip = ({
-  vertical = 'CENTER',
-  horizontal = 'LEFT',
-  distance = 6,
-  padding = 12,
-  backgroundColor = '#ffffff',
-  strokeColor = '#d0d0d0',
-  strokeWidth = 1,
-  fontColor = '#000000',
-  fontSize = 12
-}) => {
-  figma.clientStorage.setAsync('tooltip-settings', {
-    distance,
-    padding,
-    backgroundColor,
-    fontColor,
-    strokeColor,
-    strokeWidth,
-    fontSize
-  });
+export const setTooltip = options => {
+  const data = {
+    vertical: options.vertical || 'CENTER',
+    horizontal: options.horizontal || 'LEFT',
+    settings: {
+      ...Object.keys(TOOLTIP_DEFAULT_SETTINGS).reduce(
+        (b, c) => {
+          return {
+            ...b,
+            [c]: options[c]
+          };
+        },
+        { ...TOOLTIP_DEFAULT_SETTINGS }
+      )
+    }
+  };
+
+  figma.clientStorage.setAsync('tooltip-settings', data.settings);
 
   if (figma.currentPage.selection.length === 1) {
     const node = figma.currentPage.selection[0];
@@ -98,25 +97,25 @@ export const setTooltip = ({
     tooltipFrame.locked = true;
     tooltipFrame.name = 'Tooltip ' + node.name;
     tooltipFrame.layoutMode = 'VERTICAL';
-    tooltipFrame.cornerRadius = 5;
-    tooltipFrame.horizontalPadding = padding;
-    tooltipFrame.verticalPadding = padding;
-    tooltipFrame.itemSpacing = padding;
+    tooltipFrame.cornerRadius = data.settings.cornerRadius;
+    tooltipFrame.horizontalPadding = data.settings.padding;
+    tooltipFrame.verticalPadding = data.settings.padding;
+    tooltipFrame.itemSpacing = data.settings.padding;
     tooltipFrame.counterAxisSizingMode = 'AUTO';
 
-    const bg = hexToRgb(backgroundColor);
+    const bg = hexToRgb(data.settings.backgroundColor);
     tooltipFrame.backgrounds = [].concat(solidColor(bg.r, bg.g, bg.b));
 
-    const stroke = hexToRgb(strokeColor);
-    tooltipFrame.strokeWeight = strokeWidth;
+    const stroke = hexToRgb(data.settings.strokeColor);
+    tooltipFrame.strokeWeight = data.settings.strokeWidth;
     tooltipFrame.strokes = [].concat(solidColor(stroke.r, stroke.g, stroke.b));
 
     // set plugin data
 
-    const data = {
+    const dataForPlugin = {
       directions: {
-        vertical,
-        horizontal
+        vertical: data.vertical,
+        horizontal: data.horizontal
       }
     };
 
@@ -127,18 +126,21 @@ export const setTooltip = ({
           ? {
               id: tooltipFrame.id,
               nodeId: node.id,
-              ...data
+              ...dataForPlugin
             }
           : {
               ...pluginData,
-              ...data
+              ...dataForPlugin
             }
       )
     );
 
     //-----
 
-    const tooltipContent = createTooltipTextNode({ fontColor, fontSize });
+    const tooltipContent = createTooltipTextNode({
+      fontColor: data.settings.fontColor,
+      fontSize: data.settings.fontSize
+    });
 
     switch (node.type) {
       case 'SLICE':
@@ -159,7 +161,10 @@ export const setTooltip = ({
           tooltipContent.characters += `Width: ${node.width}`;
 
           // Fills
-          const fillsTextNode = createTooltipTextNode({ fontColor, fontSize });
+          const fillsTextNode = createTooltipTextNode({
+            fontColor: data.settings.fontColor,
+            fontSize: data.settings.fontSize
+          });
 
           if (node.fills) {
             fillsTextNode.characters += `Fills\n`;
@@ -204,7 +209,10 @@ export const setTooltip = ({
         }
 
         // Fills
-        const fillsTextNode = createTooltipTextNode({ fontColor, fontSize });
+        const fillsTextNode = createTooltipTextNode({
+          fontColor: data.settings.fontColor,
+          fontSize: data.settings.fontSize
+        });
 
         if (node.fills) {
           fillsTextNode.characters += `Fills\n`;
@@ -234,27 +242,27 @@ export const setTooltip = ({
     let newX = transformPosition[0][2];
     let newY = transformPosition[1][2];
 
-    switch (vertical) {
+    switch (data.vertical) {
       case 'TOP':
-        newY -= tooltipFrame.height + distance;
+        newY -= tooltipFrame.height + data.settings.distance;
         break;
       case 'CENTER':
         newY += node.height / 2 - tooltipFrame.height / 2;
         break;
       case 'BOTTOM':
-        newY += node.height + distance;
+        newY += node.height + data.settings.distance;
         break;
     }
 
-    switch (horizontal) {
+    switch (data.horizontal) {
       case 'LEFT':
-        newX -= tooltipFrame.width + distance;
+        newX -= tooltipFrame.width + data.settings.distance;
         break;
       case 'CENTER':
         newX += node.width / 2 - tooltipFrame.width / 2;
         break;
       case 'RIGHT':
-        newX += node.width + distance;
+        newX += node.width + data.settings.distance;
         break;
     }
 

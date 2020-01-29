@@ -8,7 +8,12 @@ import Tooltip from './views/Tooltip';
 import Angle from './views/Angle';
 import Presets from './views/Presets';
 
-import { sendMessage, AppProvider } from './shared';
+import {
+  sendMessage,
+  AppProvider,
+  withAppContext,
+  AppContextProps
+} from './shared';
 
 import './figma-ui/main.min.css';
 import './ui.css';
@@ -34,46 +39,48 @@ const Main = styled.div<{ selection: boolean }>`
       : ''}
 `;
 
-const App: FunctionComponent = () => {
-  const [selection, setSelection] = useState<[]>([]);
-  const [tooltipSettings, setTooltipSettings] = useState({});
-
+const App: FunctionComponent<{ appData: AppContextProps }> = props => {
   useEffect(() => {
     // check selection
     sendMessage('init');
 
     window.onmessage = event => {
       if (event.data.pluginMessage.type === 'selection') {
-        setSelection(event.data.pluginMessage.data);
+        props.appData.setSelection(event.data.pluginMessage.data);
       }
       if (event.data.pluginMessage.type === 'tooltip-settings') {
-        setTooltipSettings(event.data.pluginMessage.data);
+        props.appData.setTooltipSettings(event.data.pluginMessage.data);
       }
     };
   }, []);
 
   return (
     <Router>
-      <AppProvider selection={selection} tooltipSettings={tooltipSettings}>
-        <Main selection={Boolean(selection.length)}>
-          <Switch>
-            <Route path="/" exact>
-              <Tooltip />
-            </Route>
-            <Route path="/tooltip" exact>
-              <Home />
-            </Route>
-            <Route path="/angle" exact>
-              <Angle />
-            </Route>
-            <Route path="/presets" exact>
-              <Presets />
-            </Route>
-          </Switch>
-        </Main>
-      </AppProvider>
+      <Main selection={props.appData.selection.length > 0}>
+        <Switch>
+          <Route path="/" exact>
+            <Home />
+          </Route>
+          <Route path="/tooltip">
+            <Tooltip />
+          </Route>
+          <Route path="/angle" exact>
+            <Angle />
+          </Route>
+          <Route path="/presets" exact>
+            <Presets />
+          </Route>
+        </Switch>
+      </Main>
     </Router>
   );
 };
 
-ReactDOM.render(<App />, document.getElementById('app'));
+const Component = withAppContext(App);
+
+ReactDOM.render(
+  <AppProvider>
+    <Component />
+  </AppProvider>,
+  document.getElementById('app')
+);

@@ -482,6 +482,15 @@ const sendSelection = () => {
   });
 };
 
+const sendStorageData = async key => {
+  const data = await figma.clientStorage.getAsync(key);
+
+  figma.ui.postMessage({
+    type: key,
+    data
+  });
+};
+
 main().then(() => {
   sendSelection();
 
@@ -489,83 +498,85 @@ main().then(() => {
   figma.on('selectionchange', sendSelection);
 
   figma.ui.onmessage = async message => {
-    switch (message.action) {
-      case 'init':
-        sendSelection();
-        const data = await figma.clientStorage.getAsync('tooltip-settings');
+    // storage
+    if (message.storage) {
+      const { action: key, payload: value } = message;
 
-        figma.ui.postMessage({
-          type: 'tooltip-settings',
-          data
-        });
-      case 'resize':
-        const { width = -1, height = -1 } = message.payload;
-        figma.ui.resize(width || 180, height || 500);
-        break;
-      case 'line-offset':
-        await figma.clientStorage.setAsync(
-          'line-offset',
-          message.payload.value
-        );
-        break;
-      case 'selection':
-        sendSelection();
-        break;
-      case 'tooltip':
-        setTooltip(message.payload);
-        break;
-      case 'angle':
-        setAngleInCanvas();
-        break;
-      case 'line':
-        {
-          const { direction, strokeCap, align } = message.payload;
+      figma.clientStorage.setAsync(key, value);
+    } else {
+      switch (message.action) {
+        case 'init':
+          sendSelection();
+          await sendStorageData('tooltip-settings');
+        case 'resize':
+          const { width = -1, height = -1 } = message.payload;
+          figma.ui.resize(width || 180, height || 500);
+          break;
+        case 'line-offset':
+          await figma.clientStorage.setAsync(
+            'line-offset',
+            message.payload.value
+          );
+          break;
+        case 'selection':
+          sendSelection();
+          break;
+        case 'tooltip':
+          setTooltip(message.payload);
+          break;
+        case 'angle':
+          setAngleInCanvas();
+          break;
+        case 'line':
+          {
+            const { direction, strokeCap, align } = message.payload;
 
-          createLineFromMessage({
-            direction,
-            strokeCap,
-            align
-          });
-        }
-        break;
-      case 'line-preset':
-        {
-          const { direction, strokeCap } = message.payload;
-
-          if (direction === 'left-bottom') {
             createLineFromMessage({
-              direction: 'both',
+              direction,
               strokeCap,
-              align: Alignments.LEFT,
-              alignSecond: Alignments.BOTTOM
-            });
-          } else if (direction === 'left-top') {
-            createLineFromMessage({
-              direction: 'both',
-              strokeCap,
-              align: Alignments.LEFT,
-              alignSecond: Alignments.TOP
-            });
-          } else if (direction === 'right-bottom') {
-            createLineFromMessage({
-              direction: 'both',
-              strokeCap,
-              align: Alignments.RIGHT,
-              alignSecond: Alignments.BOTTOM
-            });
-          } else {
-            createLineFromMessage({
-              direction: 'both',
-              strokeCap,
-              align: Alignments.RIGHT,
-              alignSecond: Alignments.TOP
+              align
             });
           }
-        }
-        break;
-      case 'cancel':
-        figma.closePlugin();
-        break;
+          break;
+        case 'line-preset':
+          {
+            const { direction, strokeCap } = message.payload;
+
+            if (direction === 'left-bottom') {
+              createLineFromMessage({
+                direction: 'both',
+                strokeCap,
+                align: Alignments.LEFT,
+                alignSecond: Alignments.BOTTOM
+              });
+            } else if (direction === 'left-top') {
+              createLineFromMessage({
+                direction: 'both',
+                strokeCap,
+                align: Alignments.LEFT,
+                alignSecond: Alignments.TOP
+              });
+            } else if (direction === 'right-bottom') {
+              createLineFromMessage({
+                direction: 'both',
+                strokeCap,
+                align: Alignments.RIGHT,
+                alignSecond: Alignments.BOTTOM
+              });
+            } else {
+              createLineFromMessage({
+                direction: 'both',
+                strokeCap,
+                align: Alignments.RIGHT,
+                alignSecond: Alignments.TOP
+              });
+            }
+          }
+          break;
+        case 'cancel':
+          figma.closePlugin();
+          break;
+      }
     }
   };
 });
