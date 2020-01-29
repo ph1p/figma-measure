@@ -72,6 +72,7 @@ const Wrapper = styled.div<{ show: boolean }>`
     overflow: auto;
     top: 0;
     right: 0;
+    padding-bottom: 10px;
     background-color: #fff;
     height: 100%;
     transform: translateX(180px);
@@ -136,7 +137,9 @@ const Settings: FunctionComponent = (props: any) => {
   const delayStrokeColor = useDebounce(tooltipSettings.strokeColor, 100);
 
   // animation
-  useEffect(() => setShow(true), []);
+  useEffect(() => {
+    setShow(true);
+  }, []);
 
   const onAnimationEnd = () => {
     if (!show) {

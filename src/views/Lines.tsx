@@ -10,7 +10,7 @@ const Lines: FunctionComponent = (props: any) => {
   useEffect(() => {
     sendMessage('resize', {
       width: 155,
-      height: 380
+      height: 370
     });
   }, []);
 
@@ -116,6 +116,7 @@ const Lines: FunctionComponent = (props: any) => {
         <h4>Cap</h4>
 
         <Select
+          top
           value={cap}
           values={{
             STANDARD: 'Standard',

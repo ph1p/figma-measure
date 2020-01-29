@@ -40,10 +40,11 @@ const Main = styled.div<{ selection: boolean }>`
       : ''}
 `;
 
+sendMessage('init');
+
 const App: FunctionComponent<{ appData: AppContextProps }> = props => {
   useEffect(() => {
     // check selection
-    sendMessage('init');
 
     window.onmessage = event => {
       if (event.data.pluginMessage.type === 'selection') {
@@ -77,12 +78,18 @@ const App: FunctionComponent<{ appData: AppContextProps }> = props => {
   );
 };
 
-const Component = withAppContext(App);
+window.onmessage = event => {
+  if (event.data.pluginMessage.type === 'init') {
+    const { selection, tooltipSettings } = event.data.pluginMessage;
 
-ReactDOM.render(
-  <AppProvider>
-    <GlobalStyle />
-    <Component />
-  </AppProvider>,
-  document.getElementById('app')
-);
+    const Component = withAppContext(App);
+
+    ReactDOM.render(
+      <AppProvider selection={selection} tooltipSettings={tooltipSettings}>
+        <GlobalStyle />
+        <Component />
+      </AppProvider>,
+      document.getElementById('app')
+    );
+  }
+};

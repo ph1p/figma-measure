@@ -51,7 +51,7 @@ export const getTooltipPluginData = (node): TooltipPluginData => {
   return null;
 };
 
-export const setTooltip = options => {
+export const setTooltip = async options => {
   const data = {
     vertical: options.vertical || 'CENTER',
     horizontal: options.horizontal || 'LEFT',
@@ -72,6 +72,15 @@ export const setTooltip = options => {
 
   if (figma.currentPage.selection.length === 1) {
     const node = figma.currentPage.selection[0];
+
+    if (
+      node.type === 'INSTANCE' ||
+      node.type === 'BOOLEAN_OPERATION' ||
+      node.type === 'SLICE'
+    ) {
+      figma.notify('This type of element is not supported');
+      return;
+    }
 
     let pluginData = getTooltipPluginData(node);
     let tooltipFrame;
@@ -142,23 +151,34 @@ export const setTooltip = options => {
       fontSize: data.settings.fontSize
     });
 
+    const setTitleBold = content => {
+      let chars = 0;
+      for (const line of content.characters.split('\n')) {
+        if (line && ~line.indexOf(':')) {
+          const [label] = line.split(':');
+
+          content.setRangeFontName(chars, chars + label.length + 1, {
+            family: 'Inter',
+            style: 'Bold'
+          });
+          chars += line.length + 1;
+        }
+      }
+    };
+
     switch (node.type) {
-      case 'SLICE':
       case 'FRAME':
       case 'GROUP':
       case 'COMPONENT':
-      case 'INSTANCE':
-      case 'BOOLEAN_OPERATION':
       case 'VECTOR':
       case 'STAR':
       case 'LINE':
       case 'ELLIPSE':
       case 'POLYGON':
-        break;
-      case 'RECTANGLE':
+      case 'FRAME':
         {
-          tooltipContent.characters += `Height: ${node.height}\n`;
-          tooltipContent.characters += `Width: ${node.width}`;
+          tooltipContent.characters += `Height: ${Math.floor(node.height)}\n`;
+          tooltipContent.characters += `Width: ${Math.floor(node.width)}\n`;
 
           // Fills
           const fillsTextNode = createTooltipTextNode({
@@ -166,9 +186,32 @@ export const setTooltip = options => {
             fontSize: data.settings.fontSize
           });
 
-          if (node.fills) {
+          tooltipFrame.appendChild(fillsTextNode);
+        }
+        break;
+      case 'RECTANGLE':
+        {
+          const rectangle: RectangleNode = node;
+
+          tooltipContent.characters += `Height: ${Math.floor(
+            rectangle.height
+          )}\n`;
+          tooltipContent.characters += `Width: ${Math.floor(
+            rectangle.width
+          )}\n`;
+          tooltipContent.characters += `Corner-Radius: ${rectangle.cornerRadius.toString()}`;
+
+          setTitleBold(tooltipContent);
+
+          // Fills
+          const fillsTextNode = createTooltipTextNode({
+            fontColor: data.settings.fontColor,
+            fontSize: data.settings.fontSize
+          });
+
+          if (rectangle.fills) {
             fillsTextNode.characters += `Fills\n`;
-            (node.fills as any[]).map(f => {
+            (rectangle.fills as any[]).map(f => {
               if (f.type === 'SOLID') {
                 fillsTextNode.characters += colorString(f.color, f.opacity);
               }
@@ -195,18 +238,7 @@ export const setTooltip = options => {
         tooltipContent.characters += `Font-Family: ${fontFamily}\n`;
         tooltipContent.characters += `Font-Style: ${fontStyle}`;
 
-        let chars = 0;
-        for (const line of tooltipContent.characters.split('\n')) {
-          if (line && ~line.indexOf(':')) {
-            const [label] = line.split(':');
-
-            tooltipContent.setRangeFontName(chars, chars + label.length + 1, {
-              family: 'Inter',
-              style: 'Bold'
-            });
-            chars += line.length + 1;
-          }
-        }
+        setTitleBold(tooltipContent);
 
         // Fills
         const fillsTextNode = createTooltipTextNode({

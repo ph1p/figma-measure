@@ -74,7 +74,7 @@ const Tooltip: FunctionComponent = (props: any) => {
   useEffect(() => {
     sendMessage('resize', {
       width: 200,
-      height: 430
+      height: 275
     });
   }, []);
 
@@ -88,8 +88,8 @@ const Tooltip: FunctionComponent = (props: any) => {
     } else {
       if (selectedElement?.tooltipData) {
         setDirections({
-          horizontal: selectedElement.tooltipData.horizontal,
-          vertical: selectedElement.tooltipData.vertical
+          horizontal: selectedElement.tooltipData.directions.horizontal,
+          vertical: selectedElement.tooltipData.directions.vertical
         });
       }
     }

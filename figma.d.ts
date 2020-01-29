@@ -1,4 +1,4 @@
-// Figma Plugin API version 1, update 10
+// Figma Plugin API version 1, update 11
 
 declare global {
   // Global variable with Figma's plugin API.
@@ -158,9 +158,12 @@ declare global {
   }
 
   interface ViewportAPI {
-    center: { x: number; y: number };
+    center: Vector;
     zoom: number;
     scrollAndZoomIntoView(nodes: ReadonlyArray<BaseNode>): void;
+
+    /** PROPOSED API ONLY */
+    readonly bounds: Rect;
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -171,6 +174,13 @@ declare global {
   interface Vector {
     readonly x: number;
     readonly y: number;
+  }
+
+  interface Rect {
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
   }
 
   interface RGB {
@@ -445,7 +455,7 @@ declare global {
     readonly duration: number;
   }
 
-  export type Transition = SimpleTransition | DirectionalTransition;
+  type Transition = SimpleTransition | DirectionalTransition;
 
   type Trigger =
     | { readonly type: 'ON_CLICK' | 'ON_HOVER' | 'ON_PRESS' | 'ON_DRAG' }
@@ -489,7 +499,7 @@ declare global {
   interface BaseNodeMixin {
     readonly id: string;
     readonly parent: (BaseNode & ChildrenMixin) | null;
-    name: string; // Note: setting this also sets \`autoRename\` to false on TextNodes
+    name: string; // Note: setting this also sets `autoRename` to false on TextNodes
     readonly removed: boolean;
     toString(): string;
     remove(): void;
@@ -506,6 +516,9 @@ declare global {
   interface SceneNodeMixin {
     visible: boolean;
     locked: boolean;
+
+    /** PROPOSED API ONLY */
+    expanded: boolean;
   }
 
   interface ChildrenMixin {
@@ -514,7 +527,21 @@ declare global {
     appendChild(child: SceneNode): void;
     insertChild(index: number, child: SceneNode): void;
 
+    /** PROPOSED API ONLY */
+    findChildren(callback?: (node: SceneNode) => boolean): SceneNode[];
+    /** PROPOSED API ONLY */
+    findChild(callback: (node: SceneNode) => boolean): SceneNode | null;
+
+    /**
+     * If you only need to search immediate children, it is much faster
+     * to call node.children.filter(callback) or node.findChildren(callback)
+     */
     findAll(callback?: (node: SceneNode) => boolean): SceneNode[];
+
+    /**
+     * If you only need to search immediate children, it is much faster
+     * to call node.children.find(callback) or node.findChild(callback)
+     */
     findOne(callback: (node: SceneNode) => boolean): SceneNode | null;
   }
 
@@ -531,6 +558,9 @@ declare global {
 
     readonly width: number;
     readonly height: number;
+
+    /** PROPOSED API ONLY */
+    constrainProportions: boolean;
 
     layoutAlign: 'MIN' | 'CENTER' | 'MAX'; // applicable only inside auto-layout frames
 
@@ -574,6 +604,12 @@ declare global {
     dashPattern: ReadonlyArray<number>;
     fillStyleId: string | PluginAPI['mixed'];
     strokeStyleId: string;
+
+    /** PROPOSED API ONLY */
+    strokeMiterLimit: number;
+
+    /** PROPOSED API ONLY */
+    outlineStroke(): VectorNode | null;
   }
 
   interface CornerMixin {
@@ -593,6 +629,13 @@ declare global {
     exportAsync(settings?: ExportSettings): Promise<Uint8Array>; // Defaults to PNG format
   }
 
+  interface RelaunchableMixin {
+    /** PROPOSED API ONLY */
+    setRelaunchData(description: string): void;
+    /** PROPOSED API ONLY */
+    clearRelaunchData(): void;
+  }
+
   interface ReactionMixin {
     readonly reactions: ReadonlyArray<Reaction>;
   }
@@ -604,7 +647,8 @@ declare global {
       BlendMixin,
       GeometryMixin,
       LayoutMixin,
-      ExportMixin {}
+      ExportMixin,
+      RelaunchableMixin {}
 
   interface DefaultFrameMixin
     extends BaseNodeMixin,
@@ -618,7 +662,8 @@ declare global {
       BlendMixin,
       ConstraintMixin,
       LayoutMixin,
-      ExportMixin {
+      ExportMixin,
+      RelaunchableMixin {
     layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL';
     counterAxisSizingMode: 'FIXED' | 'AUTO'; // applicable only if layoutMode != "NONE"
     horizontalPadding: number; // applicable only if layoutMode != "NONE"
@@ -644,15 +689,33 @@ declare global {
     appendChild(child: PageNode): void;
     insertChild(index: number, child: PageNode): void;
 
+    /** PROPOSED API ONLY */
+    findChildren(callback?: (node: PageNode) => boolean): Array<PageNode>;
+    /** PROPOSED API ONLY */
+    findChild(callback: (node: PageNode) => boolean): PageNode | null;
+
+    /**
+     * If you only need to search immediate children, it is much faster
+     * to call node.children.filter(callback) or node.findChildren(callback)
+     */
     findAll(
       callback?: (node: PageNode | SceneNode) => boolean
     ): Array<PageNode | SceneNode>;
+
+    /**
+     * If you only need to search immediate children, it is much faster
+     * to call node.children.find(callback) or node.findChild(callback)
+     */
     findOne(
       callback: (node: PageNode | SceneNode) => boolean
     ): PageNode | SceneNode | null;
   }
 
-  interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin {
+  interface PageNode
+    extends BaseNodeMixin,
+      ChildrenMixin,
+      ExportMixin,
+      RelaunchableMixin {
     readonly type: 'PAGE';
     clone(): PageNode;
 
@@ -682,7 +745,8 @@ declare global {
       ContainerMixin,
       BlendMixin,
       LayoutMixin,
-      ExportMixin {
+      ExportMixin,
+      RelaunchableMixin {
     readonly type: 'GROUP';
     clone(): GroupNode;
   }
@@ -691,7 +755,8 @@ declare global {
     extends BaseNodeMixin,
       SceneNodeMixin,
       LayoutMixin,
-      ExportMixin {
+      ExportMixin,
+      RelaunchableMixin {
     readonly type: 'SLICE';
     clone(): SliceNode;
   }
@@ -820,6 +885,9 @@ declare global {
     readonly type: 'INSTANCE';
     clone(): InstanceNode;
     masterComponent: ComponentNode;
+
+    /** PROPOSED API ONLY */
+    scaleFactor: number;
   }
 
   interface BooleanOperationNode

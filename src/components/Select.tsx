@@ -12,10 +12,15 @@ const SelectWrapper = styled.div`
   }
 `;
 
+const Options = styled.ul<{ top: boolean }>`
+  ${p => (p.top ? 'bottom' : 'top')}: -5px;
+`;
+
 const Select: FunctionComponent<{
   values: { [k: string]: string };
   value: string;
   onChange: (value: string) => void;
+  top?: boolean;
 }> = (props: any) => {
   const [open, setOpen] = useState<boolean>(false);
   const [selected, setSelected] = useState<string>(
@@ -52,7 +57,8 @@ const Select: FunctionComponent<{
         </span>
         <span className="select-menu__icon"></span>
       </button>
-      <ul
+      <Options
+        top={props.top}
         className={`select-menu__list ${open && 'select-menu__list--active'}`}
       >
         {Object.entries(props.values).map(([value, key]) => (
@@ -68,7 +74,7 @@ const Select: FunctionComponent<{
             <span className="select-menu__list-item-text">{key}</span>
           </li>
         ))}
-      </ul>
+      </Options>
     </SelectWrapper>
   );
 };

@@ -1,7 +1,5 @@
 import React, {
   FunctionComponent,
-  useState,
-  createRef,
   useEffect
 } from 'react';
 import { sendMessage, withAppContext, Content } from '../shared';
@@ -10,8 +8,8 @@ import Header from '../components/Header';
 const Presets: FunctionComponent = (props: any) => {
   useEffect(() => {
     sendMessage('resize', {
-      width: 250,
-      height: 400
+      width: 150,
+      height: 90
     });
   }, []);
 
@@ -19,7 +17,6 @@ const Presets: FunctionComponent = (props: any) => {
     <>
       <Header backButton title="Angle" />
       <Content>
-        <h4>Angle</h4>
         <div
           className="align-icon angle"
           onClick={() =>

@@ -3,7 +3,8 @@ import { solidColor } from './helper';
 
 figma.showUI(__html__, {
   width: 180,
-  height: 500
+  height: 500,
+  visible: figma.command !== 'relaunch'
 });
 
 const GROUP_NAME = '📐 Measurements';
@@ -463,18 +464,48 @@ const setAngleInCanvas = () => {
   }
 };
 
+const getSelectionArray = () =>
+  figma.currentPage.selection.map(node => ({
+    id: node.id,
+    type: node.type,
+    tooltipData: getTooltipPluginData(node)
+  }));
+
 const sendSelection = () => {
   figma.ui.postMessage({
     type: 'selection',
-    data: figma.currentPage.selection.map(node => {
-      return {
-        id: node.id,
-        type: node.type,
-        tooltipData: getTooltipPluginData(node)
-      };
-    })
+    data: getSelectionArray()
   });
 };
+
+(async function main() {
+  await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
+  await figma.loadFontAsync({ family: 'Inter', style: 'Bold' });
+  await figma.loadFontAsync({ family: 'Inter', style: 'Regular' });
+})();
+
+// events
+figma.on('selectionchange', sendSelection);
+
+// if (figma.command === 'relaunch') {
+// }
+
+// function traverse(node) {
+//   if ('children' in node) {
+//     if (node.type !== 'INSTANCE') {
+//       for (const child of node.children) {
+//         if (child.setRelaunchData) {
+//           child.setRelaunchData({
+//             relaunch: 'Adds a tooltip with information'
+//           });
+//         }
+//         traverse(child);
+//       }
+//     }
+//   }
+// }
+
+// traverse(figma.root);
 
 const sendStorageData = async key => {
   const data = await figma.clientStorage.getAsync(key);
@@ -485,60 +516,54 @@ const sendStorageData = async key => {
   });
 };
 
-(async function main() {
-  await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
-  await figma.loadFontAsync({ family: 'Inter', style: 'Bold' });
-  await figma.loadFontAsync({ family: 'Inter', style: 'Regular' });
-})();
+const setTooltipWithData = async (data = {}) => {
+  const pluginData = await figma.clientStorage.getAsync('tooltip-settings');
 
-sendSelection();
-
-// events
-figma.on('selectionchange', sendSelection);
+  setTooltip({
+    ...pluginData,
+    ...data
+  });
+};
 
 figma.ui.onmessage = async message => {
-  // storage
-  if (message.storage) {
-    const { action: key, payload: value } = message;
-
-    figma.clientStorage.setAsync(key, value);
+  if (figma.command === 'relaunch') {
+    setTooltipWithData().then(() => figma.closePlugin());
   } else {
-    switch (message.action) {
-      case 'init':
-        sendSelection();
-        await sendStorageData('tooltip-settings');
-      case 'resize':
-        const { width = -1, height = -1 } = message.payload;
-        figma.ui.resize(width || 180, height || 500);
-        break;
-      case 'line-offset':
-        await figma.clientStorage.setAsync(
-          'line-offset',
-          message.payload.value
-        );
-        break;
-      case 'selection':
-        sendSelection();
-        break;
-      case 'tooltip':
-        setTooltip(message.payload);
-        break;
-      case 'angle':
-        setAngleInCanvas();
-        break;
-      case 'line':
-        {
-          const { direction, strokeCap, align } = message.payload;
+    // storage
+    if (message.storage) {
+      const { action: key, payload: value } = message;
 
-          createLineFromMessage({
-            direction,
-            strokeCap,
-            align
+      figma.clientStorage.setAsync(key, value);
+    } else {
+      switch (message.action) {
+        case 'init':
+          const tooltipSettings = await figma.clientStorage.getAsync(
+            'tooltip-settings'
+          );
+
+          figma.ui.postMessage({
+            type: 'init',
+            selection: getSelectionArray(),
+            tooltipSettings
           });
-        }
-        break;
-      case 'line-preset':
-        {
+
+        case 'resize':
+          const { width = 0, height = 0 } = message.payload;
+          figma.ui.resize(width, height);
+          break;
+        case 'selection':
+          sendSelection();
+          break;
+        case 'tooltip':
+          await setTooltipWithData(message.payload);
+          break;
+        case 'angle':
+          setAngleInCanvas();
+          break;
+        case 'line':
+          createLineFromMessage(message.payload);
+          break;
+        case 'line-preset':
           const { direction, strokeCap } = message.payload;
 
           if (direction === 'left-bottom') {
@@ -570,11 +595,12 @@ figma.ui.onmessage = async message => {
               alignSecond: Alignments.TOP
             });
           }
-        }
-        break;
-      case 'cancel':
-        figma.closePlugin();
-        break;
+
+          break;
+        case 'cancel':
+          figma.closePlugin();
+          break;
+      }
     }
   }
 };
