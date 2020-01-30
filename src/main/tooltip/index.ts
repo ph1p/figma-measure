@@ -51,6 +51,61 @@ const createArrow = (node, settings) => {
   return arrow;
 };
 
+const getTooltipFrame = (node, data) => {
+  let pluginData = getTooltipPluginData(node);
+  let tooltipFrame;
+
+  // check if plugin data is available
+  if (pluginData) {
+    // search tooltip
+    tooltipFrame = figma.getNodeById(pluginData.id);
+
+    if (!tooltipFrame) {
+      pluginData = null;
+    } else {
+      // reset content
+      try {
+        tooltipFrame.children.map(c => c.remove());
+      } catch (e) {}
+    }
+  }
+
+  if (!tooltipFrame) {
+    tooltipFrame = figma.createFrame();
+  }
+  tooltipFrame.name = 'Tooltip ' + node.name;
+  tooltipFrame.clipsContent = false;
+  tooltipFrame.fills = [];
+
+  // set plugin data
+  const dataForPlugin = {
+    directions: {
+      vertical: data.vertical,
+      horizontal: data.horizontal
+    }
+  };
+
+  node.setPluginData(
+    'tooltip',
+    JSON.stringify(
+      // new
+      !pluginData
+        ? {
+            id: tooltipFrame.id,
+            nodeId: node.id,
+            ...dataForPlugin
+          }
+        : //existing
+          {
+            ...pluginData,
+            ...dataForPlugin
+          }
+    )
+  );
+
+  return tooltipFrame;
+};
+
 export const getTooltipPluginData = (node): TooltipPluginData => {
   const data = node.getPluginData('tooltip');
   if (!data) {
@@ -75,17 +130,17 @@ export const setTooltip = async options => {
     vertical: options.vertical || 'CENTER',
     horizontal: options.horizontal || 'LEFT',
     settings: {
-      ...Object.keys(TOOLTIP_DEFAULT_SETTINGS).reduce(
-        (b, c) => {
-          return {
-            ...b,
-            [c]: options[c]
-          };
-        },
-        { ...TOOLTIP_DEFAULT_SETTINGS }
-      )
+      ...TOOLTIP_DEFAULT_SETTINGS
     }
   };
+
+  // check if value is set
+  for (const settingKey of Object.keys(TOOLTIP_DEFAULT_SETTINGS)) {
+    data.settings[settingKey] =
+      typeof options[settingKey] === 'undefined'
+        ? TOOLTIP_DEFAULT_SETTINGS[settingKey]
+        : options[settingKey];
+  }
 
   figma.clientStorage.setAsync('tooltip-settings', data.settings);
 
@@ -101,29 +156,7 @@ export const setTooltip = async options => {
       return;
     }
 
-    let pluginData = getTooltipPluginData(node);
-    let tooltipFrame;
-
-    if (pluginData) {
-      tooltipFrame = figma.getNodeById(pluginData.id);
-
-      if (!tooltipFrame) {
-        pluginData = null;
-      } else {
-        // reset content
-        try {
-          tooltipFrame.children.map(c => c.remove());
-        } catch (e) {}
-      }
-    }
-
-    if (!tooltipFrame) {
-      tooltipFrame = figma.createFrame();
-    }
-    tooltipFrame.name = 'Tooltip ' + node.name;
-    tooltipFrame.clipsContent = false;
-    tooltipFrame.fills = [];
-
+    let tooltipFrame = getTooltipFrame(node, data);
     const contentFrame = figma.createFrame();
     tooltipFrame.appendChild(contentFrame);
 
@@ -132,41 +165,22 @@ export const setTooltip = async options => {
     const stroke = hexToRgb(data.settings.strokeColor);
 
     contentFrame.locked = true;
+
+    // auto-layout
     contentFrame.layoutMode = 'VERTICAL';
     contentFrame.cornerRadius = data.settings.cornerRadius;
     contentFrame.horizontalPadding = data.settings.horizontalPadding;
     contentFrame.verticalPadding = data.settings.verticalPadding;
     contentFrame.itemSpacing = data.settings.verticalPadding;
     contentFrame.counterAxisSizingMode = 'AUTO';
+
+    // background
     contentFrame.backgrounds = [].concat(solidColor(bg.r, bg.g, bg.b));
+
+    // stroke
+    contentFrame.strokeAlign = 'CENTER';
     contentFrame.strokeWeight = data.settings.strokeWidth;
     contentFrame.strokes = [].concat(solidColor(stroke.r, stroke.g, stroke.b));
-
-    // set plugin data
-    const dataForPlugin = {
-      directions: {
-        vertical: data.vertical,
-        horizontal: data.horizontal
-      }
-    };
-
-    node.setPluginData(
-      'tooltip',
-      JSON.stringify(
-        // new
-        !pluginData
-          ? {
-              id: tooltipFrame.id,
-              nodeId: node.id,
-              ...dataForPlugin
-            }
-          : //existing
-            {
-              ...pluginData,
-              ...dataForPlugin
-            }
-      )
-    );
 
     //-----
 

@@ -9,117 +9,10 @@ import {
   TOOLTIP_DEFAULT_SETTINGS
 } from '../../shared';
 import { useHistory } from 'react-router-dom';
-import { Button, Icon } from '../../components/ui';
 
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-`;
-const fadeOut = keyframes`
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-`;
-
-const swipeIn = keyframes`
-  from {
-    transform: translateX(180px);
-  }
-
-  to {
-    transform: translateX(0);
-  }
-`;
-
-const swipeOut = keyframes`
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(180px);
-  }
-`;
-
-const Wrapper = styled.div<{ show: boolean }>`
-  position: fixed;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    cursor: pointer;
-    background-color: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    animation: ${p => (p.show ? fadeIn : fadeOut)} 0.3s forwards;
-  }
-  .window {
-    width: 180px;
-    position: absolute;
-    overflow: auto;
-    top: 0;
-    right: 0;
-    padding-bottom: 10px;
-    background-color: #fff;
-    height: 100%;
-    transform: translateX(180px);
-    animation: ${p => (p.show ? swipeIn : swipeOut)} 0.3s forwards;
-    border-left: 1px solid #e5e5e5;
-    h4 {
-      margin: 0 0 12px;
-    }
-    input[type='range'] {
-      margin-bottom: 12px;
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-  }
-`;
-
-const Colors = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin: 10px;
-
-  label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    input {
-      margin-right: 5px;
-    }
-    div {
-      p {
-        color: #999;
-        font-size: 11px;
-        margin: 0;
-        font-weight: normal;
-      }
-    }
-  }
-`;
-
-const CloseButton = styled(Icon)`
-  position: absolute;
-  top: 0;
-  right: 0;
-  cursor: pointer;
-`;
+// components
+import { Button } from '../../components/ui';
+import Header from '../../components/Header';
 
 const Settings: FunctionComponent = (props: any) => {
   const {
@@ -135,6 +28,13 @@ const Settings: FunctionComponent = (props: any) => {
   const delayBgColor = useDebounce(tooltipSettings.backgroundColor, 100);
   const delayFontColor = useDebounce(tooltipSettings.fontColor, 100);
   const delayStrokeColor = useDebounce(tooltipSettings.strokeColor, 100);
+
+  // check if value is set
+  for (const settingKey of Object.keys(tooltipSettings)) {
+    if (typeof tooltipSettings[settingKey] === 'undefined') {
+      tooltipSettings[settingKey] = TOOLTIP_DEFAULT_SETTINGS[settingKey];
+    }
+  }
 
   // animation
   useEffect(() => {
@@ -183,7 +83,12 @@ const Settings: FunctionComponent = (props: any) => {
     <Wrapper onAnimationEnd={onAnimationEnd} show={show}>
       <div className="overlay" onClick={() => setShow(false)} />
       <div className="window">
-        <CloseButton onClick={() => setShow(false)} icon="close" button />
+        <Header
+          backButton="/tooltip"
+          title="Settings"
+          closeIcon="close"
+          onClick={() => setShow(false)}
+        />
         <Content>
           <h4>Corner Radius ({tooltipSettings.cornerRadius})</h4>
           <input
@@ -304,5 +209,108 @@ const Settings: FunctionComponent = (props: any) => {
     </Wrapper>
   );
 };
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+`;
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+`;
+
+const swipeIn = keyframes`
+  from {
+    transform: translateX(180px);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+`;
+
+const swipeOut = keyframes`
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(180px);
+  }
+`;
+
+const Wrapper = styled.div<{ show: boolean }>`
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    animation: ${p => (p.show ? fadeIn : fadeOut)} 0.3s forwards;
+  }
+  .window {
+    width: 180px;
+    position: absolute;
+    overflow: auto;
+    top: 0;
+    right: 0;
+    padding-bottom: 10px;
+    background-color: #fff;
+    height: 100%;
+    transform: translateX(180px);
+    animation: ${p => (p.show ? swipeIn : swipeOut)} 0.3s forwards;
+    border-left: 1px solid #e5e5e5;
+    h4 {
+      margin: 0 0 7px;
+    }
+    input[type='range'] {
+      margin-bottom: 12px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+`;
+
+const Colors = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 10px;
+
+  label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    input {
+      margin-right: 5px;
+    }
+    div {
+      p {
+        color: #999;
+        font-size: 11px;
+        margin: 0;
+        font-weight: normal;
+      }
+    }
+  }
+`;
 
 export default withAppContext(Settings);
