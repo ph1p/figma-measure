@@ -53,25 +53,24 @@ input {
     border: 0;
     &:focus {
       outline: none;
-      &::-webkit-slider-runnable-track {
-        background: #eee;
-      }
     }
     &::-webkit-slider-runnable-track {
       width: 100%;
-      height: 4px;
+      height: 12px;
       cursor: pointer;
-      border-radius: 3px;
-      background: #efefef;
+      border-radius: 6px;
+      background: #f3f3f3;
+      box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 0px 0.5px inset;
     }
     &::-webkit-slider-thumb {
-      height: 10px;
-      width: 19px;
-      border-radius: 5px;
-      background: #17a0fb;
+      width: 12px;
+      height: 12px;
+      border-radius: 6px;
+      box-sizing: border-box;
+      background: #ffffff;
       cursor: pointer;
       -webkit-appearance: none;
-      margin-top: -3px;
+      box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 0px 0.5px;
     }
   }
 }
