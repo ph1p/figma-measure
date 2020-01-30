@@ -32,6 +32,25 @@ interface TooltipPluginData {
   };
 }
 
+const createArrow = (node, settings) => {
+  const arrow = figma.createPolygon();
+  const bg = hexToRgb(settings.backgroundColor);
+  const stroke = hexToRgb(settings.strokeColor);
+
+  arrow.strokeWeight = settings.strokeWidth;
+  arrow.strokeAlign = 'CENTER';
+  arrow.strokes = [].concat(solidColor(stroke.r, stroke.g, stroke.b));
+
+  arrow.pointCount = 3;
+  arrow.resize(14, 8);
+  arrow.rotation = 90;
+  arrow.x = -6;
+  arrow.y = node.height / 2 + 7;
+  arrow.fills = [].concat(solidColor(bg.r, bg.g, bg.b));
+
+  return arrow;
+};
+
 export const getTooltipPluginData = (node): TooltipPluginData => {
   const data = node.getPluginData('tooltip');
   if (!data) {
@@ -101,26 +120,29 @@ export const setTooltip = async options => {
     if (!tooltipFrame) {
       tooltipFrame = figma.createFrame();
     }
+    tooltipFrame.name = 'Tooltip ' + node.name;
+    tooltipFrame.clipsContent = false;
+    tooltipFrame.fills = [];
+
+    const contentFrame = figma.createFrame();
+    tooltipFrame.appendChild(contentFrame);
 
     // ----
-    tooltipFrame.locked = true;
-    tooltipFrame.name = 'Tooltip ' + node.name;
-    tooltipFrame.layoutMode = 'VERTICAL';
-    tooltipFrame.cornerRadius = data.settings.cornerRadius;
-    tooltipFrame.horizontalPadding = data.settings.horizontalPadding;
-    tooltipFrame.verticalPadding = data.settings.verticalPadding;
-    tooltipFrame.itemSpacing = data.settings.verticalPadding;
-    tooltipFrame.counterAxisSizingMode = 'AUTO';
-
     const bg = hexToRgb(data.settings.backgroundColor);
-    tooltipFrame.backgrounds = [].concat(solidColor(bg.r, bg.g, bg.b));
-
     const stroke = hexToRgb(data.settings.strokeColor);
-    tooltipFrame.strokeWeight = data.settings.strokeWidth;
-    tooltipFrame.strokes = [].concat(solidColor(stroke.r, stroke.g, stroke.b));
+
+    contentFrame.locked = true;
+    contentFrame.layoutMode = 'VERTICAL';
+    contentFrame.cornerRadius = data.settings.cornerRadius;
+    contentFrame.horizontalPadding = data.settings.horizontalPadding;
+    contentFrame.verticalPadding = data.settings.verticalPadding;
+    contentFrame.itemSpacing = data.settings.verticalPadding;
+    contentFrame.counterAxisSizingMode = 'AUTO';
+    contentFrame.backgrounds = [].concat(solidColor(bg.r, bg.g, bg.b));
+    contentFrame.strokeWeight = data.settings.strokeWidth;
+    contentFrame.strokes = [].concat(solidColor(stroke.r, stroke.g, stroke.b));
 
     // set plugin data
-
     const dataForPlugin = {
       directions: {
         vertical: data.vertical,
@@ -131,13 +153,15 @@ export const setTooltip = async options => {
     node.setPluginData(
       'tooltip',
       JSON.stringify(
+        // new
         !pluginData
           ? {
               id: tooltipFrame.id,
               nodeId: node.id,
               ...dataForPlugin
             }
-          : {
+          : //existing
+            {
               ...pluginData,
               ...dataForPlugin
             }
@@ -186,7 +210,7 @@ export const setTooltip = async options => {
             fontSize: data.settings.fontSize
           });
 
-          tooltipFrame.appendChild(fillsTextNode);
+          contentFrame.appendChild(fillsTextNode);
         }
         break;
       case 'RECTANGLE':
@@ -223,8 +247,8 @@ export const setTooltip = async options => {
             style: 'Bold'
           });
 
-          tooltipFrame.appendChild(tooltipContent);
-          tooltipFrame.appendChild(fillsTextNode);
+          contentFrame.appendChild(tooltipContent);
+          contentFrame.appendChild(fillsTextNode);
         }
         break;
       case 'TEXT':
@@ -260,14 +284,13 @@ export const setTooltip = async options => {
           style: 'Bold'
         });
 
-        tooltipFrame.appendChild(tooltipContent);
-        tooltipFrame.appendChild(fillsTextNode);
+        contentFrame.appendChild(tooltipContent);
+        contentFrame.appendChild(fillsTextNode);
 
         break;
     }
 
     // ----
-    // const tooltipGroup = figma.group([tooltipFrame], figma.currentPage);
 
     let transformPosition = node.absoluteTransform;
 
@@ -276,10 +299,10 @@ export const setTooltip = async options => {
 
     switch (data.vertical) {
       case 'TOP':
-        newY -= tooltipFrame.height + data.settings.distance;
+        newY -= contentFrame.height + data.settings.distance;
         break;
       case 'CENTER':
-        newY += node.height / 2 - tooltipFrame.height / 2;
+        newY += node.height / 2 - contentFrame.height / 2;
         break;
       case 'BOTTOM':
         newY += node.height + data.settings.distance;
@@ -288,10 +311,10 @@ export const setTooltip = async options => {
 
     switch (data.horizontal) {
       case 'LEFT':
-        newX -= tooltipFrame.width + data.settings.distance;
+        newX -= contentFrame.width + data.settings.distance;
         break;
       case 'CENTER':
-        newX += node.width / 2 - tooltipFrame.width / 2;
+        newX += node.width / 2 - contentFrame.width / 2;
         break;
       case 'RIGHT':
         newX += node.width + data.settings.distance;
@@ -317,6 +340,9 @@ export const setTooltip = async options => {
       ]
     ];
 
+    tooltipFrame.appendChild(createArrow(contentFrame, data.settings));
+
+    tooltipFrame.resize(contentFrame.width, contentFrame.height);
     tooltipFrame.relativeTransform = transformPosition;
   } else {
     figma.notify('Please select only one element');
