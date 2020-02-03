@@ -1,43 +1,36 @@
 import { setTitleBold, createTooltipTextNode, colorString } from '../../helper';
+import namePart from './parts/name';
+import fillsPart from './parts/fills';
 
 export function addTextSection(parent, node, { fontColor = '', fontSize = 0 }) {
   const fontFamily = (node.fontName as FontName).family;
   const fontStyle = (node.fontName as FontName).style;
 
-  const tooltipContent = createTooltipTextNode({
+  const tooltipTextNode = createTooltipTextNode({
     fontColor,
     fontSize
   });
 
-  tooltipContent.characters += `Opacity: ${node.opacity.toFixed(2)}\n`;
+  tooltipTextNode.characters += `Opacity: ${node.opacity.toFixed(2)}\n`;
 
   // Font
-  tooltipContent.characters += `Font-Size: ${node.fontSize.toString()}\n`;
-  tooltipContent.characters += `Font-Family: ${fontFamily}\n`;
-  tooltipContent.characters += `Font-Style: ${fontStyle}`;
+  tooltipTextNode.characters += `Font-Size: ${node.fontSize.toString()}\n`;
+  tooltipTextNode.characters += `Font-Family: ${fontFamily}\n`;
+  tooltipTextNode.characters += `Font-Style: ${fontStyle}`;
 
-  setTitleBold(tooltipContent);
+  setTitleBold(tooltipTextNode);
 
-  // Fills
-  const fillsTextNode = createTooltipTextNode({
-    fontColor,
-    fontSize
-  });
+  // Add content to parent
+  const name = namePart(node, { fontColor, fontSize });
+  const fills = fillsPart(node, { fontColor, fontSize });
 
-  if (node.fills) {
-    fillsTextNode.characters += `Fills\n`;
-    (node.fills as any[]).map(f => {
-      if (f.type === 'SOLID') {
-        fillsTextNode.characters += colorString(f.color, f.opacity);
-      }
-    });
+  if (name) {
+    parent.appendChild(name);
   }
 
-  fillsTextNode.setRangeFontName(0, 5, {
-    family: 'Inter',
-    style: 'Bold'
-  });
+  parent.appendChild(tooltipTextNode);
 
-  parent.appendChild(tooltipContent);
-  parent.appendChild(fillsTextNode);
+  if (fills) {
+    parent.appendChild(fills);
+  }
 }

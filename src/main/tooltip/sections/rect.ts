@@ -1,39 +1,38 @@
 import { setTitleBold, createTooltipTextNode, colorString } from '../../helper';
+import strokesPart from './parts/strokes';
+import fillsPart from './parts/fills';
+import namePart from './parts/name';
 
 export function addRectSection(parent, node, { fontColor = '', fontSize = 0 }) {
-  const tooltipContent = createTooltipTextNode({
-    fontColor,
-    fontSize
-  });
-
   const rectangle: RectangleNode = node;
 
-  tooltipContent.characters += `Height: ${Math.floor(rectangle.height)}\n`;
-  tooltipContent.characters += `Width: ${Math.floor(rectangle.width)}\n`;
-  tooltipContent.characters += `Corner-Radius: ${rectangle.cornerRadius.toString()}`;
-
-  setTitleBold(tooltipContent);
-
-  // Fills
-  const fillsTextNode = createTooltipTextNode({
+  const tooltipTextNode = createTooltipTextNode({
     fontColor,
     fontSize
   });
 
-  if (rectangle.fills) {
-    fillsTextNode.characters += `Fills\n`;
-    (rectangle.fills as any[]).map(f => {
-      if (f.type === 'SOLID') {
-        fillsTextNode.characters += colorString(f.color, f.opacity);
-      }
-    });
+  tooltipTextNode.characters += `Height: ${Math.floor(rectangle.height)}\n`;
+  tooltipTextNode.characters += `Width: ${Math.floor(rectangle.width)}\n`;
+  tooltipTextNode.characters += `Corner-Radius: ${rectangle.cornerRadius.toString()}`;
+
+  setTitleBold(tooltipTextNode);
+
+  // Add content to parent
+  const name = namePart(node, { fontColor, fontSize });
+  const strokes = strokesPart(node, { fontColor, fontSize });
+  const fills = fillsPart(node, { fontColor, fontSize });
+
+  if (name) {
+    parent.appendChild(name);
   }
 
-  fillsTextNode.setRangeFontName(0, 5, {
-    family: 'Inter',
-    style: 'Bold'
-  });
+  parent.appendChild(tooltipTextNode);
 
-  parent.appendChild(tooltipContent);
-  parent.appendChild(fillsTextNode);
+  if (strokes) {
+    parent.appendChild(strokes);
+  }
+
+  if (fills) {
+    parent.appendChild(fills);
+  }
 }

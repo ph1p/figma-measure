@@ -14,6 +14,7 @@ interface TooltipPluginData {
 
 const createArrow = (tooltipFrame, settings, { horizontal, vertical }) => {
   if (
+    (horizontal === 'CENTER' && vertical === 'CENTER') ||
     ((horizontal === 'LEFT' || horizontal === 'RIGHT') &&
       vertical === 'BOTTOM') ||
     ((horizontal === 'LEFT' || horizontal === 'RIGHT') && vertical === 'TOP')
