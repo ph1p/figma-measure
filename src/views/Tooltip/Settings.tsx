@@ -94,7 +94,7 @@ const Settings: FunctionComponent = (props: any) => {
           <input
             type="range"
             min="0"
-            max="300"
+            max="20"
             name="cornerRadius"
             value={tooltipSettings.cornerRadius}
             onChange={setInput}
@@ -104,7 +104,7 @@ const Settings: FunctionComponent = (props: any) => {
           <input
             type="range"
             min="0"
-            max="300"
+            max="150"
             name="distance"
             value={tooltipSettings.distance}
             onChange={setInput}
@@ -134,7 +134,7 @@ const Settings: FunctionComponent = (props: any) => {
           <input
             type="range"
             min="0"
-            max="30"
+            max="7"
             name="strokeWidth"
             value={tooltipSettings.strokeWidth}
             onChange={setInput}

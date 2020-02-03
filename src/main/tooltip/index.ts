@@ -1,28 +1,8 @@
 import { solidColor, hexToRgb } from '../helper';
 import { TOOLTIP_DEFAULT_SETTINGS } from '../../shared';
-
-function colorString(color, opacity) {
-  return `rgba(${Math.round(color.r * 255)}, ${Math.round(
-    color.g * 255
-  )}, ${Math.round(color.b * 255)}, ${opacity})`;
-}
-
-const createTooltipTextNode = ({ fontColor, fontSize }) => {
-  const text = figma.createText();
-
-  text.fontName = {
-    family: 'Inter',
-    style: 'Regular'
-  };
-  text.textAlignHorizontal = 'LEFT';
-  const c = hexToRgb(fontColor);
-
-  text.fills = [].concat(solidColor(c.r, c.g, c.b));
-  text.fontSize = fontSize;
-
-  return text;
-};
-
+import { addTextSection } from './sections/text';
+import { addRectSection } from './sections/rect';
+import { addDefaultSection } from './sections/default';
 interface TooltipPluginData {
   id: any;
   nodeId: any;
@@ -32,23 +12,64 @@ interface TooltipPluginData {
   };
 }
 
-const createArrow = (node, settings) => {
-  const arrow = figma.createPolygon();
+const createArrow = (tooltipFrame, settings, { horizontal, vertical }) => {
+  if (
+    ((horizontal === 'LEFT' || horizontal === 'RIGHT') &&
+      vertical === 'BOTTOM') ||
+    ((horizontal === 'LEFT' || horizontal === 'RIGHT') && vertical === 'TOP')
+  ) {
+    return;
+  }
+
+  const arrowFrame = figma.createFrame();
+  const arrow = figma.createRectangle();
+
   const bg = hexToRgb(settings.backgroundColor);
   const stroke = hexToRgb(settings.strokeColor);
 
-  arrow.strokeWeight = settings.strokeWidth;
-  arrow.strokeAlign = 'CENTER';
+  const STROKE_WIDTH = settings.strokeWidth;
+  const ARROW_WIDTH = 10 + STROKE_WIDTH * 2;
+  const ARROW_HEIGHT = 10 + STROKE_WIDTH * 2;
+  const FRAME_WIDTH = ARROW_WIDTH / 2;
+
+  // frame
+  arrowFrame.name = 'Arrow';
+  arrowFrame.resize(FRAME_WIDTH, ARROW_HEIGHT);
+  arrowFrame.x -= FRAME_WIDTH - STROKE_WIDTH;
+  arrowFrame.y = tooltipFrame.height / 2 - ARROW_HEIGHT / 2;
+  arrowFrame.fills = [];
+
+  // arrow
+  arrow.strokeWeight = STROKE_WIDTH;
+  arrow.strokeAlign = 'INSIDE';
   arrow.strokes = [].concat(solidColor(stroke.r, stroke.g, stroke.b));
-
-  arrow.pointCount = 3;
-  arrow.resize(14, 8);
-  arrow.rotation = 90;
-  arrow.x = -6;
-  arrow.y = node.height / 2 + 7;
+  arrow.resize(ARROW_WIDTH, ARROW_HEIGHT);
   arrow.fills = [].concat(solidColor(bg.r, bg.g, bg.b));
+  arrow.x = 0;
+  arrow.y = arrowFrame.height / 2;
+  arrow.rotation = 45;
 
-  return arrow;
+  if (horizontal === 'LEFT') {
+    arrowFrame.rotation = 180;
+    arrowFrame.x += tooltipFrame.width + ARROW_WIDTH - STROKE_WIDTH * 2;
+    arrowFrame.y = tooltipFrame.height / 2 + ARROW_HEIGHT / 2;
+  }
+
+  if (vertical === 'TOP') {
+    arrowFrame.rotation = 90;
+    arrowFrame.x = tooltipFrame.width / 2 - ARROW_WIDTH / 2;
+    arrowFrame.y = tooltipFrame.height + ARROW_HEIGHT / 2 - STROKE_WIDTH;
+  }
+
+  if (vertical === 'BOTTOM') {
+    arrowFrame.rotation = -90;
+    arrowFrame.x = tooltipFrame.width / 2 + ARROW_WIDTH / 2;
+    arrowFrame.y = -(ARROW_HEIGHT / 2 - STROKE_WIDTH);
+  }
+
+  arrowFrame.appendChild(arrow);
+
+  return arrowFrame;
 };
 
 const getTooltipFrame = (node, data) => {
@@ -178,31 +199,11 @@ export const setTooltip = async options => {
     contentFrame.backgrounds = [].concat(solidColor(bg.r, bg.g, bg.b));
 
     // stroke
-    contentFrame.strokeAlign = 'CENTER';
+    contentFrame.strokeAlign = 'INSIDE';
     contentFrame.strokeWeight = data.settings.strokeWidth;
     contentFrame.strokes = [].concat(solidColor(stroke.r, stroke.g, stroke.b));
 
     //-----
-
-    const tooltipContent = createTooltipTextNode({
-      fontColor: data.settings.fontColor,
-      fontSize: data.settings.fontSize
-    });
-
-    const setTitleBold = content => {
-      let chars = 0;
-      for (const line of content.characters.split('\n')) {
-        if (line && ~line.indexOf(':')) {
-          const [label] = line.split(':');
-
-          content.setRangeFontName(chars, chars + label.length + 1, {
-            family: 'Inter',
-            style: 'Bold'
-          });
-          chars += line.length + 1;
-        }
-      }
-    };
 
     switch (node.type) {
       case 'FRAME':
@@ -214,93 +215,13 @@ export const setTooltip = async options => {
       case 'ELLIPSE':
       case 'POLYGON':
       case 'FRAME':
-        {
-          tooltipContent.characters += `Height: ${Math.floor(node.height)}\n`;
-          tooltipContent.characters += `Width: ${Math.floor(node.width)}\n`;
-
-          // Fills
-          const fillsTextNode = createTooltipTextNode({
-            fontColor: data.settings.fontColor,
-            fontSize: data.settings.fontSize
-          });
-
-          contentFrame.appendChild(fillsTextNode);
-        }
+        addDefaultSection(contentFrame, node, data.settings);
         break;
       case 'RECTANGLE':
-        {
-          const rectangle: RectangleNode = node;
-
-          tooltipContent.characters += `Height: ${Math.floor(
-            rectangle.height
-          )}\n`;
-          tooltipContent.characters += `Width: ${Math.floor(
-            rectangle.width
-          )}\n`;
-          tooltipContent.characters += `Corner-Radius: ${rectangle.cornerRadius.toString()}`;
-
-          setTitleBold(tooltipContent);
-
-          // Fills
-          const fillsTextNode = createTooltipTextNode({
-            fontColor: data.settings.fontColor,
-            fontSize: data.settings.fontSize
-          });
-
-          if (rectangle.fills) {
-            fillsTextNode.characters += `Fills\n`;
-            (rectangle.fills as any[]).map(f => {
-              if (f.type === 'SOLID') {
-                fillsTextNode.characters += colorString(f.color, f.opacity);
-              }
-            });
-          }
-
-          fillsTextNode.setRangeFontName(0, 5, {
-            family: 'Inter',
-            style: 'Bold'
-          });
-
-          contentFrame.appendChild(tooltipContent);
-          contentFrame.appendChild(fillsTextNode);
-        }
+        addRectSection(contentFrame, node, data.settings);
         break;
       case 'TEXT':
-        const fontFamily = (node.fontName as FontName).family;
-        const fontStyle = (node.fontName as FontName).style;
-
-        tooltipContent.characters += `Opacity: ${node.opacity.toFixed(2)}\n`;
-
-        // Font
-        tooltipContent.characters += `Font-Size: ${node.fontSize.toString()}\n`;
-        tooltipContent.characters += `Font-Family: ${fontFamily}\n`;
-        tooltipContent.characters += `Font-Style: ${fontStyle}`;
-
-        setTitleBold(tooltipContent);
-
-        // Fills
-        const fillsTextNode = createTooltipTextNode({
-          fontColor: data.settings.fontColor,
-          fontSize: data.settings.fontSize
-        });
-
-        if (node.fills) {
-          fillsTextNode.characters += `Fills\n`;
-          (node.fills as any[]).map(f => {
-            if (f.type === 'SOLID') {
-              fillsTextNode.characters += colorString(f.color, f.opacity);
-            }
-          });
-        }
-
-        fillsTextNode.setRangeFontName(0, 5, {
-          family: 'Inter',
-          style: 'Bold'
-        });
-
-        contentFrame.appendChild(tooltipContent);
-        contentFrame.appendChild(fillsTextNode);
-
+        addTextSection(contentFrame, node, data.settings);
         break;
     }
 
@@ -354,7 +275,14 @@ export const setTooltip = async options => {
       ]
     ];
 
-    tooltipFrame.appendChild(createArrow(contentFrame, data.settings));
+    const arrow = createArrow(contentFrame, data.settings, {
+      horizontal: data.horizontal,
+      vertical: data.vertical
+    });
+
+    if (arrow) {
+      tooltipFrame.appendChild(arrow);
+    }
 
     tooltipFrame.resize(contentFrame.width, contentFrame.height);
     tooltipFrame.relativeTransform = transformPosition;

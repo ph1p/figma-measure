@@ -487,25 +487,25 @@ const sendSelection = () => {
 // events
 figma.on('selectionchange', sendSelection);
 
-// if (figma.command === 'relaunch') {
-// }
+function iterateOverFile(node, cb) {
+  if ('children' in node) {
+    if (node.type !== 'INSTANCE') {
+      cb(node);
+      for (const child of node.children) {
+        cb(child);
+        iterateOverFile(child, cb);
+      }
+    }
+  }
+}
 
-// function traverse(node) {
-//   if ('children' in node) {
-//     if (node.type !== 'INSTANCE') {
-//       for (const child of node.children) {
-//         if (child.setRelaunchData) {
-//           child.setRelaunchData({
-//             relaunch: 'Adds a tooltip with information'
-//           });
-//         }
-//         traverse(child);
-//       }
-//     }
-//   }
-// }
-
-// traverse(figma.root);
+iterateOverFile(figma.root, node => {
+  if (node.setRelaunchData) {
+    node.setRelaunchData({
+      relaunch: 'Adds a tooltip with information'
+    });
+  }
+});
 
 const sendStorageData = async key => {
   const data = await figma.clientStorage.getAsync(key);
@@ -527,7 +527,16 @@ const setTooltipWithData = async (data = {}) => {
 
 figma.ui.onmessage = async message => {
   if (figma.command === 'relaunch') {
-    setTooltipWithData().then(() => figma.closePlugin());
+    setTooltipWithData().then(() => {
+      figma.closePlugin();
+      iterateOverFile(figma.root, node => {
+        if (node.setRelaunchData) {
+          node.setRelaunchData({
+            relaunch: 'Adds a tooltip with information'
+          });
+        }
+      });
+    });
   } else {
     // storage
     if (message.storage) {
