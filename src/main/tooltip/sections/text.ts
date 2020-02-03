@@ -1,4 +1,4 @@
-import { setTitleBold, createTooltipTextNode, colorString } from '../../helper';
+import { setTitleBold, createTooltipTextNode } from '../../helper';
 import namePart from './parts/name';
 import fillsPart from './parts/fills';
 
