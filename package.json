@@ -35,12 +35,13 @@
     "main": "code.js",
     "ui": "ui.html",
     "enableProposedApi": false,
-    "relaunchButtons": {
-      "relaunch": {
+    "relaunchButtons": [
+      {
+        "command": "relaunch",
         "name": "Add tooltip",
         "multipleSelection": false
       }
-    }
+    ]
   },
   "dependencies": {
     "@types/node": "^13.7.0",

@@ -12,8 +12,11 @@ export function addRectSection(parent, node, { fontColor = '', fontSize = 0 }) {
   });
 
   tooltipTextNode.characters += `Height: ${Math.floor(rectangle.height)}\n`;
-  tooltipTextNode.characters += `Width: ${Math.floor(rectangle.width)}\n`;
-  tooltipTextNode.characters += `Corner-Radius: ${rectangle.cornerRadius.toString()}`;
+  tooltipTextNode.characters += `Width: ${Math.floor(rectangle.width)}`;
+
+  if (rectangle.cornerRadius) {
+    tooltipTextNode.characters += `\nCorner-Radius: ${rectangle.cornerRadius.toString()}`;
+  }
 
   setTitleBold(tooltipTextNode);
 

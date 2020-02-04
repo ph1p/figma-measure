@@ -1,9 +1,10 @@
 import { getTooltipPluginData, setTooltip } from './tooltip';
 import { solidColor } from './helper';
+import Lines from '../views/Lines';
 
 figma.showUI(__html__, {
-  width: 180,
-  height: 500,
+  width: 200,
+  height: 150,
   visible: figma.command !== 'relaunch'
 });
 
@@ -30,10 +31,69 @@ interface LineParameterTypes {
   strokeCap: string;
 }
 
+interface LinePluginData {
+  id: any;
+  nodeId: any;
+  lines: Array<{
+    isHorizontal: boolean;
+    alignment: Alignments;
+  }>;
+}
+
 const nodeGroup = node =>
   (figma.currentPage.findOne(
     currentNode => currentNode.getPluginData('parent') === node.id
   ) as FrameNode) || null;
+
+export const getPluginData = (node, name) => {
+  const data = node.getPluginData(name);
+  if (!data) {
+    return null;
+  }
+
+  return JSON.parse(data);
+};
+
+const getLineFrame = (node, data) => {
+  let name = 'line';
+  let frame = figma.createFrame();
+
+  const group = nodeGroup(node);
+
+  const foundLine = group
+    ? group.children.find(c => {
+        const line = getPluginData(c, name);
+
+        return (
+          line.isHorizontal === data.isHorizontal &&
+          line.alignment === data.alignment
+        );
+      })
+    : false;
+
+  // remove old one
+  if (foundLine) {
+    foundLine.remove();
+  }
+
+  frame.name = name;
+  frame.resize(
+    data.isHorizontal ? node.width : data.labelWidth,
+    data.isHorizontal ? data.labelHeight : node.height
+  );
+  frame.backgrounds = [];
+  frame.clipsContent = false;
+
+  // set plugin data
+  let lineData = {
+    isHorizontal: data.isHorizontal,
+    alignment: data.alignment
+  };
+
+  frame.setPluginData(name, JSON.stringify(lineData));
+
+  return frame;
+};
 
 const createLine = async options => {
   let {
@@ -67,8 +127,6 @@ const createLine = async options => {
     // margin for top and bottom
     const DIRECTION_MARGIN = 5;
 
-    const lineNodes = [line];
-
     // LABEL
     label.characters = `${parseFloat(heightOrWidth.toString()).toFixed(0)}`;
     label.fontName = {
@@ -94,15 +152,14 @@ const createLine = async options => {
     labelFrame.name = 'label';
 
     // GROUP
-    const group = figma.createFrame();
-    group.name = name;
-    group.resize(
-      isHorizontal ? nodeWidth : labelFrame.width,
-      isHorizontal ? labelFrame.height : nodeHeight
-    );
-    group.backgrounds = [];
-    group.clipsContent = false;
-    lineNodes.forEach(ln => group.appendChild(ln));
+    const group = getLineFrame(node, {
+      isHorizontal,
+      alignment: isHorizontal ? lineHorizontalAlign : lineVerticalAlign,
+      labelWidth: labelFrame.width,
+      labelHeight: labelFrame.height
+    });
+
+    group.appendChild(line);
     // const group = figma.group(lineNodes, node.parent);
 
     // add label frame
