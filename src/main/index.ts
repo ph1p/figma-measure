@@ -1,6 +1,5 @@
 import { getTooltipPluginData, setTooltip } from './tooltip';
 import { solidColor } from './helper';
-import Lines from '../views/Lines';
 
 figma.showUI(__html__, {
   width: 200,
@@ -27,15 +26,6 @@ interface LineParameterTypes {
   lineVerticalAlign: Alignments;
   lineHorizontalAlign: Alignments;
   strokeCap: string;
-}
-
-interface LinePluginData {
-  id: any;
-  nodeId: any;
-  lines: Array<{
-    isHorizontal: boolean;
-    alignment: Alignments;
-  }>;
 }
 
 const nodeGroup = node =>
