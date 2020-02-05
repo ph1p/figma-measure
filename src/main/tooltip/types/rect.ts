@@ -3,7 +3,11 @@ import strokesPart from './parts/strokes';
 import fillsPart from './parts/fills';
 import namePart from './parts/name';
 
-export function addRectSection(parent, node, { fontColor = '', fontSize = 0 }) {
+export default function addRect(
+  parent,
+  node: RectangleNode,
+  { fontColor = '', fontSize = 0 }
+) {
   const rectangle: RectangleNode = node;
 
   const tooltipTextNode = createTooltipTextNode({

@@ -4,6 +4,7 @@
     "jsx": "react",
     "lib": ["dom"],
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "resolveJsonModule": true
   }
 }

@@ -2,7 +2,11 @@ import { setTitleBold, createTooltipTextNode } from '../../helper';
 import namePart from './parts/name';
 import fillsPart from './parts/fills';
 
-export function addTextSection(parent, node, { fontColor = '', fontSize = 0 }) {
+export default function addText(
+  parent,
+  node: TextNode,
+  { fontColor = '', fontSize = 0 }
+) {
   const fontFamily = (node.fontName as FontName).family;
   const fontStyle = (node.fontName as FontName).style;
 

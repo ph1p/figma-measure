@@ -1,8 +1,9 @@
 import { solidColor, hexToRgb } from '../helper';
 import { TOOLTIP_DEFAULT_SETTINGS } from '../../shared';
-import { addTextSection } from './sections/text';
-import { addRectSection } from './sections/rect';
-import { addDefaultSection } from './sections/default'
+import addText from './types/text';
+import addRect from './types/rect';
+import addDefault from './types/default';
+import addPolygon from './types/polygon';
 
 interface TooltipPluginData {
   id: any;
@@ -30,8 +31,8 @@ const createArrow = (tooltipFrame, settings, { horizontal, vertical }) => {
   const stroke = hexToRgb(settings.strokeColor);
 
   const STROKE_WIDTH = settings.strokeWidth;
-  const ARROW_WIDTH = 10 + STROKE_WIDTH * 2;
-  const ARROW_HEIGHT = 10 + STROKE_WIDTH * 2;
+  const ARROW_WIDTH = settings.fontSize + STROKE_WIDTH * 2;
+  const ARROW_HEIGHT = settings.fontSize + STROKE_WIDTH * 2;
   const FRAME_WIDTH = ARROW_WIDTH / 2;
 
   // frame
@@ -97,6 +98,7 @@ const getTooltipFrame = (node, data) => {
     tooltipFrame = figma.createFrame();
   }
   tooltipFrame.name = 'Tooltip ' + node.name;
+  tooltipFrame.locked = true;
   tooltipFrame.clipsContent = false;
   tooltipFrame.fills = [];
 
@@ -208,22 +210,23 @@ export const setTooltip = async options => {
     //-----
 
     switch (node.type) {
-      case 'FRAME':
       case 'GROUP':
       case 'COMPONENT':
       case 'VECTOR':
       case 'STAR':
       case 'LINE':
       case 'ELLIPSE':
-      case 'POLYGON':
       case 'FRAME':
-        addDefaultSection(contentFrame, node, data.settings);
+        addDefault(contentFrame, node, data.settings);
+        break;
+      case 'POLYGON':
+        addPolygon(contentFrame, node, data.settings);
         break;
       case 'RECTANGLE':
-        addRectSection(contentFrame, node, data.settings);
+        addRect(contentFrame, node, data.settings);
         break;
       case 'TEXT':
-        addTextSection(contentFrame, node, data.settings);
+        addText(contentFrame, node, data.settings);
         break;
     }
 

@@ -8,8 +8,6 @@ figma.showUI(__html__, {
   visible: figma.command !== 'relaunch'
 });
 
-const GROUP_NAME = '📐 Measurements';
-
 enum Alignments {
   TOP = 'TOP',
   BOTTOM = 'BOTTOM',
@@ -440,6 +438,7 @@ async function createLineFromMessage({
           });
         } else {
           const measureGroup = figma.group(nodes, figma.currentPage);
+          measureGroup.locked = true;
           measureGroup.name = `📐 Measurements | ${node.name}`;
 
           measureGroup.setPluginData('parent', node.id);
@@ -507,6 +506,7 @@ const setAngleInCanvas = () => {
         group.appendChild(angleFrame);
       } else {
         const group = figma.group([angleFrame], figma.currentPage);
+        group.locked = true;
         group.name = `📐 Measurements | ${node.name}`;
         group.setPluginData('parent', node.id);
       }
@@ -529,11 +529,28 @@ const getSelectionArray = () =>
   }));
 
 const sendSelection = () => {
+  iterateOverFile(figma.root, node => {
+    if (node.setRelaunchData && isValidShape(node)) {
+      node.setRelaunchData({
+        relaunch: 'Adds a tooltip with information'
+      });
+    }
+  });
+
   figma.ui.postMessage({
     type: 'selection',
     data: getSelectionArray()
   });
 };
+
+// initial relaunch data
+iterateOverFile(figma.root, node => {
+  if (node.setRelaunchData && isValidShape(node)) {
+    node.setRelaunchData({
+      relaunch: 'Adds a tooltip with information'
+    });
+  }
+});
 
 (async function main() {
   await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
@@ -556,14 +573,6 @@ function iterateOverFile(node, cb) {
   }
 }
 
-iterateOverFile(figma.root, node => {
-  if (node.setRelaunchData) {
-    node.setRelaunchData({
-      relaunch: 'Adds a tooltip with information'
-    });
-  }
-});
-
 const sendStorageData = async key => {
   const data = await figma.clientStorage.getAsync(key);
 
@@ -585,14 +594,14 @@ const setTooltipWithData = async (data = {}) => {
 figma.ui.onmessage = async message => {
   if (figma.command === 'relaunch') {
     setTooltipWithData().then(() => {
-      figma.closePlugin();
       iterateOverFile(figma.root, node => {
-        if (node.setRelaunchData) {
+        if (node.setRelaunchData && isValidShape(node)) {
           node.setRelaunchData({
             relaunch: 'Adds a tooltip with information'
           });
         }
       });
+      figma.closePlugin();
     });
   } else {
     // storage

@@ -19,27 +19,6 @@ import './figma-ui/main.min.css';
 import './ui.css';
 import { GlobalStyle } from './style';
 
-const Main = styled.div<{ selection: boolean }>`
-  position: relative;
-
-  .align-icon,
-  .align-icon::after,
-  .align-icon::before {
-    pointer-events: none;
-    opacity: 0.5;
-  }
-  ${p =>
-    p.selection
-      ? `.align-icon,
-  .align-icon::after,
-  .align-icon::before {
-    pointer-events: all;
-    cursor: pointer;
-    opacity: 1;
-  }`
-      : ''}
-`;
-
 sendMessage('init');
 
 const App: FunctionComponent<{ appData: AppContextProps }> = props => {
@@ -77,6 +56,27 @@ const App: FunctionComponent<{ appData: AppContextProps }> = props => {
     </Router>
   );
 };
+
+const Main = styled.div<{ selection: boolean }>`
+  position: relative;
+
+  .align-icon,
+  .align-icon::after,
+  .align-icon::before {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  ${p =>
+    p.selection
+      ? `.align-icon,
+  .align-icon::after,
+  .align-icon::before {
+    pointer-events: all;
+    cursor: pointer;
+    opacity: 1;
+  }`
+      : ''}
+`;
 
 window.onmessage = event => {
   if (event.data.pluginMessage.type === 'init') {

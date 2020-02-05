@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --mode=production && zip -r -X  \"Figma Measure.zip\" \"./Figma Measure/\"",
     "dev": "webpack --watch",
-    "changelog": "conventional-changelog -p karma -i CHANGELOG.md -s -r 0"
+    "version": "conventional-changelog -p karma -i CHANGELOG.md -s -r 0 && git add ."
   },
   "author": "",
   "license": "ISC",
@@ -38,7 +38,7 @@
     "relaunchButtons": [
       {
         "command": "relaunch",
-        "name": "Add tooltip",
+        "name": "Add/Update tooltip",
         "multipleSelection": false
       }
     ]

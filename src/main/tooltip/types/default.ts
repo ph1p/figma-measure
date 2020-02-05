@@ -2,7 +2,7 @@ import { createTooltipTextNode, setTitleBold } from '../../helper';
 import namePart from './parts/name';
 import fillsPart from './parts/fills';
 
-export function addDefaultSection(
+export default function addDefault(
   parent,
   node,
   { fontColor = '', fontSize = 0 }
