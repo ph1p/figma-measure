@@ -25,6 +25,7 @@ At the bottom you can set the arrow style.
 
 ### Todolist/Featurelist
 
+- [x] Tooltips
 - [x] Create boxes with measurement
 - [x] Measure height and width
 - [x] Name groups
@@ -34,12 +35,12 @@ At the bottom you can set the arrow style.
 - [ ] Measure external distance
 - [ ] Add dashed help lines
 - [ ] Add multiple files to structure code
-- [ ] Add presets (e. g. top, left)
+- [x] Add presets (e. g. top, left)
 - [ ] Save settings in Storage
 - [ ] Show and hide all measurements
 - [ ] Better resizing
 - [ ] Collapse Groups
-- [ ] Show typo specific informations
+- [x] Show typo specific informations
 
 Feel free to open a feature request: https://github.com/ph1p/figma-measure/issues
 
