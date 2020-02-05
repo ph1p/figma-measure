@@ -1,3 +1,27 @@
+## 1.0.0 (2020-02-05)
+
+* refactor: add version update structure ([40c7b82](https://github.com/ph1p/figma-measure/commit/40c7b82))
+* refactor: drop unused imports ([410fdaf](https://github.com/ph1p/figma-measure/commit/410fdaf))
+* refactor: strucuture code ([8397e79](https://github.com/ph1p/figma-measure/commit/8397e79))
+* fix(rotation): now the tooltip rotates correct ([7591455](https://github.com/ph1p/figma-measure/commit/7591455))
+* fix(tooltip): fix some bugs and prepare for silent mode ([97e62ca](https://github.com/ph1p/figma-measure/commit/97e62ca))
+* feat(arrow): add tooltip arrow ([6908d71](https://github.com/ph1p/figma-measure/commit/6908d71))
+* feat(content): split content parts ([56e7011](https://github.com/ph1p/figma-measure/commit/56e7011))
+* feat(context): add context, split files, simplify main ([f80e350](https://github.com/ph1p/figma-measure/commit/f80e350))
+* feat(lines): find duplications and overwrite them ([75f8a99](https://github.com/ph1p/figma-measure/commit/75f8a99))
+* feat(tooltip): add auto sizing, icon and directions ([1823bbc](https://github.com/ph1p/figma-measure/commit/1823bbc))
+* feat(tooltip): add better padding control and add reset button ([18cc8c0](https://github.com/ph1p/figma-measure/commit/18cc8c0))
+* feat(tooltip): add full functional tooltip section ([03f4159](https://github.com/ph1p/figma-measure/commit/03f4159))
+* feat(tooltip): optimize saving and add new options ([98b392e](https://github.com/ph1p/figma-measure/commit/98b392e))
+* feat(tooltip): start to add info tooltip ([575be08](https://github.com/ph1p/figma-measure/commit/575be08))
+* style(range): add figma range slider ([0f53f34](https://github.com/ph1p/figma-measure/commit/0f53f34))
+* feat(router/style): add styled-components and react-router ([bb7b152](https://github.com/ph1p/figma-measure/commit/bb7b152))
+* feat(tooltip/arrow): add surrounding frame and arrow ([b2e6957](https://github.com/ph1p/figma-measure/commit/b2e6957))
+* docs: add changelog ([aa7dd48](https://github.com/ph1p/figma-measure/commit/aa7dd48))
+* build(deps): upgrade dependencies and typings ([88de9ee](https://github.com/ph1p/figma-measure/commit/88de9ee))
+
+
+
 ## 0.4.0 (2019-11-17)
 
 * 0.4.0 ([6d2627d](https://github.com/ph1p/figma-measure/commit/6d2627d))
