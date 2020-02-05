@@ -15,6 +15,10 @@ export function addDefaultSection(
   tooltipTextNode.characters += `Height: ${Math.floor(node.height)}\n`;
   tooltipTextNode.characters += `Width: ${Math.floor(node.width)}`;
 
+  if (node.rotation) {
+    tooltipTextNode.characters += `\nRotation: ${Math.floor(node.rotation)}°`;
+  }
+
   setTitleBold(tooltipTextNode);
 
   // Add content to parent

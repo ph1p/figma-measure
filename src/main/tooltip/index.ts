@@ -2,7 +2,8 @@ import { solidColor, hexToRgb } from '../helper';
 import { TOOLTIP_DEFAULT_SETTINGS } from '../../shared';
 import { addTextSection } from './sections/text';
 import { addRectSection } from './sections/rect';
-import { addDefaultSection } from './sections/default';
+import { addDefaultSection } from './sections/default'
+
 interface TooltipPluginData {
   id: any;
   nodeId: any;
@@ -228,54 +229,6 @@ export const setTooltip = async options => {
 
     // ----
 
-    let transformPosition = node.absoluteTransform;
-
-    let newX = transformPosition[0][2];
-    let newY = transformPosition[1][2];
-
-    switch (data.vertical) {
-      case 'TOP':
-        newY -= contentFrame.height + data.settings.distance;
-        break;
-      case 'CENTER':
-        newY += node.height / 2 - contentFrame.height / 2;
-        break;
-      case 'BOTTOM':
-        newY += node.height + data.settings.distance;
-        break;
-    }
-
-    switch (data.horizontal) {
-      case 'LEFT':
-        newX -= contentFrame.width + data.settings.distance;
-        break;
-      case 'CENTER':
-        newX += node.width / 2 - contentFrame.width / 2;
-        break;
-      case 'RIGHT':
-        newX += node.width + data.settings.distance;
-        break;
-    }
-
-    const xCos = transformPosition[0][0];
-    const xSin = transformPosition[0][1];
-
-    const yCos = transformPosition[1][0];
-    const ySin = transformPosition[1][1];
-
-    transformPosition = [
-      [
-        xCos, // cos
-        xSin, // sin
-        newX
-      ],
-      [
-        yCos, // -sin
-        ySin, // cos
-        newY
-      ]
-    ];
-
     const arrow = createArrow(contentFrame, data.settings, {
       horizontal: data.horizontal,
       vertical: data.vertical
@@ -286,7 +239,46 @@ export const setTooltip = async options => {
     }
 
     tooltipFrame.resize(contentFrame.width, contentFrame.height);
-    tooltipFrame.relativeTransform = transformPosition;
+
+    // ----
+    let x,
+      y = 0;
+    switch (data.vertical) {
+      case 'TOP':
+        y = (contentFrame.height + data.settings.distance) * -1;
+        break;
+      case 'CENTER':
+        y = node.height / 2 - contentFrame.height / 2;
+        break;
+      case 'BOTTOM':
+        y = node.height + data.settings.distance;
+        break;
+    }
+
+    switch (data.horizontal) {
+      case 'LEFT':
+        x = (contentFrame.width + data.settings.distance) * -1;
+        break;
+      case 'CENTER':
+        x = node.width / 2 - contentFrame.width / 2;
+        break;
+      case 'RIGHT':
+        x = node.width + data.settings.distance;
+        break;
+    }
+
+    let transformPosition = node.absoluteTransform;
+
+    let xCos = transformPosition[0][0];
+    let xSin = transformPosition[0][1];
+
+    let yCos = transformPosition[1][0];
+    let ySin = transformPosition[1][1];
+
+    tooltipFrame.relativeTransform = [
+      [xCos, xSin, xCos * x + xSin * y + transformPosition[0][2]],
+      [yCos, ySin, yCos * x + ySin * y + transformPosition[1][2]]
+    ];
   } else {
     figma.notify('Please select only one element');
   }
