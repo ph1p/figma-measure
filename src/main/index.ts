@@ -522,9 +522,7 @@ const getSelectionArray = () =>
 const sendSelection = () => {
   iterateOverFile(figma.root, node => {
     if (node.setRelaunchData && isValidShape(node)) {
-      node.setRelaunchData({
-        relaunch: 'Adds a tooltip with information'
-      });
+      node.setRelaunchData({ relaunch: '' });
     }
   });
 
@@ -537,9 +535,7 @@ const sendSelection = () => {
 // initial relaunch data
 iterateOverFile(figma.root, node => {
   if (node.setRelaunchData && isValidShape(node)) {
-    node.setRelaunchData({
-      relaunch: 'Adds a tooltip with information'
-    });
+    node.setRelaunchData({ relaunch: '' });
   }
 });
 
