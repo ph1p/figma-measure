@@ -1,5 +1,16 @@
+## <small>1.0.1 (2020-02-06)</small>
+
+* feat(relaunch): select multiple elements ([c68228e](https://github.com/ph1p/figma-measure/commit/c68228e))
+* refactor: remove some code ([9366dde](https://github.com/ph1p/figma-measure/commit/9366dde))
+* docs: update readme and ui image ([55efc92](https://github.com/ph1p/figma-measure/commit/55efc92))
+
+
+
 ## 1.0.0 (2020-02-05)
 
+* 1.0.0 ([201dec2](https://github.com/ph1p/figma-measure/commit/201dec2))
+* feat(router/style): add styled-components and react-router ([bb7b152](https://github.com/ph1p/figma-measure/commit/bb7b152))
+* feat(tooltip/arrow): add surrounding frame and arrow ([b2e6957](https://github.com/ph1p/figma-measure/commit/b2e6957))
 * refactor: add version update structure ([40c7b82](https://github.com/ph1p/figma-measure/commit/40c7b82))
 * refactor: drop unused imports ([410fdaf](https://github.com/ph1p/figma-measure/commit/410fdaf))
 * refactor: strucuture code ([8397e79](https://github.com/ph1p/figma-measure/commit/8397e79))
@@ -15,8 +26,6 @@
 * feat(tooltip): optimize saving and add new options ([98b392e](https://github.com/ph1p/figma-measure/commit/98b392e))
 * feat(tooltip): start to add info tooltip ([575be08](https://github.com/ph1p/figma-measure/commit/575be08))
 * style(range): add figma range slider ([0f53f34](https://github.com/ph1p/figma-measure/commit/0f53f34))
-* feat(router/style): add styled-components and react-router ([bb7b152](https://github.com/ph1p/figma-measure/commit/bb7b152))
-* feat(tooltip/arrow): add surrounding frame and arrow ([b2e6957](https://github.com/ph1p/figma-measure/commit/b2e6957))
 * docs: add changelog ([aa7dd48](https://github.com/ph1p/figma-measure/commit/aa7dd48))
 * build(deps): upgrade dependencies and typings ([88de9ee](https://github.com/ph1p/figma-measure/commit/88de9ee))
 
