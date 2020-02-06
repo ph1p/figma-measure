@@ -1,5 +1,12 @@
+## <small>1.1.1 (2020-02-06)</small>
+
+* refactor: set no description relaunch data ([71f3755](https://github.com/ph1p/figma-measure/commit/71f3755))
+
+
+
 ## 1.1.0 (2020-02-06)
 
+* 1.1.0 ([24eab02](https://github.com/ph1p/figma-measure/commit/24eab02))
 * feat(expanded): collapse all new created elements by default ([b910fb9](https://github.com/ph1p/figma-measure/commit/b910fb9))
 * build(deps): update dependencies ([d24407f](https://github.com/ph1p/figma-measure/commit/d24407f))
 
