@@ -1,5 +1,13 @@
+## 1.1.0 (2020-02-06)
+
+* feat(expanded): collapse all new created elements by default ([b910fb9](https://github.com/ph1p/figma-measure/commit/b910fb9))
+* build(deps): update dependencies ([d24407f](https://github.com/ph1p/figma-measure/commit/d24407f))
+
+
+
 ## <small>1.0.1 (2020-02-06)</small>
 
+* 1.0.1 ([f3ff479](https://github.com/ph1p/figma-measure/commit/f3ff479))
 * feat(relaunch): select multiple elements ([c68228e](https://github.com/ph1p/figma-measure/commit/c68228e))
 * refactor: remove some code ([9366dde](https://github.com/ph1p/figma-measure/commit/9366dde))
 * docs: update readme and ui image ([55efc92](https://github.com/ph1p/figma-measure/commit/55efc92))
