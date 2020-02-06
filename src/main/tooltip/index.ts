@@ -97,6 +97,7 @@ const getTooltipFrame = (node, data) => {
   if (!tooltipFrame) {
     tooltipFrame = figma.createFrame();
   }
+  tooltipFrame.expanded = false;
   tooltipFrame.name = 'Tooltip ' + node.name;
   tooltipFrame.locked = true;
   tooltipFrame.clipsContent = false;

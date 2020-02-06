@@ -161,8 +161,6 @@ declare global {
     center: Vector;
     zoom: number;
     scrollAndZoomIntoView(nodes: ReadonlyArray<BaseNode>): void;
-
-    /** PROPOSED API ONLY */
     readonly bounds: Rect;
   }
 
@@ -516,9 +514,6 @@ declare global {
   interface SceneNodeMixin {
     visible: boolean;
     locked: boolean;
-
-    /** PROPOSED API ONLY */
-    expanded: boolean;
   }
 
   interface ChildrenMixin {
@@ -527,20 +522,18 @@ declare global {
     appendChild(child: SceneNode): void;
     insertChild(index: number, child: SceneNode): void;
 
-    /** PROPOSED API ONLY */
     findChildren(callback?: (node: SceneNode) => boolean): SceneNode[];
-    /** PROPOSED API ONLY */
     findChild(callback: (node: SceneNode) => boolean): SceneNode | null;
 
     /**
      * If you only need to search immediate children, it is much faster
-     * to call node.children.filter(callback) or node.findChildren(callback)
+     * to call node.children.filter(callback)
      */
     findAll(callback?: (node: SceneNode) => boolean): SceneNode[];
 
     /**
      * If you only need to search immediate children, it is much faster
-     * to call node.children.find(callback) or node.findChild(callback)
+     * to call node.children.find(callback)
      */
     findOne(callback: (node: SceneNode) => boolean): SceneNode | null;
   }
@@ -558,11 +551,9 @@ declare global {
 
     readonly width: number;
     readonly height: number;
-
-    /** PROPOSED API ONLY */
     constrainProportions: boolean;
 
-    layoutAlign: 'MIN' | 'CENTER' | 'MAX'; // applicable only inside auto-layout frames
+    layoutAlign: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH'; // applicable only inside auto-layout frames
 
     resize(width: number, height: number): void;
     resizeWithoutConstraints(width: number, height: number): void;
@@ -577,6 +568,7 @@ declare global {
   }
 
   interface ContainerMixin {
+    expanded: boolean;
     backgrounds: ReadonlyArray<Paint>; // DEPRECATED: use 'fills' instead
     layoutGrids: ReadonlyArray<LayoutGrid>;
     clipsContent: boolean;
@@ -598,17 +590,13 @@ declare global {
     fills: ReadonlyArray<Paint> | PluginAPI['mixed'];
     strokes: ReadonlyArray<Paint>;
     strokeWeight: number;
+    strokeMiterLimit: number;
     strokeAlign: 'CENTER' | 'INSIDE' | 'OUTSIDE';
     strokeCap: StrokeCap | PluginAPI['mixed'];
     strokeJoin: StrokeJoin | PluginAPI['mixed'];
     dashPattern: ReadonlyArray<number>;
     fillStyleId: string | PluginAPI['mixed'];
     strokeStyleId: string;
-
-    /** PROPOSED API ONLY */
-    strokeMiterLimit: number;
-
-    /** PROPOSED API ONLY */
     outlineStroke(): VectorNode | null;
   }
 
@@ -630,10 +618,9 @@ declare global {
   }
 
   interface RelaunchableMixin {
-    /** PROPOSED API ONLY */
-    setRelaunchData(description: string): void;
-    /** PROPOSED API ONLY */
-    clearRelaunchData(): void;
+    setRelaunchData(relaunchData: {
+      [command: string]: /* description */ string;
+    }): void;
   }
 
   interface ReactionMixin {
@@ -688,15 +675,12 @@ declare global {
 
     appendChild(child: PageNode): void;
     insertChild(index: number, child: PageNode): void;
-
-    /** PROPOSED API ONLY */
     findChildren(callback?: (node: PageNode) => boolean): Array<PageNode>;
-    /** PROPOSED API ONLY */
     findChild(callback: (node: PageNode) => boolean): PageNode | null;
 
     /**
      * If you only need to search immediate children, it is much faster
-     * to call node.children.filter(callback) or node.findChildren(callback)
+     * to call node.children.filter(callback)
      */
     findAll(
       callback?: (node: PageNode | SceneNode) => boolean
@@ -704,7 +688,7 @@ declare global {
 
     /**
      * If you only need to search immediate children, it is much faster
-     * to call node.children.find(callback) or node.findChild(callback)
+     * to call node.children.find(callback)
      */
     findOne(
       callback: (node: PageNode | SceneNode) => boolean
@@ -885,8 +869,6 @@ declare global {
     readonly type: 'INSTANCE';
     clone(): InstanceNode;
     masterComponent: ComponentNode;
-
-    /** PROPOSED API ONLY */
     scaleFactor: number;
   }
 
@@ -897,6 +879,8 @@ declare global {
     readonly type: 'BOOLEAN_OPERATION';
     clone(): BooleanOperationNode;
     booleanOperation: 'UNION' | 'INTERSECT' | 'SUBTRACT' | 'EXCLUDE';
+
+    expanded: boolean;
   }
 
   type BaseNode = DocumentNode | PageNode | SceneNode;

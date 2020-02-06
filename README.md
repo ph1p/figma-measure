@@ -39,8 +39,10 @@ At the bottom you can set the arrow style.
 - [ ] Save settings in Storage
 - [ ] Show and hide all measurements
 - [ ] Better resizing
-- [ ] Collapse Groups
+- [x] Collapse Groups
 - [x] Show typo specific informations
+- [x] Add tooltip group
+- [x] Add tooltip image properties
 
 Feel free to open a feature request: https://github.com/ph1p/figma-measure/issues
 

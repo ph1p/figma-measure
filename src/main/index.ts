@@ -77,7 +77,7 @@ const getLineFrame = (node, data) => {
     isHorizontal: data.isHorizontal,
     alignment: data.alignment
   };
-
+  frame.expanded = false;
   frame.setPluginData(name, JSON.stringify(lineData));
 
   return frame;
@@ -429,6 +429,7 @@ async function createLineFromMessage({
         } else {
           const measureGroup = figma.group(nodes, figma.currentPage);
           measureGroup.locked = true;
+          measureGroup.expanded = false;
           measureGroup.name = `📐 Measurements | ${node.name}`;
 
           measureGroup.setPluginData('parent', node.id);
@@ -489,7 +490,6 @@ const setAngleInCanvas = () => {
       const ySin = transformPosition[1][1];
 
       // group
-
       const group = nodeGroup(node);
 
       if (group) {
@@ -497,6 +497,7 @@ const setAngleInCanvas = () => {
       } else {
         const group = figma.group([angleFrame], figma.currentPage);
         group.locked = true;
+        group.expanded = false;
         group.name = `📐 Measurements | ${node.name}`;
         group.setPluginData('parent', node.id);
       }
