@@ -39,7 +39,7 @@
       {
         "command": "relaunch",
         "name": "Add/Update tooltip",
-        "multipleSelection": false
+        "multipleSelection": true
       }
     ]
   },

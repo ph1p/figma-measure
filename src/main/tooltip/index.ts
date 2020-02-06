@@ -150,7 +150,7 @@ export const getTooltipPluginData = (node): TooltipPluginData => {
   return null;
 };
 
-export const setTooltip = async options => {
+export const setTooltip = async (options, specificNode = null) => {
   const data = {
     vertical: options.vertical || 'CENTER',
     horizontal: options.horizontal || 'LEFT',
@@ -169,8 +169,8 @@ export const setTooltip = async options => {
 
   figma.clientStorage.setAsync('tooltip-settings', data.settings);
 
-  if (figma.currentPage.selection.length === 1) {
-    const node = figma.currentPage.selection[0];
+  if (figma.currentPage.selection.length === 1 || specificNode) {
+    const node = specificNode || figma.currentPage.selection[0];
 
     if (
       node.type === 'INSTANCE' ||

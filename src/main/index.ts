@@ -572,27 +572,26 @@ const sendStorageData = async key => {
   });
 };
 
-const setTooltipWithData = async (data = {}) => {
+const setTooltipWithData = async (data = {}, node = null) => {
   const pluginData = await figma.clientStorage.getAsync('tooltip-settings');
 
-  setTooltip({
-    ...pluginData,
-    ...data
-  });
+  setTooltip(
+    {
+      ...pluginData,
+      ...data
+    },
+    node
+  );
 };
 
 figma.ui.onmessage = async message => {
   if (figma.command === 'relaunch') {
-    setTooltipWithData().then(() => {
-      iterateOverFile(figma.root, node => {
-        if (node.setRelaunchData && isValidShape(node)) {
-          node.setRelaunchData({
-            relaunch: 'Adds a tooltip with information'
-          });
-        }
-      });
-      figma.closePlugin();
-    });
+    for (const node of figma.currentPage.selection) {
+      if (isValidShape(node)) {
+        await setTooltipWithData({}, node);
+      }
+    }
+    figma.closePlugin();
   } else {
     // storage
     if (message.storage) {
