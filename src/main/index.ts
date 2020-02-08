@@ -376,7 +376,6 @@ const isValidShape = node =>
   node.type === 'VECTOR' ||
   node.type === 'FRAME' ||
   node.type === 'COMPONENT' ||
-  node.type === 'INSTANCE' ||
   node.type === 'POLYGON';
 
 async function createLineFromMessage({
