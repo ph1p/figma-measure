@@ -1,5 +1,12 @@
+## <small>1.1.3 (2020-02-08)</small>
+
+* fix(valid-shapes): remove instance type from valid shapes ([ce2a522](https://github.com/ph1p/figma-measure/commit/ce2a522)), closes [#5](https://github.com/ph1p/figma-measure/issues/5)
+
+
+
 ## <small>1.1.2 (2020-02-08)</small>
 
+* 1.1.2 ([dc2a4f3](https://github.com/ph1p/figma-measure/commit/dc2a4f3))
 * fix(fills): check undefined ([1af12bf](https://github.com/ph1p/figma-measure/commit/1af12bf))
 
 
