@@ -1,5 +1,12 @@
+## <small>1.1.2 (2020-02-08)</small>
+
+* fix(fills): check undefined ([1af12bf](https://github.com/ph1p/figma-measure/commit/1af12bf))
+
+
+
 ## <small>1.1.1 (2020-02-06)</small>
 
+* 1.1.1 ([01881ac](https://github.com/ph1p/figma-measure/commit/01881ac))
 * refactor: set no description relaunch data ([71f3755](https://github.com/ph1p/figma-measure/commit/71f3755))
 
 
