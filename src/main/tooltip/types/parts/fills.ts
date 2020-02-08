@@ -1,8 +1,7 @@
 import { createTooltipTextNode, colorString } from '../../../helper';
 
 export default function fillsPart(node, { fontColor = '', fontSize = 0 }) {
-
-  const fillsAvailable = node.fills.some(f => f.type !== 'IMAGE');
+  const fillsAvailable = typeof node.fills !== 'undefined' ? node.fills.some(f => f.type !== 'IMAGE') : false;
 
   if (fillsAvailable) {
     const textNode = createTooltipTextNode({
