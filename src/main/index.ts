@@ -7,6 +7,10 @@ figma.showUI(__html__, {
   visible: figma.command !== 'relaunch'
 });
 
+figma.root.setRelaunchData({
+  open: '',
+});
+
 enum Alignments {
   TOP = 'TOP',
   BOTTOM = 'BOTTOM',
@@ -519,24 +523,11 @@ const getSelectionArray = () =>
   }));
 
 const sendSelection = () => {
-  iterateOverFile(figma.root, node => {
-    if (node.setRelaunchData && isValidShape(node)) {
-      node.setRelaunchData({ relaunch: '' });
-    }
-  });
-
   figma.ui.postMessage({
     type: 'selection',
     data: getSelectionArray()
   });
 };
-
-// initial relaunch data
-iterateOverFile(figma.root, node => {
-  if (node.setRelaunchData && isValidShape(node)) {
-    node.setRelaunchData({ relaunch: '' });
-  }
-});
 
 (async function main() {
   await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });

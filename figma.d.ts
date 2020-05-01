@@ -1,4 +1,4 @@
-// Figma Plugin API version 1, update 11
+// Figma Plugin API version 1, update 14
 
 declare global {
   // Global variable with Figma's plugin API.
@@ -509,6 +509,9 @@ declare global {
     // be a name related to your plugin. Other plugins will be able to read this data.
     getSharedPluginData(namespace: string, key: string): string;
     setSharedPluginData(namespace: string, key: string, value: string): void;
+    setRelaunchData(data: {
+      [command: string]: /* description */ string;
+    }): void;
   }
 
   interface SceneNodeMixin {
@@ -527,13 +530,13 @@ declare global {
 
     /**
      * If you only need to search immediate children, it is much faster
-     * to call node.children.filter(callback)
+     * to call node.children.filter(callback) or node.findChildren(callback)
      */
     findAll(callback?: (node: SceneNode) => boolean): SceneNode[];
 
     /**
      * If you only need to search immediate children, it is much faster
-     * to call node.children.find(callback)
+     * to call node.children.find(callback) or node.findChild(callback)
      */
     findOne(callback: (node: SceneNode) => boolean): SceneNode | null;
   }
@@ -570,10 +573,6 @@ declare global {
   interface ContainerMixin {
     expanded: boolean;
     backgrounds: ReadonlyArray<Paint>; // DEPRECATED: use 'fills' instead
-    layoutGrids: ReadonlyArray<LayoutGrid>;
-    clipsContent: boolean;
-    guides: ReadonlyArray<Guide>;
-    gridStyleId: string;
     backgroundStyleId: string; // DEPRECATED: use 'fillStyleId' instead
   }
 
@@ -617,12 +616,6 @@ declare global {
     exportAsync(settings?: ExportSettings): Promise<Uint8Array>; // Defaults to PNG format
   }
 
-  interface RelaunchableMixin {
-    setRelaunchData(relaunchData: {
-      [command: string]: /* description */ string;
-    }): void;
-  }
-
   interface ReactionMixin {
     readonly reactions: ReadonlyArray<Reaction>;
   }
@@ -634,8 +627,7 @@ declare global {
       BlendMixin,
       GeometryMixin,
       LayoutMixin,
-      ExportMixin,
-      RelaunchableMixin {}
+      ExportMixin {}
 
   interface DefaultFrameMixin
     extends BaseNodeMixin,
@@ -649,13 +641,17 @@ declare global {
       BlendMixin,
       ConstraintMixin,
       LayoutMixin,
-      ExportMixin,
-      RelaunchableMixin {
+      ExportMixin {
     layoutMode: 'NONE' | 'HORIZONTAL' | 'VERTICAL';
     counterAxisSizingMode: 'FIXED' | 'AUTO'; // applicable only if layoutMode != "NONE"
     horizontalPadding: number; // applicable only if layoutMode != "NONE"
     verticalPadding: number; // applicable only if layoutMode != "NONE"
     itemSpacing: number; // applicable only if layoutMode != "NONE"
+
+    layoutGrids: ReadonlyArray<LayoutGrid>;
+    gridStyleId: string;
+    clipsContent: boolean;
+    guides: ReadonlyArray<Guide>;
 
     overflowDirection: OverflowDirection;
     numberOfFixedChildren: number;
@@ -680,7 +676,7 @@ declare global {
 
     /**
      * If you only need to search immediate children, it is much faster
-     * to call node.children.filter(callback)
+     * to call node.children.filter(callback) or node.findChildren(callback)
      */
     findAll(
       callback?: (node: PageNode | SceneNode) => boolean
@@ -688,23 +684,20 @@ declare global {
 
     /**
      * If you only need to search immediate children, it is much faster
-     * to call node.children.find(callback)
+     * to call node.children.find(callback) or node.findChild(callback)
      */
     findOne(
       callback: (node: PageNode | SceneNode) => boolean
     ): PageNode | SceneNode | null;
   }
 
-  interface PageNode
-    extends BaseNodeMixin,
-      ChildrenMixin,
-      ExportMixin,
-      RelaunchableMixin {
+  interface PageNode extends BaseNodeMixin, ChildrenMixin, ExportMixin {
     readonly type: 'PAGE';
     clone(): PageNode;
 
     guides: ReadonlyArray<Guide>;
     selection: ReadonlyArray<SceneNode>;
+    selectedTextRange: { node: TextNode; start: number; end: number } | null;
 
     backgrounds: ReadonlyArray<Paint>;
 
@@ -729,8 +722,7 @@ declare global {
       ContainerMixin,
       BlendMixin,
       LayoutMixin,
-      ExportMixin,
-      RelaunchableMixin {
+      ExportMixin {
     readonly type: 'GROUP';
     clone(): GroupNode;
   }
@@ -739,8 +731,7 @@ declare global {
     extends BaseNodeMixin,
       SceneNodeMixin,
       LayoutMixin,
-      ExportMixin,
-      RelaunchableMixin {
+      ExportMixin {
     readonly type: 'SLICE';
     clone(): SliceNode;
   }
@@ -795,7 +786,6 @@ declare global {
   interface TextNode extends DefaultShapeMixin, ConstraintMixin {
     readonly type: 'TEXT';
     clone(): TextNode;
-    characters: string;
     readonly hasMissingFont: boolean;
     textAlignHorizontal: 'LEFT' | 'CENTER' | 'RIGHT' | 'JUSTIFIED';
     textAlignVertical: 'TOP' | 'CENTER' | 'BOTTOM';
@@ -811,6 +801,14 @@ declare global {
     textDecoration: TextDecoration | PluginAPI['mixed'];
     letterSpacing: LetterSpacing | PluginAPI['mixed'];
     lineHeight: LineHeight | PluginAPI['mixed'];
+
+    characters: string;
+    insertCharacters(
+      start: number,
+      characters: string,
+      useStyle?: 'BEFORE' | 'AFTER'
+    ): void;
+    deleteCharacters(start: number, end: number): void;
 
     getRangeFontSize(start: number, end: number): number | PluginAPI['mixed'];
     setRangeFontSize(start: number, end: number, value: number): void;
