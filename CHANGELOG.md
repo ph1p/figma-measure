@@ -1,5 +1,12 @@
+## 1.2.0 (2020-05-01)
+
+* refactor(relaunch-data): remove it ([66eddd6](https://github.com/ph1p/figma-measure/commit/66eddd6))
+
+
+
 ## <small>1.1.3 (2020-02-08)</small>
 
+* 1.1.3 ([5cf2dc1](https://github.com/ph1p/figma-measure/commit/5cf2dc1))
 * fix(valid-shapes): remove instance type from valid shapes ([ce2a522](https://github.com/ph1p/figma-measure/commit/ce2a522)), closes [#5](https://github.com/ph1p/figma-measure/issues/5)
 
 
