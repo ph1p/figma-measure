@@ -1,7 +1,9 @@
 import React, { FunctionComponent, useState, useEffect } from 'react';
-import { sendMessage, withAppContext, Content, Grid } from '../shared';
+import { sendMessage } from '../shared';
 import Header from '../components/Header';
 import Select from '../components/Select';
+import { withAppContext } from '../shared/AppContext';
+import { Content, Grid } from '../shared/style';
 
 const Lines: FunctionComponent = (props: any) => {
   const [cap, setCap] = useState<string>('STANDARD');
@@ -10,7 +12,7 @@ const Lines: FunctionComponent = (props: any) => {
   useEffect(() => {
     sendMessage('resize', {
       width: 155,
-      height: 370
+      height: 370,
     });
   }, []);
 
@@ -19,16 +21,16 @@ const Lines: FunctionComponent = (props: any) => {
       sendMessage('line', {
         direction,
         align,
-        strokeCap: cap
+        strokeCap: cap,
       });
     }
   };
 
-  const setPreset = direction => {
+  const setPreset = (direction) => {
     if (props.appData.selection) {
       sendMessage('line-preset', {
         direction,
-        strokeCap: cap
+        strokeCap: cap,
       });
     }
   };
@@ -122,9 +124,9 @@ const Lines: FunctionComponent = (props: any) => {
             STANDARD: 'Standard',
             NONE: 'None',
             ARROW_LINES: 'Line Arrow',
-            ARROW_EQUILATERAL: 'Triangle Arrow'
+            ARROW_EQUILATERAL: 'Triangle Arrow',
           }}
-          onChange={value => setCap(value)}
+          onChange={(value) => setCap(value)}
         />
       </Content>
       {/* <hr /> */}

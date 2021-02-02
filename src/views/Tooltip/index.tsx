@@ -1,18 +1,15 @@
 import React, { FunctionComponent, useState, useEffect } from 'react';
-import { Route, Link } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import styled from 'styled-components';
-import {
-  sendMessage,
-  withAppContext,
-  Content,
-  TOOLTIP_DIRECTIONS
-} from '../../shared';
+import { sendMessage, TOOLTIP_DIRECTIONS } from '../../shared';
 
 // components
 import Header from '../../components/Header';
 import ButtonLink from '../../components/ButtonLink';
 
 import Settings from './Settings';
+import { withAppContext } from '../../shared/AppContext';
+import { Content } from '../../shared/style';
 
 const PreviewWrapper = styled.div<{ hasSelection: boolean }>`
   display: grid;

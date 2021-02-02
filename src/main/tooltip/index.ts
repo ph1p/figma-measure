@@ -14,7 +14,7 @@ interface TooltipPluginData {
   };
 }
 
-const createArrow = (tooltipFrame, settings, { horizontal, vertical }) => {
+function createArrow(tooltipFrame, settings, { horizontal, vertical }) {
   if (
     (horizontal === 'CENTER' && vertical === 'CENTER') ||
     ((horizontal === 'LEFT' || horizontal === 'RIGHT') &&
@@ -73,10 +73,10 @@ const createArrow = (tooltipFrame, settings, { horizontal, vertical }) => {
   arrowFrame.appendChild(arrow);
 
   return arrowFrame;
-};
+}
 
-const getTooltipFrame = (node, data) => {
-  let pluginData = getTooltipPluginData(node);
+function getTooltipFrame(node, data) {
+  let pluginData = tooltipPluginDataByNode(node);
   let tooltipFrame;
 
   // check if plugin data is available
@@ -89,7 +89,7 @@ const getTooltipFrame = (node, data) => {
     } else {
       // reset content
       try {
-        tooltipFrame.children.map(c => c.remove());
+        tooltipFrame.children.map((c) => c.remove());
       } catch (e) {}
     }
   }
@@ -107,8 +107,8 @@ const getTooltipFrame = (node, data) => {
   const dataForPlugin = {
     directions: {
       vertical: data.vertical,
-      horizontal: data.horizontal
-    }
+      horizontal: data.horizontal,
+    },
   };
 
   node.setPluginData(
@@ -119,20 +119,20 @@ const getTooltipFrame = (node, data) => {
         ? {
             id: tooltipFrame.id,
             nodeId: node.id,
-            ...dataForPlugin
+            ...dataForPlugin,
           }
         : //existing
           {
             ...pluginData,
-            ...dataForPlugin
+            ...dataForPlugin,
           }
     )
   );
 
   return tooltipFrame;
-};
+}
 
-export const getTooltipPluginData = (node): TooltipPluginData => {
+export function tooltipPluginDataByNode(node: BaseNode): TooltipPluginData {
   const data = node.getPluginData('tooltip');
   if (!data) {
     return null;
@@ -149,15 +149,15 @@ export const getTooltipPluginData = (node): TooltipPluginData => {
     return parsedData;
   }
   return null;
-};
+}
 
-export const setTooltip = async (options, specificNode = null) => {
+export async function setTooltip(options: any, specificNode = null) {
   const data = {
     vertical: options.vertical || 'CENTER',
     horizontal: options.horizontal || 'LEFT',
     settings: {
-      ...TOOLTIP_DEFAULT_SETTINGS
-    }
+      ...TOOLTIP_DEFAULT_SETTINGS,
+    },
   };
 
   // check if value is set
@@ -182,7 +182,7 @@ export const setTooltip = async (options, specificNode = null) => {
       return;
     }
 
-    let tooltipFrame = getTooltipFrame(node, data);
+    const tooltipFrame = getTooltipFrame(node, data);
     const contentFrame = figma.createFrame();
     tooltipFrame.appendChild(contentFrame);
 
@@ -235,7 +235,7 @@ export const setTooltip = async (options, specificNode = null) => {
 
     const arrow = createArrow(contentFrame, data.settings, {
       horizontal: data.horizontal,
-      vertical: data.vertical
+      vertical: data.vertical,
     });
 
     if (arrow) {
@@ -271,19 +271,19 @@ export const setTooltip = async (options, specificNode = null) => {
         break;
     }
 
-    let transformPosition = node.absoluteTransform;
+    const transformPosition = node.absoluteTransform;
 
-    let xCos = transformPosition[0][0];
-    let xSin = transformPosition[0][1];
+    const xCos = transformPosition[0][0];
+    const xSin = transformPosition[0][1];
 
-    let yCos = transformPosition[1][0];
-    let ySin = transformPosition[1][1];
+    const yCos = transformPosition[1][0];
+    const ySin = transformPosition[1][1];
 
     tooltipFrame.relativeTransform = [
       [xCos, xSin, xCos * x + xSin * y + transformPosition[0][2]],
-      [yCos, ySin, yCos * x + ySin * y + transformPosition[1][2]]
+      [yCos, ySin, yCos * x + ySin * y + transformPosition[1][2]],
     ];
   } else {
     figma.notify('Please select only one element');
   }
-};
+}

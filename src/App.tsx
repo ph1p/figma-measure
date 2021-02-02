@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState, useEffect } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import * as ReactDOM from 'react-dom';
 import { MemoryRouter as Router, Switch, Route } from 'react-router-dom';
 import styled from 'styled-components';
@@ -8,24 +8,24 @@ import Tooltip from './views/Tooltip';
 import Angle from './views/Angle';
 import Lines from './views/Lines';
 
-import {
-  sendMessage,
-  AppProvider,
-  withAppContext,
-  AppContextProps
-} from './shared';
+import { sendMessage } from './shared';
 
 import './figma-ui/main.min.css';
 import './ui.css';
 import { GlobalStyle } from './style';
+import {
+  AppContextProps,
+  withAppContext,
+  AppProvider,
+} from './shared/AppContext';
 
 sendMessage('init');
 
-const App: FunctionComponent<{ appData: AppContextProps }> = props => {
+const App: FunctionComponent<{ appData: AppContextProps }> = (props) => {
   useEffect(() => {
     // check selection
 
-    window.onmessage = event => {
+    window.onmessage = (event) => {
       if (event.data.pluginMessage.type === 'selection') {
         props.appData.setSelection(event.data.pluginMessage.data);
       }
@@ -66,7 +66,7 @@ const Main = styled.div<{ selection: boolean }>`
     pointer-events: none;
     opacity: 0.5;
   }
-  ${p =>
+  ${(p) =>
     p.selection
       ? `.align-icon,
   .align-icon::after,
@@ -78,7 +78,7 @@ const Main = styled.div<{ selection: boolean }>`
       : ''}
 `;
 
-window.onmessage = event => {
+window.onmessage = (event) => {
   if (event.data.pluginMessage.type === 'init') {
     const { selection, tooltipSettings } = event.data.pluginMessage;
 

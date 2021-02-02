@@ -1,10 +1,10 @@
-import { getTooltipPluginData, setTooltip } from './tooltip';
 import { solidColor } from './helper';
+import { tooltipPluginDataByNode, setTooltip } from './tooltip';
 
 figma.showUI(__html__, {
   width: 200,
   height: 150,
-  visible: figma.command !== 'relaunch'
+  visible: figma.command !== 'relaunch',
 });
 
 figma.root.setRelaunchData({
@@ -16,7 +16,7 @@ enum Alignments {
   BOTTOM = 'BOTTOM',
   LEFT = 'LEFT',
   RIGHT = 'RIGHT',
-  CENTER = 'CENTER'
+  CENTER = 'CENTER',
 }
 
 interface LineParameterTypes {
@@ -32,9 +32,9 @@ interface LineParameterTypes {
   strokeCap: string;
 }
 
-const nodeGroup = node =>
+const nodeGroup = (node) =>
   (figma.currentPage.findOne(
-    currentNode => currentNode.getPluginData('parent') === node.id
+    (currentNode) => currentNode.getPluginData('parent') === node.id
   ) as FrameNode) || null;
 
 export const getPluginData = (node, name) => {
@@ -46,15 +46,44 @@ export const getPluginData = (node, name) => {
   return JSON.parse(data);
 };
 
+// // const getAllMeasurements = () => {};
+
+// // const updateMeasurementsOfNode = (node) => {};
+
+const checkNodeMeasurementsAndAddValue = (node, nodeId?): string[] => {
+  let currentNodeMeasurements = node.getPluginData('measurementNodeIds');
+
+  try {
+    currentNodeMeasurements = JSON.parse(currentNodeMeasurements);
+  } catch {
+    currentNodeMeasurements = [];
+  }
+
+  if (nodeId) {
+    currentNodeMeasurements.push(nodeId);
+  }
+
+  currentNodeMeasurements = currentNodeMeasurements
+    .map((id) => figma.getNodeById(id)?.id)
+    .filter(Boolean);
+
+  node.setPluginData(
+    'measurementNodeIds',
+    JSON.stringify(currentNodeMeasurements)
+  );
+
+  return currentNodeMeasurements;
+};
+
 const getLineFrame = (node, data) => {
-  let name = 'line';
-  let frame = figma.createFrame();
+  const name = 'line';
+  const lineFrame = figma.createFrame();
 
   const group = nodeGroup(node);
 
   const foundLine = group
-    ? group.children.find(c => {
-        const line = getPluginData(c, name);
+    ? group.children.find((currentChild) => {
+        const line = getPluginData(currentChild, name);
 
         return (
           line.isHorizontal === data.isHorizontal &&
@@ -68,43 +97,49 @@ const getLineFrame = (node, data) => {
     foundLine.remove();
   }
 
-  frame.name = name;
-  frame.resize(
+  const cIds = checkNodeMeasurementsAndAddValue(node, lineFrame.id);
+  console.log(cIds);
+
+  lineFrame.name = name;
+  lineFrame.resize(
     data.isHorizontal ? node.width : data.labelWidth,
     data.isHorizontal ? data.labelHeight : node.height
   );
-  frame.backgrounds = [];
-  frame.clipsContent = false;
+  lineFrame.backgrounds = [];
+  lineFrame.clipsContent = false;
 
   // set plugin data
-  let lineData = {
+  const lineData = {
+    parent: node.id,
+    nodeId: lineFrame.id,
     isHorizontal: data.isHorizontal,
-    alignment: data.alignment
+    alignment: data.alignment,
   };
-  frame.expanded = false;
-  frame.setPluginData(name, JSON.stringify(lineData));
 
-  return frame;
+  lineFrame.expanded = false;
+  lineFrame.setPluginData(name, JSON.stringify(lineData));
+
+  return lineFrame;
 };
 
-const createLine = async options => {
-  let {
+const createLine = async (options) => {
+  const {
     node,
     direction = 'horizontal',
-    name = 'Group',
+    // name = 'Group',
     txtVerticalAlign = Alignments.CENTER,
     txtHorizontalAlign = Alignments.CENTER,
     lineVerticalAlign = Alignments.LEFT,
     lineHorizontalAlign = Alignments.BOTTOM,
-    strokeCap = 'NONE'
+    strokeCap = 'NONE',
   }: LineParameterTypes = options;
 
   const LINE_OFFSET = -3;
 
   const isHorizontal = direction === 'horizontal';
 
-  let nodeHeight = node.height;
-  let nodeWidth = node.width;
+  const nodeHeight = node.height;
+  const nodeWidth = node.width;
 
   const heightOrWidth = isHorizontal ? nodeWidth : nodeHeight;
 
@@ -123,7 +158,7 @@ const createLine = async options => {
     label.characters = `${parseFloat(heightOrWidth.toString()).toFixed(0)}`;
     label.fontName = {
       family: 'Inter',
-      style: 'Bold'
+      style: 'Bold',
     };
     label.fontSize = 10;
     label.fills = [].concat(solidColor(255, 255, 255));
@@ -148,7 +183,7 @@ const createLine = async options => {
       isHorizontal,
       alignment: isHorizontal ? lineHorizontalAlign : lineVerticalAlign,
       labelWidth: labelFrame.width,
-      labelHeight: labelFrame.height
+      labelHeight: labelFrame.height,
     });
 
     group.appendChild(line);
@@ -167,8 +202,8 @@ const createLine = async options => {
         // M x y L x y Z is close
         data: isHorizontal
           ? `M 0 0 L ${node.height} 0 Z`
-          : `M 0 0 L 0 ${node.width} Z`
-      }
+          : `M 0 0 L 0 ${node.width} Z`,
+      },
     ];
 
     line.strokes = [].concat(solidColor());
@@ -215,7 +250,7 @@ const createLine = async options => {
 
     // x, y for text box
     const boxTop = paddingTopBottom / 2;
-    const boxLeft = paddingLeftRight / 2;
+    // const boxLeft = paddingLeftRight / 2;
 
     // place text group
     if (isHorizontal) {
@@ -356,13 +391,13 @@ const createLine = async options => {
       [
         xCos, // cos
         xSin, // sin
-        newX
+        newX,
       ],
       [
         yCos, // -sin
         ySin, // cos
-        newY
-      ]
+        newY,
+      ],
     ];
 
     group.relativeTransform = transformPosition;
@@ -372,7 +407,7 @@ const createLine = async options => {
   return null;
 };
 
-const isValidShape = node =>
+const isValidShape = (node) =>
   node.type === 'RECTANGLE' ||
   node.type === 'ELLIPSE' ||
   node.type === 'GROUP' ||
@@ -386,7 +421,7 @@ async function createLineFromMessage({
   direction,
   align = Alignments.CENTER,
   strokeCap = 'ARROW_LINES',
-  alignSecond = null
+  alignSecond = null,
 }) {
   const nodes = [];
 
@@ -398,7 +433,7 @@ async function createLineFromMessage({
           direction: 'vertical',
           strokeCap,
           name: 'vertical line ' + align.toLowerCase(),
-          lineVerticalAlign: Alignments[align]
+          lineVerticalAlign: Alignments[align],
         });
 
         if (verticalLine) {
@@ -414,7 +449,7 @@ async function createLineFromMessage({
           name: 'horizontal line ' + align.toLowerCase(),
           lineHorizontalAlign: alignSecond
             ? Alignments[alignSecond]
-            : Alignments[align]
+            : Alignments[align],
         });
 
         if (horizontalLine) {
@@ -426,7 +461,7 @@ async function createLineFromMessage({
         const group = nodeGroup(node);
 
         if (group) {
-          nodes.forEach(n => {
+          nodes.forEach((n) => {
             group.appendChild(n);
           });
         } else {
@@ -458,7 +493,7 @@ const setAngleInCanvas = () => {
       text.textAlignHorizontal = 'CENTER';
       text.fontName = {
         family: 'Inter',
-        style: 'Bold'
+        style: 'Bold',
       };
 
       const textWidth = text.width + text.width / 2;
@@ -473,8 +508,8 @@ const setAngleInCanvas = () => {
       rect.fills = [].concat([
         {
           ...solidColor(255, 0, 0),
-          opacity: 0
-        }
+          opacity: 0,
+        },
       ]);
 
       text.resize(rect.width, text.height);
@@ -483,8 +518,8 @@ const setAngleInCanvas = () => {
 
       let transformPosition = node.absoluteTransform;
 
-      let newX = transformPosition[0][2];
-      let newY = transformPosition[1][2];
+      const newX = transformPosition[0][2];
+      const newY = transformPosition[1][2];
 
       const xCos = transformPosition[0][0];
       const xSin = transformPosition[0][1];
@@ -507,7 +542,7 @@ const setAngleInCanvas = () => {
 
       transformPosition = [
         [xCos, xSin, newX],
-        [yCos, ySin, newY]
+        [yCos, ySin, newY],
       ];
 
       angleFrame.relativeTransform = transformPosition;
@@ -516,16 +551,17 @@ const setAngleInCanvas = () => {
 };
 
 const getSelectionArray = () =>
-  figma.currentPage.selection.map(node => ({
+  figma.currentPage.selection.map((node) => ({
     id: node.id,
     type: node.type,
-    tooltipData: getTooltipPluginData(node)
+    tooltipData: tooltipPluginDataByNode(node),
+    // tooltipData: node,
   }));
 
 const sendSelection = () => {
   figma.ui.postMessage({
     type: 'selection',
-    data: getSelectionArray()
+    data: getSelectionArray(),
   });
 };
 
@@ -536,28 +572,38 @@ const sendSelection = () => {
 })();
 
 // events
-figma.on('selectionchange', sendSelection);
-
-function iterateOverFile(node, cb) {
-  if ('children' in node) {
-    if (node.type !== 'INSTANCE') {
-      cb(node);
-      for (const child of node.children) {
-        cb(child);
-        iterateOverFile(child, cb);
-      }
+figma.on('selectionchange', () => {
+  if (figma.currentPage.selection.length === 1) {
+    const selectedNode = figma.currentPage.selection[0];
+    if (isValidShape(selectedNode)) {
+      console.log(selectedNode);
+      checkNodeMeasurementsAndAddValue(selectedNode);
     }
   }
-}
 
-const sendStorageData = async key => {
-  const data = await figma.clientStorage.getAsync(key);
+  sendSelection();
+});
 
-  figma.ui.postMessage({
-    type: key,
-    data
-  });
-};
+// function iterateOverFile(node, cb) {
+//   if ('children' in node) {
+//     if (node.type !== 'INSTANCE') {
+//       cb(node);
+//       for (const child of node.children) {
+//         cb(child);
+//         iterateOverFile(child, cb);
+//       }
+//     }
+//   }
+// }
+
+// const sendStorageData = async (key) => {
+//   const data = await figma.clientStorage.getAsync(key);
+
+//   figma.ui.postMessage({
+//     type: key,
+//     data,
+//   });
+// };
 
 const setTooltipWithData = async (data = {}, node = null) => {
   const pluginData = await figma.clientStorage.getAsync('tooltip-settings');
@@ -565,13 +611,13 @@ const setTooltipWithData = async (data = {}, node = null) => {
   setTooltip(
     {
       ...pluginData,
-      ...data
+      ...data,
     },
     node
   );
 };
 
-figma.ui.onmessage = async message => {
+figma.ui.onmessage = async (message) => {
   if (figma.command === 'relaunch') {
     for (const node of figma.currentPage.selection) {
       if (isValidShape(node)) {
@@ -595,9 +641,9 @@ figma.ui.onmessage = async message => {
           figma.ui.postMessage({
             type: 'init',
             selection: getSelectionArray(),
-            tooltipSettings
+            tooltipSettings,
           });
-
+          break;
         case 'resize':
           const { width = 0, height = 0 } = message.payload;
           figma.ui.resize(width, height);
@@ -622,28 +668,28 @@ figma.ui.onmessage = async message => {
               direction: 'both',
               strokeCap,
               align: Alignments.LEFT,
-              alignSecond: Alignments.BOTTOM
+              alignSecond: Alignments.BOTTOM,
             });
           } else if (direction === 'left-top') {
             createLineFromMessage({
               direction: 'both',
               strokeCap,
               align: Alignments.LEFT,
-              alignSecond: Alignments.TOP
+              alignSecond: Alignments.TOP,
             });
           } else if (direction === 'right-bottom') {
             createLineFromMessage({
               direction: 'both',
               strokeCap,
               align: Alignments.RIGHT,
-              alignSecond: Alignments.BOTTOM
+              alignSecond: Alignments.BOTTOM,
             });
           } else {
             createLineFromMessage({
               direction: 'both',
               strokeCap,
               align: Alignments.RIGHT,
-              alignSecond: Alignments.TOP
+              alignSecond: Alignments.TOP,
             });
           }
 

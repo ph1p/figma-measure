@@ -1,7 +1,4 @@
-import {
-  createTooltipTextNode,
-  colorString
-} from '../../../helper';
+import { createTooltipTextNode, colorString } from '../../../helper';
 
 export default function strokesPart(node, { fontColor = '', fontSize = 0 }) {
   // Stroke

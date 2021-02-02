@@ -2,9 +2,10 @@ import React, { FunctionComponent, useEffect } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 
-import { sendMessage, withAppContext } from '../shared';
+import { sendMessage } from '../shared';
 import { Icon } from '../components/ui';
 import pkg from '../../package.json';
+import { withAppContext } from '../shared/AppContext';
 
 const Home: FunctionComponent = () => {
   const history = useHistory();

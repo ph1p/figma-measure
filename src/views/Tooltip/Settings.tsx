@@ -2,17 +2,32 @@ import React, { FunctionComponent, useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import {
   sendMessage,
-  withAppContext,
-  Content,
-  useDebounce,
   setStorage,
-  TOOLTIP_DEFAULT_SETTINGS
+  TOOLTIP_DEFAULT_SETTINGS,
 } from '../../shared';
 import { useHistory } from 'react-router-dom';
 
 // components
 import { Button } from '../../components/ui';
 import Header from '../../components/Header';
+import { withAppContext } from '../../shared/AppContext';
+import { Content } from '../../shared/style';
+
+function useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 const Settings: FunctionComponent = (props: any) => {
   const {

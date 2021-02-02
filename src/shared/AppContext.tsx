@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState, useEffect } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import PropTypes from 'prop-types';
 import { TOOLTIP_DEFAULT_SETTINGS, TooltipSettings } from '../shared';
 
