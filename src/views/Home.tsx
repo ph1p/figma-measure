@@ -1,91 +1,119 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useHistory } from 'react-router-dom';
 
 import { sendMessage } from '../shared';
-import { Icon } from '../components/ui';
-import pkg from '../../package.json';
+// import pkg from '../../package.json';
 import { withAppContext } from '../shared/AppContext';
+import Viewer from '../components/Viewer';
+
+import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
+import CenterChooser from './components/CenterChooser';
+import LineChooser from './components/LineChooser';
 
 const Home: FunctionComponent = () => {
-  const history = useHistory();
+  const [color, setColor] = useState<string>('#1745E8');
+  const [labels, setLabels] = useState<boolean>(false);
+  const [center, setCenter] = useState<
+    'dashed' | 'filled' | 'stroke' | 'fill-stroke'
+  >('stroke');
+  const [lineEnding, setLineEnding] = useState<
+    'normal' | 'none' | 'arrow' | 'arrow-filled'
+  >('normal');
+
+  useEffect(() => {
+    FigmaMessageEmitter.emit('set-measurements', {
+      lineEnding,
+    });
+  }, [lineEnding]);
 
   useEffect(() => {
     sendMessage('resize', {
-      width: 200,
-      height: 172
+      width: 285,
+      height: 450,
     });
   }, []);
 
   return (
     <>
-      <Info>Select one of the following sections </Info>
-      <Nav>
-        <ul>
-          <li onClick={() => history.push('/tooltip')}>
-            <Icon icon="component" />
-            Tooltip
-          </li>
-          <li onClick={() => history.push('/angle')}>
-            <Icon icon="angle" />
-            Angle
-          </li>
-          <li onClick={() => history.push('/lines')}>
-            <Icon icon="frame" />
-            Lines
-          </li>
-        </ul>
-      </Nav>
-      <Version>
+      <ViewerContainer>
+        <Viewer
+          color={color}
+          labels={labels}
+          center={center}
+          lineEnding={lineEnding}
+        />
+      </ViewerContainer>
+
+      <LineChooser
+        value={lineEnding}
+        onChange={(value) => setLineEnding(value)}
+      />
+      <CenterChooser value={center} onChange={(value) => setCenter(value)} />
+
+      <InputContainer>
+        <label htmlFor="color">Color</label>
+        <input
+          id="color"
+          type="color"
+          onChange={(e) => setColor(e.currentTarget.value)}
+          value={color}
+        />
+      </InputContainer>
+      <InputContainer>
+        <label htmlFor="labels">Labels</label>
+        <input
+          id="labels"
+          type="checkbox"
+          onChange={(e) => setLabels(e.currentTarget.checked)}
+          checked={labels}
+        />
+      </InputContainer>
+
+      {/* <Version>
         <a
           target="_blank"
           href="https://github.com/ph1p/figma-measure/releases"
         >
           v{pkg.version}
         </a>
-      </Version>
+      </Version> */}
     </>
   );
 };
 
-const Info = styled.nav`
-  padding: 10px;
-  color: #999;
-`;
-
-const Nav = styled.nav`
-  ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    li {
-      cursor: pointer;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      border-top: 1px solid #ddd;
-      &:last-child {
-        border-bottom: 1px solid #ddd;
-      }
-      &:hover {
-        background-color: #f3f3f3;
-      }
-    }
+const InputContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 14px;
+  align-items: center;
+  label {
+    font-weight: bold;
   }
 `;
 
-const Version = styled.div`
+const ViewerContainer = styled.div`
   text-align: center;
-  padding: 5px 8px;
-  a {
-    color: #999;
-    text-decoration: none;
-    font-size: 10px;
-    &:hover {
-      text-decoration: underline;
+  margin: 20px 0;
+  svg {
+    display: inline-block;
+    user-select: none;
+    g {
+      cursor: pointer;
     }
   }
 `;
+
+// const Version = styled.div`
+//   text-align: center;
+//   padding: 5px 8px;
+//   a {
+//     color: #999;
+//     text-decoration: none;
+//     font-size: 10px;
+//     &:hover {
+//       text-decoration: underline;
+//     }
+//   }
+// `;
 
 export default withAppContext(Home);

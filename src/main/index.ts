@@ -1,9 +1,15 @@
 import { solidColor } from './helper';
 import { tooltipPluginDataByNode, setTooltip } from './tooltip';
 
+import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
+console.log(FigmaMessageEmitter);
+FigmaMessageEmitter.on('set-measurements', (data) => {
+  console.log(data);
+});
+
 figma.showUI(__html__, {
-  width: 200,
-  height: 150,
+  width: 285,
+  height: 300,
   visible: figma.command !== 'relaunch',
 });
 
