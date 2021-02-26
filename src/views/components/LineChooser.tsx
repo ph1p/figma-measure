@@ -1,14 +1,10 @@
+import { observer } from 'mobx-react';
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
+import { useStore } from '../../store';
 
-import { withAppContext } from '../../shared/AppContext';
-
-interface Props {
-  value: 'normal' | 'none' | 'arrow' | 'arrow-filled';
-  onChange: (line: 'normal' | 'none' | 'arrow' | 'arrow-filled') => void;
-}
-
-const LineChooser: FunctionComponent<Props> = (props: Props) => {
+const LineChooser: FunctionComponent = observer(() => {
+  const store = useStore();
   return (
     <Container>
       <Icons>
@@ -18,8 +14,8 @@ const LineChooser: FunctionComponent<Props> = (props: Props) => {
           viewBox="0 0 30 30"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className={props.value === 'arrow-filled' ? 'active' : ''}
-          onClick={() => props.onChange('arrow-filled')}
+          className={store.lineEnding === 'arrow-filled' ? 'active' : ''}
+          onClick={() => store.setLineEnding('arrow-filled')}
         >
           <rect
             x="0.5"
@@ -43,8 +39,8 @@ const LineChooser: FunctionComponent<Props> = (props: Props) => {
           viewBox="0 0 30 30"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className={props.value === 'none' ? 'active' : ''}
-          onClick={() => props.onChange('none')}
+          className={store.lineEnding === 'none' ? 'active' : ''}
+          onClick={() => store.setLineEnding('none')}
         >
           <path
             fillRule="evenodd"
@@ -68,8 +64,8 @@ const LineChooser: FunctionComponent<Props> = (props: Props) => {
           viewBox="0 0 30 30"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className={props.value === 'arrow' ? 'active' : ''}
-          onClick={() => props.onChange('arrow')}
+          className={store.lineEnding === 'arrow' ? 'active' : ''}
+          onClick={() => store.setLineEnding('arrow')}
         >
           <rect
             x="0.5"
@@ -93,8 +89,8 @@ const LineChooser: FunctionComponent<Props> = (props: Props) => {
           viewBox="0 0 30 30"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className={props.value === 'normal' ? 'active' : ''}
-          onClick={() => props.onChange('normal')}
+          className={store.lineEnding === 'normal' ? 'active' : ''}
+          onClick={() => store.setLineEnding('normal')}
         >
           <rect
             x="0.5"
@@ -110,12 +106,42 @@ const LineChooser: FunctionComponent<Props> = (props: Props) => {
           />
         </svg>
       </Icons>
-      <div>
-        <input type="text" name="" id="" />
+      <div className="input icon">
+        <input
+          type="text"
+          value={store.lineDistance}
+          onChange={(e) => store.setLineDistance(+e.currentTarget.value)}
+        />
+        <div>
+          <svg
+            width="13"
+            height="14"
+            viewBox="0 0 13 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M0.999999 10L0.999999 13H2L2 10H3L3 4H2L2 1H1L1 4H0V10H0.999999Z"
+              fill="#BBBBBB"
+            />
+            <path
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M5.25 7.5H4.5V6.5H5.25V7.5ZM7.5 7.5H6V6.5H7.5V7.5ZM9 7.5H8.25V6.5H9V7.5Z"
+              fill="#4A4A4A"
+            />
+            <path
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M12 12.5L13 12.5L13 13.5L12 13.5C11.1716 13.5 10.5 12.8284 10.5 12L10.5 2C10.5 1.17157 11.1716 0.5 12 0.5L13 0.5L13 1.5L12 1.5C11.7239 1.5 11.5 1.72386 11.5 2L11.5 12C11.5 12.2761 11.7239 12.5 12 12.5Z"
+              fill="#BBBBBB"
+            />
+          </svg>
+        </div>
       </div>
     </Container>
   );
-};
+});
 
 const Icons = styled.div`
   display: flex;
@@ -153,4 +179,4 @@ const Container = styled.div`
   }
 `;
 
-export default withAppContext(LineChooser);
+export default LineChooser;

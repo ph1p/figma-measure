@@ -2,7 +2,6 @@ import React, { FunctionComponent, useState, useEffect } from 'react';
 import { sendMessage } from '../shared';
 import Header from '../components/Header';
 import Select from '../components/Select';
-import { withAppContext } from '../shared/AppContext';
 import { Content, Grid } from '../shared/style';
 
 const Lines: FunctionComponent = (props: any) => {
@@ -154,4 +153,4 @@ const Lines: FunctionComponent = (props: any) => {
   );
 };
 
-export default withAppContext(Lines);
+export default Lines;

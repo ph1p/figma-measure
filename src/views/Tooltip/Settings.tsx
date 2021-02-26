@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useState, useEffect } from 'react';
+import React, {
+  FunctionComponent,
+  useState,
+  useEffect,
+  PropsWithChildren,
+} from 'react';
 import styled, { keyframes } from 'styled-components';
 import {
   sendMessage,
@@ -10,8 +15,8 @@ import { useHistory } from 'react-router-dom';
 // components
 import { Button } from '../../components/ui';
 import Header from '../../components/Header';
-import { withAppContext } from '../../shared/AppContext';
 import { Content } from '../../shared/style';
+import { observer } from 'mobx-react';
 
 function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -29,11 +34,26 @@ function useDebounce(value, delay) {
   return debouncedValue;
 }
 
-const Settings: FunctionComponent = (props: any) => {
-  const {
-    appData: { selection, tooltipSettings, setTooltipSettings },
-    directions
-  } = props;
+const Settings: FunctionComponent<
+  PropsWithChildren<{ directions: any }>
+> = observer((props) => {
+  const { directions } = props;
+
+  const selection = [];
+  const tooltipSettings = {
+    distance: 0,
+    horizontalPadding: 0,
+    verticalPadding: 0,
+    backgroundColor: '',
+    fontColor: '',
+    strokeColor: '',
+    strokeWidth: 0,
+    fontSize: 0,
+    cornerRadius: 0,
+  };
+  function setTooltipSettings(value: any) {
+    console.log(value);
+  }
 
   const history = useHistory();
   const [show, setShow] = useState(false);
@@ -66,11 +86,11 @@ const Settings: FunctionComponent = (props: any) => {
     if (selectedElement && directions.horizontal && directions.vertical) {
       sendMessage('tooltip', {
         ...directions,
-        ...tooltipSettings
+        ...tooltipSettings,
       });
     } else {
       setStorage('tooltip-settings', {
-        ...tooltipSettings
+        ...tooltipSettings,
       });
     }
   }, [
@@ -82,10 +102,10 @@ const Settings: FunctionComponent = (props: any) => {
     tooltipSettings.verticalPadding,
     tooltipSettings.strokeWidth,
     tooltipSettings.fontSize,
-    tooltipSettings.cornerRadius
+    tooltipSettings.cornerRadius,
   ]);
 
-  const setInput = e => {
+  const setInput = (e) => {
     let value = e.target.value;
     if (e.target.type === 'range') {
       value = parseInt(value, 10);
@@ -182,7 +202,10 @@ const Settings: FunctionComponent = (props: any) => {
             </label>
           </div>
           <div>
-            <label htmlFor="backgroundColor">
+            <div className="input">
+              <label htmlFor="backgroundColor">
+                Fill<p>{tooltipSettings.backgroundColor}</p>
+              </label>
               <input
                 type="color"
                 name="backgroundColor"
@@ -190,10 +213,7 @@ const Settings: FunctionComponent = (props: any) => {
                 value={tooltipSettings.backgroundColor}
                 onChange={setInput}
               />
-              <div>
-                Fill<p>{tooltipSettings.backgroundColor}</p>
-              </div>
-            </label>
+            </div>
           </div>
           <div>
             <label htmlFor="strokeColor">
@@ -223,7 +243,7 @@ const Settings: FunctionComponent = (props: any) => {
       </div>
     </Wrapper>
   );
-};
+});
 
 const fadeIn = keyframes`
   from {
@@ -278,7 +298,7 @@ const Wrapper = styled.div<{ show: boolean }>`
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0.5);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    animation: ${p => (p.show ? fadeIn : fadeOut)} 0.3s forwards;
+    animation: ${(p) => (p.show ? fadeIn : fadeOut)} 0.3s forwards;
   }
   .window {
     width: 180px;
@@ -290,7 +310,7 @@ const Wrapper = styled.div<{ show: boolean }>`
     background-color: #fff;
     height: 100%;
     transform: translateX(180px);
-    animation: ${p => (p.show ? swipeIn : swipeOut)} 0.3s forwards;
+    animation: ${(p) => (p.show ? swipeIn : swipeOut)} 0.3s forwards;
     border-left: 1px solid #e5e5e5;
     h4 {
       margin: 0 0 7px;
@@ -328,4 +348,4 @@ const Colors = styled.div`
   }
 `;
 
-export default withAppContext(Settings);
+export default Settings;

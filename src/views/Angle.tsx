@@ -1,7 +1,6 @@
 import React, { FunctionComponent, useEffect } from 'react';
 import { sendMessage } from '../shared';
 import Header from '../components/Header';
-import { withAppContext } from '../shared/AppContext';
 import { Content } from '../shared/style';
 
 const Presets: FunctionComponent = (props: any) => {
@@ -27,4 +26,4 @@ const Presets: FunctionComponent = (props: any) => {
   );
 };
 
-export default withAppContext(Presets);
+export default Presets;

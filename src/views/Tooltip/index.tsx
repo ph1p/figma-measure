@@ -8,18 +8,18 @@ import Header from '../../components/Header';
 import ButtonLink from '../../components/ButtonLink';
 
 import Settings from './Settings';
-import { withAppContext } from '../../shared/AppContext';
 import { Content } from '../../shared/style';
+import { useStore } from '../../store';
 
 const PreviewWrapper = styled.div<{ hasSelection: boolean }>`
   display: grid;
   gap: 10px;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  pointer-events: ${p => (p.hasSelection ? 'initial' : 'none')};
+  pointer-events: ${(p) => (p.hasSelection ? 'initial' : 'none')};
   position: relative;
   &::after {
-    ${p => (!p.hasSelection ? 'content: "Please select an element."' : '')};
+    ${(p) => (!p.hasSelection ? 'content: "Please select an element."' : '')};
     font-weight: bold;
     position: absolute;
     left: 50%;
@@ -31,7 +31,7 @@ const PreviewWrapper = styled.div<{ hasSelection: boolean }>`
     cursor: pointer;
     height: 40px;
     border-radius: 3px;
-    opacity: ${p => (p.hasSelection ? 1 : 0.3)};
+    opacity: ${(p) => (p.hasSelection ? 1 : 0.3)};
     background-color: #efefef;
     border: 1px dashed #ddd;
     &:hover {
@@ -53,25 +53,26 @@ const Wrapper = styled.div`
   }
 `;
 
-const Tooltip: FunctionComponent = (props: any) => {
-  const {
-    appData: { selection, tooltipSettings }
-  } = props;
+const Tooltip: FunctionComponent = () => {
+  const tooltipSettings = {};
 
-  const hasSelection = selection.length > 0;
-  const selectedElement = selection.length === 1 ? selection[0] : undefined;
+  const store = useStore();
+
+  const hasSelection = store.selection.length > 0;
+  const selectedElement =
+    store.selection.length === 1 ? store.selection[0] : undefined;
 
   // state
   const [directions, setDirections] = useState({
     horizontal: '',
-    vertical: ''
+    vertical: '',
   });
   const [area, setArea] = useState(-1);
 
   useEffect(() => {
     sendMessage('resize', {
       width: 200,
-      height: 275
+      height: 275,
     });
   }, []);
 
@@ -79,18 +80,18 @@ const Tooltip: FunctionComponent = (props: any) => {
     if (!hasSelection || !selectedElement?.tooltipData) {
       setDirections({
         horizontal: '',
-        vertical: ''
+        vertical: '',
       });
       setArea(-1);
     } else {
       if (selectedElement?.tooltipData) {
         setDirections({
           horizontal: selectedElement.tooltipData.directions.horizontal,
-          vertical: selectedElement.tooltipData.directions.vertical
+          vertical: selectedElement.tooltipData.directions.vertical,
         });
       }
     }
-  }, [selection]);
+  }, [store.selection]);
 
   useEffect(() => {
     setArea(
@@ -115,12 +116,12 @@ const Tooltip: FunctionComponent = (props: any) => {
               onClick={() => {
                 setDirections({
                   horizontal,
-                  vertical
+                  vertical,
                 });
                 sendMessage('tooltip', {
                   horizontal,
                   vertical,
-                  ...tooltipSettings
+                  ...tooltipSettings,
                 });
               }}
             />
@@ -141,4 +142,4 @@ const Tooltip: FunctionComponent = (props: any) => {
   );
 };
 
-export default withAppContext(Tooltip);
+export default Tooltip;

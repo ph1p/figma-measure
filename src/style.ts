@@ -18,7 +18,37 @@ h4 {
   margin: 0 0 12px;
 }
 
-input {
+.input {
+  position: relative;
+  input {
+    border-radius: 3px;
+    border: 1px solid #E6E6E6;
+    outline: none;
+    padding: 7px 10px;
+    box-sizing: border-box;
+    font-size: 12px;
+    &:focus {
+      border-color: var(--blue);
+    }
+  }
+  &.icon {
+    input {
+      padding-left: 28px;
+      & + div {
+        display: flex;
+        height: 100%;
+        position: absolute;
+        left: 9px;
+        top: 0;
+        svg {
+          align-self: center;
+        }
+      }
+    }
+  }
+}
+
+/* input {
   &[type='color'] {
     -webkit-appearance: none;
     padding: 0;
@@ -73,7 +103,7 @@ input {
       box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 0px 0.5px;
     }
   }
-}
+} */
 
 ::-webkit-scrollbar {
   width: 4px;

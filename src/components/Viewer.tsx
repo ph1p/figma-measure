@@ -1,34 +1,24 @@
-import React, { FunctionComponent, useState } from 'react';
+import { observer } from 'mobx-react';
+import React, { FunctionComponent } from 'react';
+import { useStore } from '../store';
 
 interface Props {
   labels: boolean;
   color: string;
-  center: 'dashed' | 'filled' | 'stroke' | 'none' | 'fill-stroke';
-  lineEnding: 'normal' | 'none' | 'arrow' | 'arrow-filled';
 }
 
-const Viewer: FunctionComponent<Props> = (props) => {
-  const [active, setActive] = useState({
-    labels: false,
-    topBar: false,
-    leftBar: false,
-    rightBar: false,
-    bottomBar: false,
-    horizontalBar: false,
-    verticalBar: false,
-    center: false,
-    tooltip: 'top',
-  });
+const Viewer: FunctionComponent<Props> = observer((props) => {
+  const store = useStore();
 
   const clickTooltip = (e) => {
-    if (active.tooltip === e.currentTarget.dataset.direction) {
-      setActive({
-        ...active,
+    if (store.surrounding.tooltip === e.currentTarget.dataset.direction) {
+      store.setSurrounding({
+        ...store.surrounding,
         tooltip: '',
       });
     } else {
-      setActive({
-        ...active,
+      store.setSurrounding({
+        ...store.surrounding,
         tooltip: e.currentTarget.dataset.direction,
       });
     }
@@ -40,10 +30,10 @@ const Viewer: FunctionComponent<Props> = (props) => {
     first += 'Bar';
     second += 'Bar';
 
-    setActive({
-      ...active,
-      [first]: !active[first],
-      [second]: !active[second],
+    store.setSurrounding({
+      ...store.surrounding,
+      [first]: !store.surrounding[first],
+      [second]: !store.surrounding[second],
     });
   };
 
@@ -60,7 +50,11 @@ const Viewer: FunctionComponent<Props> = (props) => {
           fillRule="evenodd"
           clipRule="evenodd"
           d="M44 141.022L44 137.5C44 135.015 41.9853 133 39.5 133C37.0147 133 35 135.015 35 137.5L35 142.522C35 146.665 38.3579 150.022 42.5 150.022L47.3413 150.022C49.8266 150.022 51.8413 148.008 51.8413 145.522C51.8413 143.037 49.8266 141.022 47.3413 141.022L44 141.022Z"
-          fill={active.leftBar && active.bottomBar ? '#E8ECFD' : 'transparent'}
+          fill={
+            store.surrounding.leftBar && store.surrounding.bottomBar
+              ? '#E8ECFD'
+              : 'transparent'
+          }
         />
         <path
           fillRule="evenodd"
@@ -74,7 +68,11 @@ const Viewer: FunctionComponent<Props> = (props) => {
           fillRule="evenodd"
           clipRule="evenodd"
           d="M139.841 140.932L136.319 140.932C133.834 140.932 131.819 142.947 131.819 145.432C131.819 147.917 133.834 149.932 136.319 149.932L141.341 149.932C145.483 149.932 148.841 146.574 148.841 142.432L148.841 137.591C148.841 135.105 146.827 133.091 144.341 133.091C141.856 133.091 139.841 135.105 139.841 137.591L139.841 140.932Z"
-          fill={active.rightBar && active.bottomBar ? '#E8ECFD' : 'transparent'}
+          fill={
+            store.surrounding.rightBar && store.surrounding.bottomBar
+              ? '#E8ECFD'
+              : 'transparent'
+          }
         />
         <path
           fillRule="evenodd"
@@ -88,7 +86,11 @@ const Viewer: FunctionComponent<Props> = (props) => {
           fillRule="evenodd"
           clipRule="evenodd"
           d="M139.841 44.9094L139.841 48.4319C139.841 50.9172 141.856 52.9319 144.341 52.9319C146.827 52.9319 148.841 50.9172 148.841 48.4319L148.841 43.4094C148.841 39.2673 145.483 35.9094 141.341 35.9094L136.5 35.9094C134.015 35.9094 132 37.9241 132 40.4094C132 42.8947 134.015 44.9094 136.5 44.9094L139.841 44.9094Z"
-          fill={active.rightBar && active.topBar ? '#E8ECFD' : 'transparent'}
+          fill={
+            store.surrounding.rightBar && store.surrounding.topBar
+              ? '#E8ECFD'
+              : 'transparent'
+          }
         />
         <path
           fillRule="evenodd"
@@ -102,7 +104,11 @@ const Viewer: FunctionComponent<Props> = (props) => {
           fillRule="evenodd"
           clipRule="evenodd"
           d="M44 45L47.5225 45C50.0078 45 52.0225 42.9853 52.0225 40.5C52.0225 38.0147 50.0078 36 47.5225 36L42.5 36C38.3579 36 35 39.3579 35 43.5L35 48.3413C35 50.8266 37.0147 52.8413 39.5 52.8413C41.9853 52.8413 44 50.8266 44 48.3413L44 45Z"
-          fill={active.leftBar && active.topBar ? '#E8ECFD' : 'transparent'}
+          fill={
+            store.surrounding.leftBar && store.surrounding.topBar
+              ? '#E8ECFD'
+              : 'transparent'
+          }
         />
         <path
           fillRule="evenodd"
@@ -113,9 +119,14 @@ const Viewer: FunctionComponent<Props> = (props) => {
       </g>
       <g
         className="center"
-        onClick={() => setActive({ ...active, center: !active.center })}
+        onClick={() =>
+          store.setSurrounding({
+            ...store.surrounding,
+            center: !store.surrounding.center,
+          })
+        }
       >
-        {props.center === 'filled' && (
+        {store.fill === 'fill' && (
           <rect
             opacity="0.3"
             x="58"
@@ -132,7 +143,7 @@ const Viewer: FunctionComponent<Props> = (props) => {
           fillRule="evenodd"
           clipRule="evenodd"
           d="M54 66.5C54 59.5964 59.5964 54 66.5 54H118.5C125.404 54 131 59.5964 131 66.5V118.5C131 125.404 125.404 131 118.5 131H66.5C59.5964 131 54 125.404 54 118.5V66.5ZM67.5 62C64.4624 62 62 64.4624 62 67.5V117.5C62 120.538 64.4624 123 67.5 123H117.5C120.538 123 123 120.538 123 117.5V67.5C123 64.4624 120.538 62 117.5 62H67.5Z"
-          fill={active.center ? '#E8ECFD' : 'transparent'}
+          fill={store.surrounding.center ? '#E8ECFD' : 'transparent'}
         />
         <rect
           x="58"
@@ -141,13 +152,16 @@ const Viewer: FunctionComponent<Props> = (props) => {
           height="69"
           rx="8.5"
           stroke={props.color}
-          strokeDasharray={props.center === 'dashed' ? '3 2' : '0'}
+          strokeDasharray={store.fill === 'dashed' ? '3 2' : '0'}
         />
       </g>
       <g
         className="veritical-middle-bar"
         onClick={() =>
-          setActive({ ...active, verticalBar: !active.verticalBar })
+          store.setSurrounding({
+            ...store.surrounding,
+            verticalBar: !store.surrounding.verticalBar,
+          })
         }
       >
         <rect
@@ -157,7 +171,7 @@ const Viewer: FunctionComponent<Props> = (props) => {
           height="43"
           rx="5"
           transform="rotate(-180 98 113)"
-          fill={active.verticalBar ? '#E8ECFD' : 'transparent'}
+          fill={store.surrounding.verticalBar ? '#E8ECFD' : 'transparent'}
         />
         <path
           d="M90 74V75L92 75L92 86H93L93 75L95 75V74H90Z"
@@ -171,7 +185,10 @@ const Viewer: FunctionComponent<Props> = (props) => {
       <g
         className="horizontal-middle-bar"
         onClick={() =>
-          setActive({ ...active, horizontalBar: !active.horizontalBar })
+          store.setSurrounding({
+            ...store.surrounding,
+            horizontalBar: !store.surrounding.horizontalBar,
+          })
         }
       >
         <rect
@@ -181,7 +198,7 @@ const Viewer: FunctionComponent<Props> = (props) => {
           height="43"
           rx="5"
           transform="rotate(90 114 86)"
-          fill={active.horizontalBar ? '#E8ECFD' : 'transparent'}
+          fill={store.surrounding.horizontalBar ? '#E8ECFD' : 'transparent'}
         />
 
         {props.labels && (
@@ -203,7 +220,12 @@ const Viewer: FunctionComponent<Props> = (props) => {
       </g>
       <g
         className="left-bar"
-        onClick={() => setActive({ ...active, leftBar: !active.leftBar })}
+        onClick={() =>
+          store.setSurrounding({
+            ...store.surrounding,
+            leftBar: !store.surrounding.leftBar,
+          })
+        }
       >
         <rect
           x="34"
@@ -211,7 +233,7 @@ const Viewer: FunctionComponent<Props> = (props) => {
           width="11"
           height="60"
           rx="5"
-          fill={active.leftBar ? '#E8ECFD' : 'transparent'}
+          fill={store.surrounding.leftBar ? '#E8ECFD' : 'transparent'}
         />
 
         <path
@@ -224,7 +246,12 @@ const Viewer: FunctionComponent<Props> = (props) => {
       </g>
       <g
         className="right-bar"
-        onClick={() => setActive({ ...active, rightBar: !active.rightBar })}
+        onClick={() =>
+          store.setSurrounding({
+            ...store.surrounding,
+            rightBar: !store.surrounding.rightBar,
+          })
+        }
       >
         <rect
           x="139"
@@ -232,7 +259,7 @@ const Viewer: FunctionComponent<Props> = (props) => {
           width="11"
           height="60"
           rx="5"
-          fill={active.rightBar ? '#E8ECFD' : 'transparent'}
+          fill={store.surrounding.rightBar ? '#E8ECFD' : 'transparent'}
         />
 
         <path
@@ -245,7 +272,12 @@ const Viewer: FunctionComponent<Props> = (props) => {
       </g>
       <g
         className="top-bar"
-        onClick={() => setActive({ ...active, topBar: !active.topBar })}
+        onClick={() =>
+          store.setSurrounding({
+            ...store.surrounding,
+            topBar: !store.surrounding.topBar,
+          })
+        }
       >
         <rect
           x="121.996"
@@ -254,7 +286,7 @@ const Viewer: FunctionComponent<Props> = (props) => {
           height="60"
           rx="5"
           transform="rotate(90 121.996 34)"
-          fill={active.topBar ? '#E8ECFD' : 'transparent'}
+          fill={store.surrounding.topBar ? '#E8ECFD' : 'transparent'}
         />
 
         <path
@@ -274,7 +306,12 @@ const Viewer: FunctionComponent<Props> = (props) => {
       </g>
       <g
         className="bottom-bar"
-        onClick={() => setActive({ ...active, bottomBar: !active.bottomBar })}
+        onClick={() =>
+          store.setSurrounding({
+            ...store.surrounding,
+            bottomBar: !store.surrounding.bottomBar,
+          })
+        }
       >
         <rect
           x="121.996"
@@ -283,7 +320,7 @@ const Viewer: FunctionComponent<Props> = (props) => {
           height="60"
           rx="5"
           transform="rotate(90 121.996 139)"
-          fill={active.bottomBar ? '#E8ECFD' : 'transparent'}
+          fill={store.surrounding.bottomBar ? '#E8ECFD' : 'transparent'}
         />
 
         <path
@@ -306,29 +343,31 @@ const Viewer: FunctionComponent<Props> = (props) => {
           data-direction="right"
           onClick={clickTooltip}
           d="M164.065 87.5434L161.296 90.29C160.901 90.6812 160.901 91.3188 161.296 91.71L164.065 94.4566C164.254 94.6444 164.361 94.9 164.361 95.1666V98C164.361 99.6569 165.704 101 167.361 101L180.58 101C182.237 101 183.58 99.6568 183.58 98L183.58 84C183.58 82.3431 182.237 81 180.58 81L167.361 81C165.704 81 164.361 82.3431 164.361 84V86.8334C164.361 87.1 164.254 87.3556 164.065 87.5434Z"
-          fill={active.tooltip === 'right' ? props.color : '#E8ECFD'}
+          fill={store.surrounding.tooltip === 'right' ? props.color : '#E8ECFD'}
         />
         <path
           data-direction="bottom"
           onClick={clickTooltip}
           d="M95.1666 164.355L92.4199 161.586C92.0288 161.191 91.3912 161.191 91 161.586L88.2533 164.355C88.0656 164.544 87.81 164.651 87.5434 164.651H84.71C83.0531 164.651 81.71 165.994 81.71 167.651L81.71 180.87C81.71 182.527 83.0531 183.87 84.71 183.87L98.71 183.87C100.367 183.87 101.71 182.527 101.71 180.87L101.71 167.651C101.71 165.994 100.367 164.651 98.71 164.651H95.8766C95.6099 164.651 95.3544 164.544 95.1666 164.355Z"
-          fill={active.tooltip === 'bottom' ? props.color : '#E8ECFD'}
+          fill={
+            store.surrounding.tooltip === 'bottom' ? props.color : '#E8ECFD'
+          }
         />
         <path
           data-direction="left"
           onClick={clickTooltip}
           d="M19.5153 94.4566L22.2843 91.71C22.6786 91.3188 22.6786 90.6812 22.2843 90.29L19.5153 87.5434C19.326 87.3556 19.2195 87.1 19.2195 86.8334V84C19.2195 82.3431 17.8764 81 16.2195 81L3 81C1.34315 81 -1.44847e-07 82.3432 0 84L1.22392e-06 98C1.36877e-06 99.6569 1.34314 101 3 101L16.2195 101C17.8764 101 19.2195 99.6569 19.2195 98V95.1666C19.2195 94.9 19.326 94.6444 19.5153 94.4566Z"
-          fill={active.tooltip === 'left' ? props.color : '#E8ECFD'}
+          fill={store.surrounding.tooltip === 'left' ? props.color : '#E8ECFD'}
         />
         <path
           data-direction="top"
           onClick={clickTooltip}
           d="M88.5434 19.5153L91.29 22.2843C91.6812 22.6786 92.3188 22.6786 92.71 22.2843L95.4566 19.5153C95.6444 19.326 95.9 19.2195 96.1666 19.2195H99C100.657 19.2195 102 17.8764 102 16.2195L102 3C102 1.34315 100.657 -1.44847e-07 99 0L85 1.22392e-06C83.3431 1.36877e-06 82 1.34315 82 3L82 16.2195C82 17.8764 83.3431 19.2195 85 19.2195H87.8334C88.1 19.2195 88.3556 19.326 88.5434 19.5153Z"
-          fill={active.tooltip === 'top' ? props.color : '#E8ECFD'}
+          fill={store.surrounding.tooltip === 'top' ? props.color : '#E8ECFD'}
         />
       </g>
     </svg>
   );
-};
+});
 
 export default Viewer;

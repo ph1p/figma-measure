@@ -1,6 +1,12 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import { observer } from 'mobx-react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import * as ReactDOM from 'react-dom';
-import { MemoryRouter as Router, Switch, Route } from 'react-router-dom';
+import {
+  MemoryRouter as Router,
+  Switch,
+  Route,
+  useHistory,
+} from 'react-router-dom';
 import styled from 'styled-components';
 
 import Home from './views/Home';
@@ -8,36 +14,39 @@ import Tooltip from './views/Tooltip';
 import Angle from './views/Angle';
 import Lines from './views/Lines';
 
-import { sendMessage } from './shared';
-
 import './figma-ui/main.min.css';
 import './ui.css';
 import { GlobalStyle } from './style';
-import {
-  AppContextProps,
-  withAppContext,
-  AppProvider,
-} from './shared/AppContext';
+import { getStoreFromMain, StoreProvider, trunk, useStore } from './store';
+import FigmaMessageEmitter from './shared/FigmaMessageEmitter';
 
-sendMessage('init');
+// sendMessage('init');
 
-const App: FunctionComponent<{ appData: AppContextProps }> = (props) => {
+const App: FunctionComponent = observer(() => {
+  const store = useStore();
+
+  const [menu, setMenu] = useState(1);
+  const history = useHistory();
+
   useEffect(() => {
     // check selection
 
-    window.onmessage = (event) => {
-      if (event.data.pluginMessage.type === 'selection') {
-        props.appData.setSelection(event.data.pluginMessage.data);
-      }
-      if (event.data.pluginMessage.type === 'tooltip-settings') {
-        props.appData.setTooltipSettings(event.data.pluginMessage.data);
-      }
-    };
+    // window.onmessage = (event) => {
+    //   if (event.data.pluginMessage.type === 'selection') {
+    //     props.appData.setSelection(event.data.pluginMessage.data);
+    //   }
+    //   if (event.data.pluginMessage.type === 'tooltip-settings') {
+    //     props.appData.setTooltipSettings(event.data.pluginMessage.data);
+    //   }
+    // };
+    FigmaMessageEmitter.on('selection', (data) => store.setSelection(data));
+
+    return () => FigmaMessageEmitter.remove('selection');
   }, []);
 
   return (
-    <Router>
-      <Main selection={props.appData.selection.length > 0}>
+    <Main>
+      <div>
         <Switch>
           <Route path="/" exact>
             <Home />
@@ -52,44 +61,84 @@ const App: FunctionComponent<{ appData: AppContextProps }> = (props) => {
             <Lines />
           </Route>
         </Switch>
-      </Main>
-    </Router>
+      </div>
+      <ViewSwitch menu={menu}>
+        <div
+          onClick={() => {
+            setMenu(1);
+            history.push('/');
+          }}
+        >
+          Redlines
+        </div>
+        <div
+          onClick={() => {
+            setMenu(2);
+            history.push('/tooltip');
+          }}
+        >
+          Tooltip
+        </div>
+      </ViewSwitch>
+    </Main>
   );
-};
+});
 
-const Main = styled.div<{ selection: boolean }>`
-  position: relative;
-
-  .align-icon,
-  .align-icon::after,
-  .align-icon::before {
-    pointer-events: none;
-    opacity: 0.5;
-  }
-  ${(p) =>
-    p.selection
-      ? `.align-icon,
-  .align-icon::after,
-  .align-icon::before {
-    pointer-events: all;
-    cursor: pointer;
-    opacity: 1;
-  }`
-      : ''}
+const Main = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 `;
 
-window.onmessage = (event) => {
-  if (event.data.pluginMessage.type === 'init') {
-    const { selection, tooltipSettings } = event.data.pluginMessage;
-
-    const Component = withAppContext(App);
+getStoreFromMain().then((store) => {
+  console.log(store);
+  return trunk.init(store).then(() => {
+    // const { selection, tooltipSettings } = event.data.pluginMessage;
 
     ReactDOM.render(
-      <AppProvider selection={selection} tooltipSettings={tooltipSettings}>
+      <StoreProvider>
         <GlobalStyle />
-        <Component />
-      </AppProvider>,
+        <Router>
+          <App />
+        </Router>
+      </StoreProvider>,
       document.getElementById('app')
     );
+  });
+});
+
+const ViewSwitch = styled.div<{ menu: number }>`
+  border: 1px solid #e6e6e6;
+  border-radius: 43px;
+  display: flex;
+  position: relative;
+  margin: 0 12px 12px 12px;
+  div {
+    transition: color 0.3s;
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    text-align: center;
+    padding: 12px 0;
+    user-select: none;
+    cursor: pointer;
+    font-weight: bold;
+    &:nth-child(${(p) => p.menu}) {
+      color: #fff;
+    }
   }
-};
+  &::before {
+    content: '';
+    transition: transform 0.3s;
+    position: absolute;
+    flex: 1;
+    border-radius: 43px;
+    width: 50%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-color: #000;
+    transform: translateX(${(p) => (p.menu === 1 ? 0 : 100)}%);
+  }
+`;

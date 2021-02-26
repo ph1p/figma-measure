@@ -1,8 +1,9 @@
+import './store';
 import { solidColor } from './helper';
 import { tooltipPluginDataByNode, setTooltip } from './tooltip';
 
 import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
-console.log(FigmaMessageEmitter);
+
 FigmaMessageEmitter.on('set-measurements', (data) => {
   console.log(data);
 });
@@ -564,12 +565,8 @@ const getSelectionArray = () =>
     // tooltipData: node,
   }));
 
-const sendSelection = () => {
-  figma.ui.postMessage({
-    type: 'selection',
-    data: getSelectionArray(),
-  });
-};
+const sendSelection = () =>
+  FigmaMessageEmitter.emit('selection', getSelectionArray());
 
 (async function main() {
   await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
@@ -623,7 +620,12 @@ const setTooltipWithData = async (data = {}, node = null) => {
   );
 };
 
-figma.ui.onmessage = async (message) => {
+FigmaMessageEmitter.on('resize', ({ width, height }) =>
+  figma.ui.resize(width, height)
+);
+
+//@ts-ignore
+const bla = async (message) => {
   if (figma.command === 'relaunch') {
     for (const node of figma.currentPage.selection) {
       if (isValidShape(node)) {
@@ -649,13 +651,6 @@ figma.ui.onmessage = async (message) => {
             selection: getSelectionArray(),
             tooltipSettings,
           });
-          break;
-        case 'resize':
-          const { width = 0, height = 0 } = message.payload;
-          figma.ui.resize(width, height);
-          break;
-        case 'selection':
-          sendSelection();
           break;
         case 'tooltip':
           await setTooltipWithData(message.payload);

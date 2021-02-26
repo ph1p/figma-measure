@@ -1,54 +1,33 @@
+import { observer } from 'mobx-react';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { sendMessage } from '../shared';
 // import pkg from '../../package.json';
-import { withAppContext } from '../shared/AppContext';
 import Viewer from '../components/Viewer';
 
 import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
 import CenterChooser from './components/CenterChooser';
 import LineChooser from './components/LineChooser';
 
-const Home: FunctionComponent = () => {
+const Home: FunctionComponent = observer(() => {
   const [color, setColor] = useState<string>('#1745E8');
   const [labels, setLabels] = useState<boolean>(false);
-  const [center, setCenter] = useState<
-    'dashed' | 'filled' | 'stroke' | 'fill-stroke'
-  >('stroke');
-  const [lineEnding, setLineEnding] = useState<
-    'normal' | 'none' | 'arrow' | 'arrow-filled'
-  >('normal');
 
   useEffect(() => {
-    FigmaMessageEmitter.emit('set-measurements', {
-      lineEnding,
-    });
-  }, [lineEnding]);
-
-  useEffect(() => {
-    sendMessage('resize', {
+    FigmaMessageEmitter.emit('resize', {
       width: 285,
-      height: 450,
+      height: 530,
     });
   }, []);
 
   return (
     <>
       <ViewerContainer>
-        <Viewer
-          color={color}
-          labels={labels}
-          center={center}
-          lineEnding={lineEnding}
-        />
+        <Viewer color={color} labels={labels} />
       </ViewerContainer>
 
-      <LineChooser
-        value={lineEnding}
-        onChange={(value) => setLineEnding(value)}
-      />
-      <CenterChooser value={center} onChange={(value) => setCenter(value)} />
+      <LineChooser />
+      <CenterChooser />
 
       <InputContainer>
         <label htmlFor="color">Color</label>
@@ -79,7 +58,7 @@ const Home: FunctionComponent = () => {
       </Version> */}
     </>
   );
-};
+});
 
 const InputContainer = styled.div`
   display: flex;
@@ -116,4 +95,4 @@ const ViewerContainer = styled.div`
 //   }
 // `;
 
-export default withAppContext(Home);
+export default Home;
