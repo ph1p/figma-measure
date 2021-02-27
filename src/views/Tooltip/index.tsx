@@ -1,15 +1,12 @@
+import { observer } from 'mobx-react';
 import React, { FunctionComponent, useState, useEffect } from 'react';
-import { Route } from 'react-router-dom';
 import styled from 'styled-components';
+import { Toggle } from '../../components/Toggle';
 import { sendMessage, TOOLTIP_DIRECTIONS } from '../../shared';
 
 // components
-import Header from '../../components/Header';
-import ButtonLink from '../../components/ButtonLink';
-
-import Settings from './Settings';
-import { Content } from '../../shared/style';
 import { useStore } from '../../store';
+import { PreviewTooltip } from './components/PreviewTooltip';
 
 const PreviewWrapper = styled.div<{ hasSelection: boolean }>`
   display: grid;
@@ -53,9 +50,25 @@ const Wrapper = styled.div`
   }
 `;
 
-const Tooltip: FunctionComponent = () => {
-  const tooltipSettings = {};
+const Settings = styled.div`
+  padding: 12px;
+  > div {
+    margin-bottom: 10px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+`;
 
+const Preview = styled.div`
+  background-color: #1745e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 215px;
+`;
+
+const Tooltip: FunctionComponent = observer(() => {
   const store = useStore();
 
   const hasSelection = store.selection.length > 0;
@@ -105,7 +118,52 @@ const Tooltip: FunctionComponent = () => {
 
   return (
     <Wrapper>
-      <Header backButton title="Tooltip" />
+      <Preview>
+        <PreviewTooltip />
+      </Preview>
+      <Settings>
+        <Toggle
+          checked={store.tooltip.fontStyle}
+          label="Font-Style"
+          onChange={() => store.toggleTooltipSetting('fontStyle')}
+        />
+        <Toggle
+          checked={store.tooltip.fontFamily}
+          label="Font-Family"
+          onChange={() => store.toggleTooltipSetting('fontFamily')}
+        />
+        <Toggle
+          checked={store.tooltip.fontSize}
+          label="Font-Size"
+          onChange={() => store.toggleTooltipSetting('fontSize')}
+        />
+        <Toggle
+          checked={store.tooltip.width}
+          label="Width"
+          onChange={() => store.toggleTooltipSetting('width')}
+        />
+        <Toggle
+          checked={store.tooltip.height}
+          label="Height"
+          onChange={() => store.toggleTooltipSetting('height')}
+        />
+        <Toggle
+          checked={store.tooltip.color}
+          label="Color"
+          onChange={() => store.toggleTooltipSetting('color')}
+        />
+        <Toggle
+          checked={store.tooltip.opacity}
+          label="Opacity"
+          onChange={() => store.toggleTooltipSetting('opacity')}
+        />
+        <Toggle
+          checked={store.tooltip.stroke}
+          label="Stroke"
+          onChange={() => store.toggleTooltipSetting('stroke')}
+        />
+      </Settings>
+      {/* <Header backButton title="Tooltip" />
       <Content>
         <h4>Choose the direction</h4>
         <PreviewWrapper hasSelection={hasSelection}>
@@ -137,9 +195,9 @@ const Tooltip: FunctionComponent = () => {
 
       <Route path="/tooltip/settings" exact={false}>
         <Settings directions={directions} />
-      </Route>
+      </Route> */}
     </Wrapper>
   );
-};
+});
 
 export default Tooltip;

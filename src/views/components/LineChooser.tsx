@@ -154,7 +154,7 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-width: 1px 0;
+  border-width: 1px 0 0;
   border-color: #eee;
   border-style: solid;
   input {

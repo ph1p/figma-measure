@@ -1,17 +1,19 @@
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import styled from 'styled-components';
+import { ColorPicker } from '../components/ColorPicker';
+import { Toggle } from '../components/Toggle';
 
 // import pkg from '../../package.json';
 import Viewer from '../components/Viewer';
 
 import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
+import { useStore } from '../store';
 import CenterChooser from './components/CenterChooser';
 import LineChooser from './components/LineChooser';
 
 const Home: FunctionComponent = observer(() => {
-  const [color, setColor] = useState<string>('#1745E8');
-  const [labels, setLabels] = useState<boolean>(false);
+  const store = useStore();
 
   useEffect(() => {
     FigmaMessageEmitter.emit('resize', {
@@ -23,7 +25,7 @@ const Home: FunctionComponent = observer(() => {
   return (
     <>
       <ViewerContainer>
-        <Viewer color={color} labels={labels} />
+        <Viewer />
       </ViewerContainer>
 
       <LineChooser />
@@ -31,20 +33,17 @@ const Home: FunctionComponent = observer(() => {
 
       <InputContainer>
         <label htmlFor="color">Color</label>
-        <input
-          id="color"
-          type="color"
-          onChange={(e) => setColor(e.currentTarget.value)}
-          value={color}
+        <ColorPicker
+          id="base-color"
+          onChange={(color) => store.setColor(color)}
+          color={store.color}
         />
       </InputContainer>
-      <InputContainer>
-        <label htmlFor="labels">Labels</label>
-        <input
-          id="labels"
-          type="checkbox"
-          onChange={(e) => setLabels(e.currentTarget.checked)}
-          checked={labels}
+      <InputContainer style={{ paddingTop: 0 }}>
+        <Toggle
+          checked={store.labels}
+          label="Labels"
+          onChange={(e) => store.setLabels(e.currentTarget.checked)}
         />
       </InputContainer>
 
@@ -63,7 +62,7 @@ const Home: FunctionComponent = observer(() => {
 const InputContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 14px;
+  padding: 12px;
   align-items: center;
   label {
     font-weight: bold;
@@ -71,10 +70,13 @@ const InputContainer = styled.div`
 `;
 
 const ViewerContainer = styled.div`
-  text-align: center;
-  margin: 20px 0;
+  position: relative;
+  height: 271px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   svg {
-    display: inline-block;
     user-select: none;
     g {
       cursor: pointer;

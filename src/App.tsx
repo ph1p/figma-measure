@@ -39,7 +39,10 @@ const App: FunctionComponent = observer(() => {
     //     props.appData.setTooltipSettings(event.data.pluginMessage.data);
     //   }
     // };
-    FigmaMessageEmitter.on('selection', (data) => store.setSelection(data));
+    FigmaMessageEmitter.on('selection', (data) => {
+      console.log(data);
+      store.setSelection(data);
+    });
 
     return () => FigmaMessageEmitter.remove('selection');
   }, []);

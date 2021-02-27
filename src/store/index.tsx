@@ -5,10 +5,24 @@ import fme from '../shared/FigmaMessageEmitter';
 
 const STORAGE_KEY = '__figma_mobx_sync__';
 
+interface TooltipSettings {
+  position: string;
+  width: boolean;
+  height: boolean;
+  fontFamily: boolean;
+  fontStyle: boolean;
+  fontSize: boolean;
+  color: boolean;
+  opacity: boolean;
+  stroke: boolean;
+}
 class RootStore {
   constructor() {
     makeAutoObservable(this);
   }
+
+  labels = true;
+  color = '#1745E8';
 
   @ignore
   selection = [];
@@ -37,6 +51,53 @@ class RootStore {
     center: false,
     tooltip: 'top',
   };
+
+  @ignore
+  tooltip: TooltipSettings = {
+    position: '',
+    width: true,
+    height: true,
+    fontFamily: false,
+    fontStyle: false,
+    fontSize: false,
+    color: false,
+    opacity: false,
+    stroke: false,
+  };
+
+  setColor(color: string) {
+    this.color = color;
+  }
+
+  setLabels(labels: boolean) {
+    this.labels = labels;
+  }
+
+  setTooltipPosition(position) {
+    this.tooltip.position = position;
+  }
+
+  toggleTooltipSetting(key: keyof Omit<TooltipSettings, 'position'>) {
+    const truthyFlags = Object.keys(this.tooltip).filter((key) => {
+      if (typeof this.tooltip[key] === 'boolean') {
+        return this.tooltip[key];
+      }
+    }).length;
+
+    if (truthyFlags > 1 || !this.tooltip[key]) {
+      this.tooltip = {
+        ...this.tooltip,
+        [key]: !this.tooltip[key],
+      };
+    }
+  }
+
+  setTooltipSettings(settings) {
+    this.tooltip = {
+      ...this.tooltip,
+      ...settings,
+    };
+  }
 
   setFill(fill) {
     this.fill = fill;
