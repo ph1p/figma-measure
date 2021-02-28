@@ -3,8 +3,8 @@ export const solidColor = (r = 255, g = 0, b = 0) => ({
   color: {
     r: r / 255,
     g: g / 255,
-    b: b / 255
-  }
+    b: b / 255,
+  },
 });
 
 export const hexToRgb = (hex: string) => {
@@ -13,12 +13,24 @@ export const hexToRgb = (hex: string) => {
     ? {
         r: parseInt(result[1], 16),
         g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
+        b: parseInt(result[3], 16),
       }
     : null;
 };
 
-export const setTitleBold = content => {
+export function rgbaToHex(data) {
+  let rgba = data.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
+  return `#${(
+    (1 << 24) +
+    (parseInt(rgba[0]) << 16) +
+    (parseInt(rgba[1]) << 8) +
+    parseInt(rgba[2])
+  )
+    .toString(16)
+    .slice(1)}`;
+}
+
+export const setTitleBold = (content) => {
   let chars = 0;
   for (const line of content.characters.split('\n')) {
     if (line && ~line.indexOf(':')) {
@@ -26,7 +38,7 @@ export const setTitleBold = content => {
 
       content.setRangeFontName(chars, chars + label.length + 1, {
         family: 'Inter',
-        style: 'Bold'
+        style: 'Bold',
       });
       chars += line.length + 1;
     }
@@ -44,7 +56,7 @@ export const createTooltipTextNode = ({ fontColor, fontSize }) => {
 
   text.fontName = {
     family: 'Inter',
-    style: 'Regular'
+    style: 'Regular',
   };
 
   text.textAlignHorizontal = 'LEFT';

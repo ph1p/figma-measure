@@ -27,6 +27,7 @@ h4 {
     padding: 7px 10px;
     box-sizing: border-box;
     font-size: 12px;
+    width: 100%;
     &:focus {
       border-color: var(--blue);
     }

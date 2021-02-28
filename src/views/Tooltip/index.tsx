@@ -1,46 +1,46 @@
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useState, useEffect } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import styled from 'styled-components';
 import { Toggle } from '../../components/Toggle';
-import { sendMessage, TOOLTIP_DIRECTIONS } from '../../shared';
+import { sendMessage } from '../../shared';
 
 // components
 import { useStore } from '../../store';
 import { PreviewTooltip } from './components/PreviewTooltip';
 
-const PreviewWrapper = styled.div<{ hasSelection: boolean }>`
-  display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  pointer-events: ${(p) => (p.hasSelection ? 'initial' : 'none')};
-  position: relative;
-  &::after {
-    ${(p) => (!p.hasSelection ? 'content: "Please select an element."' : '')};
-    font-weight: bold;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
-  .box {
-    cursor: pointer;
-    height: 40px;
-    border-radius: 3px;
-    opacity: ${(p) => (p.hasSelection ? 1 : 0.3)};
-    background-color: #efefef;
-    border: 1px dashed #ddd;
-    &:hover {
-      background-color: #ddd;
-    }
-    &.tooltip {
-      cursor: pointer;
-      background-color: #17a0fb;
-      border: 0;
-    }
-  }
-`;
+// const PreviewWrapper = styled.div<{ hasSelection: boolean }>`
+//   display: grid;
+//   gap: 10px;
+//   grid-template-columns: repeat(3, 1fr);
+//   grid-template-rows: repeat(3, 1fr);
+//   pointer-events: ${(p) => (p.hasSelection ? 'initial' : 'none')};
+//   position: relative;
+//   &::after {
+//     ${(p) => (!p.hasSelection ? 'content: "Please select an element."' : '')};
+//     font-weight: bold;
+//     position: absolute;
+//     left: 50%;
+//     top: 50%;
+//     transform: translate(-50%, -50%);
+//     text-align: center;
+//   }
+//   .box {
+//     cursor: pointer;
+//     height: 40px;
+//     border-radius: 3px;
+//     opacity: ${(p) => (p.hasSelection ? 1 : 0.3)};
+//     background-color: #efefef;
+//     border: 1px dashed #ddd;
+//     &:hover {
+//       background-color: #ddd;
+//     }
+//     &.tooltip {
+//       cursor: pointer;
+//       background-color: #17a0fb;
+//       border: 0;
+//     }
+//   }
+// `;
 
 const Wrapper = styled.div`
   position: relative;
@@ -71,16 +71,16 @@ const Preview = styled.div`
 const Tooltip: FunctionComponent = observer(() => {
   const store = useStore();
 
-  const hasSelection = store.selection.length > 0;
-  const selectedElement =
-    store.selection.length === 1 ? store.selection[0] : undefined;
+  // const hasSelection = store.selection.length > 0;
+  // const selectedElement =
+  //   store.selection.length === 1 ? store.selection[0] : undefined;
 
   // state
-  const [directions, setDirections] = useState({
-    horizontal: '',
-    vertical: '',
-  });
-  const [area, setArea] = useState(-1);
+  // const [directions, setDirections] = useState({
+  //   horizontal: '',
+  //   vertical: '',
+  // });
+  // const [area, setArea] = useState(-1);
 
   useEffect(() => {
     sendMessage('resize', {
@@ -89,32 +89,32 @@ const Tooltip: FunctionComponent = observer(() => {
     });
   }, []);
 
-  useEffect(() => {
-    if (!hasSelection || !selectedElement?.tooltipData) {
-      setDirections({
-        horizontal: '',
-        vertical: '',
-      });
-      setArea(-1);
-    } else {
-      if (selectedElement?.tooltipData) {
-        setDirections({
-          horizontal: selectedElement.tooltipData.directions.horizontal,
-          vertical: selectedElement.tooltipData.directions.vertical,
-        });
-      }
-    }
-  }, [store.selection]);
+  // useEffect(() => {
+  //   if (!hasSelection || !selectedElement?.tooltipData) {
+  //     setDirections({
+  //       horizontal: '',
+  //       vertical: '',
+  //     });
+  //     setArea(-1);
+  //   } else {
+  //     if (selectedElement?.tooltipData) {
+  //       setDirections({
+  //         horizontal: selectedElement.tooltipData.directions.horizontal,
+  //         vertical: selectedElement.tooltipData.directions.vertical,
+  //       });
+  //     }
+  //   }
+  // }, [store.selection]);
 
-  useEffect(() => {
-    setArea(
-      TOOLTIP_DIRECTIONS.indexOf(
-        TOOLTIP_DIRECTIONS.find(
-          ([h, v]) => h === directions.horizontal && v === directions.vertical
-        )
-      )
-    );
-  }, [directions]);
+  // useEffect(() => {
+  //   setArea(
+  //     TOOLTIP_DIRECTIONS.indexOf(
+  //       TOOLTIP_DIRECTIONS.find(
+  //         ([h, v]) => h === directions.horizontal && v === directions.vertical
+  //       )
+  //     )
+  //   );
+  // }, [directions]);
 
   return (
     <Wrapper>

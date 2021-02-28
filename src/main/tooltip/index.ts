@@ -1,9 +1,6 @@
 import { solidColor, hexToRgb } from '../helper';
 import { TOOLTIP_DEFAULT_SETTINGS } from '../../shared';
-import addText from './types/text';
-import addRect from './types/rect';
-import addDefault from './types/default';
-import addPolygon from './types/polygon';
+import addNode from './types';
 
 interface TooltipPluginData {
   id: any;
@@ -151,14 +148,39 @@ export function tooltipPluginDataByNode(node: BaseNode): TooltipPluginData {
   return null;
 }
 
-export async function setTooltip(options: any, specificNode = null) {
+export function setTooltip(options: any, specificNode = null) {
   const data = {
     vertical: options.vertical || 'CENTER',
     horizontal: options.horizontal || 'LEFT',
-    settings: {
-      ...TOOLTIP_DEFAULT_SETTINGS,
-    },
+    settings: TOOLTIP_DEFAULT_SETTINGS,
   };
+
+  data.settings = {
+    ...data.settings,
+    ...options,
+  };
+  console.log(data.settings);
+
+  switch (options.position) {
+    case 'top':
+      data.vertical = 'TOP';
+      data.horizontal = 'CENTER';
+      break;
+    case 'bottom':
+      data.vertical = 'BOTTOM';
+      data.horizontal = 'CENTER';
+      break;
+    case 'left':
+      data.vertical = 'CENTER';
+      data.horizontal = 'LEFT';
+      break;
+    case 'right':
+      data.vertical = 'CENTER';
+      data.horizontal = 'RIGHT';
+      break;
+    default:
+      return;
+  }
 
   // check if value is set
   for (const settingKey of Object.keys(TOOLTIP_DEFAULT_SETTINGS)) {
@@ -195,9 +217,11 @@ export async function setTooltip(options: any, specificNode = null) {
     // auto-layout
     contentFrame.layoutMode = 'VERTICAL';
     contentFrame.cornerRadius = data.settings.cornerRadius;
-    contentFrame.horizontalPadding = data.settings.horizontalPadding;
-    contentFrame.verticalPadding = data.settings.verticalPadding;
-    contentFrame.itemSpacing = data.settings.verticalPadding;
+    contentFrame.paddingTop = data.settings.paddingTopBottom;
+    contentFrame.paddingBottom = data.settings.paddingTopBottom;
+    contentFrame.paddingLeft = data.settings.paddingLeftRight;
+    contentFrame.paddingRight = data.settings.paddingLeftRight;
+    contentFrame.itemSpacing = 3;
     contentFrame.counterAxisSizingMode = 'AUTO';
 
     // background
@@ -218,16 +242,10 @@ export async function setTooltip(options: any, specificNode = null) {
       case 'LINE':
       case 'ELLIPSE':
       case 'FRAME':
-        addDefault(contentFrame, node, data.settings);
-        break;
       case 'POLYGON':
-        addPolygon(contentFrame, node, data.settings);
-        break;
       case 'RECTANGLE':
-        addRect(contentFrame, node, data.settings);
-        break;
       case 'TEXT':
-        addText(contentFrame, node, data.settings);
+        addNode(contentFrame, node, data.settings);
         break;
     }
 
@@ -283,6 +301,8 @@ export async function setTooltip(options: any, specificNode = null) {
       [xCos, xSin, xCos * x + xSin * y + transformPosition[0][2]],
       [yCos, ySin, yCos * x + ySin * y + transformPosition[1][2]],
     ];
+
+    return tooltipFrame;
   } else {
     figma.notify('Please select only one element');
   }

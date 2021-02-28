@@ -1,4 +1,8 @@
+import { STORAGE_KEY } from '../shared/constants';
 import fme from '../shared/FigmaMessageEmitter';
+
+export const getState = async () =>
+  JSON.parse(await figma.clientStorage.getAsync(STORAGE_KEY));
 
 fme.on('storage', async (key, send) => {
   try {
@@ -34,6 +38,4 @@ fme.on('storage remove item', async (key, send) => {
   }
 });
 
-fme.once('store initialized', () => {
-  console.log('neis');
-});
+fme.once('store initialized', () => {});

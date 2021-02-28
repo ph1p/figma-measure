@@ -108,9 +108,9 @@ const CenterChooser: FunctionComponent = observer(() => {
           <rect x="4" y="4" width="22" height="22" rx="8" fill="#E4E4E4" />
         </svg>
       </Icons>
-      <div className="input icon">
+      <div className="input icon" style={{ width: 75 }}>
         <input
-          type="text"
+          type="number"
           value={store.dashDistance}
           onChange={(e) => store.setDashDistance(+e.currentTarget.value)}
         />

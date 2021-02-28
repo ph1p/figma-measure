@@ -14,8 +14,8 @@ const LineChooser: FunctionComponent = observer(() => {
           viewBox="0 0 30 30"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className={store.lineEnding === 'arrow-filled' ? 'active' : ''}
-          onClick={() => store.setLineEnding('arrow-filled')}
+          className={store.strokeCap === 'ARROW_EQUILATERAL' ? 'active' : ''}
+          onClick={() => store.setStrokeCap('ARROW_EQUILATERAL')}
         >
           <rect
             x="0.5"
@@ -39,8 +39,8 @@ const LineChooser: FunctionComponent = observer(() => {
           viewBox="0 0 30 30"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className={store.lineEnding === 'none' ? 'active' : ''}
-          onClick={() => store.setLineEnding('none')}
+          className={store.strokeCap === 'NONE' ? 'active' : ''}
+          onClick={() => store.setStrokeCap('NONE')}
         >
           <path
             fillRule="evenodd"
@@ -64,8 +64,8 @@ const LineChooser: FunctionComponent = observer(() => {
           viewBox="0 0 30 30"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className={store.lineEnding === 'arrow' ? 'active' : ''}
-          onClick={() => store.setLineEnding('arrow')}
+          className={store.strokeCap === 'ARROW_LINES' ? 'active' : ''}
+          onClick={() => store.setStrokeCap('ARROW_LINES')}
         >
           <rect
             x="0.5"
@@ -89,8 +89,8 @@ const LineChooser: FunctionComponent = observer(() => {
           viewBox="0 0 30 30"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className={store.lineEnding === 'normal' ? 'active' : ''}
-          onClick={() => store.setLineEnding('normal')}
+          className={store.strokeCap === 'STANDARD' ? 'active' : ''}
+          onClick={() => store.setStrokeCap('STANDARD')}
         >
           <rect
             x="0.5"
@@ -106,11 +106,11 @@ const LineChooser: FunctionComponent = observer(() => {
           />
         </svg>
       </Icons>
-      <div className="input icon">
+      <div className="input icon" style={{ width: 75 }}>
         <input
-          type="text"
-          value={store.lineDistance}
-          onChange={(e) => store.setLineDistance(+e.currentTarget.value)}
+          type="number"
+          value={store.strokeOffset}
+          onChange={(e) => store.setStrokeOffset(+e.currentTarget.value)}
         />
         <div>
           <svg

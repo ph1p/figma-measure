@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { ColorPicker } from '../components/ColorPicker';
 import { Toggle } from '../components/Toggle';
 
-// import pkg from '../../package.json';
 import Viewer from '../components/Viewer';
 
 import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
@@ -18,7 +17,7 @@ const Home: FunctionComponent = observer(() => {
   useEffect(() => {
     FigmaMessageEmitter.emit('resize', {
       width: 285,
-      height: 530,
+      height: 539,
     });
   }, []);
 
@@ -39,22 +38,21 @@ const Home: FunctionComponent = observer(() => {
           color={store.color}
         />
       </InputContainer>
+
       <InputContainer style={{ paddingTop: 0 }}>
         <Toggle
           checked={store.labels}
           label="Labels"
           onChange={(e) => store.setLabels(e.currentTarget.checked)}
         />
+        <div className="input" style={{ width: 55, marginLeft: 12 }}>
+          <input
+            type="text"
+            value={store.unit}
+            onChange={(e) => store.setUnit(e.currentTarget.value)}
+          />
+        </div>
       </InputContainer>
-
-      {/* <Version>
-        <a
-          target="_blank"
-          href="https://github.com/ph1p/figma-measure/releases"
-        >
-          v{pkg.version}
-        </a>
-      </Version> */}
     </>
   );
 });

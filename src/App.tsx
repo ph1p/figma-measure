@@ -11,8 +11,6 @@ import styled from 'styled-components';
 
 import Home from './views/Home';
 import Tooltip from './views/Tooltip';
-import Angle from './views/Angle';
-import Lines from './views/Lines';
 
 import './figma-ui/main.min.css';
 import './ui.css';
@@ -30,19 +28,7 @@ const App: FunctionComponent = observer(() => {
 
   useEffect(() => {
     // check selection
-
-    // window.onmessage = (event) => {
-    //   if (event.data.pluginMessage.type === 'selection') {
-    //     props.appData.setSelection(event.data.pluginMessage.data);
-    //   }
-    //   if (event.data.pluginMessage.type === 'tooltip-settings') {
-    //     props.appData.setTooltipSettings(event.data.pluginMessage.data);
-    //   }
-    // };
-    FigmaMessageEmitter.on('selection', (data) => {
-      console.log(data);
-      store.setSelection(data);
-    });
+    FigmaMessageEmitter.on('selection', (data) => store.setSelection(data));
 
     return () => FigmaMessageEmitter.remove('selection');
   }, []);
@@ -56,12 +42,6 @@ const App: FunctionComponent = observer(() => {
           </Route>
           <Route path="/tooltip">
             <Tooltip />
-          </Route>
-          <Route path="/angle" exact>
-            <Angle />
-          </Route>
-          <Route path="/lines" exact>
-            <Lines />
           </Route>
         </Switch>
       </div>
@@ -95,7 +75,6 @@ const Main = styled.div`
 `;
 
 getStoreFromMain().then((store) => {
-  console.log(store);
   return trunk.init(store).then(() => {
     // const { selection, tooltipSettings } = event.data.pluginMessage;
 

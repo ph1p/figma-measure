@@ -1,9 +1,8 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, toJS } from 'mobx';
 import React from 'react';
 import { AsyncTrunk, ignore } from 'mobx-sync';
 import fme from '../shared/FigmaMessageEmitter';
-
-const STORAGE_KEY = '__figma_mobx_sync__';
+import { STORAGE_KEY } from '../shared/constants';
 
 interface TooltipSettings {
   position: string;
@@ -16,6 +15,18 @@ interface TooltipSettings {
   opacity: boolean;
   stroke: boolean;
 }
+
+const DEFAULT_SURROUNDING_FLAGS = {
+  labels: false,
+  topBar: false,
+  leftBar: false,
+  rightBar: false,
+  bottomBar: false,
+  horizontalBar: false,
+  verticalBar: false,
+  center: false,
+  tooltip: '',
+};
 class RootStore {
   constructor() {
     makeAutoObservable(this);
@@ -27,32 +38,18 @@ class RootStore {
   @ignore
   selection = [];
 
-  @ignore
   fill: 'dashed' | 'fill' | 'stroke' | 'fill-stroke' = 'stroke';
 
-  @ignore
   dashDistance: number = 0;
 
-  @ignore
-  lineEnding: 'normal' | 'none' | 'arrow' | 'arrow-filled' = 'normal';
+  strokeCap: StrokeCap | 'STANDARD' = 'STANDARD';
+  strokeOffset: number = 10;
+
+  unit: string = 'px';
 
   @ignore
-  lineDistance: number = 0;
+  surrounding = DEFAULT_SURROUNDING_FLAGS;
 
-  @ignore
-  surrounding = {
-    labels: false,
-    topBar: false,
-    leftBar: false,
-    rightBar: false,
-    bottomBar: false,
-    horizontalBar: false,
-    verticalBar: false,
-    center: false,
-    tooltip: 'top',
-  };
-
-  @ignore
   tooltip: TooltipSettings = {
     position: '',
     width: true,
@@ -67,17 +64,15 @@ class RootStore {
 
   setColor(color: string) {
     this.color = color;
+    this.sendMeasurements();
   }
 
   setLabels(labels: boolean) {
     this.labels = labels;
+    this.sendMeasurements();
   }
 
-  setTooltipPosition(position) {
-    this.tooltip.position = position;
-  }
-
-  toggleTooltipSetting(key: keyof Omit<TooltipSettings, 'position'>) {
+  toggleTooltipSetting(key: keyof TooltipSettings) {
     const truthyFlags = Object.keys(this.tooltip).filter((key) => {
       if (typeof this.tooltip[key] === 'boolean') {
         return this.tooltip[key];
@@ -99,28 +94,67 @@ class RootStore {
     };
   }
 
+  setUnit(unit: string) {
+    this.unit = unit;
+    this.sendMeasurements();
+  }
+
   setFill(fill) {
-    this.fill = fill;
+    if (this.selection.length > 0) {
+      this.fill = fill;
+      this.sendMeasurements();
+    }
   }
 
   setDashDistance(distance: number) {
     this.dashDistance = distance;
+    this.sendMeasurements();
   }
 
-  setLineEnding(lineEnding) {
-    this.lineEnding = lineEnding;
+  setStrokeCap(strokeCap: StrokeCap | 'STANDARD') {
+    this.strokeCap = strokeCap;
+    this.sendMeasurements();
   }
 
-  setLineDistance(lineDistance) {
-    this.lineDistance = lineDistance;
+  setStrokeOffset(strokeOffset: number) {
+    this.strokeOffset = parseInt(strokeOffset.toString(), 0) || 0;
+    this.sendMeasurements();
   }
 
-  setSurrounding(surrounding) {
-    this.surrounding = surrounding;
+  setSurrounding(surrounding, disableTransfer = false) {
+    if (this.selection.length > 0) {
+      this.surrounding = surrounding;
+      if (!disableTransfer) {
+        this.sendMeasurements();
+      }
+    }
+  }
+
+  resetSurrounding() {
+    this.surrounding = DEFAULT_SURROUNDING_FLAGS;
   }
 
   setSelection(selection = []) {
     this.selection = selection;
+  }
+
+  sendMeasurements() {
+    if (this.selection.length > 0) {
+      fme.emit(
+        'set measurements',
+        toJS({
+          labels: this.labels,
+          color: this.color,
+          fill: this.fill,
+          dashDistance: this.dashDistance,
+          strokeCap: this.strokeCap,
+          strokeOffset: this.strokeOffset,
+          surrounding: toJS(this.surrounding),
+          tooltip: toJS(this.tooltip),
+          unit: this.unit,
+        })
+      );
+    }
   }
 }
 

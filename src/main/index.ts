@@ -1,12 +1,10 @@
 import './store';
-import { solidColor } from './helper';
+import { hexToRgb, solidColor } from './helper';
 import { tooltipPluginDataByNode, setTooltip } from './tooltip';
 
 import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
-
-FigmaMessageEmitter.on('set-measurements', (data) => {
-  console.log(data);
-});
+import { PluginNodeData, Store } from '../shared/interfaces';
+import { VERSION } from '../shared/constants';
 
 figma.showUI(__html__, {
   width: 285,
@@ -37,6 +35,10 @@ interface LineParameterTypes {
   lineVerticalAlign: Alignments;
   lineHorizontalAlign: Alignments;
   strokeCap: string;
+  offset: number;
+  unit: string;
+  color: string;
+  labels: boolean;
 }
 
 const nodeGroup = (node) =>
@@ -57,55 +59,9 @@ export const getPluginData = (node, name) => {
 
 // // const updateMeasurementsOfNode = (node) => {};
 
-const checkNodeMeasurementsAndAddValue = (node, nodeId?): string[] => {
-  let currentNodeMeasurements = node.getPluginData('measurementNodeIds');
-
-  try {
-    currentNodeMeasurements = JSON.parse(currentNodeMeasurements);
-  } catch {
-    currentNodeMeasurements = [];
-  }
-
-  if (nodeId) {
-    currentNodeMeasurements.push(nodeId);
-  }
-
-  currentNodeMeasurements = currentNodeMeasurements
-    .map((id) => figma.getNodeById(id)?.id)
-    .filter(Boolean);
-
-  node.setPluginData(
-    'measurementNodeIds',
-    JSON.stringify(currentNodeMeasurements)
-  );
-
-  return currentNodeMeasurements;
-};
-
 const getLineFrame = (node, data) => {
   const name = 'line';
   const lineFrame = figma.createFrame();
-
-  const group = nodeGroup(node);
-
-  const foundLine = group
-    ? group.children.find((currentChild) => {
-        const line = getPluginData(currentChild, name);
-
-        return (
-          line.isHorizontal === data.isHorizontal &&
-          line.alignment === data.alignment
-        );
-      })
-    : false;
-
-  // remove old one
-  if (foundLine) {
-    foundLine.remove();
-  }
-
-  const cIds = checkNodeMeasurementsAndAddValue(node, lineFrame.id);
-  console.log(cIds);
 
   lineFrame.name = name;
   lineFrame.resize(
@@ -116,20 +72,27 @@ const getLineFrame = (node, data) => {
   lineFrame.clipsContent = false;
 
   // set plugin data
-  const lineData = {
-    parent: node.id,
-    nodeId: lineFrame.id,
-    isHorizontal: data.isHorizontal,
-    alignment: data.alignment,
-  };
+  // const lineData = {
+  //   parent: node.id,
+  //   nodeId: lineFrame.id,
+  // };
 
   lineFrame.expanded = false;
-  lineFrame.setPluginData(name, JSON.stringify(lineData));
+  // lineFrame.setPluginData(name, JSON.stringify(lineData));
 
   return lineFrame;
 };
 
-const createLine = async (options) => {
+const getColor = (color: string) => {
+  if (color) {
+    const { r, g, b } = hexToRgb(color);
+    return solidColor(r, g, b);
+  } else {
+    return solidColor();
+  }
+};
+
+const createLine = (options) => {
   const {
     node,
     direction = 'horizontal',
@@ -139,9 +102,15 @@ const createLine = async (options) => {
     lineVerticalAlign = Alignments.LEFT,
     lineHorizontalAlign = Alignments.BOTTOM,
     strokeCap = 'NONE',
+    offset = 3,
+    unit = '',
+    color = '',
+    labels = true,
   }: LineParameterTypes = options;
 
-  const LINE_OFFSET = -3;
+  const LINE_OFFSET = offset * -1;
+
+  const mainColor = getColor(color);
 
   const isHorizontal = direction === 'horizontal';
 
@@ -153,7 +122,6 @@ const createLine = async (options) => {
   if (heightOrWidth > 0.01) {
     // needed elements
     const line = figma.createVector();
-    const label = figma.createText();
 
     const paddingTopBottom = 3;
     const paddingLeftRight = 5;
@@ -162,42 +130,52 @@ const createLine = async (options) => {
     const DIRECTION_MARGIN = 5;
 
     // LABEL
-    label.characters = `${parseFloat(heightOrWidth.toString()).toFixed(0)}`;
-    label.fontName = {
-      family: 'Inter',
-      style: 'Bold',
-    };
-    label.fontSize = 10;
-    label.fills = [].concat(solidColor(255, 255, 255));
+    let labelFrame;
 
-    // LABEL RECT
-    const labelFrame = figma.createFrame();
-    labelFrame.cornerRadius = 3;
+    if (labels) {
+      const label = figma.createText();
 
-    labelFrame.layoutMode = 'HORIZONTAL';
-    labelFrame.horizontalPadding = paddingLeftRight;
-    labelFrame.verticalPadding = paddingTopBottom;
-    labelFrame.counterAxisSizingMode = 'AUTO';
-    labelFrame.x = label.x - paddingLeftRight / 2;
-    labelFrame.y = label.y - paddingTopBottom / 2;
-    labelFrame.fills = [].concat(solidColor());
+      label.characters = `${parseFloat(heightOrWidth.toString()).toFixed(0)}${
+        unit && ' ' + unit
+      }`;
+      label.fontName = {
+        family: 'Inter',
+        style: 'Bold',
+      };
+      label.fontSize = 10;
+      label.fills = [].concat(solidColor(255, 255, 255));
 
-    labelFrame.appendChild(label);
-    labelFrame.name = 'label';
+      // LABEL RECT
+      labelFrame = figma.createFrame();
+      labelFrame.cornerRadius = 3;
+
+      labelFrame.layoutMode = 'HORIZONTAL';
+      labelFrame.horizontalPadding = paddingLeftRight;
+      labelFrame.verticalPadding = paddingTopBottom;
+      labelFrame.counterAxisSizingMode = 'AUTO';
+      labelFrame.x = label.x - paddingLeftRight / 2;
+      labelFrame.y = label.y - paddingTopBottom / 2;
+      labelFrame.fills = [].concat(mainColor);
+
+      labelFrame.appendChild(label);
+      labelFrame.name = 'label';
+    }
 
     // GROUP
     const group = getLineFrame(node, {
       isHorizontal,
       alignment: isHorizontal ? lineHorizontalAlign : lineVerticalAlign,
-      labelWidth: labelFrame.width,
-      labelHeight: labelFrame.height,
+      labelWidth: labelFrame ? labelFrame.width : 7,
+      labelHeight: labelFrame ? labelFrame.height : 7,
     });
 
     group.appendChild(line);
     // const group = figma.group(lineNodes, node.parent);
 
     // add label frame
-    group.appendChild(labelFrame);
+    if (labelFrame) {
+      group.appendChild(labelFrame);
+    }
 
     // LINE
     line.x = isHorizontal ? 0 : group.width / 2 - line.strokeWeight / 2;
@@ -213,42 +191,40 @@ const createLine = async (options) => {
       },
     ];
 
-    line.strokes = [].concat(solidColor());
+    line.strokes = [].concat(mainColor);
     line.resize(isHorizontal ? node.width : 1, isHorizontal ? 1 : node.height);
 
-    const measureLineWidth = Math.abs(LINE_OFFSET) * 2 + line.strokeWeight;
-
+    // STROKE CAP
     if (strokeCap === 'STANDARD') {
-      if (measureLineWidth >= 0.01) {
+      const strokeCapWidth = 6 + line.strokeWeight;
+      if (strokeCapWidth >= 0.01) {
         const firstMeasureLine = figma.createLine();
         const secondMeasureLine = figma.createLine();
 
         group.appendChild(firstMeasureLine);
         group.appendChild(secondMeasureLine);
 
-        firstMeasureLine.strokes = [].concat(solidColor());
-        secondMeasureLine.strokes = [].concat(solidColor());
-        firstMeasureLine.resize(measureLineWidth, 0);
-        secondMeasureLine.resize(measureLineWidth, 0);
+        firstMeasureLine.strokes = [].concat(mainColor);
+        secondMeasureLine.strokes = [].concat(mainColor);
+        firstMeasureLine.resize(strokeCapWidth, 0);
+        secondMeasureLine.resize(strokeCapWidth, 0);
 
         if (!isHorizontal) {
           firstMeasureLine.x =
-            group.width / 2 - measureLineWidth / 2 - line.strokeWeight / 2;
+            group.width / 2 - strokeCapWidth / 2 - line.strokeWeight / 2;
           firstMeasureLine.y += 1;
 
           secondMeasureLine.x =
-            group.width / 2 - measureLineWidth / 2 - line.strokeWeight / 2;
+            group.width / 2 - strokeCapWidth / 2 - line.strokeWeight / 2;
           secondMeasureLine.y += nodeHeight;
         } else {
           firstMeasureLine.rotation = 90;
           firstMeasureLine.x += 1;
-          firstMeasureLine.y =
-            group.height - measureLineWidth / 2 - line.strokeWeight;
+          firstMeasureLine.y = line.y + strokeCapWidth / 2;
 
           secondMeasureLine.rotation = 90;
           secondMeasureLine.x += nodeWidth;
-          secondMeasureLine.y =
-            group.height - measureLineWidth / 2 - line.strokeWeight;
+          secondMeasureLine.y = line.y + strokeCapWidth / 2;
         }
       }
     } else {
@@ -260,48 +236,52 @@ const createLine = async (options) => {
     // const boxLeft = paddingLeftRight / 2;
 
     // place text group
-    if (isHorizontal) {
-      labelFrame.x = 0;
-      labelFrame.y += boxTop + nodeHeight - LINE_OFFSET - line.strokeWeight;
-
-      // vertical text align
-      if (txtVerticalAlign === Alignments.CENTER) {
-        labelFrame.y = 0;
-      } else if (txtVerticalAlign === Alignments.BOTTOM) {
-        labelFrame.y += DIRECTION_MARGIN;
-      } else if (txtVerticalAlign === Alignments.TOP) {
-        labelFrame.y -= labelFrame.height + DIRECTION_MARGIN;
-      }
-
-      // horizontal text align
-      if (txtHorizontalAlign === Alignments.CENTER) {
-        labelFrame.x = nodeWidth / 2 - labelFrame.width / 2;
-      } else if (txtHorizontalAlign === Alignments.LEFT) {
-        labelFrame.x -= nodeWidth / 2 - labelFrame.width / 2 - DIRECTION_MARGIN;
-      } else if (txtHorizontalAlign === Alignments.RIGHT) {
-        labelFrame.x += nodeWidth / 2 - labelFrame.width / 2 - DIRECTION_MARGIN;
-      }
-    } else {
-      labelFrame.x = 0;
-      labelFrame.y += boxTop;
-
-      // vertical text align
-      if (txtVerticalAlign === Alignments.CENTER) {
-        labelFrame.y += nodeHeight / 2 - labelFrame.height / 2;
-      } else if (txtVerticalAlign === Alignments.BOTTOM) {
-        labelFrame.y += nodeHeight - labelFrame.height - DIRECTION_MARGIN;
-      } else if (txtVerticalAlign === Alignments.TOP) {
-        labelFrame.y += DIRECTION_MARGIN;
-      }
-
-      // vertical text align
-      if (txtHorizontalAlign === Alignments.CENTER) {
+    if (labels) {
+      if (isHorizontal) {
         labelFrame.x = 0;
-        // labelFrame.x = (labelFrame.width / 2) + LINE_OFFSET;
-      } else if (txtHorizontalAlign === Alignments.LEFT) {
-        labelFrame.x -= labelFrame.width + DIRECTION_MARGIN;
-      } else if (txtHorizontalAlign === Alignments.RIGHT) {
-        labelFrame.x += DIRECTION_MARGIN;
+        labelFrame.y += boxTop + nodeHeight - LINE_OFFSET - line.strokeWeight;
+
+        // vertical text align
+        if (txtVerticalAlign === Alignments.CENTER) {
+          labelFrame.y = 0;
+        } else if (txtVerticalAlign === Alignments.BOTTOM) {
+          labelFrame.y += DIRECTION_MARGIN;
+        } else if (txtVerticalAlign === Alignments.TOP) {
+          labelFrame.y -= labelFrame.height + DIRECTION_MARGIN;
+        }
+
+        // horizontal text align
+        if (txtHorizontalAlign === Alignments.CENTER) {
+          labelFrame.x = nodeWidth / 2 - labelFrame.width / 2;
+        } else if (txtHorizontalAlign === Alignments.LEFT) {
+          labelFrame.x -=
+            nodeWidth / 2 - labelFrame.width / 2 - DIRECTION_MARGIN;
+        } else if (txtHorizontalAlign === Alignments.RIGHT) {
+          labelFrame.x +=
+            nodeWidth / 2 - labelFrame.width / 2 - DIRECTION_MARGIN;
+        }
+      } else {
+        labelFrame.x = 0;
+        labelFrame.y += boxTop;
+
+        // vertical text align
+        if (txtVerticalAlign === Alignments.CENTER) {
+          labelFrame.y += nodeHeight / 2 - labelFrame.height / 2;
+        } else if (txtVerticalAlign === Alignments.BOTTOM) {
+          labelFrame.y += nodeHeight - labelFrame.height - DIRECTION_MARGIN;
+        } else if (txtVerticalAlign === Alignments.TOP) {
+          labelFrame.y += DIRECTION_MARGIN;
+        }
+
+        // vertical text align
+        if (txtHorizontalAlign === Alignments.CENTER) {
+          labelFrame.x = 0;
+          // labelFrame.x = (labelFrame.width / 2) + LINE_OFFSET;
+        } else if (txtHorizontalAlign === Alignments.LEFT) {
+          labelFrame.x -= labelFrame.width + DIRECTION_MARGIN;
+        } else if (txtHorizontalAlign === Alignments.RIGHT) {
+          labelFrame.x += DIRECTION_MARGIN;
+        }
       }
     }
 
@@ -424,65 +404,65 @@ const isValidShape = (node) =>
   node.type === 'COMPONENT' ||
   node.type === 'POLYGON';
 
-async function createLineFromMessage({
-  direction,
-  align = Alignments.CENTER,
-  strokeCap = 'ARROW_LINES',
-  alignSecond = null,
-}) {
-  const nodes = [];
+// async function createLineFromMessage({
+//   direction,
+//   align = Alignments.CENTER,
+//   strokeCap = 'ARROW_LINES',
+//   alignSecond = null,
+// }) {
+//   const nodes = [];
 
-  for (const node of figma.currentPage.selection) {
-    if (isValidShape(node)) {
-      if (direction === 'vertical' || direction === 'both') {
-        const verticalLine = await createLine({
-          node,
-          direction: 'vertical',
-          strokeCap,
-          name: 'vertical line ' + align.toLowerCase(),
-          lineVerticalAlign: Alignments[align],
-        });
+//   for (const node of figma.currentPage.selection) {
+//     if (isValidShape(node)) {
+//       if (direction === 'vertical' || direction === 'both') {
+//         const verticalLine = await createLine({
+//           node,
+//           direction: 'vertical',
+//           strokeCap,
+//           name: 'vertical line ' + align.toLowerCase(),
+//           lineVerticalAlign: Alignments[align],
+//         });
 
-        if (verticalLine) {
-          nodes.push(verticalLine);
-        }
-      }
+//         if (verticalLine) {
+//           nodes.push(verticalLine);
+//         }
+//       }
 
-      if (direction === 'horizontal' || direction === 'both') {
-        const horizontalLine = await createLine({
-          node,
-          direction: 'horizontal',
-          strokeCap,
-          name: 'horizontal line ' + align.toLowerCase(),
-          lineHorizontalAlign: alignSecond
-            ? Alignments[alignSecond]
-            : Alignments[align],
-        });
+//       if (direction === 'horizontal' || direction === 'both') {
+//         const horizontalLine = await createLine({
+//           node,
+//           direction: 'horizontal',
+//           strokeCap,
+//           name: 'horizontal line ' + align.toLowerCase(),
+//           lineHorizontalAlign: alignSecond
+//             ? Alignments[alignSecond]
+//             : Alignments[align],
+//         });
 
-        if (horizontalLine) {
-          nodes.push(horizontalLine);
-        }
-      }
+//         if (horizontalLine) {
+//           nodes.push(horizontalLine);
+//         }
+//       }
 
-      if (nodes.length > 0) {
-        const group = nodeGroup(node);
+//       if (nodes.length > 0) {
+//         const group = nodeGroup(node);
 
-        if (group) {
-          nodes.forEach((n) => {
-            group.appendChild(n);
-          });
-        } else {
-          const measureGroup = figma.group(nodes, figma.currentPage);
-          measureGroup.locked = true;
-          measureGroup.expanded = false;
-          measureGroup.name = `📐 Measurements | ${node.name}`;
+//         if (group) {
+//           nodes.forEach((n) => {
+//             group.appendChild(n);
+//           });
+//         } else {
+//           const measureGroup = figma.group(nodes, figma.currentPage);
+//           measureGroup.locked = true;
+//           measureGroup.expanded = false;
+//           measureGroup.name = `📐 Measurements | ${node.name}`;
 
-          measureGroup.setPluginData('parent', node.id);
-        }
-      }
-    }
-  }
-}
+//           measureGroup.setPluginData('parent', node.id);
+//         }
+//       }
+//     }
+//   }
+// }
 
 const setAngleInCanvas = () => {
   for (const node of figma.currentPage.selection) {
@@ -558,12 +538,23 @@ const setAngleInCanvas = () => {
 };
 
 const getSelectionArray = () =>
-  figma.currentPage.selection.map((node) => ({
-    id: node.id,
-    type: node.type,
-    tooltipData: tooltipPluginDataByNode(node),
-    // tooltipData: node,
-  }));
+  figma.currentPage.selection.map((node) => {
+    let data = {};
+
+    try {
+      data = JSON.parse(node.getPluginData('data'));
+    } catch {
+      data = {};
+    }
+
+    return {
+      id: node.id,
+      type: node.type,
+      tooltipData: tooltipPluginDataByNode(node),
+      data,
+      // tooltipData: node,
+    };
+  });
 
 const sendSelection = () =>
   FigmaMessageEmitter.emit('selection', getSelectionArray());
@@ -575,17 +566,7 @@ const sendSelection = () =>
 })();
 
 // events
-figma.on('selectionchange', () => {
-  if (figma.currentPage.selection.length === 1) {
-    const selectedNode = figma.currentPage.selection[0];
-    if (isValidShape(selectedNode)) {
-      console.log(selectedNode);
-      checkNodeMeasurementsAndAddValue(selectedNode);
-    }
-  }
-
-  sendSelection();
-});
+figma.on('selectionchange', sendSelection);
 
 // function iterateOverFile(node, cb) {
 //   if ('children' in node) {
@@ -608,28 +589,164 @@ figma.on('selectionchange', () => {
 //   });
 // };
 
-const setTooltipWithData = async (data = {}, node = null) => {
-  const pluginData = await figma.clientStorage.getAsync('tooltip-settings');
-
-  setTooltip(
-    {
-      ...pluginData,
-      ...data,
-    },
-    node
-  );
-};
-
 FigmaMessageEmitter.on('resize', ({ width, height }) =>
   figma.ui.resize(width, height)
 );
+
+FigmaMessageEmitter.answer('current selection', async () =>
+  getSelectionArray()
+);
+
+FigmaMessageEmitter.on('set measurements', (store: Partial<Store>) => {
+  const node = figma.currentPage.selection[0];
+
+  let data: PluginNodeData = {};
+
+  try {
+    data = JSON.parse(node.getPluginData('data'));
+    node.setPluginData('data', '{}');
+  } catch {}
+
+  if (data?.connectedNodes?.length) {
+    data.connectedNodes.map((id) => {
+      const node = figma.getNodeById(id);
+      if (node) {
+        node.remove();
+      }
+    });
+  }
+
+  let connectedNodes = [];
+
+  if (store.surrounding.tooltip) {
+    const tooltip = setTooltip(
+      {
+        flags: store.tooltip,
+        unit: store.unit,
+        distance: store.strokeOffset + 6,
+        position: store.surrounding.tooltip,
+      },
+      node
+    );
+
+    if (tooltip) {
+      connectedNodes.push(tooltip);
+    }
+  }
+
+  const strokeSettings = {
+    strokeCap: store.strokeCap,
+    offset: store.strokeOffset,
+    unit: store.unit,
+    color: store.color,
+    labels: store.labels,
+  };
+
+  if (store.surrounding.rightBar) {
+    connectedNodes.push(
+      createLine({
+        ...strokeSettings,
+        node,
+        direction: 'vertical',
+        name: 'vertical line ' + Alignments.RIGHT.toLowerCase(),
+        lineVerticalAlign: Alignments.RIGHT,
+      })
+    );
+  }
+
+  if (store.surrounding.leftBar) {
+    connectedNodes.push(
+      createLine({
+        ...strokeSettings,
+        node,
+        direction: 'vertical',
+        name: 'vertical line ' + Alignments.LEFT.toLowerCase(),
+        lineVerticalAlign: Alignments.LEFT,
+      })
+    );
+  }
+
+  if (store.surrounding.topBar) {
+    connectedNodes.push(
+      createLine({
+        ...strokeSettings,
+        node,
+        direction: 'horizontal',
+        name: 'horizontal line ' + Alignments.TOP.toLowerCase(),
+        lineHorizontalAlign: Alignments.TOP,
+      })
+    );
+  }
+
+  if (store.surrounding.bottomBar) {
+    connectedNodes.push(
+      createLine({
+        ...strokeSettings,
+        node,
+        direction: 'horizontal',
+        name: 'horizontal line ' + Alignments.BOTTOM.toLowerCase(),
+        lineHorizontalAlign: Alignments.BOTTOM,
+      })
+    );
+  }
+
+  if (store.surrounding.horizontalBar) {
+    connectedNodes.push(
+      createLine({
+        ...strokeSettings,
+        node,
+        direction: 'horizontal',
+        name: 'horizontal line ' + Alignments.CENTER.toLowerCase(),
+        lineHorizontalAlign: Alignments.CENTER,
+      })
+    );
+  }
+
+  if (store.surrounding.verticalBar) {
+    connectedNodes.push(
+      createLine({
+        ...strokeSettings,
+        node,
+        direction: 'vertical',
+        name: 'vertical line ' + Alignments.CENTER.toLowerCase(),
+        lineVerticalAlign: Alignments.CENTER,
+      })
+    );
+  }
+
+  node.setPluginData(
+    'data',
+    JSON.stringify({
+      connectedNodes: connectedNodes.map(({ id }) => id),
+      surrounding: store.surrounding,
+      version: VERSION,
+    } as PluginNodeData)
+  );
+
+  if (connectedNodes.length > 0) {
+    const group = nodeGroup(node);
+
+    if (group) {
+      connectedNodes.forEach((n) => {
+        group.appendChild(n);
+      });
+    } else {
+      const measureGroup = figma.group(connectedNodes, figma.currentPage);
+      measureGroup.locked = true;
+      measureGroup.expanded = false;
+      measureGroup.name = `📐 Measurements | ${node.name}`;
+
+      measureGroup.setPluginData('parent', node.id);
+    }
+  }
+});
 
 //@ts-ignore
 const bla = async (message) => {
   if (figma.command === 'relaunch') {
     for (const node of figma.currentPage.selection) {
       if (isValidShape(node)) {
-        await setTooltipWithData({}, node);
+        // await setTooltipWithData({}, node);
       }
     }
     figma.closePlugin();
@@ -653,46 +770,46 @@ const bla = async (message) => {
           });
           break;
         case 'tooltip':
-          await setTooltipWithData(message.payload);
+          // await setTooltipWithData(message.payload);
           break;
         case 'angle':
           setAngleInCanvas();
           break;
         case 'line':
-          createLineFromMessage(message.payload);
+          // createLineFromMessage(message.payload);
           break;
         case 'line-preset':
-          const { direction, strokeCap } = message.payload;
+          // const { direction, strokeCap } = message.payload;
 
-          if (direction === 'left-bottom') {
-            createLineFromMessage({
-              direction: 'both',
-              strokeCap,
-              align: Alignments.LEFT,
-              alignSecond: Alignments.BOTTOM,
-            });
-          } else if (direction === 'left-top') {
-            createLineFromMessage({
-              direction: 'both',
-              strokeCap,
-              align: Alignments.LEFT,
-              alignSecond: Alignments.TOP,
-            });
-          } else if (direction === 'right-bottom') {
-            createLineFromMessage({
-              direction: 'both',
-              strokeCap,
-              align: Alignments.RIGHT,
-              alignSecond: Alignments.BOTTOM,
-            });
-          } else {
-            createLineFromMessage({
-              direction: 'both',
-              strokeCap,
-              align: Alignments.RIGHT,
-              alignSecond: Alignments.TOP,
-            });
-          }
+          // if (direction === 'left-bottom') {
+          //   createLineFromMessage({
+          //     direction: 'both',
+          //     strokeCap,
+          //     align: Alignments.LEFT,
+          //     alignSecond: Alignments.BOTTOM,
+          //   });
+          // } else if (direction === 'left-top') {
+          //   createLineFromMessage({
+          //     direction: 'both',
+          //     strokeCap,
+          //     align: Alignments.LEFT,
+          //     alignSecond: Alignments.TOP,
+          //   });
+          // } else if (direction === 'right-bottom') {
+          //   createLineFromMessage({
+          //     direction: 'both',
+          //     strokeCap,
+          //     align: Alignments.RIGHT,
+          //     alignSecond: Alignments.BOTTOM,
+          //   });
+          // } else {
+          //   createLineFromMessage({
+          //     direction: 'both',
+          //     strokeCap,
+          //     align: Alignments.RIGHT,
+          //     alignSecond: Alignments.TOP,
+          //   });
+          // }
 
           break;
         case 'cancel':

@@ -13,7 +13,7 @@ import {
   OpacityIcon,
   StrokeIcon,
   WidthIcon,
-} from './TooltipIcons';
+} from '../../../components/icons/TooltipIcons';
 
 const Tooltip = styled.div`
   padding: 12px;
@@ -71,7 +71,7 @@ export const PreviewTooltip: FunctionComponent = observer(() => {
           <div className="icon">
             <FontSizeIcon />
           </div>
-          <span>12</span>
+          <span>12{store.unit}</span>
         </div>
       )}
       {store.tooltip.width && (
@@ -79,7 +79,7 @@ export const PreviewTooltip: FunctionComponent = observer(() => {
           <div className="icon">
             <WidthIcon />
           </div>
-          <span>200</span>
+          <span>200{store.unit}</span>
         </div>
       )}
       {store.tooltip.height && (
@@ -87,7 +87,7 @@ export const PreviewTooltip: FunctionComponent = observer(() => {
           <div className="icon">
             <HeightIcon />
           </div>
-          <span>100</span>
+          <span>100{store.unit}</span>
         </div>
       )}
       {store.tooltip.color && (
@@ -111,7 +111,7 @@ export const PreviewTooltip: FunctionComponent = observer(() => {
           <div className="icon">
             <StrokeIcon />
           </div>
-          <span>5</span>
+          <span>5{store.unit}</span>
         </div>
       )}
     </Tooltip>

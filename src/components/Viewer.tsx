@@ -1,35 +1,62 @@
+import { toJS } from 'mobx';
 import { observer } from 'mobx-react';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
+import { PluginNodeData } from '../shared/interfaces';
 import { useStore } from '../store';
 
 const Viewer: FunctionComponent = observer(() => {
   const store = useStore();
 
   const clickTooltip = (e) => {
-    if (store.surrounding.tooltip === e.currentTarget.dataset.direction) {
-      store.setSurrounding({
-        ...store.surrounding,
-        tooltip: '',
-      });
-    } else {
-      store.setSurrounding({
-        ...store.surrounding,
-        tooltip: e.currentTarget.dataset.direction,
-      });
+    if (store.selection.length > 0) {
+      if (store.surrounding.tooltip === e.currentTarget.dataset.direction) {
+        store.setSurrounding({
+          ...store.surrounding,
+          tooltip: '',
+        });
+      } else {
+        store.setSurrounding({
+          ...store.surrounding,
+          tooltip: e.currentTarget.dataset.direction,
+        });
+      }
     }
   };
 
+  // set data from selection
+  useEffect(() => {
+    console.log(toJS(store.selection));
+    const selection = toJS(store.selection);
+    if (selection.length > 0) {
+      try {
+        const data: PluginNodeData = selection[0]?.data;
+
+        if (data?.surrounding) {
+          store.setSurrounding(data.surrounding, true);
+        } else {
+          store.resetSurrounding();
+        }
+      } catch {
+        store.resetSurrounding();
+      }
+    } else {
+      store.resetSurrounding();
+    }
+  }, [store.selection]);
+
   const clickCorner = (e) => {
-    let [first, second] = e.currentTarget.dataset.direction.split('-');
+    if (store.selection.length > 0) {
+      let [first, second] = e.currentTarget.dataset.direction.split('-');
 
-    first += 'Bar';
-    second += 'Bar';
+      first += 'Bar';
+      second += 'Bar';
 
-    store.setSurrounding({
-      ...store.surrounding,
-      [first]: !store.surrounding[first],
-      [second]: !store.surrounding[second],
-    });
+      store.setSurrounding({
+        ...store.surrounding,
+        [first]: !store.surrounding[first],
+        [second]: !store.surrounding[second],
+      });
+    }
   };
 
   return (
@@ -39,6 +66,7 @@ const Viewer: FunctionComponent = observer(() => {
       viewBox="0 0 184 184"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      style={{ opacity: store.selection.length > 0 ? 1 : 0.6 }}
     >
       <g data-direction="left-bottom" onClick={clickCorner}>
         <path
@@ -121,7 +149,7 @@ const Viewer: FunctionComponent = observer(() => {
           })
         }
       >
-        {store.fill === 'fill' && (
+        {(store.fill === 'fill' || store.fill === 'fill-stroke') && (
           <rect
             opacity="0.3"
             x="58"
@@ -140,15 +168,17 @@ const Viewer: FunctionComponent = observer(() => {
           d="M54 66.5C54 59.5964 59.5964 54 66.5 54H118.5C125.404 54 131 59.5964 131 66.5V118.5C131 125.404 125.404 131 118.5 131H66.5C59.5964 131 54 125.404 54 118.5V66.5ZM67.5 62C64.4624 62 62 64.4624 62 67.5V117.5C62 120.538 64.4624 123 67.5 123H117.5C120.538 123 123 120.538 123 117.5V67.5C123 64.4624 120.538 62 117.5 62H67.5Z"
           fill={store.surrounding.center ? '#E8ECFD' : 'transparent'}
         />
-        <rect
-          x="58"
-          y="58"
-          width="69"
-          height="69"
-          rx="8.5"
-          stroke={store.color}
-          strokeDasharray={store.fill === 'dashed' ? '3 2' : '0'}
-        />
+        {store.fill !== 'fill' && (
+          <rect
+            x="58"
+            y="58"
+            width="69"
+            height="69"
+            rx="8.5"
+            stroke={store.color}
+            strokeDasharray={store.fill === 'dashed' ? '3 2' : '0'}
+          />
+        )}
       </g>
       <g
         className="veritical-middle-bar"
