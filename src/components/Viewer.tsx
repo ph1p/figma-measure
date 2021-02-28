@@ -25,7 +25,6 @@ const Viewer: FunctionComponent = observer(() => {
 
   // set data from selection
   useEffect(() => {
-    console.log(toJS(store.selection));
     const selection = toJS(store.selection);
     if (selection.length > 0) {
       try {

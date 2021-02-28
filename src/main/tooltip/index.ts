@@ -159,7 +159,6 @@ export function setTooltip(options: any, specificNode = null) {
     ...data.settings,
     ...options,
   };
-  console.log(data.settings);
 
   switch (options.position) {
     case 'top':

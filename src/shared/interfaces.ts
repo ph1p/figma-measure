@@ -1,5 +1,27 @@
+export enum Alignments {
+  TOP = 'TOP',
+  BOTTOM = 'BOTTOM',
+  LEFT = 'LEFT',
+  RIGHT = 'RIGHT',
+  CENTER = 'CENTER',
+}
+export interface LineParameterTypes {
+  left: number;
+  top: number;
+  node: SceneNode;
+  direction: string;
+  name: string;
+  txtVerticalAlign: Alignments;
+  txtHorizontalAlign: Alignments;
+  lineVerticalAlign: Alignments;
+  lineHorizontalAlign: Alignments;
+  strokeCap: string;
+  offset: number;
+  unit: string;
+  color: string;
+  labels: boolean;
+}
 export interface TooltipSettings {
-  position: string;
   width: boolean;
   height: boolean;
   fontFamily: boolean;
@@ -8,6 +30,8 @@ export interface TooltipSettings {
   color: boolean;
   opacity: boolean;
   stroke: boolean;
+  cornerRadius: boolean;
+  points: boolean;
 }
 
 export interface PluginNodeData {
@@ -28,11 +52,13 @@ export interface SurroundingSettings {
   tooltip: string;
 }
 
+export type FillTypes = 'dashed' | 'fill' | 'stroke' | 'fill-stroke';
+
 export interface Store {
   labels: boolean;
   color: string;
   selection: any[];
-  fill: 'dashed' | 'fill' | 'stroke' | 'fill-stroke';
+  fill: FillTypes;
   dashDistance: number;
   unit: string;
   strokeCap: StrokeCap | 'STANDARD';

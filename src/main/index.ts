@@ -3,8 +3,15 @@ import { hexToRgb, solidColor } from './helper';
 import { tooltipPluginDataByNode, setTooltip } from './tooltip';
 
 import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
-import { PluginNodeData, Store } from '../shared/interfaces';
+import {
+  Alignments,
+  FillTypes,
+  LineParameterTypes,
+  PluginNodeData,
+  Store,
+} from '../shared/interfaces';
 import { VERSION } from '../shared/constants';
+import { drawSpacing } from './spacing';
 
 figma.showUI(__html__, {
   width: 285,
@@ -16,30 +23,9 @@ figma.root.setRelaunchData({
   open: '',
 });
 
-enum Alignments {
-  TOP = 'TOP',
-  BOTTOM = 'BOTTOM',
-  LEFT = 'LEFT',
-  RIGHT = 'RIGHT',
-  CENTER = 'CENTER',
-}
-
-interface LineParameterTypes {
-  left: number;
-  top: number;
-  node: SceneNode;
-  direction: string;
-  name: string;
-  txtVerticalAlign: Alignments;
-  txtHorizontalAlign: Alignments;
-  lineVerticalAlign: Alignments;
-  lineHorizontalAlign: Alignments;
-  strokeCap: string;
-  offset: number;
-  unit: string;
-  color: string;
-  labels: boolean;
-}
+FigmaMessageEmitter.on('draw spacing', (settings) => {
+  drawSpacing(settings);
+});
 
 const nodeGroup = (node) =>
   (figma.currentPage.findOne(
@@ -399,8 +385,10 @@ const isValidShape = (node) =>
   node.type === 'ELLIPSE' ||
   node.type === 'GROUP' ||
   node.type === 'TEXT' ||
+  node.type === 'STAR' ||
   node.type === 'VECTOR' ||
   node.type === 'FRAME' ||
+  node.type === 'INSTANCE' ||
   node.type === 'COMPONENT' ||
   node.type === 'POLYGON';
 
@@ -566,7 +554,10 @@ const sendSelection = () =>
 })();
 
 // events
-figma.on('selectionchange', sendSelection);
+figma.on('selectionchange', () => {
+  console.log(figma.currentPage.selection);
+  sendSelection();
+});
 
 // function iterateOverFile(node, cb) {
 //   if ('children' in node) {
@@ -617,6 +608,18 @@ FigmaMessageEmitter.on('set measurements', (store: Partial<Store>) => {
   }
 
   let connectedNodes = [];
+
+  if (store.surrounding.center) {
+    const fillNode = createFill(node, {
+      fill: store.fill,
+      dashDistance: store.dashDistance,
+      color: store.color,
+    });
+
+    if (fillNode) {
+      connectedNodes.push(fillNode);
+    }
+  }
 
   if (store.surrounding.tooltip) {
     const tooltip = setTooltip(
@@ -714,6 +717,7 @@ FigmaMessageEmitter.on('set measurements', (store: Partial<Store>) => {
     );
   }
 
+  console.log({ connectedNodes });
   node.setPluginData(
     'data',
     JSON.stringify({
@@ -740,6 +744,52 @@ FigmaMessageEmitter.on('set measurements', (store: Partial<Store>) => {
     }
   }
 });
+
+const createFill = (
+  node: SceneNode,
+  {
+    fill,
+    dashDistance,
+    color,
+  }: { fill: FillTypes; dashDistance: number; color: string }
+) => {
+  if (node.type !== 'SLICE' && node.type !== 'GROUP') {
+    const cloneNode = node.clone();
+    cloneNode.fills = [];
+    cloneNode.strokes = [];
+
+    const { r, g, b } = hexToRgb(color);
+
+    switch (fill) {
+      case 'dashed':
+        cloneNode.dashPattern = [dashDistance];
+        cloneNode.strokes = [].concat(solidColor(r, g, b));
+        cloneNode.strokeWeight = 1;
+        break;
+      case 'fill':
+        cloneNode.fills = [].concat({
+          ...solidColor(r, g, b),
+          opacity: 0.3,
+        });
+        break;
+      case 'fill-stroke':
+        cloneNode.strokes = [].concat(solidColor(r, g, b));
+        cloneNode.strokeWeight = 1;
+
+        cloneNode.fills = [].concat({
+          ...solidColor(r, g, b),
+          opacity: 0.3,
+        });
+        break;
+      case 'stroke':
+        cloneNode.strokes = [].concat(solidColor(r, g, b));
+        cloneNode.strokeWeight = 1;
+        break;
+    }
+
+    return cloneNode;
+  }
+};
 
 //@ts-ignore
 const bla = async (message) => {

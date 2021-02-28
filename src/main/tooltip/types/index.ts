@@ -8,21 +8,43 @@ import fontFamilyPart from './parts/font-family';
 import fontSizePart from './parts/font-size';
 import fontStylePart from './parts/font-style';
 import pointCountPart from './parts/points';
+import { TooltipSettings } from '../../../shared/interfaces';
 
 export default function addNode(
   parent,
   node: RectangleNode | TextNode | PolygonNode,
   settings
 ) {
+  const flags: TooltipSettings = settings.flags;
   // Add content to parent
-  widthPart(node, parent, settings);
-  heightPart(node, parent, settings);
-  fillsPart(node, parent, settings);
-  cornerRadiusPart(node, parent, settings);
-  strokesPart(node, parent, settings);
-  opacityPart(node, parent, settings);
-  fontFamilyPart(node, parent, settings);
-  fontStylePart(node, parent, settings);
-  fontSizePart(node, parent, settings);
-  pointCountPart(node, parent, settings);
+  if (flags.width) {
+    widthPart(node, parent, settings);
+  }
+  if (flags.height) {
+    heightPart(node, parent, settings);
+  }
+  if (flags.color) {
+    fillsPart(node, parent, settings);
+  }
+  if (flags.cornerRadius) {
+    cornerRadiusPart(node, parent, settings);
+  }
+  if (flags.stroke) {
+    strokesPart(node, parent, settings);
+  }
+  if (flags.opacity) {
+    opacityPart(node, parent, settings);
+  }
+  if (flags.fontFamily) {
+    fontFamilyPart(node, parent, settings);
+  }
+  if (flags.fontStyle) {
+    fontStylePart(node, parent, settings);
+  }
+  if (flags.fontSize) {
+    fontSizePart(node, parent, settings);
+  }
+  if (flags.points) {
+    pointCountPart(node, parent, settings);
+  }
 }

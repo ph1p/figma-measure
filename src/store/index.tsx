@@ -3,18 +3,7 @@ import React from 'react';
 import { AsyncTrunk, ignore } from 'mobx-sync';
 import fme from '../shared/FigmaMessageEmitter';
 import { STORAGE_KEY } from '../shared/constants';
-
-interface TooltipSettings {
-  position: string;
-  width: boolean;
-  height: boolean;
-  fontFamily: boolean;
-  fontStyle: boolean;
-  fontSize: boolean;
-  color: boolean;
-  opacity: boolean;
-  stroke: boolean;
-}
+import { TooltipSettings } from '../shared/interfaces';
 
 const DEFAULT_SURROUNDING_FLAGS = {
   labels: false,
@@ -51,15 +40,16 @@ class RootStore {
   surrounding = DEFAULT_SURROUNDING_FLAGS;
 
   tooltip: TooltipSettings = {
-    position: '',
+    cornerRadius: true,
+    points: true,
     width: true,
     height: true,
-    fontFamily: false,
-    fontStyle: false,
-    fontSize: false,
-    color: false,
-    opacity: false,
-    stroke: false,
+    fontFamily: true,
+    fontStyle: true,
+    fontSize: true,
+    color: true,
+    opacity: true,
+    stroke: true,
   };
 
   setColor(color: string) {
@@ -85,6 +75,8 @@ class RootStore {
         [key]: !this.tooltip[key],
       };
     }
+
+    this.sendMeasurements();
   }
 
   setTooltipSettings(settings) {
@@ -100,10 +92,8 @@ class RootStore {
   }
 
   setFill(fill) {
-    if (this.selection.length > 0) {
-      this.fill = fill;
-      this.sendMeasurements();
-    }
+    this.fill = fill;
+    this.sendMeasurements();
   }
 
   setDashDistance(distance: number) {
