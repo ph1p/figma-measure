@@ -69,7 +69,7 @@ const getLineFrame = (node, data) => {
   return lineFrame;
 };
 
-const getColor = (color: string) => {
+export const getColor = (color: string) => {
   if (color) {
     const { r, g, b } = hexToRgb(color);
     return solidColor(r, g, b);
@@ -136,8 +136,10 @@ const createLine = (options) => {
       labelFrame.cornerRadius = 3;
 
       labelFrame.layoutMode = 'HORIZONTAL';
-      labelFrame.horizontalPadding = paddingLeftRight;
-      labelFrame.verticalPadding = paddingTopBottom;
+      labelFrame.paddingLeft = paddingLeftRight;
+      labelFrame.paddingRight = paddingLeftRight;
+      labelFrame.paddingTop = paddingTopBottom;
+      labelFrame.paddingBottom = paddingTopBottom;
       labelFrame.counterAxisSizingMode = 'AUTO';
       labelFrame.x = label.x - paddingLeftRight / 2;
       labelFrame.y = label.y - paddingTopBottom / 2;

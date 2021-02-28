@@ -1,7 +1,56 @@
+import { getColor } from '.';
+import { solidColor } from './helper';
+
+function createLabel(baseNode, text, color, isVertical) {
+  const labelFrame = figma.createFrame();
+  const label = figma.createText();
+
+  label.characters = text;
+  label.fontName = {
+    family: 'Inter',
+    style: 'Bold',
+  };
+  label.fontSize = 10;
+  label.fills = [].concat(solidColor(255, 255, 255));
+
+  labelFrame.appendChild(label);
+  labelFrame.name = 'label';
+
+  // LABEL RECT
+  labelFrame.cornerRadius = 3;
+
+  labelFrame.layoutMode = 'HORIZONTAL';
+  labelFrame.paddingLeft = 6;
+  labelFrame.paddingRight = 6;
+  labelFrame.paddingTop = 3;
+  labelFrame.paddingBottom = 3;
+  labelFrame.counterAxisSizingMode = 'AUTO';
+  labelFrame.x = baseNode.x;
+  labelFrame.y = baseNode.y;
+  if (!isVertical) {
+    labelFrame.x += baseNode.width / 2 - labelFrame.width / 2;
+    labelFrame.y -= labelFrame.height / 2;
+  } else {
+    labelFrame.y += baseNode.height / 2 - labelFrame.height / 2;
+    labelFrame.x -= labelFrame.width / 2;
+  }
+  labelFrame.fills = [].concat(color);
+
+  return labelFrame;
+}
+
+function distanceBetweenTwoPoints(x1, y1, x2, y2) {
+  let dx = Math.pow(x2 - x1, 2);
+  let dy = Math.pow(y2 - y1, 2);
+  return Math.sqrt(dx + dy);
+}
+
 export const drawSpacing = ({ color = '', labels = '', unit = '' }) => {
   if (figma.currentPage.selection.length !== 2) {
     return;
   }
+
+  const mainColor = getColor(color);
 
   const spacingGroup = [];
 
@@ -114,7 +163,21 @@ export const drawSpacing = ({ color = '', labels = '', unit = '' }) => {
         data: `M ${yellowX1} ${yellowY1} L ${yellowX2} ${yellowY2}`,
       },
     ];
+    line1.strokes = [].concat(mainColor);
     spacingGroup.push(line1);
+
+    if (labels) {
+      spacingGroup.push(
+        createLabel(
+          line1,
+          `${distanceBetweenTwoPoints(yellowX1, yellowY1, yellowX2, yellowY2)}${
+            unit && ' ' + unit
+          }`,
+          mainColor,
+          true
+        )
+      );
+    }
   }
 
   if (!cutsHorizontalRectPoints && !cutsVerticalRectPoints) {
@@ -132,6 +195,7 @@ export const drawSpacing = ({ color = '', labels = '', unit = '' }) => {
         data: `M ${brownX1} ${brownY1} L ${brownX2} ${brownY2}`,
       },
     ];
+    line2.strokes = [].concat(mainColor);
     spacingGroup.push(line2);
 
     // purple
@@ -149,6 +213,7 @@ export const drawSpacing = ({ color = '', labels = '', unit = '' }) => {
         data: `M ${purpleX1} ${purpleY1} L ${purpleX2} ${purpleY2}`,
       },
     ];
+    line3.strokes = [].concat(mainColor);
     spacingGroup.push(line3);
   }
 
@@ -207,7 +272,21 @@ export const drawSpacing = ({ color = '', labels = '', unit = '' }) => {
         data: `M ${blueX1} ${blueY1} L ${blueX2} ${blueY2}`,
       },
     ];
+    line4.strokes = [].concat(mainColor);
     spacingGroup.push(line4);
+
+    if (labels) {
+      spacingGroup.push(
+        createLabel(
+          line4,
+          `${distanceBetweenTwoPoints(blueX1, blueY1, blueX2, blueY2)}${
+            unit && ' ' + unit
+          }`,
+          mainColor,
+          false
+        )
+      );
+    }
   }
 
   if (spacingGroup.length > 0) {
