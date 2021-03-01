@@ -72,7 +72,7 @@ function createArrow(tooltipFrame, settings, { horizontal, vertical }) {
   return arrowFrame;
 }
 
-function getTooltipFrame(node, data) {
+function getTooltipFrame(node, data): FrameNode {
   let pluginData = tooltipPluginDataByNode(node);
   let tooltipFrame;
 
@@ -287,6 +287,23 @@ export function setTooltip(options: any, specificNode = null) {
         x = node.width + data.settings.distance;
         break;
     }
+
+    tooltipFrame.effects = [].concat({
+      offset: {
+        x: tooltipFrame.x,
+        y: tooltipFrame.y + 2,
+      },
+      visible: true,
+      blendMode: 'NORMAL',
+      type: 'DROP_SHADOW',
+      color: {
+        r: 0,
+        g: 0,
+        b: 0,
+        a: 0.1,
+      },
+      radius: 4,
+    });
 
     const transformPosition = node.absoluteTransform;
 

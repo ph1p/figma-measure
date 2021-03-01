@@ -11,7 +11,7 @@ import {
   Store,
 } from '../shared/interfaces';
 import { VERSION } from '../shared/constants';
-import { drawSpacing } from './spacing';
+import { drawSpacing, getSpacing, setSpacing } from './spacing';
 
 figma.showUI(__html__, {
   width: 285,
@@ -21,10 +21,6 @@ figma.showUI(__html__, {
 
 figma.root.setRelaunchData({
   open: '',
-});
-
-FigmaMessageEmitter.on('draw spacing', (settings) => {
-  drawSpacing(settings);
 });
 
 const nodeGroup = (node) =>
@@ -382,150 +378,17 @@ const createLine = (options) => {
   return null;
 };
 
-const isValidShape = (node) =>
-  node.type === 'RECTANGLE' ||
-  node.type === 'ELLIPSE' ||
-  node.type === 'GROUP' ||
-  node.type === 'TEXT' ||
-  node.type === 'STAR' ||
-  node.type === 'VECTOR' ||
-  node.type === 'FRAME' ||
-  node.type === 'INSTANCE' ||
-  node.type === 'COMPONENT' ||
-  node.type === 'POLYGON';
-
-// async function createLineFromMessage({
-//   direction,
-//   align = Alignments.CENTER,
-//   strokeCap = 'ARROW_LINES',
-//   alignSecond = null,
-// }) {
-//   const nodes = [];
-
-//   for (const node of figma.currentPage.selection) {
-//     if (isValidShape(node)) {
-//       if (direction === 'vertical' || direction === 'both') {
-//         const verticalLine = await createLine({
-//           node,
-//           direction: 'vertical',
-//           strokeCap,
-//           name: 'vertical line ' + align.toLowerCase(),
-//           lineVerticalAlign: Alignments[align],
-//         });
-
-//         if (verticalLine) {
-//           nodes.push(verticalLine);
-//         }
-//       }
-
-//       if (direction === 'horizontal' || direction === 'both') {
-//         const horizontalLine = await createLine({
-//           node,
-//           direction: 'horizontal',
-//           strokeCap,
-//           name: 'horizontal line ' + align.toLowerCase(),
-//           lineHorizontalAlign: alignSecond
-//             ? Alignments[alignSecond]
-//             : Alignments[align],
-//         });
-
-//         if (horizontalLine) {
-//           nodes.push(horizontalLine);
-//         }
-//       }
-
-//       if (nodes.length > 0) {
-//         const group = nodeGroup(node);
-
-//         if (group) {
-//           nodes.forEach((n) => {
-//             group.appendChild(n);
-//           });
-//         } else {
-//           const measureGroup = figma.group(nodes, figma.currentPage);
-//           measureGroup.locked = true;
-//           measureGroup.expanded = false;
-//           measureGroup.name = `📐 Measurements | ${node.name}`;
-
-//           measureGroup.setPluginData('parent', node.id);
-//         }
-//       }
-//     }
-//   }
-// }
-
-const setAngleInCanvas = () => {
-  for (const node of figma.currentPage.selection) {
-    if (Math.floor(node.rotation) !== 0) {
-      const rect = figma.createRectangle();
-      const text = figma.createText();
-      const angleFrame = figma.createFrame();
-
-      angleFrame.appendChild(rect);
-      angleFrame.appendChild(text);
-
-      text.fontSize = 10;
-      text.characters = Math.floor(node.rotation) + '°';
-      text.fills = [].concat(solidColor(255, 0, 0));
-      text.textAlignHorizontal = 'CENTER';
-      text.fontName = {
-        family: 'Inter',
-        style: 'Bold',
-      };
-
-      const textWidth = text.width + text.width / 2;
-
-      angleFrame.resize(textWidth, textWidth);
-      angleFrame.backgrounds = [];
-      angleFrame.name = 'angle';
-
-      //rect
-      rect.resize(textWidth, textWidth);
-      rect.strokes = [].concat(solidColor(255, 0, 0));
-      rect.fills = [].concat([
-        {
-          ...solidColor(255, 0, 0),
-          opacity: 0,
-        },
-      ]);
-
-      text.resize(rect.width, text.height);
-      text.y = rect.height / 2 - text.height / 2;
-      text.x += 2;
-
-      let transformPosition = node.absoluteTransform;
-
-      const newX = transformPosition[0][2];
-      const newY = transformPosition[1][2];
-
-      const xCos = transformPosition[0][0];
-      const xSin = transformPosition[0][1];
-
-      const yCos = transformPosition[1][0];
-      const ySin = transformPosition[1][1];
-
-      // group
-      const group = nodeGroup(node);
-
-      if (group) {
-        group.appendChild(angleFrame);
-      } else {
-        const group = figma.group([angleFrame], figma.currentPage);
-        group.locked = true;
-        group.expanded = false;
-        group.name = `📐 Measurements | ${node.name}`;
-        group.setPluginData('parent', node.id);
-      }
-
-      transformPosition = [
-        [xCos, xSin, newX],
-        [yCos, ySin, newY],
-      ];
-
-      angleFrame.relativeTransform = transformPosition;
-    }
-  }
-};
+// const isValidShape = (node) =>
+//   node.type === 'RECTANGLE' ||
+//   node.type === 'ELLIPSE' ||
+//   node.type === 'GROUP' ||
+//   node.type === 'TEXT' ||
+//   node.type === 'STAR' ||
+//   node.type === 'VECTOR' ||
+//   node.type === 'FRAME' ||
+//   node.type === 'INSTANCE' ||
+//   node.type === 'COMPONENT' ||
+//   node.type === 'POLYGON';
 
 const getSelectionArray = () =>
   figma.currentPage.selection.map((node) => {
@@ -541,6 +404,7 @@ const getSelectionArray = () =>
       id: node.id,
       type: node.type,
       tooltipData: tooltipPluginDataByNode(node),
+      hasSpacing: Object.keys(getSpacing(node)).length > 0,
       data,
       // tooltipData: node,
     };
@@ -557,7 +421,6 @@ const sendSelection = () =>
 
 // events
 figma.on('selectionchange', () => {
-  console.log(figma.currentPage.selection);
   sendSelection();
 });
 
@@ -609,12 +472,55 @@ FigmaMessageEmitter.on('set measurements', (store: Partial<Store>) => {
     });
   }
 
+  const spacing = getSpacing(node);
+
+  if (Object.keys(spacing).length > 0) {
+    Object.keys(spacing)
+      .filter((connectedNodeId) => {
+        // check if group exists
+        const foundGroup = figma.getNodeById(spacing[connectedNodeId]);
+        if (!foundGroup) {
+          delete spacing[connectedNodeId];
+          setSpacing(node, spacing);
+        }
+
+        // get connected node
+        const foundConnectedNode = figma.getNodeById(connectedNodeId);
+
+        // node removed
+        if (!foundConnectedNode) {
+          try {
+            figma.getNodeById(spacing[connectedNodeId]).remove();
+            delete spacing[connectedNodeId];
+            setSpacing(node, spacing);
+          } catch {}
+        } else {
+          // check connected node group
+          const connectedNodeSpacing = getSpacing(foundConnectedNode);
+          const foundGroup = figma.getNodeById(connectedNodeSpacing[node.id]);
+          if (!foundGroup) {
+            delete connectedNodeSpacing[node.id];
+            setSpacing(foundConnectedNode, connectedNodeSpacing);
+          }
+
+          return connectedNodeId;
+        }
+      })
+      .map((connectedNodeId) => {
+        drawSpacing([node, figma.getNodeById(connectedNodeId)], {
+          color: store.color,
+          labels: store.labels,
+          unit: store.unit,
+        });
+      });
+  }
+
   let connectedNodes = [];
 
   if (store.surrounding.center) {
     const fillNode = createFill(node, {
       fill: store.fill,
-      dashDistance: store.dashDistance,
+      opacity: store.opacity,
       color: store.color,
     });
 
@@ -719,7 +625,6 @@ FigmaMessageEmitter.on('set measurements', (store: Partial<Store>) => {
     );
   }
 
-  console.log({ connectedNodes });
   node.setPluginData(
     'data',
     JSON.stringify({
@@ -749,32 +654,48 @@ FigmaMessageEmitter.on('set measurements', (store: Partial<Store>) => {
 
 const createFill = (
   node: SceneNode,
-  {
-    fill,
-    dashDistance,
-    color,
-  }: { fill: FillTypes; dashDistance: number; color: string }
+  { fill, opacity, color }: { fill: FillTypes; opacity: number; color: string }
 ) => {
   if (node.type !== 'SLICE' && node.type !== 'GROUP') {
-    const cloneNode = node.clone();
+    let cloneNode: SceneNode;
+
+    if (
+      node.type === 'FRAME' ||
+      node.type === 'TEXT' ||
+      node.type === 'COMPONENT' ||
+      node.type === 'INSTANCE'
+    ) {
+      cloneNode = figma.createRectangle();
+      cloneNode.resize(node.width, node.height);
+    } else {
+      cloneNode = node.clone();
+    }
+
+    cloneNode.x = node.x;
+    cloneNode.y = node.y;
+    cloneNode.relativeTransform = node.absoluteTransform;
+
     cloneNode.fills = [];
     cloneNode.strokes = [];
+    cloneNode.opacity = 1;
 
     const { r, g, b } = hexToRgb(color);
 
     switch (fill) {
       case 'dashed':
-        cloneNode.dashPattern = [dashDistance];
+        cloneNode.dashPattern = [4];
         cloneNode.strokes = [].concat(solidColor(r, g, b));
         cloneNode.strokeWeight = 1;
         break;
       case 'fill':
+        cloneNode.opacity = opacity / 100;
         cloneNode.fills = [].concat({
           ...solidColor(r, g, b),
           opacity: 0.3,
         });
         break;
       case 'fill-stroke':
+        cloneNode.opacity = opacity / 100;
         cloneNode.strokes = [].concat(solidColor(r, g, b));
         cloneNode.strokeWeight = 1;
 
@@ -790,84 +711,5 @@ const createFill = (
     }
 
     return cloneNode;
-  }
-};
-
-//@ts-ignore
-const bla = async (message) => {
-  if (figma.command === 'relaunch') {
-    for (const node of figma.currentPage.selection) {
-      if (isValidShape(node)) {
-        // await setTooltipWithData({}, node);
-      }
-    }
-    figma.closePlugin();
-  } else {
-    // storage
-    if (message.storage) {
-      const { action: key, payload: value } = message;
-
-      figma.clientStorage.setAsync(key, value);
-    } else {
-      switch (message.action) {
-        case 'init':
-          const tooltipSettings = await figma.clientStorage.getAsync(
-            'tooltip-settings'
-          );
-
-          figma.ui.postMessage({
-            type: 'init',
-            selection: getSelectionArray(),
-            tooltipSettings,
-          });
-          break;
-        case 'tooltip':
-          // await setTooltipWithData(message.payload);
-          break;
-        case 'angle':
-          setAngleInCanvas();
-          break;
-        case 'line':
-          // createLineFromMessage(message.payload);
-          break;
-        case 'line-preset':
-          // const { direction, strokeCap } = message.payload;
-
-          // if (direction === 'left-bottom') {
-          //   createLineFromMessage({
-          //     direction: 'both',
-          //     strokeCap,
-          //     align: Alignments.LEFT,
-          //     alignSecond: Alignments.BOTTOM,
-          //   });
-          // } else if (direction === 'left-top') {
-          //   createLineFromMessage({
-          //     direction: 'both',
-          //     strokeCap,
-          //     align: Alignments.LEFT,
-          //     alignSecond: Alignments.TOP,
-          //   });
-          // } else if (direction === 'right-bottom') {
-          //   createLineFromMessage({
-          //     direction: 'both',
-          //     strokeCap,
-          //     align: Alignments.RIGHT,
-          //     alignSecond: Alignments.BOTTOM,
-          //   });
-          // } else {
-          //   createLineFromMessage({
-          //     direction: 'both',
-          //     strokeCap,
-          //     align: Alignments.RIGHT,
-          //     alignSecond: Alignments.TOP,
-          //   });
-          // }
-
-          break;
-        case 'cancel':
-          figma.closePlugin();
-          break;
-      }
-    }
   }
 };

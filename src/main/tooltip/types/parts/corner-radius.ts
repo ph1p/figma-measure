@@ -7,7 +7,7 @@ export default function cornerRadiusPart(
 ) {
   if (node.cornerRadius) {
     const cornerRadiusIcon = figma.createNodeFromSvg(
-      `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.84229 12.5H5.81104V8.92188H10.0767V12.5H11.0454V4.5H10.0767V8.0625H5.81104V4.5H4.84229V12.5Z" fill="black" fill-opacity="0.3"/></svg>`
+      `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5 10V11H6V10C6 7.79086 7.79086 6 10 6H10.6667C10.7789 6 10.8901 6.00462 11 6.01369V5.01093C10.8898 5.00368 10.7787 5 10.6667 5H10C7.23858 5 5 7.23857 5 10Z" fill="black" fill-opacity="0.8"/></svg>`
     );
     const textNode = createTooltipTextNode({
       fontColor,

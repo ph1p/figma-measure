@@ -59,7 +59,7 @@ export interface Store {
   color: string;
   selection: any[];
   fill: FillTypes;
-  dashDistance: number;
+  opacity: number;
   unit: string;
   strokeCap: StrokeCap | 'STANDARD';
   strokeOffset: number;
@@ -71,7 +71,7 @@ export interface Store {
   toggleTooltipSetting(key: keyof TooltipSettings): void;
   setTooltipSettings(settings: any): void;
   setFill(fill: any): void;
-  setDashDistance(distance: number): void;
+  setOpacity(opacity: number): void;
   setStrokeCap(lineEnding: StrokeCap | 'STANDARD'): void;
   setStrokeOffset(offset: number): void;
   setSurrounding(surrounding: any): void;

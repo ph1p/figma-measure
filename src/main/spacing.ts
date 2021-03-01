@@ -1,5 +1,53 @@
 import { getColor } from '.';
+import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
 import { solidColor } from './helper';
+
+export const getSpacing = (node) => JSON.parse(node.getPluginData('spacing') || '{}');
+export const setSpacing = (node, data) =>
+  node.setPluginData('spacing', JSON.stringify(data));
+
+FigmaMessageEmitter.on('draw spacing', (settings) => {
+  let spacingRemoved = false;
+  const rects = figma.currentPage.selection;
+
+  if (rects.length > 0 && rects.length <= 2) {
+    const node = rects[0];
+    const spacing = getSpacing(node);
+
+    Object.keys(spacing).filter((connectedNodeId) => {
+      // check if group exists
+      const group = figma.getNodeById(spacing[connectedNodeId]);
+
+      delete spacing[connectedNodeId];
+      setSpacing(node, spacing);
+      try {
+        group.remove();
+        spacingRemoved = true;
+      } catch {}
+
+      // get connected node
+      const foundConnectedNode = figma.getNodeById(connectedNodeId);
+
+      // node removed
+      if (foundConnectedNode) {
+        // check connected node group
+        const connectedNodeSpacing = getSpacing(foundConnectedNode);
+        delete connectedNodeSpacing[node.id];
+        setSpacing(foundConnectedNode, connectedNodeSpacing);
+      }
+    });
+
+    if(rects.length === 1 && !spacingRemoved) {
+      figma.notify('Please select on more element.');
+    }
+
+    if (!spacingRemoved) {
+      drawSpacing(rects, settings);
+    }
+  } else {
+    figma.notify('Please select exactly two elements.');
+  }
+});
 
 function createLabel(baseNode, text, color, isVertical) {
   const labelFrame = figma.createFrame();
@@ -45,16 +93,26 @@ function distanceBetweenTwoPoints(x1, y1, x2, y2) {
   return Math.floor(Math.sqrt(dx + dy));
 }
 
-export const drawSpacing = ({ color = '', labels = '', unit = '' }) => {
-  if (figma.currentPage.selection.length !== 2) {
+export const drawSpacing = (
+  rects,
+  { color = '', labels = true, unit = '' }
+) => {
+  if (rects.length !== 2) {
     return;
+  }
+
+  const spacingData1 = JSON.parse(rects[0].getPluginData('spacing') || '{}');
+  const spacingData2 = JSON.parse(rects[1].getPluginData('spacing') || '{}');
+
+  if (spacingData1[rects[1].id]) {
+    try {
+      figma.getNodeById(spacingData1[rects[1].id]).remove();
+    } catch {}
   }
 
   const mainColor = getColor(color);
 
   const spacingGroup = [];
-
-  const rects = figma.currentPage.selection;
 
   const x1 = rects[0].x;
   const y1 = rects[0].y;
@@ -294,21 +352,22 @@ export const drawSpacing = ({ color = '', labels = '', unit = '' }) => {
     group.locked = true;
     group.expanded = false;
 
-    const id = rects.map((rect) => rect.id).join('-');
-    const spacingData = JSON.parse(figma.root.getPluginData('spacing') || '{}');
-
-    if (spacingData[id]) {
-      try {
-        figma.getNodeById(spacingData[id]).remove();
-      } catch {}
-    }
-
-    figma.root.setPluginData(
+    rects[0].setPluginData(
       'spacing',
       JSON.stringify({
-        ...spacingData,
-        [id]: group.id,
+        ...spacingData1,
+        [rects[1].id]: group.id,
       })
     );
+
+    rects[1].setPluginData(
+      'spacing',
+      JSON.stringify({
+        ...spacingData2,
+        [rects[0].id]: group.id,
+      })
+    );
+
+    return group;
   }
 };

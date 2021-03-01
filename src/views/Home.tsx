@@ -1,7 +1,10 @@
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
-import { ColorPicker } from '../components/ColorPicker';
+import { Colors } from '../components/ColorPicker';
+import { EyeClosedIcon, EyeIcon } from '../components/icons/EyeIcons';
+import { RefreshIcon } from '../components/icons/RefreshIcon';
+import { SpacingIcon } from '../components/icons/SpacingIcon';
 import { Toggle } from '../components/Toggle';
 
 import Viewer from '../components/Viewer';
@@ -17,65 +20,63 @@ const Home: FunctionComponent = observer(() => {
   useEffect(() => {
     FigmaMessageEmitter.emit('resize', {
       width: 285,
-      height: 539,
+      height: 526,
     });
   }, []);
+
+  const isSpacingToggleActive = useMemo(() => {
+    return (
+      store.selection.some((selection) => selection.hasSpacing) ||
+      (store.selection.length === 1 && store.selection[0].hasSpacing)
+    );
+  }, [store.selection]);
+
+  const shouldDisableSpacing = useMemo(() => {
+    return store.selection.length === 1 && !store.selection[0].hasSpacing;
+  }, [store.selection]);
+
+  const toggleSpacing = () => {
+    FigmaMessageEmitter.emit('draw spacing', {
+      color: store.color,
+      labels: store.labels,
+      unit: store.unit,
+    });
+    FigmaMessageEmitter.ask('current selection').then((data: string[]) =>
+      store.setSelection(data)
+    );
+  };
 
   return (
     <>
       <ViewerContainer>
+        {store.selection.length === 0 && (
+          <ViewerOverlay>
+            <span>
+              Select a Layer
+              <br />
+              to get started
+            </span>
+          </ViewerOverlay>
+        )}
         <Viewer />
 
-        <Spacing
-          onClick={() => {
-            if (store.selection.length === 2) {
-              FigmaMessageEmitter.emit('draw spacing', {
-                color: store.color,
-                labels: store.labels,
-                unit: store.unit,
-              });
-            } else {
-              alert('Please select 2 element to measure the distance');
-            }
-          }}
+        <Visibility onClick={() => store.toggleVisibility()}>
+          {store.visibility ? <EyeIcon /> : <EyeClosedIcon />}
+        </Visibility>
+
+        <Refresh
+          active={store.selection.length > 0}
+          onClick={() => store.sendMeasurements()}
         >
-          <svg
-            width="30"
-            height="29"
-            viewBox="0 0 30 29"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect
-              x="0.5"
-              y="0.5"
-              width="29"
-              height="28"
-              rx="9.5"
-              stroke="#E8E8E8"
-            />
-            <line x1="9" y1="14.5" x2="21" y2="14.5" stroke={store.color} />
-            <line
-              x1="12"
-              y1="14.5"
-              x2="18"
-              y2="14.5"
-              stroke={store.color}
-              strokeWidth="3"
-            />
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M26 7.5C26 7.22386 25.7761 7 25.5 7H24.5C23.6716 7 23 7.67157 23 8.5V20.5C23 21.3284 23.6716 22 24.5 22H25.5C25.7761 22 26 21.7761 26 21.5C26 21.2239 25.7761 21 25.5 21H25C24.4477 21 24 20.5523 24 20V9C24 8.44772 24.4477 8 25 8H25.5C25.7761 8 26 7.77614 26 7.5Z"
-              fill="black"
-            />
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M4 7.5C4 7.22386 4.22386 7 4.5 7H5.5C6.32843 7 7 7.67157 7 8.5V20.5C7 21.3284 6.32843 22 5.5 22H4.5C4.22386 22 4 21.7761 4 21.5C4 21.2239 4.22386 21 4.5 21H5C5.55228 21 6 20.5523 6 20V9C6 8.44772 5.55228 8 5 8H4.5C4.22386 8 4 7.77614 4 7.5Z"
-              fill="black"
-            />
-          </svg>
+          <RefreshIcon />
+        </Refresh>
+
+        <Spacing
+          active={isSpacingToggleActive}
+          disable={shouldDisableSpacing}
+          onClick={toggleSpacing}
+        >
+          <SpacingIcon />
         </Spacing>
       </ViewerContainer>
 
@@ -84,8 +85,8 @@ const Home: FunctionComponent = observer(() => {
 
       <InputContainer>
         <label htmlFor="color">Color</label>
-        <ColorPicker
-          id="base-color"
+        <Colors
+          colors={['#E8278A', '#FAAA00', '#2CB571', '#1D45E8', '#7623F5']}
           onChange={(color) => store.setColor(color)}
           color={store.color}
         />
@@ -94,7 +95,7 @@ const Home: FunctionComponent = observer(() => {
       <InputContainer style={{ paddingTop: 0 }}>
         <Toggle
           checked={store.labels}
-          label="Labels"
+          label="Numbers"
           onChange={(e) => store.setLabels(e.currentTarget.checked)}
         />
         <div className="input" style={{ width: 55, marginLeft: 12 }}>
@@ -109,21 +110,66 @@ const Home: FunctionComponent = observer(() => {
   );
 });
 
+const ViewerOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: bold;
+  z-index: 3;
+`;
+
 const InputContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 12px;
+  padding: 14px;
   align-items: center;
   label {
     font-weight: bold;
   }
 `;
 
-const Spacing = styled.div`
+const Spacing = styled.div<{ active: boolean; disable: boolean }>`
   position: absolute;
   right: 12px;
   bottom: 12px;
   cursor: pointer;
+  opacity: ${(props) => (props.disable ? 0.5 : 1)};
+  ${(props) => (props.active ? 'box-shadow: 0 0 0 3px #e8ecfd' : '')};
+  border-radius: 3px;
+`;
+
+const Refresh = styled.div<{ active?: boolean }>`
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #e8e8e8;
+  overflow: hidden;
+  opacity: ${(props) => (props.active ? 1 : 0.5)};
+  svg {
+    margin: -2px 0 0 -2px;
+  }
+  &:hover {
+    background-color: #f3f5ff;
+  }
+  &:active {
+    background-color: #e8ecfd;
+  }
+`;
+
+const Visibility = styled(Refresh)`
+  left: 12px;
+  top: 12px;
 `;
 
 const ViewerContainer = styled.div`
@@ -140,18 +186,5 @@ const ViewerContainer = styled.div`
     }
   }
 `;
-
-// const Version = styled.div`
-//   text-align: center;
-//   padding: 5px 8px;
-//   a {
-//     color: #999;
-//     text-decoration: none;
-//     font-size: 10px;
-//     &:hover {
-//       text-decoration: underline;
-//     }
-//   }
-// `;
 
 export default Home;

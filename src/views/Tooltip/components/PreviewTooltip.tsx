@@ -6,11 +6,13 @@ import styled from 'styled-components';
 import { useStore } from '../../../store';
 import {
   ColorIcon,
+  CornerRadiusIcon,
   FontFamilyIcon,
   FontSizeIcon,
   FontStyleIcon,
   HeightIcon,
   OpacityIcon,
+  PointsIcon,
   StrokeIcon,
   WidthIcon,
 } from '../../../components/icons/TooltipIcons';
@@ -112,6 +114,22 @@ export const PreviewTooltip: FunctionComponent = observer(() => {
             <StrokeIcon />
           </div>
           <span>5{store.unit}</span>
+        </div>
+      )}
+      {store.tooltip.cornerRadius && (
+        <div>
+          <div className="icon">
+            <CornerRadiusIcon />
+          </div>
+          <span>7{store.unit}</span>
+        </div>
+      )}
+      {store.tooltip.points && (
+        <div>
+          <div className="icon">
+            <PointsIcon />
+          </div>
+          <span>4</span>
         </div>
       )}
     </Tooltip>

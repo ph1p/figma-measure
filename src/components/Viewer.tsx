@@ -72,7 +72,6 @@ const Viewer: FunctionComponent = observer(() => {
       viewBox="0 0 184 184"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ opacity: store.selection.length > 0 ? 1 : 0.6 }}
     >
       <g data-direction="left-bottom" onClick={clickCorner}>
         <path

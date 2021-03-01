@@ -111,8 +111,8 @@ const CenterChooser: FunctionComponent = observer(() => {
       <div className="input icon" style={{ width: 75 }}>
         <input
           type="number"
-          value={store.dashDistance}
-          onChange={(e) => store.setDashDistance(+e.currentTarget.value)}
+          value={store.opacity}
+          onChange={(e) => store.setOpacity(+e.currentTarget.value)}
         />
         <div>
           <svg

@@ -51,6 +51,8 @@ const Wrapper = styled.div`
 `;
 
 const Settings = styled.div`
+  overflow: auto;
+  height: 209px;
   padding: 12px;
   > div {
     margin-bottom: 10px;
@@ -65,7 +67,7 @@ const Preview = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 215px;
+  height: 275px;
 `;
 
 const Tooltip: FunctionComponent = observer(() => {
@@ -161,6 +163,16 @@ const Tooltip: FunctionComponent = observer(() => {
           checked={store.tooltip.stroke}
           label="Stroke"
           onChange={() => store.toggleTooltipSetting('stroke')}
+        />
+        <Toggle
+          checked={store.tooltip.cornerRadius}
+          label="Corner-Radius"
+          onChange={() => store.toggleTooltipSetting('cornerRadius')}
+        />
+        <Toggle
+          checked={store.tooltip.points}
+          label="Points"
+          onChange={() => store.toggleTooltipSetting('points')}
         />
       </Settings>
       {/* <Header backButton title="Tooltip" />

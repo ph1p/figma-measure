@@ -28,6 +28,9 @@ const App: FunctionComponent = observer(() => {
 
   useEffect(() => {
     // check selection
+    FigmaMessageEmitter.ask('current selection').then((data: string[]) =>
+      store.setSelection(data)
+    );
     FigmaMessageEmitter.on('selection', (data) => store.setSelection(data));
 
     return () => FigmaMessageEmitter.remove('selection');
@@ -67,17 +70,8 @@ const App: FunctionComponent = observer(() => {
   );
 });
 
-const Main = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-`;
-
-getStoreFromMain().then((store) => {
-  return trunk.init(store).then(() => {
-    // const { selection, tooltipSettings } = event.data.pluginMessage;
-
+getStoreFromMain().then((store) =>
+  trunk.init(store).then(() =>
     ReactDOM.render(
       <StoreProvider>
         <GlobalStyle />
@@ -86,18 +80,25 @@ getStoreFromMain().then((store) => {
         </Router>
       </StoreProvider>,
       document.getElementById('app')
-    );
-  });
-});
+    )
+  )
+);
+
+const Main = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+`;
 
 const ViewSwitch = styled.div<{ menu: number }>`
-  border: 1px solid #e6e6e6;
-  border-radius: 43px;
+  border-top: 1px solid #e6e6e6;
   display: flex;
   position: relative;
-  margin: 0 12px 12px 12px;
+  overflow: hidden;
+  height: 42px;
   div {
-    transition: color 0.3s;
+    transition: font-weight 0.3s;
     position: relative;
     z-index: 2;
     flex: 1;
@@ -105,22 +106,25 @@ const ViewSwitch = styled.div<{ menu: number }>`
     padding: 12px 0;
     user-select: none;
     cursor: pointer;
-    font-weight: bold;
-    &:nth-child(${(p) => p.menu}) {
-      color: #fff;
+    font-weight: normal;
+    &::before {
+      content: '';
+      transition: transform 0.3s;
+      position: absolute;
+      flex: 1;
+      border-radius: 6px 6px 0 0;
+      width: 60%;
+      height: 4px;
+      left: 50%;
+      bottom: 0;
+      background-color: #000;
+      transform: translate(-50%, 5px);
     }
-  }
-  &::before {
-    content: '';
-    transition: transform 0.3s;
-    position: absolute;
-    flex: 1;
-    border-radius: 43px;
-    width: 50%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    background-color: #000;
-    transform: translateX(${(p) => (p.menu === 1 ? 0 : 100)}%);
+    &:nth-child(${(p) => p.menu}) {
+      font-weight: bold;
+      &::before {
+        transform: translate(-50%, 0);
+      }
+    }
   }
 `;

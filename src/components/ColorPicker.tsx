@@ -97,3 +97,60 @@ export const ColorPicker: FunctionComponent<Props> = (props) => {
     </Wrapper>
   );
 };
+
+interface ColorsProps {
+  colors: string[];
+  onChange: (color: string) => void;
+  color: string;
+}
+
+const ColorItem = styled.div<{ color: string; active: boolean }>`
+  position: relative;
+  width: 22px;
+  height: 22px;
+  border-radius: 8px;
+  background-color: ${(props) => props.color};
+  cursor: pointer;
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    position: absolute;
+    top: 7px;
+    left: 7px;
+    border-radius: 100%;
+    transition: background-color 0.3s;
+    background-color: ${(props) => (props.active ? '#fff' : 'transparent')};
+  }
+  &:hover {
+    &::before {
+      background-color: ${(props) =>
+        props.active ? '#fff' : 'rgba(0, 0, 0, 0.2)'};
+    }
+  }
+`;
+
+const ColorsWrapper = styled.div`
+  display: flex;
+  ${ColorItem} {
+    margin-right: 3px;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+`;
+
+export const Colors: FunctionComponent<ColorsProps> = (props) => {
+  return (
+    <ColorsWrapper>
+      {props.colors.map((color) => (
+        <ColorItem
+          key={color}
+          color={color}
+          active={color === props.color}
+          onClick={() => color !== props.color && props.onChange(color)}
+        />
+      ))}
+    </ColorsWrapper>
+  );
+};

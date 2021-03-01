@@ -22,14 +22,16 @@ class RootStore {
   }
 
   labels = true;
-  color = '#1745E8';
+  color = '#E8278A';
+
+  visibility = true;
 
   @ignore
   selection = [];
 
   fill: FillTypes = 'stroke';
 
-  dashDistance: number = 0;
+  opacity: number = 50;
 
   strokeCap: StrokeCap | 'STANDARD' = 'STANDARD';
   strokeOffset: number = 10;
@@ -96,8 +98,8 @@ class RootStore {
     this.sendMeasurements();
   }
 
-  setDashDistance(distance: number) {
-    this.dashDistance = distance;
+  setOpacity(distance: number) {
+    this.opacity = distance;
     this.sendMeasurements();
   }
 
@@ -128,6 +130,10 @@ class RootStore {
     this.selection = selection;
   }
 
+  toggleVisibility() {
+    this.visibility = !this.visibility;
+  }
+
   sendMeasurements() {
     if (this.selection.length > 0) {
       FigmaMessageEmitter.emit(
@@ -136,7 +142,7 @@ class RootStore {
           labels: this.labels,
           color: this.color,
           fill: this.fill,
-          dashDistance: this.dashDistance,
+          opacity: this.opacity,
           strokeCap: this.strokeCap,
           strokeOffset: this.strokeOffset,
           surrounding: toJS(this.surrounding),
