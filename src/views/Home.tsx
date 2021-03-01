@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useEffect, useMemo } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 import styled from 'styled-components';
 import { Colors } from '../components/ColorPicker';
 import { EyeClosedIcon, EyeIcon } from '../components/icons/EyeIcons';
@@ -16,13 +16,6 @@ import LineChooser from './components/LineChooser';
 
 const Home: FunctionComponent = observer(() => {
   const store = useStore();
-
-  useEffect(() => {
-    FigmaMessageEmitter.emit('resize', {
-      width: 285,
-      height: 526,
-    });
-  }, []);
 
   const hasSpacing = useMemo(() => {
     return store.selection.some((selection) => selection.hasSpacing);

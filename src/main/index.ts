@@ -15,12 +15,13 @@ import { drawSpacing, getSpacing, setSpacing } from './spacing';
 
 figma.showUI(__html__, {
   width: 285,
-  height: 300,
-  visible: figma.command !== 'relaunch',
+  height: 526,
+  visible: figma.command !== 'visibility',
 });
 
 figma.root.setRelaunchData({
   open: '',
+  visibility: '',
 });
 
 const getGlobalGroup = () => {
@@ -28,6 +29,15 @@ const getGlobalGroup = () => {
     (node) => node.getPluginData('isGlobalGroup') === '1'
   ) as GroupNode;
 };
+
+if (figma.command === 'visibility') {
+  const group = getGlobalGroup();
+
+  if (group) {
+    group.visible = !group.visible;
+  }
+  figma.closePlugin();
+}
 
 export const addToGlobalGroup = (node: SceneNode) => {
   let globalGroup: GroupNode = getGlobalGroup();

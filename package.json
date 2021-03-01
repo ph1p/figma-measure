@@ -41,8 +41,8 @@
         "name": "Open Figma-Measure"
       },
       {
-        "command": "relaunch",
-        "name": "Add/Update tooltip",
+        "command": "visibility",
+        "name": "Show/Hide Measurements",
         "multipleSelection": true
       }
     ]
