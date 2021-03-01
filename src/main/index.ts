@@ -23,6 +23,26 @@ figma.root.setRelaunchData({
   open: '',
 });
 
+const getGlobalGroup = () => {
+  return figma.currentPage.findOne(
+    (node) => node.getPluginData('isGlobalGroup') === '1'
+  ) as GroupNode;
+};
+
+const addToGlobalGroup = (node: SceneNode) => {
+  let globalGroup: GroupNode = getGlobalGroup();
+
+  if (!globalGroup) {
+    globalGroup = figma.group([node], figma.currentPage);
+  } else {
+    globalGroup.appendChild(node);
+  }
+  globalGroup.locked = true;
+  globalGroup.expanded = false;
+  globalGroup.name = `📐 Measurements`;
+  globalGroup.setPluginData('isGlobalGroup', '1');
+};
+
 const nodeGroup = (node) =>
   (figma.currentPage.findOne(
     (currentNode) => currentNode.getPluginData('parent') === node.id
@@ -37,10 +57,6 @@ export const getPluginData = (node, name) => {
   return JSON.parse(data);
 };
 
-// // const getAllMeasurements = () => {};
-
-// // const updateMeasurementsOfNode = (node) => {};
-
 const getLineFrame = (node, data) => {
   const name = 'line';
   const lineFrame = figma.createFrame();
@@ -53,14 +69,7 @@ const getLineFrame = (node, data) => {
   lineFrame.backgrounds = [];
   lineFrame.clipsContent = false;
 
-  // set plugin data
-  // const lineData = {
-  //   parent: node.id,
-  //   nodeId: lineFrame.id,
-  // };
-
   lineFrame.expanded = false;
-  // lineFrame.setPluginData(name, JSON.stringify(lineData));
 
   return lineFrame;
 };
@@ -424,230 +433,221 @@ figma.on('selectionchange', () => {
   sendSelection();
 });
 
-// function iterateOverFile(node, cb) {
-//   if ('children' in node) {
-//     if (node.type !== 'INSTANCE') {
-//       cb(node);
-//       for (const child of node.children) {
-//         cb(child);
-//         iterateOverFile(child, cb);
-//       }
-//     }
-//   }
-// }
-
-// const sendStorageData = async (key) => {
-//   const data = await figma.clientStorage.getAsync(key);
-
-//   figma.ui.postMessage({
-//     type: key,
-//     data,
-//   });
-// };
-
 FigmaMessageEmitter.on('resize', ({ width, height }) =>
   figma.ui.resize(width, height)
 );
+
+FigmaMessageEmitter.on('toggle visibility', () => {
+  const group = getGlobalGroup();
+
+  if (group) {
+    group.visible = !group.visible;
+  }
+});
 
 FigmaMessageEmitter.answer('current selection', async () =>
   getSelectionArray()
 );
 
 FigmaMessageEmitter.on('set measurements', (store: Partial<Store>) => {
-  const node = figma.currentPage.selection[0];
+  // const node = figma.currentPage.selection[0];
 
-  let data: PluginNodeData = {};
+  for (const node of figma.currentPage.selection) {
+    let data: PluginNodeData = {};
 
-  try {
-    data = JSON.parse(node.getPluginData('data'));
-    node.setPluginData('data', '{}');
-  } catch {}
+    try {
+      data = JSON.parse(node.getPluginData('data'));
+      node.setPluginData('data', '{}');
+    } catch {}
 
-  if (data?.connectedNodes?.length) {
-    data.connectedNodes.map((id) => {
-      const node = figma.getNodeById(id);
-      if (node) {
-        node.remove();
-      }
-    });
-  }
-
-  const spacing = getSpacing(node);
-
-  if (Object.keys(spacing).length > 0) {
-    Object.keys(spacing)
-      .filter((connectedNodeId) => {
-        // check if group exists
-        const foundGroup = figma.getNodeById(spacing[connectedNodeId]);
-        if (!foundGroup) {
-          delete spacing[connectedNodeId];
-          setSpacing(node, spacing);
+    if (data?.connectedNodes?.length) {
+      data.connectedNodes.map((id) => {
+        const node = figma.getNodeById(id);
+        if (node) {
+          node.remove();
         }
+      });
+    }
 
-        // get connected node
-        const foundConnectedNode = figma.getNodeById(connectedNodeId);
+    const spacing = getSpacing(node);
 
-        // node removed
-        if (!foundConnectedNode) {
-          try {
-            figma.getNodeById(spacing[connectedNodeId]).remove();
+    if (Object.keys(spacing).length > 0) {
+      Object.keys(spacing)
+        .filter((connectedNodeId) => {
+          // check if group exists
+          const foundGroup = figma.getNodeById(spacing[connectedNodeId]);
+          if (!foundGroup) {
             delete spacing[connectedNodeId];
             setSpacing(node, spacing);
-          } catch {}
-        } else {
-          // check connected node group
-          const connectedNodeSpacing = getSpacing(foundConnectedNode);
-          const foundGroup = figma.getNodeById(connectedNodeSpacing[node.id]);
-          if (!foundGroup) {
-            delete connectedNodeSpacing[node.id];
-            setSpacing(foundConnectedNode, connectedNodeSpacing);
           }
 
-          return connectedNodeId;
-        }
-      })
-      .map((connectedNodeId) => {
-        drawSpacing([node, figma.getNodeById(connectedNodeId)], {
-          color: store.color,
-          labels: store.labels,
-          unit: store.unit,
+          // get connected node
+          const foundConnectedNode = figma.getNodeById(connectedNodeId);
+
+          // node removed
+          if (!foundConnectedNode) {
+            try {
+              figma.getNodeById(spacing[connectedNodeId]).remove();
+              delete spacing[connectedNodeId];
+              setSpacing(node, spacing);
+            } catch {}
+          } else {
+            // check connected node group
+            const connectedNodeSpacing = getSpacing(foundConnectedNode);
+            const foundGroup = figma.getNodeById(connectedNodeSpacing[node.id]);
+            if (!foundGroup) {
+              delete connectedNodeSpacing[node.id];
+              setSpacing(foundConnectedNode, connectedNodeSpacing);
+            }
+
+            return connectedNodeId;
+          }
+        })
+        .map((connectedNodeId) => {
+          drawSpacing([node, figma.getNodeById(connectedNodeId)], {
+            color: store.color,
+            labels: store.labels,
+            unit: store.unit,
+          });
         });
+    }
+
+    let connectedNodes = [];
+
+    if (store.surrounding.center) {
+      const fillNode = createFill(node, {
+        fill: store.fill,
+        opacity: store.opacity,
+        color: store.color,
       });
-  }
 
-  let connectedNodes = [];
+      if (fillNode) {
+        connectedNodes.push(fillNode);
+      }
+    }
 
-  if (store.surrounding.center) {
-    const fillNode = createFill(node, {
-      fill: store.fill,
-      opacity: store.opacity,
+    if (store.surrounding.tooltip) {
+      const tooltip = setTooltip(
+        {
+          flags: store.tooltip,
+          unit: store.unit,
+          distance: store.strokeOffset + 6,
+          position: store.surrounding.tooltip,
+        },
+        node
+      );
+
+      if (tooltip) {
+        connectedNodes.push(tooltip);
+      }
+    }
+
+    const strokeSettings = {
+      strokeCap: store.strokeCap,
+      offset: store.strokeOffset,
+      unit: store.unit,
       color: store.color,
-    });
+      labels: store.labels,
+    };
 
-    if (fillNode) {
-      connectedNodes.push(fillNode);
+    if (store.surrounding.rightBar) {
+      connectedNodes.push(
+        createLine({
+          ...strokeSettings,
+          node,
+          direction: 'vertical',
+          name: 'vertical line ' + Alignments.RIGHT.toLowerCase(),
+          lineVerticalAlign: Alignments.RIGHT,
+        })
+      );
     }
-  }
 
-  if (store.surrounding.tooltip) {
-    const tooltip = setTooltip(
-      {
-        flags: store.tooltip,
-        unit: store.unit,
-        distance: store.strokeOffset + 6,
-        position: store.surrounding.tooltip,
-      },
-      node
-    );
-
-    if (tooltip) {
-      connectedNodes.push(tooltip);
+    if (store.surrounding.leftBar) {
+      connectedNodes.push(
+        createLine({
+          ...strokeSettings,
+          node,
+          direction: 'vertical',
+          name: 'vertical line ' + Alignments.LEFT.toLowerCase(),
+          lineVerticalAlign: Alignments.LEFT,
+        })
+      );
     }
-  }
 
-  const strokeSettings = {
-    strokeCap: store.strokeCap,
-    offset: store.strokeOffset,
-    unit: store.unit,
-    color: store.color,
-    labels: store.labels,
-  };
+    if (store.surrounding.topBar) {
+      connectedNodes.push(
+        createLine({
+          ...strokeSettings,
+          node,
+          direction: 'horizontal',
+          name: 'horizontal line ' + Alignments.TOP.toLowerCase(),
+          lineHorizontalAlign: Alignments.TOP,
+        })
+      );
+    }
 
-  if (store.surrounding.rightBar) {
-    connectedNodes.push(
-      createLine({
-        ...strokeSettings,
-        node,
-        direction: 'vertical',
-        name: 'vertical line ' + Alignments.RIGHT.toLowerCase(),
-        lineVerticalAlign: Alignments.RIGHT,
-      })
+    if (store.surrounding.bottomBar) {
+      connectedNodes.push(
+        createLine({
+          ...strokeSettings,
+          node,
+          direction: 'horizontal',
+          name: 'horizontal line ' + Alignments.BOTTOM.toLowerCase(),
+          lineHorizontalAlign: Alignments.BOTTOM,
+        })
+      );
+    }
+
+    if (store.surrounding.horizontalBar) {
+      connectedNodes.push(
+        createLine({
+          ...strokeSettings,
+          node,
+          direction: 'horizontal',
+          name: 'horizontal line ' + Alignments.CENTER.toLowerCase(),
+          lineHorizontalAlign: Alignments.CENTER,
+        })
+      );
+    }
+
+    if (store.surrounding.verticalBar) {
+      connectedNodes.push(
+        createLine({
+          ...strokeSettings,
+          node,
+          direction: 'vertical',
+          name: 'vertical line ' + Alignments.CENTER.toLowerCase(),
+          lineVerticalAlign: Alignments.CENTER,
+        })
+      );
+    }
+
+    node.setPluginData(
+      'data',
+      JSON.stringify({
+        connectedNodes: connectedNodes.map(({ id }) => id),
+        surrounding: store.surrounding,
+        version: VERSION,
+      } as PluginNodeData)
     );
-  }
 
-  if (store.surrounding.leftBar) {
-    connectedNodes.push(
-      createLine({
-        ...strokeSettings,
-        node,
-        direction: 'vertical',
-        name: 'vertical line ' + Alignments.LEFT.toLowerCase(),
-        lineVerticalAlign: Alignments.LEFT,
-      })
-    );
-  }
+    if (connectedNodes.length > 0) {
+      const group = nodeGroup(node);
 
-  if (store.surrounding.topBar) {
-    connectedNodes.push(
-      createLine({
-        ...strokeSettings,
-        node,
-        direction: 'horizontal',
-        name: 'horizontal line ' + Alignments.TOP.toLowerCase(),
-        lineHorizontalAlign: Alignments.TOP,
-      })
-    );
-  }
+      if (group) {
+        connectedNodes.forEach((n) => {
+          group.appendChild(n);
+        });
+        addToGlobalGroup(group);
+      } else {
+        const measureGroup = figma.group(connectedNodes, figma.currentPage);
+        measureGroup.locked = true;
+        measureGroup.expanded = false;
+        measureGroup.name = `📏 ${node.name}`;
 
-  if (store.surrounding.bottomBar) {
-    connectedNodes.push(
-      createLine({
-        ...strokeSettings,
-        node,
-        direction: 'horizontal',
-        name: 'horizontal line ' + Alignments.BOTTOM.toLowerCase(),
-        lineHorizontalAlign: Alignments.BOTTOM,
-      })
-    );
-  }
-
-  if (store.surrounding.horizontalBar) {
-    connectedNodes.push(
-      createLine({
-        ...strokeSettings,
-        node,
-        direction: 'horizontal',
-        name: 'horizontal line ' + Alignments.CENTER.toLowerCase(),
-        lineHorizontalAlign: Alignments.CENTER,
-      })
-    );
-  }
-
-  if (store.surrounding.verticalBar) {
-    connectedNodes.push(
-      createLine({
-        ...strokeSettings,
-        node,
-        direction: 'vertical',
-        name: 'vertical line ' + Alignments.CENTER.toLowerCase(),
-        lineVerticalAlign: Alignments.CENTER,
-      })
-    );
-  }
-
-  node.setPluginData(
-    'data',
-    JSON.stringify({
-      connectedNodes: connectedNodes.map(({ id }) => id),
-      surrounding: store.surrounding,
-      version: VERSION,
-    } as PluginNodeData)
-  );
-
-  if (connectedNodes.length > 0) {
-    const group = nodeGroup(node);
-
-    if (group) {
-      connectedNodes.forEach((n) => {
-        group.appendChild(n);
-      });
-    } else {
-      const measureGroup = figma.group(connectedNodes, figma.currentPage);
-      measureGroup.locked = true;
-      measureGroup.expanded = false;
-      measureGroup.name = `📐 Measurements | ${node.name}`;
-
-      measureGroup.setPluginData('parent', node.id);
+        measureGroup.setPluginData('parent', node.id);
+        addToGlobalGroup(measureGroup);
+      }
     }
   }
 });

@@ -132,6 +132,7 @@ class RootStore {
 
   toggleVisibility() {
     this.visibility = !this.visibility;
+    FigmaMessageEmitter.emit('toggle visibility');
   }
 
   sendMeasurements() {

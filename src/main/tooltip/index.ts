@@ -189,8 +189,6 @@ export function setTooltip(options: any, specificNode = null) {
         : options[settingKey];
   }
 
-  figma.clientStorage.setAsync('tooltip-settings', data.settings);
-
   if (figma.currentPage.selection.length === 1 || specificNode) {
     const node = specificNode || figma.currentPage.selection[0];
 

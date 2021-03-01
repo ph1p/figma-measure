@@ -170,6 +170,7 @@ const Refresh = styled.div<{ active?: boolean }>`
 const Visibility = styled(Refresh)`
   left: 12px;
   top: 12px;
+  z-index: 10;
 `;
 
 const ViewerContainer = styled.div`
