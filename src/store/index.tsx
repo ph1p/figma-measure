@@ -1,9 +1,9 @@
 import { makeAutoObservable, toJS } from 'mobx';
 import React from 'react';
 import { AsyncTrunk, ignore } from 'mobx-sync';
-import fme from '../shared/FigmaMessageEmitter';
+import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
 import { STORAGE_KEY } from '../shared/constants';
-import { TooltipSettings } from '../shared/interfaces';
+import { FillTypes, TooltipSettings } from '../shared/interfaces';
 
 const DEFAULT_SURROUNDING_FLAGS = {
   labels: false,
@@ -27,7 +27,7 @@ class RootStore {
   @ignore
   selection = [];
 
-  fill: 'dashed' | 'fill' | 'stroke' | 'fill-stroke' = 'stroke';
+  fill: FillTypes = 'stroke';
 
   dashDistance: number = 0;
 
@@ -130,7 +130,7 @@ class RootStore {
 
   sendMeasurements() {
     if (this.selection.length > 0) {
-      fme.emit(
+      FigmaMessageEmitter.emit(
         'set measurements',
         toJS({
           labels: this.labels,
@@ -172,27 +172,33 @@ export const trunk = new AsyncTrunk(rootStore, {
   storageKey: STORAGE_KEY,
   storage: {
     getItem(key: string) {
-      fme.emit('storage get item', key);
-      return new Promise((resolve) => fme.once('storage get item', resolve));
+      FigmaMessageEmitter.emit('storage get item', key);
+      return new Promise((resolve) =>
+        FigmaMessageEmitter.once('storage get item', resolve)
+      );
     },
     setItem(key: string, value: string) {
-      fme.emit('storage set item', {
+      FigmaMessageEmitter.emit('storage set item', {
         key,
         value,
       });
-      return new Promise((resolve) => fme.once('storage set item', resolve));
+      return new Promise((resolve) =>
+        FigmaMessageEmitter.once('storage set item', resolve)
+      );
     },
     removeItem(key: string) {
-      fme.emit('storage remove item', key);
-      return new Promise((resolve) => fme.once('storage remove item', resolve));
+      FigmaMessageEmitter.emit('storage remove item', key);
+      return new Promise((resolve) =>
+        FigmaMessageEmitter.once('storage remove item', resolve)
+      );
     },
   },
 });
 
 export const getStoreFromMain = (): Promise<TStore | {}> => {
   return new Promise((resolve) => {
-    fme.emit('storage', STORAGE_KEY);
-    fme.once('storage', (store, emit) => {
+    FigmaMessageEmitter.emit('storage', STORAGE_KEY);
+    FigmaMessageEmitter.once('storage', (store, emit) => {
       emit('store initialized');
       resolve(JSON.parse(store || '{}'));
     });

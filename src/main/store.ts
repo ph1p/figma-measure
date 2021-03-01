@@ -1,10 +1,10 @@
 import { STORAGE_KEY } from '../shared/constants';
-import fme from '../shared/FigmaMessageEmitter';
+import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
 
 export const getState = async () =>
   JSON.parse(await figma.clientStorage.getAsync(STORAGE_KEY));
 
-fme.on('storage', async (key, send) => {
+FigmaMessageEmitter.on('storage', async (key, send) => {
   try {
     send('storage', await figma.clientStorage.getAsync(key));
   } catch {
@@ -12,13 +12,13 @@ fme.on('storage', async (key, send) => {
   }
 });
 
-fme.on('storage set item', ({ key, value }, send) => {
+FigmaMessageEmitter.on('storage set item', ({ key, value }, send) => {
   figma.clientStorage.setAsync(key, value);
 
   send('storage set item', true);
 });
 
-fme.on('storage get item', async (key, send) => {
+FigmaMessageEmitter.on('storage get item', async (key, send) => {
   try {
     const store = await figma.clientStorage.getAsync(key);
 
@@ -28,7 +28,7 @@ fme.on('storage get item', async (key, send) => {
   }
 });
 
-fme.on('storage remove item', async (key, send) => {
+FigmaMessageEmitter.on('storage remove item', async (key, send) => {
   try {
     await figma.clientStorage.setAsync(key, undefined);
 
@@ -38,4 +38,4 @@ fme.on('storage remove item', async (key, send) => {
   }
 });
 
-fme.once('store initialized', () => {});
+FigmaMessageEmitter.once('store initialized', () => {});
