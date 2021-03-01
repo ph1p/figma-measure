@@ -42,7 +42,7 @@ function createLabel(baseNode, text, color, isVertical) {
 function distanceBetweenTwoPoints(x1, y1, x2, y2) {
   let dx = Math.pow(x2 - x1, 2);
   let dy = Math.pow(y2 - y1, 2);
-  return Math.sqrt(dx + dy);
+  return Math.floor(Math.sqrt(dx + dy));
 }
 
 export const drawSpacing = ({ color = '', labels = '', unit = '' }) => {
