@@ -1,17 +1,14 @@
-import { getColor } from '.';
+import { addToGlobalGroup, getColor } from '.';
 import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
 import { solidColor } from './helper';
 
-export const getSpacing = (node) => JSON.parse(node.getPluginData('spacing') || '{}');
+export const getSpacing = (node) =>
+  JSON.parse(node.getPluginData('spacing') || '{}');
 export const setSpacing = (node, data) =>
   node.setPluginData('spacing', JSON.stringify(data));
 
-FigmaMessageEmitter.on('draw spacing', (settings) => {
-  let spacingRemoved = false;
-  const rects = figma.currentPage.selection;
-
-  if (rects.length > 0 && rects.length <= 2) {
-    const node = rects[0];
+FigmaMessageEmitter.on('remove spacing', () => {
+  for (const node of figma.currentPage.selection) {
     const spacing = getSpacing(node);
 
     Object.keys(spacing).filter((connectedNodeId) => {
@@ -22,7 +19,6 @@ FigmaMessageEmitter.on('draw spacing', (settings) => {
       setSpacing(node, spacing);
       try {
         group.remove();
-        spacingRemoved = true;
       } catch {}
 
       // get connected node
@@ -36,14 +32,14 @@ FigmaMessageEmitter.on('draw spacing', (settings) => {
         setSpacing(foundConnectedNode, connectedNodeSpacing);
       }
     });
+  }
+});
 
-    if(rects.length === 1 && !spacingRemoved) {
-      figma.notify('Please select on more element.');
-    }
+FigmaMessageEmitter.on('draw spacing', (settings) => {
+  const rects = figma.currentPage.selection;
 
-    if (!spacingRemoved) {
-      drawSpacing(rects, settings);
-    }
+  if (rects.length === 2) {
+    drawSpacing(rects, settings);
   } else {
     figma.notify('Please select exactly two elements.');
   }
@@ -114,23 +110,23 @@ export const drawSpacing = (
 
   const spacingGroup = [];
 
-  const x1 = rects[0].x;
-  const y1 = rects[0].y;
+  const x1 = rects[1].x;
+  const y1 = rects[1].y;
 
-  const x2 = rects[1].x;
-  const y2 = rects[1].y;
+  const x2 = rects[0].x;
+  const y2 = rects[0].y;
 
-  const centerX1 = rects[0].x + rects[0].width / 2;
-  const centerY1 = rects[0].y + rects[0].height / 2;
+  const centerX1 = rects[1].x + rects[1].width / 2;
+  const centerY1 = rects[1].y + rects[1].height / 2;
 
-  const centerX2 = rects[1].x + rects[1].width / 2;
-  const centerY2 = rects[1].y + rects[1].height / 2;
+  const centerX2 = rects[0].x + rects[0].width / 2;
+  const centerY2 = rects[0].y + rects[0].height / 2;
 
-  const w1 = rects[0].width;
-  const w2 = rects[1].width;
+  const w1 = rects[1].width;
+  const w2 = rects[0].width;
 
-  const h1 = rects[0].height;
-  const h2 = rects[1].height;
+  const h1 = rects[1].height;
+  const h2 = rects[0].height;
 
   let verticalDirection = 'center';
   let horizontalDirection = 'center';
@@ -254,6 +250,7 @@ export const drawSpacing = (
       },
     ];
     line2.strokes = [].concat(mainColor);
+    line2.dashPattern = [4];
     spacingGroup.push(line2);
 
     // purple
@@ -272,6 +269,7 @@ export const drawSpacing = (
       },
     ];
     line3.strokes = [].concat(mainColor);
+    line3.dashPattern = [4];
     spacingGroup.push(line3);
   }
 
@@ -351,6 +349,7 @@ export const drawSpacing = (
     const group = figma.group(spacingGroup, figma.currentPage);
     group.locked = true;
     group.expanded = false;
+    group.name = `spacing ${rects[0].name} - ${rects[1].name}`;
 
     rects[0].setPluginData(
       'spacing',
@@ -368,6 +367,6 @@ export const drawSpacing = (
       })
     );
 
-    return group;
+    addToGlobalGroup(group);
   }
 };

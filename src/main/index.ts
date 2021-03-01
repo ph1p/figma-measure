@@ -29,7 +29,7 @@ const getGlobalGroup = () => {
   ) as GroupNode;
 };
 
-const addToGlobalGroup = (node: SceneNode) => {
+export const addToGlobalGroup = (node: SceneNode) => {
   let globalGroup: GroupNode = getGlobalGroup();
 
   if (!globalGroup) {

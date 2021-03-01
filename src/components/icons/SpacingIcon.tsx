@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const SpacingIcon = () => {
+export const SpacingIcon = (props: { remove?: boolean }) => {
   return (
     <svg
       width="30"
@@ -10,15 +10,19 @@ export const SpacingIcon = () => {
       xmlns="http://www.w3.org/2000/svg"
     >
       <rect x="0.5" y="0.5" width="29" height="28" rx="4" stroke="#E8E8E8" />
-      <line x1="9" y1="14.5" x2="21" y2="14.5" stroke="#1745E8" />
-      <line
-        x1="12"
-        y1="14.5"
-        x2="18"
-        y2="14.5"
-        stroke="#1745E8"
-        strokeWidth="3"
-      />
+      {!props.remove && (
+        <>
+          <line x1="9" y1="14.5" x2="21" y2="14.5" stroke="#1745E8" />
+          <line
+            x1="12"
+            y1="14.5"
+            x2="18"
+            y2="14.5"
+            stroke="#1745E8"
+            strokeWidth="3"
+          />
+        </>
+      )}
       <path
         fillRule="evenodd"
         clipRule="evenodd"

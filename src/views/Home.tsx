@@ -24,26 +24,29 @@ const Home: FunctionComponent = observer(() => {
     });
   }, []);
 
-  const isSpacingToggleActive = useMemo(() => {
-    return (
-      store.selection.some((selection) => selection.hasSpacing) ||
-      (store.selection.length === 1 && store.selection[0].hasSpacing)
+  const hasSpacing = useMemo(() => {
+    return store.selection.some((selection) => selection.hasSpacing);
+  }, [store.selection]);
+
+  const refreshSelection = () =>
+    FigmaMessageEmitter.ask('current selection').then((data: string[]) =>
+      store.setSelection(data)
     );
-  }, [store.selection]);
 
-  const shouldDisableSpacing = useMemo(() => {
-    return store.selection.length === 1 && !store.selection[0].hasSpacing;
-  }, [store.selection]);
-
-  const toggleSpacing = () => {
+  const addSpacing = () => {
     FigmaMessageEmitter.emit('draw spacing', {
       color: store.color,
       labels: store.labels,
       unit: store.unit,
     });
-    FigmaMessageEmitter.ask('current selection').then((data: string[]) =>
-      store.setSelection(data)
-    );
+    refreshSelection();
+  };
+
+  const removeSpacing = () => {
+    if (hasSpacing) {
+      FigmaMessageEmitter.emit('remove spacing');
+      refreshSelection();
+    }
   };
 
   return (
@@ -71,11 +74,13 @@ const Home: FunctionComponent = observer(() => {
           <RefreshIcon />
         </Refresh>
 
-        <Spacing
-          active={isSpacingToggleActive}
-          disable={shouldDisableSpacing}
-          onClick={toggleSpacing}
-        >
+        {hasSpacing && (
+          <RemoveSpacing onClick={removeSpacing}>
+            <SpacingIcon remove />
+          </RemoveSpacing>
+        )}
+
+        <Spacing active={store.selection.length === 2} onClick={addSpacing}>
           <SpacingIcon />
         </Spacing>
       </ViewerContainer>
@@ -135,14 +140,18 @@ const InputContainer = styled.div`
   }
 `;
 
-const Spacing = styled.div<{ active: boolean; disable: boolean }>`
+const Spacing = styled.div<{ active?: boolean; disable?: boolean }>`
   position: absolute;
   right: 12px;
   bottom: 12px;
   cursor: pointer;
-  opacity: ${(props) => (props.disable ? 0.5 : 1)};
-  ${(props) => (props.active ? 'box-shadow: 0 0 0 3px #e8ecfd' : '')};
+  opacity: ${(props) => (props.active ? 1 : 0.5)};
   border-radius: 3px;
+`;
+
+const RemoveSpacing = styled(Spacing)`
+  right: 54px;
+  opacity: 1;
 `;
 
 const Refresh = styled.div<{ active?: boolean }>`

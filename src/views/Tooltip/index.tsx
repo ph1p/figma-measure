@@ -1,8 +1,7 @@
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { Toggle } from '../../components/Toggle';
-import { sendMessage } from '../../shared';
 
 // components
 import { useStore } from '../../store';
@@ -38,13 +37,6 @@ const Preview = styled.div`
 
 const Tooltip: FunctionComponent = observer(() => {
   const store = useStore();
-
-  useEffect(() => {
-    sendMessage('resize', {
-      width: 200,
-      height: 275,
-    });
-  }, []);
 
   return (
     <Wrapper>
