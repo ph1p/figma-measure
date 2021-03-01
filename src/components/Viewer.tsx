@@ -1,4 +1,4 @@
-import { toJS } from 'mobx';
+import { reaction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { FunctionComponent, useEffect } from 'react';
 import { PluginNodeData } from '../shared/interfaces';
@@ -24,24 +24,31 @@ const Viewer: FunctionComponent = observer(() => {
   };
 
   // set data from selection
-  useEffect(() => {
-    const selection = toJS(store.selection);
-    if (selection.length > 0) {
-      try {
-        const data: PluginNodeData = selection[0]?.data;
+  useEffect(
+    () =>
+      reaction(
+        () => store.selection.slice(),
+        () => {
+          const selection = toJS(store.selection);
+          if (selection.length > 0) {
+            try {
+              const data: PluginNodeData = selection[0]?.data;
 
-        if (data?.surrounding) {
-          store.setSurrounding(data.surrounding, true);
-        } else {
-          store.resetSurrounding();
+              if (data?.surrounding) {
+                store.setSurrounding(data.surrounding, true);
+              } else {
+                store.resetSurrounding();
+              }
+            } catch {
+              store.resetSurrounding();
+            }
+          } else {
+            store.resetSurrounding();
+          }
         }
-      } catch {
-        store.resetSurrounding();
-      }
-    } else {
-      store.resetSurrounding();
-    }
-  }, [store.selection]);
+      ),
+    []
+  );
 
   const clickCorner = (e) => {
     if (store.selection.length > 0) {
