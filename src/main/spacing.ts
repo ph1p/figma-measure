@@ -110,17 +110,17 @@ export const drawSpacing = (
 
   const spacingGroup = [];
 
-  const x1 = rects[1].x;
-  const y1 = rects[1].y;
+  const x1 = rects[1].absoluteTransform[0][2];
+  const y1 = rects[1].absoluteTransform[1][2];
 
-  const x2 = rects[0].x;
-  const y2 = rects[0].y;
+  const x2 = rects[0].absoluteTransform[0][2];
+  const y2 = rects[0].absoluteTransform[1][2];
 
-  const centerX1 = rects[1].x + rects[1].width / 2;
-  const centerY1 = rects[1].y + rects[1].height / 2;
+  const centerX1 = x1 + rects[1].width / 2;
+  const centerY1 = y1 + rects[1].height / 2;
 
-  const centerX2 = rects[0].x + rects[0].width / 2;
-  const centerY2 = rects[0].y + rects[0].height / 2;
+  const centerX2 = x2 + rects[0].width / 2;
+  const centerY2 = y2 + rects[0].height / 2;
 
   const w1 = rects[1].width;
   const w2 = rects[0].width;
@@ -211,6 +211,7 @@ export const drawSpacing = (
     }
 
     const line1 = figma.createVector();
+
     line1.vectorPaths = [
       {
         windingRule: 'EVENODD',
@@ -243,6 +244,7 @@ export const drawSpacing = (
     brownY2 = horizontalDirection === 'top' ? y1 : y1 + h1;
 
     const line2 = figma.createVector();
+
     line2.vectorPaths = [
       {
         windingRule: 'EVENODD',
@@ -262,6 +264,7 @@ export const drawSpacing = (
     purpleY2 = centerY2;
 
     const line3 = figma.createVector();
+
     line3.vectorPaths = [
       {
         windingRule: 'EVENODD',
@@ -322,6 +325,7 @@ export const drawSpacing = (
     }
 
     const line4 = figma.createVector();
+
     line4.vectorPaths = [
       {
         windingRule: 'EVENODD',
