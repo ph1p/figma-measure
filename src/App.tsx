@@ -55,7 +55,7 @@ const App: FunctionComponent = observer(() => {
             history.push('/');
           }}
         >
-          Redlines
+          Measure
         </div>
         <div
           onClick={() => {

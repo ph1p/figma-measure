@@ -22,7 +22,7 @@ class RootStore {
   }
 
   labels = true;
-  color = '#E8278A';
+  color = '#EF5533';
 
   visibility = true;
 

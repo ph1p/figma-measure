@@ -24,12 +24,6 @@ figma.root.setRelaunchData({
   visibility: '',
 });
 
-const getGlobalGroup = () => {
-  return figma.currentPage.findOne(
-    (node) => node.getPluginData('isGlobalGroup') === '1'
-  ) as GroupNode;
-};
-
 if (figma.command === 'visibility') {
   const group = getGlobalGroup();
 
@@ -39,7 +33,72 @@ if (figma.command === 'visibility') {
   figma.closePlugin();
 }
 
-export const addToGlobalGroup = (node: SceneNode) => {
+export function getColor(color: string) {
+  if (color) {
+    const { r, g, b } = hexToRgb(color);
+    return solidColor(r, g, b);
+  } else {
+    return solidColor();
+  }
+}
+
+export function createLabel({
+  baseNode,
+  text,
+  color,
+  isVertical,
+}: {
+  baseNode?: SceneNode;
+  text: string;
+  color: any;
+  isVertical?: boolean;
+}) {
+  const labelFrame = figma.createFrame();
+  const label = figma.createText();
+
+  label.characters = text;
+  label.fontName = {
+    family: 'Inter',
+    style: 'Bold',
+  };
+  label.fontSize = 10;
+  label.fills = [].concat(solidColor(255, 255, 255));
+
+  labelFrame.appendChild(label);
+  labelFrame.name = 'label';
+
+  // LABEL RECT
+  labelFrame.cornerRadius = 3;
+
+  labelFrame.layoutMode = 'HORIZONTAL';
+  labelFrame.paddingLeft = 6;
+  labelFrame.paddingRight = 6;
+  labelFrame.paddingTop = 3;
+  labelFrame.paddingBottom = 3;
+  labelFrame.counterAxisSizingMode = 'AUTO';
+  if (baseNode) {
+    labelFrame.x = baseNode.x;
+    labelFrame.y = baseNode.y;
+    if (!isVertical) {
+      labelFrame.x += baseNode.width / 2 - labelFrame.width / 2;
+      labelFrame.y -= labelFrame.height / 2;
+    } else {
+      labelFrame.y += baseNode.height / 2 - labelFrame.height / 2;
+      labelFrame.x -= labelFrame.width / 2;
+    }
+  }
+  labelFrame.fills = [].concat(color);
+
+  return labelFrame;
+}
+
+function getGlobalGroup() {
+  return figma.currentPage.findOne(
+    (node) => node.getPluginData('isGlobalGroup') === '1'
+  ) as GroupNode;
+}
+
+export function addToGlobalGroup(node: SceneNode) {
   let globalGroup: GroupNode = getGlobalGroup();
 
   if (!globalGroup) {
@@ -51,23 +110,26 @@ export const addToGlobalGroup = (node: SceneNode) => {
   globalGroup.expanded = false;
   globalGroup.name = `📐 Measurements`;
   globalGroup.setPluginData('isGlobalGroup', '1');
-};
+}
 
-const nodeGroup = (node) =>
-  (figma.currentPage.findOne(
-    (currentNode) => currentNode.getPluginData('parent') === node.id
-  ) as FrameNode) || null;
+function nodeGroup(node) {
+  return (
+    (figma.currentPage.findOne(
+      (currentNode) => currentNode.getPluginData('parent') === node.id
+    ) as FrameNode) || null
+  );
+}
 
-export const getPluginData = (node, name) => {
+export function getPluginData(node, name) {
   const data = node.getPluginData(name);
   if (!data) {
     return null;
   }
 
   return JSON.parse(data);
-};
+}
 
-const getLineFrame = (node, data) => {
+function getLineFrame(node, data) {
   const name = 'line';
   const lineFrame = figma.createFrame();
 
@@ -82,18 +144,9 @@ const getLineFrame = (node, data) => {
   lineFrame.expanded = false;
 
   return lineFrame;
-};
+}
 
-export const getColor = (color: string) => {
-  if (color) {
-    const { r, g, b } = hexToRgb(color);
-    return solidColor(r, g, b);
-  } else {
-    return solidColor();
-  }
-};
-
-const createLine = (options) => {
+function createLine(options) {
   const {
     node,
     direction = 'horizontal',
@@ -125,7 +178,7 @@ const createLine = (options) => {
     const line = figma.createVector();
 
     const paddingTopBottom = 3;
-    const paddingLeftRight = 5;
+    // const paddingLeftRight = 5;
 
     // margin for top and bottom
     const DIRECTION_MARGIN = 5;
@@ -134,34 +187,10 @@ const createLine = (options) => {
     let labelFrame;
 
     if (labels) {
-      const label = figma.createText();
-
-      label.characters = `${parseFloat(heightOrWidth.toString()).toFixed(0)}${
-        unit && ' ' + unit
-      }`;
-      label.fontName = {
-        family: 'Inter',
-        style: 'Bold',
-      };
-      label.fontSize = 10;
-      label.fills = [].concat(solidColor(255, 255, 255));
-
-      // LABEL RECT
-      labelFrame = figma.createFrame();
-      labelFrame.cornerRadius = 3;
-
-      labelFrame.layoutMode = 'HORIZONTAL';
-      labelFrame.paddingLeft = paddingLeftRight;
-      labelFrame.paddingRight = paddingLeftRight;
-      labelFrame.paddingTop = paddingTopBottom;
-      labelFrame.paddingBottom = paddingTopBottom;
-      labelFrame.counterAxisSizingMode = 'AUTO';
-      labelFrame.x = label.x - paddingLeftRight / 2;
-      labelFrame.y = label.y - paddingTopBottom / 2;
-      labelFrame.fills = [].concat(mainColor);
-
-      labelFrame.appendChild(label);
-      labelFrame.name = 'label';
+      labelFrame = createLabel({
+        text: `${parseFloat(heightOrWidth.toString()).toFixed(0)}${unit}`,
+        color: mainColor,
+      });
     }
 
     // GROUP
@@ -395,22 +424,10 @@ const createLine = (options) => {
     return group;
   }
   return null;
-};
+}
 
-// const isValidShape = (node) =>
-//   node.type === 'RECTANGLE' ||
-//   node.type === 'ELLIPSE' ||
-//   node.type === 'GROUP' ||
-//   node.type === 'TEXT' ||
-//   node.type === 'STAR' ||
-//   node.type === 'VECTOR' ||
-//   node.type === 'FRAME' ||
-//   node.type === 'INSTANCE' ||
-//   node.type === 'COMPONENT' ||
-//   node.type === 'POLYGON';
-
-const getSelectionArray = () =>
-  figma.currentPage.selection.map((node) => {
+function getSelectionArray() {
+  return figma.currentPage.selection.map((node) => {
     let data = {};
 
     try {
@@ -428,15 +445,10 @@ const getSelectionArray = () =>
       // tooltipData: node,
     };
   });
+}
 
 const sendSelection = () =>
   FigmaMessageEmitter.emit('selection', getSelectionArray());
-
-(async function main() {
-  await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
-  await figma.loadFontAsync({ family: 'Inter', style: 'Bold' });
-  await figma.loadFontAsync({ family: 'Inter', style: 'Regular' });
-})();
 
 // events
 figma.on('selectionchange', () => {
@@ -662,10 +674,10 @@ FigmaMessageEmitter.on('set measurements', (store: Partial<Store>) => {
   }
 });
 
-const createFill = (
+function createFill(
   node: SceneNode,
   { fill, opacity, color }: { fill: FillTypes; opacity: number; color: string }
-) => {
+) {
   if (node.type !== 'SLICE' && node.type !== 'GROUP') {
     let cloneNode: SceneNode;
 
@@ -722,4 +734,10 @@ const createFill = (
 
     return cloneNode;
   }
-};
+}
+
+(async function main() {
+  await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
+  await figma.loadFontAsync({ family: 'Inter', style: 'Bold' });
+  await figma.loadFontAsync({ family: 'Inter', style: 'Regular' });
+})();

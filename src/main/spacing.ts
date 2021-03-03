@@ -1,6 +1,5 @@
-import { addToGlobalGroup, getColor } from '.';
+import { addToGlobalGroup, createLabel, getColor } from '.';
 import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
-import { solidColor } from './helper';
 
 export const getSpacing = (node) =>
   JSON.parse(node.getPluginData('spacing') || '{}');
@@ -44,44 +43,6 @@ FigmaMessageEmitter.on('draw spacing', (settings) => {
     figma.notify('Please select exactly two elements.');
   }
 });
-
-function createLabel(baseNode, text, color, isVertical) {
-  const labelFrame = figma.createFrame();
-  const label = figma.createText();
-
-  label.characters = text;
-  label.fontName = {
-    family: 'Inter',
-    style: 'Bold',
-  };
-  label.fontSize = 10;
-  label.fills = [].concat(solidColor(255, 255, 255));
-
-  labelFrame.appendChild(label);
-  labelFrame.name = 'label';
-
-  // LABEL RECT
-  labelFrame.cornerRadius = 3;
-
-  labelFrame.layoutMode = 'HORIZONTAL';
-  labelFrame.paddingLeft = 6;
-  labelFrame.paddingRight = 6;
-  labelFrame.paddingTop = 3;
-  labelFrame.paddingBottom = 3;
-  labelFrame.counterAxisSizingMode = 'AUTO';
-  labelFrame.x = baseNode.x;
-  labelFrame.y = baseNode.y;
-  if (!isVertical) {
-    labelFrame.x += baseNode.width / 2 - labelFrame.width / 2;
-    labelFrame.y -= labelFrame.height / 2;
-  } else {
-    labelFrame.y += baseNode.height / 2 - labelFrame.height / 2;
-    labelFrame.x -= labelFrame.width / 2;
-  }
-  labelFrame.fills = [].concat(color);
-
-  return labelFrame;
-}
 
 function distanceBetweenTwoPoints(x1, y1, x2, y2) {
   let dx = Math.pow(x2 - x1, 2);
@@ -223,14 +184,17 @@ export const drawSpacing = (
 
     if (labels) {
       spacingGroup.push(
-        createLabel(
-          line1,
-          `${distanceBetweenTwoPoints(yellowX1, yellowY1, yellowX2, yellowY2)}${
-            unit && ' ' + unit
-          }`,
-          mainColor,
-          true
-        )
+        createLabel({
+          baseNode: line1,
+          text: `${distanceBetweenTwoPoints(
+            yellowX1,
+            yellowY1,
+            yellowX2,
+            yellowY2
+          )}${unit}`,
+          color: mainColor,
+          isVertical: true,
+        })
       );
     }
   }
@@ -337,14 +301,17 @@ export const drawSpacing = (
 
     if (labels) {
       spacingGroup.push(
-        createLabel(
-          line4,
-          `${distanceBetweenTwoPoints(blueX1, blueY1, blueX2, blueY2)}${
-            unit && ' ' + unit
-          }`,
-          mainColor,
-          false
-        )
+        createLabel({
+          baseNode: line4,
+          text: `${distanceBetweenTwoPoints(
+            blueX1,
+            blueY1,
+            blueX2,
+            blueY2
+          )}${unit}`,
+          color: mainColor,
+          isVertical: false,
+        })
       );
     }
   }

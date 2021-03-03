@@ -84,7 +84,14 @@ const Home: FunctionComponent = observer(() => {
       <InputContainer>
         <label htmlFor="color">Color</label>
         <Colors
-          colors={['#E8278A', '#FAAA00', '#2CB571', '#1D45E8', '#7623F5']}
+          colors={[
+            '#EF5533',
+            '#E8278A',
+            '#FAAA00',
+            '#2CB571',
+            '#1D45E8',
+            '#7623F5',
+          ]}
           onChange={(color) => store.setColor(color)}
           color={store.color}
         />
@@ -173,6 +180,7 @@ const Visibility = styled(Refresh)`
   left: 12px;
   top: 12px;
   z-index: 10;
+  opacity: 1;
 `;
 
 const ViewerContainer = styled.div`
