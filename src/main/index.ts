@@ -2,7 +2,7 @@ import './store';
 import { hexToRgb, solidColor } from './helper';
 import { tooltipPluginDataByNode, setTooltip } from './tooltip';
 
-import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
+import EventEmitter from '../shared/EventEmitter';
 import {
   Alignments,
   FillTypes,
@@ -448,18 +448,18 @@ function getSelectionArray() {
 }
 
 const sendSelection = () =>
-  FigmaMessageEmitter.emit('selection', getSelectionArray());
+  EventEmitter.emit('selection', getSelectionArray());
 
 // events
 figma.on('selectionchange', () => {
   sendSelection();
 });
 
-FigmaMessageEmitter.on('resize', ({ width, height }) =>
+EventEmitter.on('resize', ({ width, height }) =>
   figma.ui.resize(width, height)
 );
 
-FigmaMessageEmitter.on('toggle visibility', () => {
+EventEmitter.on('toggle visibility', () => {
   const group = getGlobalGroup();
 
   if (group) {
@@ -467,11 +467,11 @@ FigmaMessageEmitter.on('toggle visibility', () => {
   }
 });
 
-FigmaMessageEmitter.answer('current selection', async () =>
+EventEmitter.answer('current selection', async () =>
   getSelectionArray()
 );
 
-FigmaMessageEmitter.on('set measurements', (store: Partial<Store>) => {
+EventEmitter.on('set measurements', (store: Partial<Store>) => {
   // const node = figma.currentPage.selection[0];
 
   for (const node of figma.currentPage.selection) {

@@ -1,12 +1,12 @@
 import { addToGlobalGroup, createLabel, getColor } from '.';
-import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
+import EventEmitter from '../shared/EventEmitter';
 
 export const getSpacing = (node) =>
   JSON.parse(node.getPluginData('spacing') || '{}');
 export const setSpacing = (node, data) =>
   node.setPluginData('spacing', JSON.stringify(data));
 
-FigmaMessageEmitter.on('remove spacing', () => {
+EventEmitter.on('remove spacing', () => {
   for (const node of figma.currentPage.selection) {
     const spacing = getSpacing(node);
 
@@ -34,7 +34,7 @@ FigmaMessageEmitter.on('remove spacing', () => {
   }
 });
 
-FigmaMessageEmitter.on('draw spacing', (settings) => {
+EventEmitter.on('draw spacing', (settings) => {
   const rects = figma.currentPage.selection;
 
   if (rects.length === 2) {

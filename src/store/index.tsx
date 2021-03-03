@@ -1,7 +1,7 @@
 import { makeAutoObservable, toJS } from 'mobx';
 import React from 'react';
 import { AsyncTrunk, ignore } from 'mobx-sync';
-import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
+import EventEmitter from '../shared/EventEmitter';
 import { STORAGE_KEY } from '../shared/constants';
 import { FillTypes, TooltipSettings } from '../shared/interfaces';
 
@@ -132,12 +132,12 @@ class RootStore {
 
   toggleVisibility() {
     this.visibility = !this.visibility;
-    FigmaMessageEmitter.emit('toggle visibility');
+    EventEmitter.emit('toggle visibility');
   }
 
   sendMeasurements() {
     if (this.selection.length > 0) {
-      FigmaMessageEmitter.emit(
+      EventEmitter.emit(
         'set measurements',
         toJS({
           labels: this.labels,
@@ -179,24 +179,24 @@ export const trunk = new AsyncTrunk(rootStore, {
   storageKey: STORAGE_KEY,
   storage: {
     getItem(key: string) {
-      FigmaMessageEmitter.emit('storage get item', key);
+      EventEmitter.emit('storage get item', key);
       return new Promise((resolve) =>
-        FigmaMessageEmitter.once('storage get item', resolve)
+        EventEmitter.once('storage get item', resolve)
       );
     },
     setItem(key: string, value: string) {
-      FigmaMessageEmitter.emit('storage set item', {
+      EventEmitter.emit('storage set item', {
         key,
         value,
       });
       return new Promise((resolve) =>
-        FigmaMessageEmitter.once('storage set item', resolve)
+        EventEmitter.once('storage set item', resolve)
       );
     },
     removeItem(key: string) {
-      FigmaMessageEmitter.emit('storage remove item', key);
+      EventEmitter.emit('storage remove item', key);
       return new Promise((resolve) =>
-        FigmaMessageEmitter.once('storage remove item', resolve)
+        EventEmitter.once('storage remove item', resolve)
       );
     },
   },
@@ -204,8 +204,8 @@ export const trunk = new AsyncTrunk(rootStore, {
 
 export const getStoreFromMain = (): Promise<TStore | {}> => {
   return new Promise((resolve) => {
-    FigmaMessageEmitter.emit('storage', STORAGE_KEY);
-    FigmaMessageEmitter.once('storage', (store, emit) => {
+    EventEmitter.emit('storage', STORAGE_KEY);
+    EventEmitter.once('storage', (store, emit) => {
       emit('store initialized');
       resolve(JSON.parse(store || '{}'));
     });

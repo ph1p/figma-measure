@@ -1,7 +1,7 @@
 /**
  * An structured way to handle renderer and main messages
  */
-class FigmaMessageEmitter {
+class EventEmitter {
   messageEvent = new Map();
   emit: (name: string, data?: object | number | string | Uint8Array) => void;
 
@@ -119,4 +119,4 @@ class FigmaMessageEmitter {
   }
 }
 
-export default new FigmaMessageEmitter();
+export default new EventEmitter();

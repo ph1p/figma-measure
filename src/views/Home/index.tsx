@@ -1,16 +1,16 @@
 import { observer } from 'mobx-react';
 import React, { FunctionComponent, useMemo } from 'react';
 import styled from 'styled-components';
-import { Colors } from '../components/ColorPicker';
-import { EyeClosedIcon, EyeIcon } from '../components/icons/EyeIcons';
-import { RefreshIcon } from '../components/icons/RefreshIcon';
-import { SpacingIcon } from '../components/icons/SpacingIcon';
-import { Toggle } from '../components/Toggle';
+import { Colors } from '../../components/ColorPicker';
+import { EyeClosedIcon, EyeIcon } from '../../components/icons/EyeIcons';
+import { RefreshIcon } from '../../components/icons/RefreshIcon';
+import { SpacingIcon } from '../../components/icons/SpacingIcon';
+import { Toggle } from '../../components/Toggle';
 
-import Viewer from '../components/Viewer';
+import Viewer from './components/Viewer';
 
-import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
-import { useStore } from '../store';
+import EventEmitter from '../../shared/EventEmitter';
+import { useStore } from '../../store';
 import CenterChooser from './components/CenterChooser';
 import LineChooser from './components/LineChooser';
 
@@ -22,12 +22,12 @@ const Home: FunctionComponent = observer(() => {
   }, [store.selection]);
 
   const refreshSelection = () =>
-    FigmaMessageEmitter.ask('current selection').then((data: string[]) =>
+    EventEmitter.ask('current selection').then((data: string[]) =>
       store.setSelection(data)
     );
 
   const addSpacing = () => {
-    FigmaMessageEmitter.emit('draw spacing', {
+    EventEmitter.emit('draw spacing', {
       color: store.color,
       labels: store.labels,
       unit: store.unit,
@@ -37,7 +37,7 @@ const Home: FunctionComponent = observer(() => {
 
   const removeSpacing = () => {
     if (hasSpacing) {
-      FigmaMessageEmitter.emit('remove spacing');
+      EventEmitter.emit('remove spacing');
       refreshSelection();
     }
   };

@@ -12,13 +12,11 @@ import styled from 'styled-components';
 import Home from './views/Home';
 import Tooltip from './views/Tooltip';
 
-import './figma-ui/main.min.css';
-import './ui.css';
 import { GlobalStyle } from './style';
 import { getStoreFromMain, StoreProvider, trunk, useStore } from './store';
-import FigmaMessageEmitter from './shared/FigmaMessageEmitter';
+import EventEmitter from './shared/EventEmitter';
 
-// sendMessage('init');
+import './ui.css';
 
 const App: FunctionComponent = observer(() => {
   const store = useStore();
@@ -28,12 +26,12 @@ const App: FunctionComponent = observer(() => {
 
   useEffect(() => {
     // check selection
-    FigmaMessageEmitter.ask('current selection').then((data: string[]) =>
+    EventEmitter.ask('current selection').then((data: string[]) =>
       store.setSelection(data)
     );
-    FigmaMessageEmitter.on('selection', (data) => store.setSelection(data));
+    EventEmitter.on('selection', (data) => store.setSelection(data));
 
-    return () => FigmaMessageEmitter.remove('selection');
+    return () => EventEmitter.remove('selection');
   }, []);
 
   return (

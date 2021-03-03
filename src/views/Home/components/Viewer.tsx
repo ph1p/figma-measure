@@ -1,8 +1,8 @@
 import { reaction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { FunctionComponent, useEffect } from 'react';
-import { PluginNodeData } from '../shared/interfaces';
-import { useStore } from '../store';
+import { PluginNodeData } from '../../../shared/interfaces';
+import { useStore } from '../../../store';
 
 const Viewer: FunctionComponent = observer(() => {
   const store = useStore();

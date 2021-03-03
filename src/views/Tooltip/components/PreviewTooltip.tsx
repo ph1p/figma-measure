@@ -17,36 +17,6 @@ import {
   WidthIcon,
 } from '../../../components/icons/TooltipIcons';
 
-const Tooltip = styled.div`
-  padding: 12px;
-  background-color: #fff;
-  border-radius: 7px;
-  width: 130px;
-  position: relative;
-  &::before {
-    content: '';
-    position: absolute;
-    margin-top: -3px;
-    top: 50%;
-    right: -6px;
-    width: 0;
-    height: 0;
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
-    border-left: 6px solid #fff;
-  }
-  & > div {
-    display: flex;
-    margin-bottom: 6px;
-    &:last-child {
-      margin-bottom: 0;
-    }
-    .icon {
-      margin-right: 12px;
-    }
-  }
-`;
-
 export const PreviewTooltip: FunctionComponent = observer(() => {
   const store = useStore();
 
@@ -135,3 +105,33 @@ export const PreviewTooltip: FunctionComponent = observer(() => {
     </Tooltip>
   );
 });
+
+const Tooltip = styled.div`
+  padding: 12px;
+  background-color: #fff;
+  border-radius: 7px;
+  width: 130px;
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    margin-top: -3px;
+    top: 50%;
+    right: -6px;
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 6px solid #fff;
+  }
+  & > div {
+    display: flex;
+    margin-bottom: 6px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    .icon {
+      margin-right: 12px;
+    }
+  }
+`;

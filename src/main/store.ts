@@ -1,10 +1,10 @@
 import { STORAGE_KEY } from '../shared/constants';
-import FigmaMessageEmitter from '../shared/FigmaMessageEmitter';
+import EventEmitter from '../shared/EventEmitter';
 
 export const getState = async () =>
   JSON.parse(await figma.clientStorage.getAsync(STORAGE_KEY));
 
-FigmaMessageEmitter.on('storage', async (key, send) => {
+EventEmitter.on('storage', async (key, send) => {
   try {
     send('storage', await figma.clientStorage.getAsync(key));
   } catch {
@@ -12,13 +12,13 @@ FigmaMessageEmitter.on('storage', async (key, send) => {
   }
 });
 
-FigmaMessageEmitter.on('storage set item', ({ key, value }, send) => {
+EventEmitter.on('storage set item', ({ key, value }, send) => {
   figma.clientStorage.setAsync(key, value);
 
   send('storage set item', true);
 });
 
-FigmaMessageEmitter.on('storage get item', async (key, send) => {
+EventEmitter.on('storage get item', async (key, send) => {
   try {
     const store = await figma.clientStorage.getAsync(key);
 
@@ -28,7 +28,7 @@ FigmaMessageEmitter.on('storage get item', async (key, send) => {
   }
 });
 
-FigmaMessageEmitter.on('storage remove item', async (key, send) => {
+EventEmitter.on('storage remove item', async (key, send) => {
   try {
     await figma.clientStorage.setAsync(key, undefined);
 
@@ -38,4 +38,4 @@ FigmaMessageEmitter.on('storage remove item', async (key, send) => {
   }
 });
 
-FigmaMessageEmitter.once('store initialized', () => {});
+EventEmitter.once('store initialized', () => {});

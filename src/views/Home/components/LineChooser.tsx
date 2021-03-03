@@ -1,10 +1,11 @@
 import { observer } from 'mobx-react';
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
-import { useStore } from '../../store';
+import { useStore } from '../../../store';
 
 const LineChooser: FunctionComponent = observer(() => {
   const store = useStore();
+
   return (
     <Container>
       <Icons>

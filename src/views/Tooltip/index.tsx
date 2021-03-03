@@ -7,34 +7,6 @@ import { Toggle } from '../../components/Toggle';
 import { useStore } from '../../store';
 import { PreviewTooltip } from './components/PreviewTooltip';
 
-const Wrapper = styled.div`
-  position: relative;
-  top: 0;
-  .settings-link {
-    width: 100%;
-  }
-`;
-
-const Settings = styled.div`
-  overflow: auto;
-  height: 209px;
-  padding: 12px;
-  > div {
-    margin-bottom: 10px;
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-`;
-
-const Preview = styled.div`
-  background-color: #1745e8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 275px;
-`;
-
 const Tooltip: FunctionComponent = observer(() => {
   const store = useStore();
 
@@ -98,5 +70,33 @@ const Tooltip: FunctionComponent = observer(() => {
     </Wrapper>
   );
 });
+
+const Wrapper = styled.div`
+  position: relative;
+  top: 0;
+  .settings-link {
+    width: 100%;
+  }
+`;
+
+const Settings = styled.div`
+  overflow: auto;
+  height: 209px;
+  padding: 12px;
+  > div {
+    margin-bottom: 10px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+`;
+
+const Preview = styled.div`
+  background-color: #1745e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 275px;
+`;
 
 export default Tooltip;
