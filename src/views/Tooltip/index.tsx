@@ -15,7 +15,35 @@ const Tooltip: FunctionComponent = observer(() => {
       <Preview>
         <PreviewTooltip />
       </Preview>
-      <Settings>
+      <TooltipDistance>
+        <label htmlFor="tooltip-distance">Distance</label>
+        <div className="input icon" style={{ width: 75 }}>
+          <input
+            type="number"
+            id="tooltip-distance"
+            value={store.tooltipOffset}
+            onChange={(e) => store.setTooltipOffset(+e.currentTarget.value)}
+          />
+          <div>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M0 11H8L8 8.5L9.5 7L8 5.5V3H0V11Z" fill="#BBBBBB" />
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M13 12.5L14 12.5L14 13.5L13 13.5C12.1716 13.5 11.5 12.8284 11.5 12L11.5 2C11.5 1.17157 12.1716 0.5 13 0.5L14 0.5L14 1.5L13 1.5C12.7239 1.5 12.5 1.72386 12.5 2L12.5 12C12.5 12.2761 12.7239 12.5 13 12.5Z"
+                fill="#BBBBBB"
+              />
+            </svg>
+          </div>
+        </div>
+      </TooltipDistance>
+      <ToggleInputs>
         <Toggle
           checked={store.tooltip.fontStyle}
           label="Font-Style"
@@ -66,22 +94,33 @@ const Tooltip: FunctionComponent = observer(() => {
           label="Points"
           onChange={() => store.toggleTooltipSetting('points')}
         />
-      </Settings>
+      </ToggleInputs>
     </Wrapper>
   );
 });
 
-const Wrapper = styled.div`
+const TooltipDistance = styled.div`
   position: relative;
   top: 0;
-  .settings-link {
-    width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 14px;
+  border-bottom: 1px solid #e6e6e6;
+  label {
+    font-weight: bold;
   }
 `;
 
-const Settings = styled.div`
+const Wrapper = styled.div`
+  position: relative;
+  top: 0;
+`;
+
+const ToggleInputs = styled.div`
   overflow: auto;
-  height: 209px;
+  height: 150px;
   padding: 12px;
   > div {
     margin-bottom: 10px;

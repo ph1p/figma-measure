@@ -447,8 +447,7 @@ function getSelectionArray() {
   });
 }
 
-const sendSelection = () =>
-  EventEmitter.emit('selection', getSelectionArray());
+const sendSelection = () => EventEmitter.emit('selection', getSelectionArray());
 
 // events
 figma.on('selectionchange', () => {
@@ -467,13 +466,9 @@ EventEmitter.on('toggle visibility', () => {
   }
 });
 
-EventEmitter.answer('current selection', async () =>
-  getSelectionArray()
-);
+EventEmitter.answer('current selection', async () => getSelectionArray());
 
 EventEmitter.on('set measurements', (store: Partial<Store>) => {
-  // const node = figma.currentPage.selection[0];
-
   for (const node of figma.currentPage.selection) {
     let data: PluginNodeData = {};
 
@@ -534,7 +529,7 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
         });
     }
 
-    let connectedNodes = [];
+    const connectedNodes = [];
 
     if (store.surrounding.center) {
       const fillNode = createFill(node, {
@@ -553,7 +548,7 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
         {
           flags: store.tooltip,
           unit: store.unit,
-          distance: store.strokeOffset + 6,
+          distance: store.tooltipOffset,
           position: store.surrounding.tooltip,
         },
         node

@@ -85,8 +85,8 @@ const Home: FunctionComponent = observer(() => {
         <label htmlFor="color">Color</label>
         <Colors
           colors={[
-            '#EF5533',
             '#E8278A',
+            '#EF5533',
             '#FAAA00',
             '#2CB571',
             '#1D45E8',

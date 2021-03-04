@@ -5,8 +5,8 @@ export default function fontFamilyPart(
   parent,
   { fontColor = '', fontSize = 0 }
 ) {
-  const fontFamily = node.fontName
-    ? (node.fontName as FontName).family
+  const fontFamily = node?.fontName
+    ? (node?.fontName as FontName).family
     : undefined;
 
   if (fontFamily) {

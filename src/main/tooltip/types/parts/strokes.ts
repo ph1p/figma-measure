@@ -7,7 +7,7 @@ export default function strokesPart(
   { fontColor = '', fontSize = 0, unit = '' }
 ) {
   // Stroke
-  if (node.strokes.length) {
+  if (node?.strokes?.length) {
     const iconNode = figma.createNodeFromSvg(
       `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M11.5 9H3.5V7H11.5V9Z" fill="#8C8C8C"/>

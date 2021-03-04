@@ -3,9 +3,9 @@ import React from 'react';
 import { AsyncTrunk, ignore } from 'mobx-sync';
 import EventEmitter from '../shared/EventEmitter';
 import { STORAGE_KEY } from '../shared/constants';
-import { FillTypes, TooltipSettings } from '../shared/interfaces';
+import { FillTypes, SurroundingSettings, TooltipPositions, TooltipSettings } from '../shared/interfaces';
 
-const DEFAULT_SURROUNDING_FLAGS = {
+const DEFAULT_SURROUNDING_FLAGS: SurroundingSettings = {
   labels: false,
   topBar: false,
   leftBar: false,
@@ -14,7 +14,7 @@ const DEFAULT_SURROUNDING_FLAGS = {
   horizontalBar: false,
   verticalBar: false,
   center: false,
-  tooltip: '',
+  tooltip: TooltipPositions.NONE,
 };
 class RootStore {
   constructor() {
@@ -31,16 +31,17 @@ class RootStore {
 
   fill: FillTypes = 'stroke';
 
-  opacity: number = 50;
+  opacity = 50;
 
   strokeCap: StrokeCap | 'STANDARD' = 'STANDARD';
-  strokeOffset: number = 10;
+  strokeOffset = 10;
 
-  unit: string = 'px';
+  unit = 'px';
 
   @ignore
-  surrounding = DEFAULT_SURROUNDING_FLAGS;
+  surrounding: SurroundingSettings = DEFAULT_SURROUNDING_FLAGS;
 
+  tooltipOffset = 15;
   tooltip: TooltipSettings = {
     cornerRadius: true,
     points: true,
@@ -65,9 +66,9 @@ class RootStore {
   }
 
   toggleTooltipSetting(key: keyof TooltipSettings) {
-    const truthyFlags = Object.keys(this.tooltip).filter((key) => {
-      if (typeof this.tooltip[key] === 'boolean') {
-        return this.tooltip[key];
+    const truthyFlags = Object.keys(this.tooltip).filter((settingsKey) => {
+      if (typeof this.tooltip[settingsKey] === 'boolean') {
+        return this.tooltip[settingsKey];
       }
     }).length;
 
@@ -78,6 +79,11 @@ class RootStore {
       };
     }
 
+    this.sendMeasurements();
+  }
+
+  setTooltipOffset(tooltipOffset: number) {
+    this.tooltipOffset = tooltipOffset;
     this.sendMeasurements();
   }
 
@@ -147,6 +153,7 @@ class RootStore {
           strokeCap: this.strokeCap,
           strokeOffset: this.strokeOffset,
           surrounding: toJS(this.surrounding),
+          tooltipOffset: this.tooltipOffset,
           tooltip: toJS(this.tooltip),
           unit: this.unit,
         })

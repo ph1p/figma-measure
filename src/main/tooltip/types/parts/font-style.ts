@@ -6,7 +6,7 @@ export default function fontStylePart(
   { fontColor = '', fontSize = 0 }
 ) {
   const fontStyle = node.fontName
-    ? (node.fontName as FontName).style
+    ? (node?.fontName as FontName).style
     : undefined;
 
   if (fontStyle) {

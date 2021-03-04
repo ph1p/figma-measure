@@ -8,12 +8,12 @@ import fontFamilyPart from './parts/font-family';
 import fontSizePart from './parts/font-size';
 import fontStylePart from './parts/font-style';
 import pointCountPart from './parts/points';
-import { TooltipSettings } from '../../../shared/interfaces';
+import { SetTooltipOptions, TooltipSettings } from '../../../shared/interfaces';
 
 export default function addNode(
-  parent,
-  node: RectangleNode | TextNode | PolygonNode,
-  settings
+  parent: SceneNode,
+  node: SceneNode,
+  settings: SetTooltipOptions
 ) {
   const flags: TooltipSettings = settings.flags;
   // Add content to parent

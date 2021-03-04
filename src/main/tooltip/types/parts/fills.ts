@@ -32,7 +32,7 @@ export default function fillsPart(
   parent,
   { fontColor = '', fontSize = 0 }
 ) {
-  if (node.fills !== figma.mixed) {
+  if (node?.fills !== figma.mixed) {
     const fillsAvailable =
       typeof node.fills !== 'undefined'
         ? node.fills.some((f) => f.type !== 'IMAGE')

@@ -5,6 +5,18 @@ export enum Alignments {
   RIGHT = 'RIGHT',
   CENTER = 'CENTER',
 }
+
+export interface SetTooltipOptions {
+  flags: TooltipSettings;
+  unit: string;
+  distance: number;
+  position: TooltipPositions;
+  vertical?: TooltipPositions;
+  horizontal?: TooltipPositions;
+  backgroundColor?: string;
+  fontColor?: string;
+  fontSize?: number;
+}
 export interface LineParameterTypes {
   left: number;
   top: number;
@@ -49,10 +61,31 @@ export interface SurroundingSettings {
   horizontalBar: boolean;
   verticalBar: boolean;
   center: boolean;
-  tooltip: string;
+  tooltip: TooltipPositions;
 }
 
 export type FillTypes = 'dashed' | 'fill' | 'stroke' | 'fill-stroke';
+
+export enum TooltipPositions {
+  TOP = 'TOP',
+  LEFT = 'LEFT',
+  BOTTOM = 'BOTTOM',
+  RIGHT = 'RIGHT',
+  NONE = '',
+}
+
+export interface MainMeasurements {
+  labels: boolean;
+  color: string;
+  fill: FillTypes;
+  opacity: number;
+  strokeCap: StrokeCap | 'STANDARD';
+  strokeOffset: number;
+  surrounding: SurroundingSettings;
+  tooltipOffset: number;
+  tooltip: TooltipSettings;
+  unit: string;
+}
 
 export interface Store {
   labels: boolean;
@@ -64,6 +97,7 @@ export interface Store {
   strokeCap: StrokeCap | 'STANDARD';
   strokeOffset: number;
   surrounding: SurroundingSettings;
+  tooltipOffset: number;
   tooltip: TooltipSettings;
   setUnit(unit: string): void;
   setColor(color: string): void;
@@ -72,6 +106,7 @@ export interface Store {
   setTooltipSettings(settings: any): void;
   setFill(fill: any): void;
   setOpacity(opacity: number): void;
+  setTooltipOffset(tooltipOffset: number): void;
   setStrokeCap(lineEnding: StrokeCap | 'STANDARD'): void;
   setStrokeOffset(offset: number): void;
   setSurrounding(surrounding: any): void;

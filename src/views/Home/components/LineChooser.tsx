@@ -128,7 +128,7 @@ const LineChooser: FunctionComponent = observer(() => {
             <path
               fillRule="evenodd"
               clipRule="evenodd"
-              d="M5.25 7.5H4.5V6.5H5.25V7.5ZM7.5 7.5H6V6.5H7.5V7.5ZM9 7.5H8.25V6.5H9V7.5Z"
+              d="M5.5 7.5H4V6.5H5.5V7.5ZM9 7.5H7.25V6.5H9V7.5Z"
               fill="#4A4A4A"
             />
             <path
