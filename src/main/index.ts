@@ -705,20 +705,18 @@ function createFill(
         cloneNode.strokeWeight = 1;
         break;
       case 'fill':
-        cloneNode.opacity = opacity / 100;
         cloneNode.fills = [].concat({
           ...solidColor(r, g, b),
-          opacity: 0.3,
+          opacity: opacity / 100,
         });
         break;
       case 'fill-stroke':
-        cloneNode.opacity = opacity / 100;
         cloneNode.strokes = [].concat(solidColor(r, g, b));
         cloneNode.strokeWeight = 1;
 
         cloneNode.fills = [].concat({
           ...solidColor(r, g, b),
-          opacity: 0.3,
+          opacity: opacity / 100,
         });
         break;
       case 'stroke':

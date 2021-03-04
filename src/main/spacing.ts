@@ -50,11 +50,37 @@ function distanceBetweenTwoPoints(x1, y1, x2, y2) {
   return Math.floor(Math.sqrt(dx + dy));
 }
 
+const getShapeValues = (shape: SceneNode) => {
+  let transformPosition = shape.absoluteTransform;
+  let x = transformPosition[0][2];
+  let y = transformPosition[1][2];
+
+  let w = shape.width;
+  let h = shape.height;
+
+  let cx = x + w / 2;
+  let cy = y + h / 2;
+
+  return {
+    x,
+    y,
+    w,
+    h,
+    cx,
+    cy,
+  };
+};
+
 export const drawSpacing = (
   rects,
   { color = '', labels = true, unit = '' }
 ) => {
   if (rects.length !== 2) {
+    return;
+  }
+
+  if (rects.some((rect) => Math.abs(Math.round(rect.rotation)) !== 0)) {
+    figma.notify('Rotated elements are currently not supported.');
     return;
   }
 
@@ -71,23 +97,23 @@ export const drawSpacing = (
 
   const spacingGroup = [];
 
-  const x1 = rects[1].absoluteTransform[0][2];
-  const y1 = rects[1].absoluteTransform[1][2];
+  let {
+    x: x1,
+    y: y1,
+    w: w1,
+    h: h1,
+    cx: centerX1,
+    cy: centerY1,
+  } = getShapeValues(rects[1]);
 
-  const x2 = rects[0].absoluteTransform[0][2];
-  const y2 = rects[0].absoluteTransform[1][2];
-
-  const centerX1 = x1 + rects[1].width / 2;
-  const centerY1 = y1 + rects[1].height / 2;
-
-  const centerX2 = x2 + rects[0].width / 2;
-  const centerY2 = y2 + rects[0].height / 2;
-
-  const w1 = rects[1].width;
-  const w2 = rects[0].width;
-
-  const h1 = rects[1].height;
-  const h2 = rects[0].height;
+  let {
+    x: x2,
+    y: y2,
+    w: w2,
+    h: h2,
+    cx: centerX2,
+    cy: centerY2,
+  } = getShapeValues(rects[0]);
 
   let verticalDirection = 'center';
   let horizontalDirection = 'center';
