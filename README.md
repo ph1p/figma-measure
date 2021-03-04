@@ -22,28 +22,6 @@ At the bottom you can set the arrow style.
 
 ![](./assets/ui.png)
 
-
-### Todolist/Featurelist
-
-- [x] Tooltips
-- [x] Create boxes with measurement
-- [x] Measure height and width
-- [x] Name groups
-- [x] Add a small UI
-- [x] Line alignment
-- [x] Text alignment
-- [ ] Measure external distance
-- [ ] Add dashed help lines
-- [ ] Add multiple files to structure code
-- [x] Add presets (e. g. top, left)
-- [ ] Save settings in Storage
-- [ ] Show and hide all measurements
-- [ ] Better resizing
-- [x] Collapse Groups
-- [x] Show typo specific informations
-- [x] Add tooltip group
-- [x] Add tooltip image properties
-
 Feel free to open a feature request: https://github.com/ph1p/figma-measure/issues
 
 ### Development
