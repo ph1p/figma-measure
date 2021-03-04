@@ -3,7 +3,12 @@ import React from 'react';
 import { AsyncTrunk, ignore } from 'mobx-sync';
 import EventEmitter from '../shared/EventEmitter';
 import { STORAGE_KEY } from '../shared/constants';
-import { FillTypes, SurroundingSettings, TooltipPositions, TooltipSettings } from '../shared/interfaces';
+import {
+  FillTypes,
+  SurroundingSettings,
+  TooltipPositions,
+  TooltipSettings,
+} from '../shared/interfaces';
 
 const DEFAULT_SURROUNDING_FLAGS: SurroundingSettings = {
   labels: false,
@@ -139,6 +144,10 @@ class RootStore {
   toggleVisibility() {
     this.visibility = !this.visibility;
     EventEmitter.emit('toggle visibility');
+  }
+
+  setVisibility(visibility: boolean) {
+    this.visibility = visibility;
   }
 
   sendMeasurements() {

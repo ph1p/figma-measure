@@ -458,6 +458,12 @@ EventEmitter.on('resize', ({ width, height }) =>
   figma.ui.resize(width, height)
 );
 
+EventEmitter.answer('get visibility', async () => {
+  const group = getGlobalGroup();
+
+  return group ? group.visible : false;
+});
+
 EventEmitter.on('toggle visibility', () => {
   const group = getGlobalGroup();
 

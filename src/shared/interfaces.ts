@@ -99,16 +99,5 @@ export interface Store {
   surrounding: SurroundingSettings;
   tooltipOffset: number;
   tooltip: TooltipSettings;
-  setUnit(unit: string): void;
-  setColor(color: string): void;
-  setLabels(labels: boolean): void;
-  toggleTooltipSetting(key: keyof TooltipSettings): void;
-  setTooltipSettings(settings: any): void;
-  setFill(fill: any): void;
-  setOpacity(opacity: number): void;
-  setTooltipOffset(tooltipOffset: number): void;
-  setStrokeCap(lineEnding: StrokeCap | 'STANDARD'): void;
-  setStrokeOffset(offset: number): void;
-  setSurrounding(surrounding: any): void;
-  setSelection(selection?: any[]): void;
+  visibility: boolean;
 }

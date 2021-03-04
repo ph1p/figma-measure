@@ -25,6 +25,10 @@ const App: FunctionComponent = observer(() => {
   const history = useHistory();
 
   useEffect(() => {
+    // check visibility
+    EventEmitter.ask('get visibility').then((visibility: boolean) => {
+      store.setVisibility(visibility);
+    });
     // check selection
     EventEmitter.ask('current selection').then((data: string[]) =>
       store.setSelection(data)
