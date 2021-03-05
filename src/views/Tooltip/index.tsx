@@ -30,7 +30,7 @@ const Tooltip: FunctionComponent = observer(() => {
               height="14"
               viewBox="0 0 14 14"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+              xmlns="https://www.w3.org/2000/svg"
             >
               <path d="M0 11H8L8 8.5L9.5 7L8 5.5V3H0V11Z" fill="#BBBBBB" />
               <path

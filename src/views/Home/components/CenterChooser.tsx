@@ -14,7 +14,7 @@ const CenterChooser: FunctionComponent = observer(() => {
           height="30"
           viewBox="0 0 30 30"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+          xmlns="https://www.w3.org/2000/svg"
           className={store.fill === 'stroke' ? 'active' : ''}
           onClick={() => store.setFill('stroke')}
         >
@@ -41,7 +41,7 @@ const CenterChooser: FunctionComponent = observer(() => {
           height="30"
           viewBox="0 0 30 30"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+          xmlns="https://www.w3.org/2000/svg"
           className={store.fill === 'dashed' ? 'active' : ''}
           onClick={() => store.setFill('dashed')}
         >
@@ -66,7 +66,7 @@ const CenterChooser: FunctionComponent = observer(() => {
           height="30"
           viewBox="0 0 30 30"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+          xmlns="https://www.w3.org/2000/svg"
           className={store.fill === 'fill-stroke' ? 'active' : ''}
           onClick={() => store.setFill('fill-stroke')}
         >
@@ -94,7 +94,7 @@ const CenterChooser: FunctionComponent = observer(() => {
           height="30"
           viewBox="0 0 30 30"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+          xmlns="https://www.w3.org/2000/svg"
           className={store.fill === 'fill' ? 'active' : ''}
           onClick={() => store.setFill('fill')}
         >
@@ -121,7 +121,7 @@ const CenterChooser: FunctionComponent = observer(() => {
             height="10"
             viewBox="0 0 10 10"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+            xmlns="https://www.w3.org/2000/svg"
           >
             <path
               fillRule="evenodd"

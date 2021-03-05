@@ -93,13 +93,13 @@ export function createLabel({
 }
 
 function getGlobalGroup() {
-  return figma.currentPage.findOne(
+  return (figma.currentPage.findOne(
     (node) => node.getPluginData('isGlobalGroup') === '1'
-  ) as GroupNode;
+  ) as unknown) as GroupNode | FrameNode;
 }
 
 export function addToGlobalGroup(node: SceneNode) {
-  let globalGroup: GroupNode = getGlobalGroup();
+  let globalGroup = getGlobalGroup();
 
   if (!globalGroup) {
     globalGroup = figma.group([node], figma.currentPage);
@@ -114,9 +114,9 @@ export function addToGlobalGroup(node: SceneNode) {
 
 function nodeGroup(node) {
   return (
-    (figma.currentPage.findOne(
+    ((figma.currentPage.findOne(
       (currentNode) => currentNode.getPluginData('parent') === node.id
-    ) as FrameNode) || null
+    ) as unknown) as GroupNode | FrameNode) || null
   );
 }
 
@@ -178,7 +178,6 @@ function createLine(options) {
     const line = figma.createVector();
 
     const paddingTopBottom = 3;
-    // const paddingLeftRight = 5;
 
     // margin for top and bottom
     const DIRECTION_MARGIN = 5;
@@ -202,7 +201,6 @@ function createLine(options) {
     });
 
     group.appendChild(line);
-    // const group = figma.group(lineNodes, node.parent);
 
     // add label frame
     if (labelFrame) {
@@ -265,7 +263,6 @@ function createLine(options) {
 
     // x, y for text box
     const boxTop = paddingTopBottom / 2;
-    // const boxLeft = paddingLeftRight / 2;
 
     // place text group
     if (labels) {
@@ -442,7 +439,6 @@ function getSelectionArray() {
       tooltipData: tooltipPluginDataByNode(node),
       hasSpacing: Object.keys(getSpacing(node)).length > 0,
       data,
-      // tooltipData: node,
     };
   });
 }
@@ -484,12 +480,12 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
     } catch {}
 
     if (data?.connectedNodes?.length) {
-      data.connectedNodes.map((id) => {
-        const node = figma.getNodeById(id);
-        if (node) {
-          node.remove();
+      for (const id of data.connectedNodes) {
+        const foundNode = figma.getNodeById(id);
+        if (foundNode) {
+          foundNode.remove();
         }
-      });
+      }
     }
 
     const spacing = getSpacing(node);
@@ -526,7 +522,7 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
             return connectedNodeId;
           }
         })
-        .map((connectedNodeId) => {
+        .forEach((connectedNodeId) => {
           drawSpacing([node, figma.getNodeById(connectedNodeId)], {
             color: store.color,
             labels: store.labels,

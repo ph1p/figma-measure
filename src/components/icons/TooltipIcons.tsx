@@ -6,7 +6,7 @@ export const PointsIcon = () => (
     height="16"
     viewBox="0 0 16 16"
     fill="none"
-    xmlns="http://www.w3.org/2000/svg"
+    xmlns="https://www.w3.org/2000/svg"
   >
     <circle cx="8" cy="8" r="4" fill="#8C8C8C" />
   </svg>
@@ -18,7 +18,7 @@ export const CornerRadiusIcon = () => (
     height="16"
     viewBox="0 0 16 16"
     fill="none"
-    xmlns="http://www.w3.org/2000/svg"
+    xmlns="https://www.w3.org/2000/svg"
   >
     <path
       fillRule="evenodd"
@@ -36,7 +36,7 @@ export const WidthIcon = () => (
     height="16"
     viewBox="0 0 16 16"
     fill="none"
-    xmlns="http://www.w3.org/2000/svg"
+    xmlns="https://www.w3.org/2000/svg"
   >
     <path
       d="M5.146 12.5H6.146L7.91162 6.125H7.97412L9.73975 12.5H10.7397L12.9272 4.5H11.9429L10.271 11.0156H10.1929L8.48975 4.5H7.396L5.69287 11.0156H5.61475L3.94287 4.5H2.9585L5.146 12.5Z"
@@ -52,7 +52,7 @@ export const HeightIcon = () => (
     height="16"
     viewBox="0 0 16 16"
     fill="none"
-    xmlns="http://www.w3.org/2000/svg"
+    xmlns="https://www.w3.org/2000/svg"
   >
     <path
       d="M4.84229 12.5H5.81104V8.92188H10.0767V12.5H11.0454V4.5H10.0767V8.0625H5.81104V4.5H4.84229V12.5Z"
@@ -68,7 +68,7 @@ export const FontSizeIcon = () => (
     height="16"
     viewBox="0 0 16 16"
     fill="none"
-    xmlns="http://www.w3.org/2000/svg"
+    xmlns="https://www.w3.org/2000/svg"
   >
     <path
       fillRule="evenodd"
@@ -85,7 +85,7 @@ export const FontStyleIcon = () => (
     height="16"
     viewBox="0 0 16 16"
     fill="none"
-    xmlns="http://www.w3.org/2000/svg"
+    xmlns="https://www.w3.org/2000/svg"
   >
     <path d="M8 4H3V6.5M8 4H13V6.5M8 4V13M8 13H10M8 13H6" stroke="#8C8C8C" />
   </svg>
@@ -97,7 +97,7 @@ export const FontFamilyIcon = () => (
     height="16"
     viewBox="0 0 16 16"
     fill="none"
-    xmlns="http://www.w3.org/2000/svg"
+    xmlns="https://www.w3.org/2000/svg"
   >
     <path
       d="M13.1797 9.69922H12.0625V9.625C12.0703 8.17578 12.5 7.73438 13.2266 7.28906C13.6914 7 14.0547 6.58984 14.0547 6.00781C14.0547 5.31641 13.5156 4.875 12.8516 4.875C12.2539 4.875 11.6641 5.23828 11.6172 6.06641H10.4297C10.4805 4.66016 11.5352 3.89062 12.8516 3.89062C14.2852 3.89062 15.2461 4.75 15.2461 6.01953C15.2461 6.89844 14.8164 7.49219 14.1172 7.91406C13.4531 8.32422 13.1953 8.72656 13.1797 9.625V9.69922Z"
@@ -122,7 +122,7 @@ export const StrokeIcon = () => (
     height="16"
     viewBox="0 0 16 16"
     fill="none"
-    xmlns="http://www.w3.org/2000/svg"
+    xmlns="https://www.w3.org/2000/svg"
   >
     <path d="M11.5 9H3.5V7H11.5V9Z" fill="#8C8C8C" />
   </svg>
@@ -134,7 +134,7 @@ export const OpacityIcon = () => (
     height="16"
     viewBox="0 0 16 16"
     fill="none"
-    xmlns="http://www.w3.org/2000/svg"
+    xmlns="https://www.w3.org/2000/svg"
   >
     <path
       fillRule="evenodd"
@@ -151,7 +151,7 @@ export const ColorIcon = () => (
     height="16"
     viewBox="0 0 16 16"
     fill="none"
-    xmlns="http://www.w3.org/2000/svg"
+    xmlns="https://www.w3.org/2000/svg"
   >
     <path
       fillRule="evenodd"

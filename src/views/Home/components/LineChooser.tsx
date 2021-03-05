@@ -14,7 +14,7 @@ const LineChooser: FunctionComponent = observer(() => {
           height="30"
           viewBox="0 0 30 30"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+          xmlns="https://www.w3.org/2000/svg"
           className={store.strokeCap === 'ARROW_EQUILATERAL' ? 'active' : ''}
           onClick={() => store.setStrokeCap('ARROW_EQUILATERAL')}
         >
@@ -39,7 +39,7 @@ const LineChooser: FunctionComponent = observer(() => {
           height="30"
           viewBox="0 0 30 30"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+          xmlns="https://www.w3.org/2000/svg"
           className={store.strokeCap === 'NONE' ? 'active' : ''}
           onClick={() => store.setStrokeCap('NONE')}
         >
@@ -64,7 +64,7 @@ const LineChooser: FunctionComponent = observer(() => {
           height="30"
           viewBox="0 0 30 30"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+          xmlns="https://www.w3.org/2000/svg"
           className={store.strokeCap === 'ARROW_LINES' ? 'active' : ''}
           onClick={() => store.setStrokeCap('ARROW_LINES')}
         >
@@ -89,7 +89,7 @@ const LineChooser: FunctionComponent = observer(() => {
           height="30"
           viewBox="0 0 30 30"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+          xmlns="https://www.w3.org/2000/svg"
           className={store.strokeCap === 'STANDARD' ? 'active' : ''}
           onClick={() => store.setStrokeCap('STANDARD')}
         >
@@ -119,7 +119,7 @@ const LineChooser: FunctionComponent = observer(() => {
             height="14"
             viewBox="0 0 13 14"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+            xmlns="https://www.w3.org/2000/svg"
           >
             <path
               d="M0.999999 10L0.999999 13H2L2 10H3L3 4H2L2 1H1L1 4H0V10H0.999999Z"

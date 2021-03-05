@@ -10,7 +10,7 @@ EventEmitter.on('remove spacing', () => {
   for (const node of figma.currentPage.selection) {
     const spacing = getSpacing(node);
 
-    Object.keys(spacing).filter((connectedNodeId) => {
+    for (const connectedNodeId of Object.keys(spacing)) {
       // check if group exists
       const group = figma.getNodeById(spacing[connectedNodeId]);
 
@@ -30,7 +30,7 @@ EventEmitter.on('remove spacing', () => {
         delete connectedNodeSpacing[node.id];
         setSpacing(foundConnectedNode, connectedNodeSpacing);
       }
-    });
+    }
   }
 });
 
@@ -44,22 +44,19 @@ EventEmitter.on('draw spacing', (settings) => {
   }
 });
 
-function distanceBetweenTwoPoints(x1, y1, x2, y2) {
-  let dx = Math.pow(x2 - x1, 2);
-  let dy = Math.pow(y2 - y1, 2);
-  return Math.floor(Math.sqrt(dx + dy));
-}
+const distanceBetweenTwoPoints = (x1, y1, x2, y2) =>
+  Math.floor(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)));
 
 const getShapeValues = (shape: SceneNode) => {
-  let transformPosition = shape.absoluteTransform;
-  let x = transformPosition[0][2];
-  let y = transformPosition[1][2];
+  const transformPosition = shape.absoluteTransform;
+  const x = transformPosition[0][2];
+  const y = transformPosition[1][2];
 
-  let w = shape.width;
-  let h = shape.height;
+  const w = shape.width;
+  const h = shape.height;
 
-  let cx = x + w / 2;
-  let cy = y + h / 2;
+  const cx = x + w / 2;
+  const cy = y + h / 2;
 
   return {
     x,

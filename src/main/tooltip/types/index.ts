@@ -1,13 +1,13 @@
-import strokesPart from './parts/strokes';
-import fillsPart from './parts/fills';
-import widthPart from './parts/width';
-import heightPart from './parts/height';
-import cornerRadiusPart from './parts/corner-radius';
-import opacityPart from './parts/opacity';
-import fontFamilyPart from './parts/font-family';
-import fontSizePart from './parts/font-size';
-import fontStylePart from './parts/font-style';
-import pointCountPart from './parts/points';
+import strokes from './parts/strokes';
+import fills from './parts/fills';
+import width from './parts/width';
+import height from './parts/height';
+import cornerRadius from './parts/cornerRadius';
+import opacity from './parts/opacity';
+import fontFamily from './parts/fontFamily';
+import fontSize from './parts/fontSize';
+import fontStyle from './parts/fontStyle';
+import pointCount from './parts/points';
 import { SetTooltipOptions, TooltipSettings } from '../../../shared/interfaces';
 
 export default function addNode(
@@ -18,33 +18,33 @@ export default function addNode(
   const flags: TooltipSettings = settings.flags;
   // Add content to parent
   if (flags.width) {
-    widthPart(node, parent, settings);
+    width(node, parent, settings);
   }
   if (flags.height) {
-    heightPart(node, parent, settings);
+    height(node, parent, settings);
   }
   if (flags.color) {
-    fillsPart(node, parent, settings);
+    fills(node, parent, settings);
   }
   if (flags.cornerRadius) {
-    cornerRadiusPart(node, parent, settings);
+    cornerRadius(node, parent, settings);
   }
   if (flags.stroke) {
-    strokesPart(node, parent, settings);
+    strokes(node, parent, settings);
   }
   if (flags.opacity) {
-    opacityPart(node, parent, settings);
+    opacity(node, parent, settings);
   }
   if (flags.fontFamily) {
-    fontFamilyPart(node, parent, settings);
+    fontFamily(node, parent, settings);
   }
   if (flags.fontStyle) {
-    fontStylePart(node, parent, settings);
+    fontStyle(node, parent, settings);
   }
   if (flags.fontSize) {
-    fontSizePart(node, parent, settings);
+    fontSize(node, parent, settings);
   }
   if (flags.points) {
-    pointCountPart(node, parent, settings);
+    pointCount(node, parent, settings);
   }
 }
