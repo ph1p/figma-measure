@@ -165,16 +165,22 @@ const Container = styled.div`
   }
   svg {
     cursor: pointer;
-    &:hover {
-      opacity: 0.7;
-    }
-    &:hover,
-    &.active {
+
+    &:not(.active):hover {
       rect {
-        stroke: #1745e8;
+        stroke: ${(props) => props.theme.dimmedColor};
       }
       path {
-        fill: #1745e8;
+        fill: ${(props) => props.theme.dimmedColor};
+      }
+    }
+
+    &.active {
+      rect {
+        stroke: ${(props) => props.theme.color};
+      }
+      path {
+        fill: ${(props) => props.theme.color};
       }
     }
   }

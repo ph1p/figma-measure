@@ -86,6 +86,7 @@ const CenterChooser: FunctionComponent = observer(() => {
             rx="7.5"
             fill="#E4E4E4"
             stroke="#A1A1A1"
+            className="background"
           />
         </svg>
 
@@ -106,7 +107,15 @@ const CenterChooser: FunctionComponent = observer(() => {
             rx="9.5"
             stroke="#E8E8E8"
           />
-          <rect x="4" y="4" width="22" height="22" rx="8" fill="#E4E4E4" />
+          <rect
+            x="4"
+            y="4"
+            width="22"
+            height="22"
+            rx="8"
+            fill="#E4E4E4"
+            className="background"
+          />
         </svg>
       </Icons>
       <div className="input icon" style={{ width: 75 }}>
@@ -128,7 +137,6 @@ const CenterChooser: FunctionComponent = observer(() => {
               clipRule="evenodd"
               d="M6 0H4V1H6V0ZM8.5 9H9V8.5H10V9V10H9H8.5V9ZM1 4V6H0V4H1ZM9 1.5V1H8.5V0H9H10V1V1.5H9ZM9 4V6H10V4H9ZM1 1.5V1H1.5V0H1H0V1V1.5H1ZM0 9V8.5H1V9H1.5V10H1H0V9ZM6 9H4V10H6V9Z"
               fill="black"
-              fillOpacity="0.4"
             />
           </svg>
         </div>
@@ -156,16 +164,27 @@ const Container = styled.div`
   }
   svg {
     cursor: pointer;
-    &:hover {
-      opacity: 0.7;
-    }
-    &:hover,
-    &.active {
+
+    &:not(.active):hover {
       rect {
-        stroke: #1745e8;
+        stroke: ${(props) => props.theme.dimmedColor};
       }
       path {
-        fill: #1745e8;
+        fill: ${(props) => props.theme.dimmedColor};
+      }
+    }
+
+    &.active {
+      rect {
+        stroke: ${(props) => props.theme.color};
+      }
+
+      .background {
+        fill: ${(props) => props.theme.dimmedColor};
+      }
+
+      path {
+        fill: ${(props) => props.theme.color};
       }
     }
   }

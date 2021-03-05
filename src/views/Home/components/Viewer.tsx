@@ -12,7 +12,7 @@ const Wrapper = styled.div<{ color: string }>`
     }
     &.active {
       .element {
-        fill: ${(props) => props.color};
+        fill: ${(props) => props.theme.color};
       }
       .background {
         fill: #e8ecfd;
@@ -27,11 +27,10 @@ const Wrapper = styled.div<{ color: string }>`
 
   .tooltip {
     path:not(.active):hover {
-      fill: ${(props) => props.color};
-      fill-opacity: 0.3;
+      fill: ${(props) => props.theme.dimmedColor};
     }
     path.active {
-      fill: ${(props) => props.color};
+      fill: ${(props) => props.theme.color};
     }
   }
 
@@ -48,28 +47,25 @@ const Wrapper = styled.div<{ color: string }>`
 
     &:not(.active):hover {
       .border {
-        stroke: ${(props) => props.color};
-        stroke-opacity: 0.5;
+        stroke: ${(props) => props.theme.dimmedColor};
       }
       .background {
         &.fill-stroke,
         &.fill {
-          fill: ${(props) => props.color};
-          fill-opacity: 0.3;
+          fill: ${(props) => props.theme.dimmedColor};
         }
       }
     }
 
     &.active {
       .border {
-        stroke: ${(props) => props.color};
+        stroke: ${(props) => props.theme.color};
       }
       .background {
         fill: #e8ecfd;
         &.fill-stroke,
         &.fill {
-          fill: ${(props) => props.color};
-          fill-opacity: 0.7;
+          fill: ${(props) => props.theme.dimmedColor};
         }
       }
     }

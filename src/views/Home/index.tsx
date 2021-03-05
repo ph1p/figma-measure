@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useMemo } from 'react';
-import styled from 'styled-components';
+import React, { FunctionComponent, useContext, useMemo } from 'react';
+import styled, { ThemeContext } from 'styled-components';
 import { Colors } from '../../components/ColorPicker';
 import { EyeClosedIcon, EyeIcon } from '../../components/icons/EyeIcons';
 import { RefreshIcon } from '../../components/icons/RefreshIcon';
@@ -15,6 +15,7 @@ import CenterChooser from './components/CenterChooser';
 import LineChooser from './components/LineChooser';
 
 const Home: FunctionComponent = observer(() => {
+  const theme = useContext(ThemeContext);
   const store = useStore();
 
   const hasSpacing = useMemo(() => {
@@ -84,14 +85,7 @@ const Home: FunctionComponent = observer(() => {
       <InputContainer>
         <label htmlFor="color">Color</label>
         <Colors
-          colors={[
-            '#E8278A',
-            '#EF5533',
-            '#FAAA00',
-            '#2CB571',
-            '#1D45E8',
-            '#7623F5',
-          ]}
+          colors={theme.colors}
           onChange={(color) => store.setColor(color)}
           color={store.color}
         />

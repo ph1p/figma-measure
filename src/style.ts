@@ -1,5 +1,69 @@
 import { createGlobalStyle } from 'styled-components';
 
+export const DEFAULT_COLOR = '#1745e8';
+export const TOKENS = {
+  colors: {
+    d_cerise: {
+      value: '#dac0ce',
+    },
+    d_persian: {
+      value: '#c0c6da',
+    },
+    d_jade: {
+      value: '#c0d3cb',
+    },
+    d_sun: {
+      value: '#dcd2be',
+    },
+    d_red: {
+      value: '#dac8c4',
+    },
+    d_violet: {
+      value: '#ccc0db',
+    },
+    persian: {
+      value: '#1745e8',
+    },
+    violet: {
+      value: '#7614f5',
+    },
+    jade: {
+      value: '#12b571',
+    },
+    sun: {
+      value: '#ffaa00',
+    },
+    cerise: {
+      value: '#e8178a',
+    },
+    red: {
+      value: '#ef5533',
+    },
+  },
+};
+
+export const getDimmedColorByColor = (color: string) => {
+  try {
+    const name = Object.entries(TOKENS.colors).find(
+      ([_, data]) => data.value === color
+    )[0];
+
+    return TOKENS.colors[`d_${name}`].value;
+  } catch {
+    return DEFAULT_COLOR;
+  }
+};
+
+export const theme = {
+  tokens: TOKENS,
+  colors: Object.keys(TOKENS.colors)
+    .filter((colorKey) => !colorKey.startsWith('d_'))
+    .map((colorKey) => TOKENS.colors[colorKey].value),
+  dimmedColors: Object.keys(TOKENS.colors)
+    .filter((colorKey) => colorKey.startsWith('d_'))
+    .map((colorKey) => TOKENS.colors[colorKey].value),
+};
+
 export const GlobalStyle = createGlobalStyle`
 body {
   font-family: Inter;
@@ -48,63 +112,6 @@ h4 {
     }
   }
 }
-
-/* input {
-  &[type='color'] {
-    -webkit-appearance: none;
-    padding: 0;
-    border: 0;
-    width: 25px;
-    height: 25px;
-    cursor: pointer;
-    &::-webkit-color-swatch-wrapper {
-      padding: 0;
-      border-radius: 100%;
-      overflow: hidden;
-    }
-    &::-webkit-color-swatch {
-      border: none;
-      border: 1px solid #ddd;
-      border-radius: 100%;
-    }
-  }
-
-  &[type='range']:hover,
-  &[type='color']:hover,
-  &[type='range']:focus,
-  &[type='color']:focus {
-    border: 0;
-    outline: none;
-  }
-
-  &[type='range'] {
-    -webkit-appearance: none;
-    margin: 0;
-    width: 100%;
-    border: 0;
-    &:focus {
-      outline: none;
-    }
-    &::-webkit-slider-runnable-track {
-      width: 100%;
-      height: 12px;
-      cursor: pointer;
-      border-radius: 6px;
-      background: #f3f3f3;
-      box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 0px 0.5px inset;
-    }
-    &::-webkit-slider-thumb {
-      width: 12px;
-      height: 12px;
-      border-radius: 6px;
-      box-sizing: border-box;
-      background: #ffffff;
-      cursor: pointer;
-      -webkit-appearance: none;
-      box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 0px 0.5px;
-    }
-  }
-} */
 
 ::-webkit-scrollbar {
   width: 4px;

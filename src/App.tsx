@@ -7,12 +7,17 @@ import {
   Route,
   useHistory,
 } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
 
 import Home from './views/Home';
 import Tooltip from './views/Tooltip';
 
-import { GlobalStyle } from './style';
+import {
+  DEFAULT_COLOR,
+  getDimmedColorByColor,
+  GlobalStyle,
+  theme,
+} from './style';
 import { getStoreFromMain, StoreProvider, trunk, useStore } from './store';
 import EventEmitter from './shared/EventEmitter';
 
@@ -39,36 +44,46 @@ const App: FunctionComponent = observer(() => {
   }, []);
 
   return (
-    <Main>
-      <div>
-        <Switch>
-          <Route path="/" exact>
-            <Home />
-          </Route>
-          <Route path="/tooltip">
-            <Tooltip />
-          </Route>
-        </Switch>
-      </div>
-      <ViewSwitch menu={menu}>
-        <div
-          onClick={() => {
-            setMenu(1);
-            history.push('/');
-          }}
-        >
-          Measure
+    <ThemeProvider
+      theme={{
+        color: store?.color || DEFAULT_COLOR,
+        dimmedColor: getDimmedColorByColor(store.color),
+        ...theme,
+      }}
+    >
+      <GlobalStyle />
+
+      <Main>
+        <div>
+          <Switch>
+            <Route path="/" exact>
+              <Home />
+            </Route>
+            <Route path="/tooltip">
+              <Tooltip />
+            </Route>
+          </Switch>
         </div>
-        <div
-          onClick={() => {
-            setMenu(2);
-            history.push('/tooltip');
-          }}
-        >
-          Tooltip
-        </div>
-      </ViewSwitch>
-    </Main>
+        <ViewSwitch menu={menu}>
+          <div
+            onClick={() => {
+              setMenu(1);
+              history.push('/');
+            }}
+          >
+            Measure
+          </div>
+          <div
+            onClick={() => {
+              setMenu(2);
+              history.push('/tooltip');
+            }}
+          >
+            Tooltip
+          </div>
+        </ViewSwitch>
+      </Main>
+    </ThemeProvider>
   );
 });
 
@@ -76,7 +91,6 @@ getStoreFromMain().then((store) =>
   trunk.init(store).then(() =>
     ReactDOM.render(
       <StoreProvider>
-        <GlobalStyle />
         <Router>
           <App />
         </Router>

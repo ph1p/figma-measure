@@ -131,7 +131,7 @@ const ToggleInputs = styled.div`
 `;
 
 const Preview = styled.div`
-  background-color: #1745e8;
+  background-color: ${(props) => props.theme.color};
   display: flex;
   align-items: center;
   justify-content: center;

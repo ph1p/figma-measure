@@ -27,7 +27,7 @@ const InputWrapper = styled.div`
     cursor: pointer;
     &:checked {
       & + span {
-        background-color: #1745e8;
+        background-color: ${(props) => props.theme.color};
         &:before {
           content: '';
           transform: translateX(12px);
