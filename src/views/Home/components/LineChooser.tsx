@@ -160,7 +160,6 @@ const Container = styled.div`
   border-style: solid;
   input {
     width: 75px;
-    padding: 5px 10px;
     box-sizing: border-box;
   }
   svg {
