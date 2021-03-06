@@ -7,7 +7,7 @@ export const SpacingIcon = (props: { remove?: boolean }) => {
       height="29"
       viewBox="0 0 30 29"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+      xmlns="https://www.w3.org/2000/svg"
     >
       <rect x="0.5" y="0.5" width="29" height="28" rx="9.5" stroke="#E8E8E8" />
       {!props.remove && (

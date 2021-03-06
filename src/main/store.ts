@@ -37,5 +37,3 @@ EventEmitter.on('storage remove item', async (key, send) => {
     send('storage remove item', false);
   }
 });
-
-EventEmitter.once('store initialized', () => {});

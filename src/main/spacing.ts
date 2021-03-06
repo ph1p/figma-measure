@@ -162,8 +162,6 @@ export const drawSpacing = (
 
   // yellow
   if (!cutsHorizontalRectPoints) {
-    // ctx.beginPath();
-
     let yellowX1, yellowX2, yellowY1, yellowY2;
 
     // point1

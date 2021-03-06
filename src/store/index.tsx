@@ -223,8 +223,7 @@ export const trunk = new AsyncTrunk(rootStore, {
 export const getStoreFromMain = (): Promise<TStore> => {
   return new Promise((resolve) => {
     EventEmitter.emit('storage', STORAGE_KEY);
-    EventEmitter.once('storage', (store, emit) => {
-      emit('store initialized');
+    EventEmitter.once('storage', (store) => {
       resolve(JSON.parse(store || '{}'));
     });
   });
