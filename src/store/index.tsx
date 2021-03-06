@@ -9,6 +9,7 @@ import {
   TooltipPositions,
   TooltipSettings,
 } from '../shared/interfaces';
+import { DEFAULT_COLOR } from '../style';
 
 const DEFAULT_SURROUNDING_FLAGS: SurroundingSettings = {
   labels: false,
@@ -27,7 +28,7 @@ class RootStore {
   }
 
   labels = true;
-  color = '#EF5533';
+  color = DEFAULT_COLOR;
 
   visibility = true;
 

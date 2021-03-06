@@ -140,7 +140,15 @@ const Spacing = styled.div<{ active?: boolean; disable?: boolean }>`
   bottom: 12px;
   cursor: pointer;
   opacity: ${(props) => (props.active ? 1 : 0.5)};
-  border-radius: 3px;
+  border-radius: 7px;
+  line {
+    stroke: ${(props) => props.theme.color};
+  }
+  &:hover {
+    rect {
+      stroke: ${(props) => props.theme.color};
+    }
+  }
 `;
 
 const RemoveSpacing = styled(Spacing)`
@@ -153,20 +161,21 @@ const Refresh = styled.div<{ active?: boolean }>`
   right: 12px;
   top: 12px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 11px;
   width: 30px;
   height: 30px;
   border: 1px solid #e8e8e8;
   overflow: hidden;
   opacity: ${(props) => (props.active ? 1 : 0.5)};
+
   svg {
     margin: -2px 0 0 -2px;
   }
   &:hover {
-    background-color: #f3f5ff;
+    background-color: ${(props) => props.theme.hoverColor};
   }
   &:active {
-    background-color: #e8ecfd;
+    border-color: ${(props) => props.theme.color};
   }
 `;
 

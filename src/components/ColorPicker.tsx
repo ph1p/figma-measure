@@ -30,7 +30,7 @@ const Wrapper = styled.div`
     font-size: 12px;
     width: 100%;
     &:focus {
-      border-color: var(--blue);
+      border-color: ${(props) => props.theme.color};
     }
   }
   .color {

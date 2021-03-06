@@ -167,10 +167,10 @@ const Container = styled.div`
 
     &:not(.active):hover {
       rect {
-        stroke: ${(props) => props.theme.dimmedColor};
+        stroke: ${(props) => props.theme.softColor};
       }
       path {
-        fill: ${(props) => props.theme.dimmedColor};
+        fill: ${(props) => props.theme.softColor};
       }
     }
 
@@ -180,7 +180,7 @@ const Container = styled.div`
       }
 
       .background {
-        fill: ${(props) => props.theme.dimmedColor};
+        fill: ${(props) => props.theme.softColor};
       }
 
       path {

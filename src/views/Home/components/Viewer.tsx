@@ -5,32 +5,37 @@ import styled from 'styled-components';
 import { PluginNodeData, TooltipPositions } from '../../../shared/interfaces';
 import { useStore } from '../../../store';
 
-const Wrapper = styled.div<{ color: string }>`
+const Wrapper = styled.div`
   .line {
     .element {
-      fill: #999999;
+      fill: ${(props) => props.theme.softColor};
     }
     &.active {
       .element {
         fill: ${(props) => props.theme.color};
       }
       .background {
-        fill: #e8ecfd;
+        fill: transparent;
       }
     }
-    &:not(.active):hover {
+    &:hover {
       .background {
-        fill: #e8ecfd;
+        fill: ${(props) => props.theme.hoverColor};
       }
     }
   }
 
   .tooltip {
-    path:not(.active):hover {
-      fill: ${(props) => props.theme.dimmedColor};
-    }
-    path.active {
-      fill: ${(props) => props.theme.color};
+    path {
+      stroke: ${(props) => props.theme.softColor};
+      fill: transparent;
+      &:not(.active):hover {
+        fill: ${(props) => props.theme.softColor};
+      }
+      &.active {
+        stroke: ${(props) => props.theme.color};
+        fill: ${(props) => props.theme.color};
+      }
     }
   }
 
@@ -38,22 +43,23 @@ const Wrapper = styled.div<{ color: string }>`
     .background {
       &.fill-stroke,
       &.fill {
-        fill: #e8ecfd;
+        fill: ${(props) => props.theme.softColor};
+        fill-opacity: 0.3;
       }
-    }
-    .border {
-      stroke: #666;
     }
 
-    &:not(.active):hover {
-      .border {
-        stroke: ${(props) => props.theme.dimmedColor};
-      }
+    .border {
+      stroke: ${(props) => props.theme.softColor};
+    }
+
+    &:hover {
       .background {
-        &.fill-stroke,
         &.fill {
-          fill: ${(props) => props.theme.dimmedColor};
+          stroke: ${(props) => props.theme.color};
         }
+      }
+      .highlight {
+        fill: ${(props) => props.theme.hoverColor};
       }
     }
 
@@ -61,19 +67,8 @@ const Wrapper = styled.div<{ color: string }>`
       .border {
         stroke: ${(props) => props.theme.color};
       }
-      .background {
-        fill: #e8ecfd;
-        &.fill-stroke,
-        &.fill {
-          fill: ${(props) => props.theme.dimmedColor};
-        }
-      }
-    }
-
-    &:not(.active):hover,
-    &.active {
       .highlight {
-        fill: #e8ecfd;
+        fill: ${(props) => props.theme.softColor};
       }
     }
   }
@@ -141,7 +136,7 @@ const Viewer: FunctionComponent = observer(() => {
   };
 
   return (
-    <Wrapper color="#1745e8">
+    <Wrapper>
       <svg
         width="184"
         height="184"
@@ -161,14 +156,14 @@ const Viewer: FunctionComponent = observer(() => {
           <path
             fillRule="evenodd"
             clipRule="evenodd"
-            d="M44 141.022L44 137.5C44 135.015 41.9853 133 39.5 133C37.0147 133 35 135.015 35 137.5L35 142.522C35 146.665 38.3579 150.022 42.5 150.022L47.3413 150.022C49.8266 150.022 51.8413 148.008 51.8413 145.522C51.8413 143.037 49.8266 141.022 47.3413 141.022L44 141.022Z"
+            d="M44.0848 141.012L44.0848 137.494C44.0848 135.012 42.0511 133 39.5424 133C37.0337 133 35 135.012 35 137.494L35 142.51C35 146.647 38.3895 150 42.5707 150L47.4576 150C49.9663 150 52 147.988 52 145.506C52 143.024 49.9663 141.012 47.4576 141.012L44.0848 141.012Z"
             className="background"
             fill="transparent"
           />
           <path
             fillRule="evenodd"
             clipRule="evenodd"
-            d="M39.4092 142.522C39.4092 143.903 40.5285 145.022 41.9092 145.022L47.4092 145.022L47.4092 146.022L41.9092 146.022C39.9762 146.022 38.4092 144.455 38.4092 142.522L38.4092 137.022L39.4092 137.022L39.4092 142.522Z"
+            d="M39.999 142.505C39.999 143.886 41.1275 145.005 42.5196 145.005L46.9907 145.005L46.9907 146.005L42.5196 146.005C40.5707 146.005 38.9907 144.438 38.9907 142.505L38.9907 138.005L39.999 138.005L39.999 142.505Z"
             className="element"
           />
         </g>
@@ -184,14 +179,14 @@ const Viewer: FunctionComponent = observer(() => {
           <path
             fillRule="evenodd"
             clipRule="evenodd"
-            d="M139.841 140.932L136.319 140.932C133.834 140.932 131.819 142.947 131.819 145.432C131.819 147.917 133.834 149.932 136.319 149.932L141.341 149.932C145.483 149.932 148.841 146.574 148.841 142.432L148.841 137.591C148.841 135.105 146.827 133.091 144.341 133.091C141.856 133.091 139.841 135.105 139.841 137.591L139.841 140.932Z"
+            d="M141.012 140.915L137.494 140.915C135.012 140.915 133 142.949 133 145.458C133 147.966 135.012 150 137.494 150L142.51 150C146.647 150 150 146.61 150 142.429L150 137.542C150 135.034 147.988 133 145.506 133C143.024 133 141.012 135.034 141.012 137.542L141.012 140.915Z"
             className="background"
             fill="transparent"
           />
           <path
             fillRule="evenodd"
             clipRule="evenodd"
-            d="M141.341 145.522C142.722 145.522 143.841 144.403 143.841 143.022L143.841 137.522L144.841 137.522L144.841 143.022C144.841 144.955 143.274 146.522 141.341 146.522L135.841 146.522L135.841 145.522L141.341 145.522Z"
+            d="M142.499 144.992C143.88 144.992 145 143.863 145 142.471L145 138L146 138L146 142.471C146 144.42 144.433 146 142.499 146L138 146L138 144.992L142.499 144.992Z"
             className="element"
           />
         </g>
@@ -207,14 +202,14 @@ const Viewer: FunctionComponent = observer(() => {
           <path
             fillRule="evenodd"
             clipRule="evenodd"
-            d="M139.841 44.9094L139.841 48.4319C139.841 50.9172 141.856 52.9319 144.341 52.9319C146.827 52.9319 148.841 50.9172 148.841 48.4319L148.841 43.4094C148.841 39.2673 145.483 35.9094 141.341 35.9094L136.5 35.9094C134.015 35.9094 132 37.9241 132 40.4094C132 42.8947 134.015 44.9094 136.5 44.9094L139.841 44.9094Z"
+            d="M140.915 43.9881L140.915 47.5059C140.915 49.9879 142.949 52 145.458 52C147.966 52 150 49.9879 150 47.5059L150 42.4901C150 38.3534 146.61 35 142.429 35L137.542 35C135.034 35 133 37.0121 133 39.4941C133 41.9761 135.034 43.9881 137.542 43.9881L140.915 43.9881Z"
             className="background"
             fill="transparent"
           />
           <path
             fillRule="evenodd"
             clipRule="evenodd"
-            d="M144.432 43.4094C144.432 42.0287 143.313 40.9094 141.932 40.9094L136.432 40.9094L136.432 39.9094L141.932 39.9094C143.865 39.9094 145.432 41.4764 145.432 43.4094L145.432 48.9094L144.432 48.9094L144.432 43.4094Z"
+            d="M144.992 42.5006C144.992 41.1196 143.863 40.0002 142.471 40.0002L138 40.0002L138 39L142.471 39C144.42 39 146 40.5673 146 42.5006L146 47L144.992 47L144.992 42.5006Z"
             className="element"
           />
         </g>
@@ -230,14 +225,14 @@ const Viewer: FunctionComponent = observer(() => {
           <path
             fillRule="evenodd"
             clipRule="evenodd"
-            d="M44 45L47.5225 45C50.0078 45 52.0225 42.9853 52.0225 40.5C52.0225 38.0147 50.0078 36 47.5225 36L42.5 36C38.3579 36 35 39.3579 35 43.5L35 48.3413C35 50.8266 37.0147 52.8413 39.5 52.8413C41.9853 52.8413 44 50.8266 44 48.3413L44 45Z"
+            d="M43.9881 44.0848L47.5059 44.0848C49.9879 44.0848 52 42.0511 52 39.5424C52 37.0337 49.9879 35 47.5059 35L42.4901 35C38.3534 35 35 38.3895 35 42.5707L35 47.4576C35 49.9663 37.0121 52 39.4941 52C41.9761 52 43.9881 49.9663 43.9881 47.4576L43.9881 44.0848Z"
             className="background"
             fill="transparent"
           />
           <path
             fillRule="evenodd"
             clipRule="evenodd"
-            d="M42.5 40.4094C41.1193 40.4094 40 41.5287 40 42.9094L40 48.4094L39 48.4094L39 42.9094C39 40.9764 40.567 39.4094 42.5 39.4094L48 39.4094L48 40.4094L42.5 40.4094Z"
+            d="M42.4913 40.0083C41.1104 40.0083 39.9909 41.1368 39.9909 42.5289L39.9909 47H38.9907L38.9907 42.5289C38.9907 40.5799 40.558 39 42.4913 39L46.9907 39L46.9907 40.0083L42.4913 40.0083Z"
             className="element"
           />
         </g>
@@ -250,9 +245,8 @@ const Viewer: FunctionComponent = observer(() => {
             })
           }
         >
-          {store.fill === 'fill' || store.fill === 'fill-stroke' ? (
+          {(store.fill === 'fill' || store.fill === 'fill-stroke') && (
             <rect
-              opacity="0.3"
               x="58"
               y="58"
               width="69"
@@ -262,15 +256,15 @@ const Viewer: FunctionComponent = observer(() => {
               fill="#ddd"
               stroke="transparent"
             />
-          ) : (
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M54 66.5C54 59.5964 59.5964 54 66.5 54H118.5C125.404 54 131 59.5964 131 66.5V118.5C131 125.404 125.404 131 118.5 131H66.5C59.5964 131 54 125.404 54 118.5V66.5ZM67.5 62C64.4624 62 62 64.4624 62 67.5V117.5C62 120.538 64.4624 123 67.5 123H117.5C120.538 123 123 120.538 123 117.5V67.5C123 64.4624 120.538 62 117.5 62H67.5Z"
-              fill="transparent"
-              className="highlight"
-            />
           )}
+
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M54 66.5C54 59.5964 59.5964 54 66.5 54H118.5C125.404 54 131 59.5964 131 66.5V118.5C131 125.404 125.404 131 118.5 131H66.5C59.5964 131 54 125.404 54 118.5V66.5ZM67.5 62C64.4624 62 62 64.4624 62 67.5V117.5C62 120.538 64.4624 123 67.5 123H117.5C120.538 123 123 120.538 123 117.5V67.5C123 64.4624 120.538 62 117.5 62H67.5Z"
+            fill="transparent"
+            className="highlight"
+          />
 
           {store.fill !== 'fill' && (
             <rect
@@ -349,10 +343,56 @@ const Viewer: FunctionComponent = observer(() => {
           <path
             fillRule="evenodd"
             clipRule="evenodd"
-            d="M76 94H75V92V91V89H76L76 91L109 91V89H110V91V92V94H109V92L76 92L76 94Z"
+            d="M75 94H76L76 92L89 92V93L96 93V92L109 92V94H110V92V91V89H109V91L96 91V90L89 90V91L76 91L76 89H75V91V92V94Z"
             className="element"
           />
         </g>
+
+        <g className="tooltip">
+          <path
+            data-direction="RIGHT"
+            onClick={clickTooltip}
+            className={
+              store.surrounding.tooltip === TooltipPositions.RIGHT
+                ? 'active'
+                : ''
+            }
+            d="M163.122 87.5434L160.301 90.29C159.9 90.6812 159.9 91.3188 160.301 91.71L163.122 94.4566C163.315 94.6444 163.423 94.9 163.423 95.1666V98C163.423 99.6569 164.791 101 166.479 101L179.944 101C181.632 101 183 99.6569 183 98L183 84C183 82.3431 181.632 81 179.944 81L166.479 81C164.791 81 163.423 82.3432 163.423 84V86.8334C163.423 87.1 163.315 87.3556 163.122 87.5434Z"
+            fill="#E8ECFD"
+          />
+          <path
+            data-direction="BOTTOM"
+            onClick={clickTooltip}
+            className={
+              store.surrounding.tooltip === TooltipPositions.BOTTOM
+                ? 'active'
+                : ''
+            }
+            d="M95.4566 163.122L92.71 160.301C92.3188 159.9 91.6812 159.9 91.29 160.301L88.5434 163.122C88.3556 163.315 88.1 163.423 87.8334 163.423H85C83.3431 163.423 82 164.791 82 166.479L82 179.944C82 181.632 83.3431 183 85 183L99 183C100.657 183 102 181.632 102 179.944L102 166.479C102 164.791 100.657 163.423 99 163.423H96.1666C95.9 163.423 95.6444 163.315 95.4566 163.122Z"
+            fill="#E8ECFD"
+          />
+          <path
+            data-direction="LEFT"
+            onClick={clickTooltip}
+            className={
+              store.surrounding.tooltip === TooltipPositions.LEFT
+                ? 'active'
+                : ''
+            }
+            d="M20.8782 94.4566L23.6987 91.71C24.1004 91.3188 24.1004 90.6812 23.6987 90.29L20.8782 87.5434C20.6854 87.3556 20.577 87.1 20.577 86.8334V84C20.577 82.3431 19.2089 81 17.5212 81L4.05579 81C2.36813 81 1 82.3431 1 84L1 98C1 99.6569 2.36812 101 4.05579 101L17.5212 101C19.2089 101 20.577 99.6569 20.577 98V95.1666C20.577 94.9 20.6854 94.6444 20.8782 94.4566Z"
+            fill="#E8ECFD"
+          />
+          <path
+            data-direction="TOP"
+            onClick={clickTooltip}
+            className={
+              store.surrounding.tooltip === TooltipPositions.TOP ? 'active' : ''
+            }
+            d="M88.5434 20.8782L91.29 23.6987C91.6812 24.1004 92.3188 24.1004 92.71 23.6987L95.4566 20.8782C95.6444 20.6854 95.9 20.577 96.1666 20.577H99C100.657 20.577 102 19.2089 102 17.5212L102 4.05579C102 2.36813 100.657 1 99 1L85 1C83.3431 1 82 2.36813 82 4.05579L82 17.5212C82 19.2089 83.3431 20.577 85 20.577H87.8334C88.1 20.577 88.3556 20.6854 88.5434 20.8782Z"
+            fill="#E8ECFD"
+          />
+        </g>
+
         <g
           className={`left-bar line ${
             store.surrounding.leftBar ? 'active' : ''
@@ -365,23 +405,23 @@ const Viewer: FunctionComponent = observer(() => {
           }
         >
           <rect
-            className="background"
-            fill="transparent"
             x="34"
             y="62"
             width="11"
-            height="60"
+            height="61"
             rx="5"
+            className="background"
+            fill="transparent"
           />
-
           <path
+            d="M42.0002 69H40.0002L40.0002 115H42.0002V116H37.0002L37.0002 115L39.0002 115L39.0002 69L37.0002 69L37.0002 68L42.0002 68V69Z"
             className="element"
-            d="M42 69H40L40 115H42V116H37L37 115L39 115L39 69L37 69L37 68L42 68V69Z"
           />
           {store.labels && (
             <rect x="38" y="85" width="3" height="14" className="element" />
           )}
         </g>
+
         <g
           className={`right-bar line ${
             store.surrounding.rightBar ? 'active' : ''
@@ -394,23 +434,23 @@ const Viewer: FunctionComponent = observer(() => {
           }
         >
           <rect
-            x="139"
+            x="140"
             y="62"
             width="11"
-            height="60"
+            height="61"
             rx="5"
             className="background"
             fill="transparent"
           />
-
           <path
-            d="M147 69H145L145 115H147V116H142L142 115L144 115L144 69L142 69L142 68L147 68V69Z"
+            d="M148 69H146L146 115H148V116H143L143 115L145 115L145 69L143 69L143 68L148 68V69Z"
             className="element"
           />
           {store.labels && (
-            <rect x="143" y="85" width="3" height="14" className="element" />
+            <rect x="144" y="85" width="3" height="14" className="element" />
           )}
         </g>
+
         <g
           className={`top-bar line ${store.surrounding.topBar ? 'active' : ''}`}
           onClick={() =>
@@ -421,31 +461,31 @@ const Viewer: FunctionComponent = observer(() => {
           }
         >
           <rect
-            x="121.996"
+            x="123"
             y="34"
             width="11"
-            height="60"
+            height="61"
             rx="5"
-            transform="rotate(90 121.996 34)"
+            transform="rotate(90 123 34)"
             className="background"
             fill="transparent"
           />
-
           <path
-            d="M114.996 42.0001L114.996 40.0001L68.9961 40.0001L68.9961 42.0001L67.9961 42.0001L67.9961 37.0001L68.9961 37.0001L68.9961 39.0001L114.996 39.0001L114.996 37.0001L115.996 37.0001L115.996 42.0001L114.996 42.0001Z"
+            d="M116 42.0001L116 40.0001L70 40.0001L70 42.0001L69 42.0001L69 37.0001L70 37.0001L70 39.0001L116 39.0001L116 37.0001L117 37.0001L117 42.0001L116 42.0001Z"
             className="element"
           />
           {store.labels && (
             <rect
-              x="98.9961"
+              x="100"
               y="38"
               width="3"
               height="14"
-              transform="rotate(90 98.9961 38)"
+              transform="rotate(90 100 38)"
               className="element"
             />
           )}
         </g>
+
         <g
           className={`bottom-bar line ${
             store.surrounding.bottomBar ? 'active' : ''
@@ -458,74 +498,29 @@ const Viewer: FunctionComponent = observer(() => {
           }
         >
           <rect
-            x="121.996"
-            y="139"
+            x="123"
+            y="140"
             width="11"
-            height="60"
+            height="61"
             rx="5"
-            transform="rotate(90 121.996 139)"
+            transform="rotate(90 123 140)"
             className="background"
             fill="transparent"
           />
-
           <path
-            d="M114.996 147L114.996 145L68.9961 145L68.9961 147L67.9961 147L67.9961 142L68.9961 142L68.9961 144L114.996 144L114.996 142L115.996 142L115.996 147L114.996 147Z"
+            d="M116 148L116 146L70 146L70 148L69 148L69 143L70 143L70 145L116 145L116 143L117 143L117 148L116 148Z"
             className="element"
           />
           {store.labels && (
             <rect
-              x="98.9961"
-              y="143"
+              x="100"
+              y="144"
               width="3"
               height="14"
-              transform="rotate(90 98.9961 143)"
+              transform="rotate(90 100 144)"
               className="element"
             />
           )}
-        </g>
-        <g className="tooltip">
-          <path
-            data-direction="RIGHT"
-            onClick={clickTooltip}
-            d="M164.065 87.5434L161.296 90.29C160.901 90.6812 160.901 91.3188 161.296 91.71L164.065 94.4566C164.254 94.6444 164.361 94.9 164.361 95.1666V98C164.361 99.6569 165.704 101 167.361 101L180.58 101C182.237 101 183.58 99.6568 183.58 98L183.58 84C183.58 82.3431 182.237 81 180.58 81L167.361 81C165.704 81 164.361 82.3431 164.361 84V86.8334C164.361 87.1 164.254 87.3556 164.065 87.5434Z"
-            className={
-              store.surrounding.tooltip === TooltipPositions.RIGHT
-                ? 'active'
-                : ''
-            }
-            fill="#E8ECFD"
-          />
-          <path
-            data-direction="BOTTOM"
-            onClick={clickTooltip}
-            d="M95.1666 164.355L92.4199 161.586C92.0288 161.191 91.3912 161.191 91 161.586L88.2533 164.355C88.0656 164.544 87.81 164.651 87.5434 164.651H84.71C83.0531 164.651 81.71 165.994 81.71 167.651L81.71 180.87C81.71 182.527 83.0531 183.87 84.71 183.87L98.71 183.87C100.367 183.87 101.71 182.527 101.71 180.87L101.71 167.651C101.71 165.994 100.367 164.651 98.71 164.651H95.8766C95.6099 164.651 95.3544 164.544 95.1666 164.355Z"
-            className={
-              store.surrounding.tooltip === TooltipPositions.BOTTOM
-                ? 'active'
-                : ''
-            }
-            fill="#E8ECFD"
-          />
-          <path
-            data-direction="LEFT"
-            onClick={clickTooltip}
-            d="M19.5153 94.4566L22.2843 91.71C22.6786 91.3188 22.6786 90.6812 22.2843 90.29L19.5153 87.5434C19.326 87.3556 19.2195 87.1 19.2195 86.8334V84C19.2195 82.3431 17.8764 81 16.2195 81L3 81C1.34315 81 -1.44847e-07 82.3432 0 84L1.22392e-06 98C1.36877e-06 99.6569 1.34314 101 3 101L16.2195 101C17.8764 101 19.2195 99.6569 19.2195 98V95.1666C19.2195 94.9 19.326 94.6444 19.5153 94.4566Z"
-            className={
-              store.surrounding.tooltip === TooltipPositions.LEFT
-                ? 'active'
-                : ''
-            }
-            fill="#E8ECFD"
-          />
-          <path
-            data-direction="TOP"
-            onClick={clickTooltip}
-            d="M88.5434 19.5153L91.29 22.2843C91.6812 22.6786 92.3188 22.6786 92.71 22.2843L95.4566 19.5153C95.6444 19.326 95.9 19.2195 96.1666 19.2195H99C100.657 19.2195 102 17.8764 102 16.2195L102 3C102 1.34315 100.657 -1.44847e-07 99 0L85 1.22392e-06C83.3431 1.36877e-06 82 1.34315 82 3L82 16.2195C82 17.8764 83.3431 19.2195 85 19.2195H87.8334C88.1 19.2195 88.3556 19.326 88.5434 19.5153Z"
-            className={
-              store.surrounding.tooltip === TooltipPositions.TOP ? 'active' : ''
-            }
-            fill="#E8ECFD"
-          />
         </g>
       </svg>
     </Wrapper>

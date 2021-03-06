@@ -1,67 +1,98 @@
 import { createGlobalStyle } from 'styled-components';
 
-export const DEFAULT_COLOR = '#1745e8';
 export const TOKENS = {
   colors: {
-    d_cerise: {
-      value: '#dac0ce',
+    solid: {
+      red: {
+        value: '#ef5533',
+      },
+      persian: {
+        value: '#1745e8',
+      },
+      violet: {
+        value: '#7614f5',
+      },
+      jade: {
+        value: '#12b571',
+      },
+      sun: {
+        value: '#ffaa00',
+      },
+      cerise: {
+        value: '#e8178a',
+      },
     },
-    d_persian: {
-      value: '#c0c6da',
+    soft: {
+      cerise: {
+        value: '#dac0ce',
+      },
+      persian: {
+        value: '#c0c6da',
+      },
+      jade: {
+        value: '#c0d3cb',
+      },
+      sun: {
+        value: '#dcd2be',
+      },
+      red: {
+        value: '#dac8c4',
+      },
+      violet: {
+        value: '#ccc0db',
+      },
     },
-    d_jade: {
-      value: '#c0d3cb',
-    },
-    d_sun: {
-      value: '#dcd2be',
-    },
-    d_red: {
-      value: '#dac8c4',
-    },
-    d_violet: {
-      value: '#ccc0db',
-    },
-    persian: {
-      value: '#1745e8',
-    },
-    violet: {
-      value: '#7614f5',
-    },
-    jade: {
-      value: '#12b571',
-    },
-    sun: {
-      value: '#ffaa00',
-    },
-    cerise: {
-      value: '#e8178a',
-    },
-    red: {
-      value: '#ef5533',
+    hover: {
+      sun: {
+        value: '#fdf8e8',
+      },
+      cerise: {
+        value: '#fde8f7',
+      },
+      red: {
+        value: '#fdf6e8',
+      },
+      jade: {
+        value: '#e8fdf7',
+      },
+      violet: {
+        value: '#f1e8fd',
+      },
+      persian: {
+        value: '#e8ecfd',
+      },
     },
   },
 };
 
-export const getDimmedColorByColor = (color: string) => {
-  try {
-    const name = Object.entries(TOKENS.colors).find(
-      ([_, data]) => data.value === color
-    )[0];
+export const DEFAULT_COLOR = TOKENS.colors.solid.persian.value;
 
-    return TOKENS.colors[`d_${name}`].value;
-  } catch {
-    return DEFAULT_COLOR;
+export const getColorByTypeAndSolidColor = (
+  color: string,
+  type: keyof typeof TOKENS.colors = 'solid'
+) => {
+  const foundColor = Object.entries(TOKENS.colors.solid).find(
+    ([_, data]) => data.value.toLowerCase() === color.toLowerCase()
+  );
+
+  if (foundColor) {
+    return TOKENS.colors[type][foundColor[0]].value;
+  } else {
+    return TOKENS.colors[type].persian.value;
   }
 };
 
 export const theme = {
   tokens: TOKENS,
-  colors: Object.keys(TOKENS.colors)
-    .filter((colorKey) => !colorKey.startsWith('d_'))
-    .map((colorKey) => TOKENS.colors[colorKey].value),
-  dimmedColors: Object.keys(TOKENS.colors)
-    .filter((colorKey) => colorKey.startsWith('d_'))
-    .map((colorKey) => TOKENS.colors[colorKey].value),
+  colors: Object.keys(TOKENS.colors.solid).map(
+    (color) => TOKENS.colors.solid[color].value
+  ),
+  softColors: Object.keys(TOKENS.colors.soft).map(
+    (color) => TOKENS.colors.soft[color].value
+  ),
+  hoverColors: Object.keys(TOKENS.colors.hover).map(
+    (color) => TOKENS.colors.hover[color].value
+  ),
 };
 
 export const GlobalStyle = createGlobalStyle`
@@ -93,7 +124,7 @@ h4 {
     font-size: 12px;
     width: 100%;
     &:focus {
-      border-color: var(--blue);
+      border-color: ${(props) => props.theme.color};
     }
   }
   &.icon {

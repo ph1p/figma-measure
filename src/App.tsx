@@ -12,12 +12,7 @@ import styled, { ThemeProvider } from 'styled-components';
 import Home from './views/Home';
 import Tooltip from './views/Tooltip';
 
-import {
-  DEFAULT_COLOR,
-  getDimmedColorByColor,
-  GlobalStyle,
-  theme,
-} from './style';
+import { DEFAULT_COLOR, getColorByTypeAndSolidColor, GlobalStyle, theme } from './style';
 import { getStoreFromMain, StoreProvider, trunk, useStore } from './store';
 import EventEmitter from './shared/EventEmitter';
 
@@ -47,7 +42,8 @@ const App: FunctionComponent = observer(() => {
     <ThemeProvider
       theme={{
         color: store?.color || DEFAULT_COLOR,
-        dimmedColor: getDimmedColorByColor(store.color),
+        softColor: getColorByTypeAndSolidColor(store.color, 'soft'),
+        hoverColor: getColorByTypeAndSolidColor(store.color, 'hover'),
         ...theme,
       }}
     >

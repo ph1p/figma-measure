@@ -457,7 +457,7 @@ EventEmitter.on('resize', ({ width, height }) =>
 EventEmitter.answer('get visibility', async () => {
   const group = getGlobalGroup();
 
-  return group ? group.visible : false;
+  return group ? group.visible : true;
 });
 
 EventEmitter.on('toggle visibility', () => {
