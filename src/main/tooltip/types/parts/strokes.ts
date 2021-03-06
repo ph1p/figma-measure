@@ -1,32 +1,48 @@
-import {
-  createTooltipTextNode,
-  colorString
-} from '../../../helper';
+import { createTooltipTextNode } from '../../../helper';
+import { createColorNode } from './fills';
 
-export default function strokesPart(node, { fontColor = '', fontSize = 0 }) {
+export default function strokes(
+  node,
+  parent,
+  { fontColor = '', fontSize = 0, unit = '' }
+) {
   // Stroke
-  if (node.strokes.length) {
+  if (node?.strokes?.length) {
+    const iconNode = figma.createNodeFromSvg(
+      `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="https://www.w3.org/2000/svg">
+      <path d="M11.5 9H3.5V7H11.5V9Z" fill="#8C8C8C"/>
+      </svg>`
+    );
     const textNode = createTooltipTextNode({
       fontColor,
-      fontSize
+      fontSize,
     });
-    textNode.characters += `Strokes\n`;
+    textNode.x += 20;
+    textNode.y += 1.5;
 
-    textNode.characters += `Weight: ${Math.floor(node.strokeWeight)}\n`;
+    textNode.characters += `${Math.floor(node.strokeWeight)}${unit}`;
 
-    textNode.characters += (node.strokes as any[])
-      .filter(s => s.type === 'SOLID')
-      .map(s => colorString(s.color, s.opacity))
-      .join('\n');
+    figma.group([iconNode, textNode], parent);
 
-    textNode.setRangeFontName(0, 7, {
-      family: 'Inter',
-      style: 'Bold'
-    });
-    textNode.setRangeFontSize(0, 7, fontSize + 1);
+    const fillColors = (node.strokes as any[])
+      .filter((s) => s.type === 'SOLID' && s.visible)
+      .map((fill) => {
+        const fillFrame = figma.createFrame();
 
-    return textNode;
+        for (const colorNode of createColorNode(fill, {
+          fontColor,
+          fontSize,
+        })) {
+          fillFrame.appendChild(colorNode);
+        }
+
+        fillFrame.x += 20;
+        fillFrame.resize(fillFrame.width, 16);
+        return fillFrame;
+      });
+
+    if (fillColors.length > 0) {
+      figma.group(fillColors, parent);
+    }
   }
-
-  return;
 }

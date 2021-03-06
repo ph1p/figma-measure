@@ -1,95 +1,142 @@
-import React, { FunctionComponent, useState, useEffect } from 'react';
+import { observer } from 'mobx-react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import * as ReactDOM from 'react-dom';
-import { MemoryRouter as Router, Switch, Route } from 'react-router-dom';
-import styled from 'styled-components';
+import {
+  MemoryRouter as Router,
+  Switch,
+  Route,
+  useHistory,
+} from 'react-router-dom';
+import styled, { ThemeProvider } from 'styled-components';
 
 import Home from './views/Home';
 import Tooltip from './views/Tooltip';
-import Angle from './views/Angle';
-import Lines from './views/Lines';
 
-import {
-  sendMessage,
-  AppProvider,
-  withAppContext,
-  AppContextProps
-} from './shared';
+import { DEFAULT_COLOR, getColorByTypeAndSolidColor, GlobalStyle, theme } from './style';
+import { getStoreFromMain, StoreProvider, trunk, useStore } from './store';
+import EventEmitter from './shared/EventEmitter';
 
-import './figma-ui/main.min.css';
 import './ui.css';
-import { GlobalStyle } from './style';
 
-sendMessage('init');
+const App: FunctionComponent = observer(() => {
+  const store = useStore();
 
-const App: FunctionComponent<{ appData: AppContextProps }> = props => {
+  const [menu, setMenu] = useState(1);
+  const history = useHistory();
+
   useEffect(() => {
+    // check visibility
+    EventEmitter.ask('get visibility').then((visibility: boolean) => {
+      store.setVisibility(visibility);
+    });
     // check selection
+    EventEmitter.ask('current selection').then((data: string[]) =>
+      store.setSelection(data)
+    );
+    EventEmitter.on('selection', (data) => store.setSelection(data));
 
-    window.onmessage = event => {
-      if (event.data.pluginMessage.type === 'selection') {
-        props.appData.setSelection(event.data.pluginMessage.data);
-      }
-      if (event.data.pluginMessage.type === 'tooltip-settings') {
-        props.appData.setTooltipSettings(event.data.pluginMessage.data);
-      }
-    };
+    return () => EventEmitter.remove('selection');
   }, []);
 
   return (
-    <Router>
-      <Main selection={props.appData.selection.length > 0}>
-        <Switch>
-          <Route path="/" exact>
-            <Home />
-          </Route>
-          <Route path="/tooltip">
-            <Tooltip />
-          </Route>
-          <Route path="/angle" exact>
-            <Angle />
-          </Route>
-          <Route path="/lines" exact>
-            <Lines />
-          </Route>
-        </Switch>
+    <ThemeProvider
+      theme={{
+        color: store?.color || DEFAULT_COLOR,
+        softColor: getColorByTypeAndSolidColor(store.color, 'soft'),
+        hoverColor: getColorByTypeAndSolidColor(store.color, 'hover'),
+        ...theme,
+      }}
+    >
+      <GlobalStyle />
+
+      <Main>
+        <div>
+          <Switch>
+            <Route path="/" exact>
+              <Home />
+            </Route>
+            <Route path="/tooltip">
+              <Tooltip />
+            </Route>
+          </Switch>
+        </div>
+        <ViewSwitch menu={menu}>
+          <div
+            onClick={() => {
+              setMenu(1);
+              history.push('/');
+            }}
+          >
+            Measure
+          </div>
+          <div
+            onClick={() => {
+              setMenu(2);
+              history.push('/tooltip');
+            }}
+          >
+            Tooltip
+          </div>
+        </ViewSwitch>
       </Main>
-    </Router>
+    </ThemeProvider>
   );
-};
+});
 
-const Main = styled.div<{ selection: boolean }>`
-  position: relative;
+getStoreFromMain().then((store) =>
+  trunk.init(store).then(() =>
+    ReactDOM.render(
+      <StoreProvider>
+        <Router>
+          <App />
+        </Router>
+      </StoreProvider>,
+      document.getElementById('app')
+    )
+  )
+);
 
-  .align-icon,
-  .align-icon::after,
-  .align-icon::before {
-    pointer-events: none;
-    opacity: 0.5;
-  }
-  ${p =>
-    p.selection
-      ? `.align-icon,
-  .align-icon::after,
-  .align-icon::before {
-    pointer-events: all;
-    cursor: pointer;
-    opacity: 1;
-  }`
-      : ''}
+const Main = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 `;
 
-window.onmessage = event => {
-  if (event.data.pluginMessage.type === 'init') {
-    const { selection, tooltipSettings } = event.data.pluginMessage;
-
-    const Component = withAppContext(App);
-
-    ReactDOM.render(
-      <AppProvider selection={selection} tooltipSettings={tooltipSettings}>
-        <GlobalStyle />
-        <Component />
-      </AppProvider>,
-      document.getElementById('app')
-    );
+const ViewSwitch = styled.div<{ menu: number }>`
+  border-top: 1px solid #e6e6e6;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  height: 42px;
+  div {
+    transition: font-weight 0.3s;
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    text-align: center;
+    padding: 12px 0;
+    user-select: none;
+    cursor: pointer;
+    font-weight: normal;
+    &::before {
+      content: '';
+      transition: transform 0.3s;
+      position: absolute;
+      flex: 1;
+      border-radius: 6px 6px 0 0;
+      width: 60%;
+      height: 4px;
+      left: 50%;
+      bottom: 0;
+      background-color: #000;
+      transform: translate(-50%, 5px);
+    }
+    &:nth-child(${(p) => p.menu}) {
+      font-weight: bold;
+      &::before {
+        transform: translate(-50%, 0);
+      }
+    }
   }
-};
+`;

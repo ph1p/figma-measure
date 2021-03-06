@@ -1,147 +1,141 @@
-import React, { FunctionComponent, useState, useEffect } from 'react';
-import { Route, Link } from 'react-router-dom';
+import { observer } from 'mobx-react';
+import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
-import {
-  sendMessage,
-  withAppContext,
-  Content,
-  TOOLTIP_DIRECTIONS
-} from '../../shared';
+import { Toggle } from '../../components/Toggle';
 
 // components
-import Header from '../../components/Header';
-import ButtonLink from '../../components/ButtonLink';
+import { useStore } from '../../store';
+import { PreviewTooltip } from './components/PreviewTooltip';
 
-import Settings from './Settings';
+const Tooltip: FunctionComponent = observer(() => {
+  const store = useStore();
 
-const PreviewWrapper = styled.div<{ hasSelection: boolean }>`
-  display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  pointer-events: ${p => (p.hasSelection ? 'initial' : 'none')};
+  return (
+    <Wrapper>
+      <Preview>
+        <PreviewTooltip />
+      </Preview>
+      <TooltipDistance>
+        <label htmlFor="tooltip-distance">Distance</label>
+        <div className="input icon" style={{ width: 75 }}>
+          <input
+            type="number"
+            id="tooltip-distance"
+            value={store.tooltipOffset}
+            onChange={(e) => store.setTooltipOffset(+e.currentTarget.value)}
+          />
+          <div>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              xmlns="https://www.w3.org/2000/svg"
+            >
+              <path d="M0 11H8L8 8.5L9.5 7L8 5.5V3H0V11Z" fill="#BBBBBB" />
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M13 12.5L14 12.5L14 13.5L13 13.5C12.1716 13.5 11.5 12.8284 11.5 12L11.5 2C11.5 1.17157 12.1716 0.5 13 0.5L14 0.5L14 1.5L13 1.5C12.7239 1.5 12.5 1.72386 12.5 2L12.5 12C12.5 12.2761 12.7239 12.5 13 12.5Z"
+                fill="#BBBBBB"
+              />
+            </svg>
+          </div>
+        </div>
+      </TooltipDistance>
+      <ToggleInputs>
+        <Toggle
+          checked={store.tooltip.fontStyle}
+          label="Font-Style"
+          onChange={() => store.toggleTooltipSetting('fontStyle')}
+        />
+        <Toggle
+          checked={store.tooltip.fontFamily}
+          label="Font-Family"
+          onChange={() => store.toggleTooltipSetting('fontFamily')}
+        />
+        <Toggle
+          checked={store.tooltip.fontSize}
+          label="Font-Size"
+          onChange={() => store.toggleTooltipSetting('fontSize')}
+        />
+        <Toggle
+          checked={store.tooltip.width}
+          label="Width"
+          onChange={() => store.toggleTooltipSetting('width')}
+        />
+        <Toggle
+          checked={store.tooltip.height}
+          label="Height"
+          onChange={() => store.toggleTooltipSetting('height')}
+        />
+        <Toggle
+          checked={store.tooltip.color}
+          label="Color"
+          onChange={() => store.toggleTooltipSetting('color')}
+        />
+        <Toggle
+          checked={store.tooltip.opacity}
+          label="Opacity"
+          onChange={() => store.toggleTooltipSetting('opacity')}
+        />
+        <Toggle
+          checked={store.tooltip.stroke}
+          label="Stroke"
+          onChange={() => store.toggleTooltipSetting('stroke')}
+        />
+        <Toggle
+          checked={store.tooltip.cornerRadius}
+          label="Corner-Radius"
+          onChange={() => store.toggleTooltipSetting('cornerRadius')}
+        />
+        <Toggle
+          checked={store.tooltip.points}
+          label="Points"
+          onChange={() => store.toggleTooltipSetting('points')}
+        />
+      </ToggleInputs>
+    </Wrapper>
+  );
+});
+
+const TooltipDistance = styled.div`
   position: relative;
-  &::after {
-    ${p => (!p.hasSelection ? 'content: "Please select an element."' : '')};
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 14px;
+  border-bottom: 1px solid #e6e6e6;
+  label {
     font-weight: bold;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
-  .box {
-    cursor: pointer;
-    height: 40px;
-    border-radius: 3px;
-    opacity: ${p => (p.hasSelection ? 1 : 0.3)};
-    background-color: #efefef;
-    border: 1px dashed #ddd;
-    &:hover {
-      background-color: #ddd;
-    }
-    &.tooltip {
-      cursor: pointer;
-      background-color: #17a0fb;
-      border: 0;
-    }
   }
 `;
 
 const Wrapper = styled.div`
   position: relative;
   top: 0;
-  .settings-link {
-    width: 100%;
+`;
+
+const ToggleInputs = styled.div`
+  overflow: auto;
+  height: 150px;
+  padding: 12px;
+  > div {
+    margin-bottom: 10px;
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 `;
 
-const Tooltip: FunctionComponent = (props: any) => {
-  const {
-    appData: { selection, tooltipSettings }
-  } = props;
+const Preview = styled.div`
+  background-color: ${(props) => props.theme.color};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 275px;
+`;
 
-  const hasSelection = selection.length > 0;
-  const selectedElement = selection.length === 1 ? selection[0] : undefined;
-
-  // state
-  const [directions, setDirections] = useState({
-    horizontal: '',
-    vertical: ''
-  });
-  const [area, setArea] = useState(-1);
-
-  useEffect(() => {
-    sendMessage('resize', {
-      width: 200,
-      height: 275
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!hasSelection || !selectedElement?.tooltipData) {
-      setDirections({
-        horizontal: '',
-        vertical: ''
-      });
-      setArea(-1);
-    } else {
-      if (selectedElement?.tooltipData) {
-        setDirections({
-          horizontal: selectedElement.tooltipData.directions.horizontal,
-          vertical: selectedElement.tooltipData.directions.vertical
-        });
-      }
-    }
-  }, [selection]);
-
-  useEffect(() => {
-    setArea(
-      TOOLTIP_DIRECTIONS.indexOf(
-        TOOLTIP_DIRECTIONS.find(
-          ([h, v]) => h === directions.horizontal && v === directions.vertical
-        )
-      )
-    );
-  }, [directions]);
-
-  return (
-    <Wrapper>
-      <Header backButton title="Tooltip" />
-      <Content>
-        <h4>Choose the direction</h4>
-        <PreviewWrapper hasSelection={hasSelection}>
-          {TOOLTIP_DIRECTIONS.map(([horizontal, vertical], areaIndex) => (
-            <div
-              key={horizontal + vertical}
-              className={`box ${areaIndex === area ? 'tooltip' : ''}`}
-              onClick={() => {
-                setDirections({
-                  horizontal,
-                  vertical
-                });
-                sendMessage('tooltip', {
-                  horizontal,
-                  vertical,
-                  ...tooltipSettings
-                });
-              }}
-            />
-          ))}
-        </PreviewWrapper>
-      </Content>
-      <hr />
-      <Content>
-        <ButtonLink className="settings-link" to="/tooltip/settings">
-          Settings
-        </ButtonLink>
-      </Content>
-
-      <Route path="/tooltip/settings" exact={false}>
-        <Settings directions={directions} />
-      </Route>
-    </Wrapper>
-  );
-};
-
-export default withAppContext(Tooltip);
+export default Tooltip;

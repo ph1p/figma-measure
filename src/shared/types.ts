@@ -1,7 +1,7 @@
 export interface TooltipSettings {
   distance?: number;
-  horizontalPadding?: number;
-  verticalPadding?: number;
+  paddingTopBottom?: number;
+  paddingLeftRight?: number;
   backgroundColor?: string;
   fontColor?: string;
   strokeColor?: string;

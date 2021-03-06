@@ -1,5 +1,100 @@
 import { createGlobalStyle } from 'styled-components';
 
+export const TOKENS = {
+  colors: {
+    solid: {
+      red: {
+        value: '#ef5533',
+      },
+      persian: {
+        value: '#1745e8',
+      },
+      violet: {
+        value: '#7614f5',
+      },
+      jade: {
+        value: '#12b571',
+      },
+      sun: {
+        value: '#ffaa00',
+      },
+      cerise: {
+        value: '#e8178a',
+      },
+    },
+    soft: {
+      cerise: {
+        value: '#dac0ce',
+      },
+      persian: {
+        value: '#c0c6da',
+      },
+      jade: {
+        value: '#c0d3cb',
+      },
+      sun: {
+        value: '#dcd2be',
+      },
+      red: {
+        value: '#dac8c4',
+      },
+      violet: {
+        value: '#ccc0db',
+      },
+    },
+    hover: {
+      sun: {
+        value: '#fdf8e8',
+      },
+      cerise: {
+        value: '#fde8f7',
+      },
+      red: {
+        value: '#fdf6e8',
+      },
+      jade: {
+        value: '#e8fdf7',
+      },
+      violet: {
+        value: '#f1e8fd',
+      },
+      persian: {
+        value: '#e8ecfd',
+      },
+    },
+  },
+};
+
+export const DEFAULT_COLOR = TOKENS.colors.solid.persian.value;
+
+export const getColorByTypeAndSolidColor = (
+  color: string,
+  type: keyof typeof TOKENS.colors = 'solid'
+) => {
+  const foundColor = Object.entries(TOKENS.colors.solid).find(
+    ([_, data]) => data.value.toLowerCase() === color.toLowerCase()
+  );
+
+  if (foundColor) {
+    return TOKENS.colors[type][foundColor[0]].value;
+  } else {
+    return TOKENS.colors[type].persian.value;
+  }
+};
+
+export const theme = {
+  tokens: TOKENS,
+  colors: Object.keys(TOKENS.colors.solid).map(
+    (color) => TOKENS.colors.solid[color].value
+  ),
+  softColors: Object.keys(TOKENS.colors.soft).map(
+    (color) => TOKENS.colors.soft[color].value
+  ),
+  hoverColors: Object.keys(TOKENS.colors.hover).map(
+    (color) => TOKENS.colors.hover[color].value
+  ),
+};
+
 export const GlobalStyle = createGlobalStyle`
 body {
   font-family: Inter;
@@ -18,59 +113,33 @@ h4 {
   margin: 0 0 12px;
 }
 
-input {
-  &[type='color'] {
-    -webkit-appearance: none;
-    padding: 0;
-    border: 0;
-    width: 25px;
-    height: 25px;
-    cursor: pointer;
-    &::-webkit-color-swatch-wrapper {
-      padding: 0;
-      border-radius: 100%;
-      overflow: hidden;
-    }
-    &::-webkit-color-swatch {
-      border: none;
-      border: 1px solid #ddd;
-      border-radius: 100%;
-    }
-  }
-
-  &[type='range']:hover,
-  &[type='color']:hover,
-  &[type='range']:focus,
-  &[type='color']:focus {
-    border: 0;
+.input {
+  position: relative;
+  input {
+    border-radius: 3px;
+    border: 1px solid #E6E6E6;
     outline: none;
-  }
-
-  &[type='range'] {
-    -webkit-appearance: none;
-    margin: 0;
+    padding: 7px 10px;
+    box-sizing: border-box;
+    font-size: 12px;
     width: 100%;
-    border: 0;
     &:focus {
-      outline: none;
+      border-color: ${(props) => props.theme.color};
     }
-    &::-webkit-slider-runnable-track {
-      width: 100%;
-      height: 12px;
-      cursor: pointer;
-      border-radius: 6px;
-      background: #f3f3f3;
-      box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 0px 0.5px inset;
-    }
-    &::-webkit-slider-thumb {
-      width: 12px;
-      height: 12px;
-      border-radius: 6px;
-      box-sizing: border-box;
-      background: #ffffff;
-      cursor: pointer;
-      -webkit-appearance: none;
-      box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 0px 0.5px;
+  }
+  &.icon {
+    input {
+      padding-left: 28px;
+      & + div {
+        display: flex;
+        height: 100%;
+        position: absolute;
+        left: 9px;
+        top: 0;
+        svg {
+          align-self: center;
+        }
+      }
     }
   }
 }

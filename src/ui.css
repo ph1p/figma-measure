@@ -1,164 +1,45 @@
-.no-selection {
-  margin-bottom: 15px;
-  position: absolute;
-  left: 0;
-  top: 0;
-  padding: 10px 17px;
-  background-color: #f24822;
-  color: #fff;
-  width: 100%;
-  z-index: 3;
-  transition: all 0.3s;
-  transform: translateY(-53px);
-  box-shadow: none;
+/* Global styles */
+* {
+  box-sizing: border-box;
 }
 
-.no-selection.active {
-  transform: translateY(0px);
-  box-shadow: 0 5px 17px rgba(0, 0, 0, 0.2), 0 2px 7px rgba(0, 0, 0, 0.15);
-}
-
-.no-selection .icon {
-  float: left;
-  margin: 0 5px 0 -10px;
-}
-
-.align-icon {
+body {
   position: relative;
-  width: 38px;
-  height: 38px;
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  border-radius: 3px;
-}
-.align-icon.active,
-.align-icon:hover {
-  border-color: #18a0fb;
-  border-width: 2px;
-}
-.align-icon::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 14px;
-  height: 14px;
-  transform: translate(-50%, -50%);
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  border-radius: 2px;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-/* lines */
-.align-icon::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 21px;
-  height: 1px;
-  transform: translate(-50%, -100%);
-  background-color: #000;
+/*  FONTS */
+@font-face {
+  font-family: 'Inter';
+  font-weight: 400;
+  font-style: normal;
+  src: url('https://rsms.me/inter/font-files/Inter-Regular.woff2?v=3.7')
+      format('woff2'),
+    url('https://rsms.me/inter/font-files/Inter-Regular.woff?v=3.7')
+      format('woff');
 }
 
-.align-icon.horizontal.top::before {
-  transform: translate(-50%, -12px);
-}
-.align-icon.horizontal.bottom::before {
-  transform: translate(-50%, 12px);
-}
-
-.align-icon.vertical::before {
-  width: 1px;
-  height: 21px;
-  transform: translate(-100%, -50%);
+@font-face {
+  font-family: 'Inter';
+  font-weight: 500;
+  font-style: normal;
+  src: url('https://rsms.me/inter/font-files/Inter-Medium.woff2?v=3.7')
+      format('woff2'),
+    url('https://rsms.me/inter/font-files/Inter-Medium.woff2?v=3.7')
+      format('woff');
 }
 
-.align-icon.vertical.left::before {
-  transform: translate(-12px, -50%);
-}
-.align-icon.vertical.right::before {
-  transform: translate(12px, -50%);
-}
-
-.align-icon.angle::before {
-  width: 21px;
-  height: 21px;
-  border-width: 0 0 1px 1px;
-  border-color: #000;
-  border-style: solid;
-  background-color: transparent;
-  transform: translate(-50%, -50%);
-}
-
-.align-icon.angle::after {
-  border-width: 1px 1px 0 0;
-  border-color: rgba(0, 0, 0, 0.3);
-  border-style: solid;
-  width: 12px;
-  height: 12px;
-  border-radius: 0 100% 0 0;
-}
-
-.align-icon.left-bottom::before {
-  width: 21px;
-  height: 21px;
-  border-width: 0 0 1px 1px;
-  border-color: #000;
-  border-style: solid;
-  background-color: transparent;
-  transform: translate(-50%, -50%);
-}
-
-.align-icon.left-top::before {
-  width: 21px;
-  height: 21px;
-  border-width: 1px 0 0 1px;
-  border-color: #000;
-  border-style: solid;
-  background-color: transparent;
-  transform: translate(-50%, -50%);
-}
-
-.align-icon.right-top::before {
-  width: 21px;
-  height: 21px;
-  border-width: 1px 1px 0 0;
-  border-color: #000;
-  border-style: solid;
-  background-color: transparent;
-  transform: translate(-50%, -50%);
-}
-
-.align-icon.right-bottom::before {
-  width: 21px;
-  height: 21px;
-  border-width: 0 1px 1px 0;
-  border-color: #000;
-  border-style: solid;
-  background-color: transparent;
-  transform: translate(-50%, -50%);
-}
-
-.align-icon.tooltip::after {
-  width: 22px;
-  height: 22px;
-}
-
-.align-icon.tooltip::before {
-  width: 15px;
-  height: 3px;
-  border-width: 1px 0 1px 0;
-  border-color: #000;
-  border-style: solid;
-  background-color: transparent;
-  transform: translate(-50%, -6px);
-}
-
-.footer {
-  padding: 0 10px 10px;
-}
-.button-mark {
-  width: 100%;
-  margin-top: 15px;
+@font-face {
+  font-family: 'Inter';
+  font-weight: 600;
+  font-style: normal;
+  src: url('https://rsms.me/inter/font-files/Inter-SemiBold.woff2?v=3.7')
+      format('woff2'),
+    url('https://rsms.me/inter/font-files/Inter-SemiBold.woff2?v=3.7')
+      format('woff');
 }
 
 button {

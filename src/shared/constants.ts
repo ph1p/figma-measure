@@ -1,26 +1,3 @@
-import { TooltipSettings } from './types';
+export const VERSION = 1;
 
-export const TOOLTIP_DIRECTIONS = [
-  // area, horizontal, vertical
-  ['LEFT', 'TOP'],
-  ['CENTER', 'TOP'],
-  ['RIGHT', 'TOP'],
-  ['LEFT', 'CENTER'],
-  ['CENTER', 'CENTER'],
-  ['RIGHT', 'CENTER'],
-  ['LEFT', 'BOTTOM'],
-  ['CENTER', 'BOTTOM'],
-  ['RIGHT', 'BOTTOM']
-];
-
-export const TOOLTIP_DEFAULT_SETTINGS: TooltipSettings = {
-  distance: 6,
-  horizontalPadding: 12,
-  verticalPadding: 12,
-  backgroundColor: '#ffffff',
-  fontColor: '#000000',
-  strokeColor: '#d0d0d0',
-  strokeWidth: 1,
-  fontSize: 12,
-  cornerRadius: 3
-};
+export const STORAGE_KEY = '__figma_mobx_sync__';
