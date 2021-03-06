@@ -1,6 +1,6 @@
 import './store';
 import { hexToRgb, solidColor } from './helper';
-import { tooltipPluginDataByNode, setTooltip } from './tooltip';
+import { setTooltip } from './tooltip';
 
 import EventEmitter from '../shared/EventEmitter';
 import {
@@ -9,6 +9,7 @@ import {
   LineParameterTypes,
   PluginNodeData,
   Store,
+  NodeSelection,
 } from '../shared/interfaces';
 import { VERSION } from '../shared/constants';
 import { drawSpacing, getSpacing, setSpacing } from './spacing';
@@ -305,7 +306,6 @@ function createLine(options) {
         // vertical text align
         if (txtHorizontalAlign === Alignments.CENTER) {
           labelFrame.x = 0;
-          // labelFrame.x = (labelFrame.width / 2) + LINE_OFFSET;
         } else if (txtHorizontalAlign === Alignments.LEFT) {
           labelFrame.x -= labelFrame.width + DIRECTION_MARGIN;
         } else if (txtHorizontalAlign === Alignments.RIGHT) {
@@ -423,7 +423,7 @@ function createLine(options) {
   return null;
 }
 
-function getSelectionArray() {
+function getSelectionArray(): NodeSelection[] {
   return figma.currentPage.selection.map((node) => {
     let data = {};
 
@@ -436,7 +436,6 @@ function getSelectionArray() {
     return {
       id: node.id,
       type: node.type,
-      tooltipData: tooltipPluginDataByNode(node),
       hasSpacing: Object.keys(getSpacing(node)).length > 0,
       data,
     };
@@ -444,6 +443,45 @@ function getSelectionArray() {
 }
 
 const sendSelection = () => EventEmitter.emit('selection', getSelectionArray());
+
+const cleanOrphanNodes = () => {
+  const group = getGlobalGroup();
+
+  if (group) {
+    for (const node of group.children) {
+      const foundNode = figma.getNodeById(node.getPluginData('parent'));
+
+      if (!foundNode) {
+        node.remove();
+      }
+    }
+  }
+};
+
+const removeAllMeasurementConnections = () => {
+  const group = getGlobalGroup();
+
+  if (group) {
+    for (const node of group.children) {
+      const foundNode = figma.getNodeById(node.getPluginData('parent'));
+      const connectNodes = JSON.parse(node.getPluginData('connected') || '[]');
+
+      if (connectNodes.length > 0) {
+        for (const connectedNode of connectNodes.map((id: string) =>
+          figma.getNodeById(id)
+        )) {
+          connectedNode.setPluginData('spacing', '');
+        }
+      }
+
+      if (foundNode) {
+        foundNode.setPluginData('data', '');
+      }
+
+      node.remove();
+    }
+  }
+};
 
 // events
 figma.on('selectionchange', () => {
@@ -470,12 +508,18 @@ EventEmitter.on('toggle visibility', () => {
 
 EventEmitter.answer('current selection', async () => getSelectionArray());
 
+EventEmitter.on('remove all measurements', () =>
+  removeAllMeasurementConnections()
+);
+
 EventEmitter.on('set measurements', (store: Partial<Store>) => {
+  cleanOrphanNodes();
+
   for (const node of figma.currentPage.selection) {
     let data: PluginNodeData = {};
 
     try {
-      data = JSON.parse(node.getPluginData('data'));
+      data = JSON.parse(node.getPluginData('data') || '{}');
       node.setPluginData('data', '{}');
     } catch {}
 
@@ -513,8 +557,10 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
           } else {
             // check connected node group
             const connectedNodeSpacing = getSpacing(foundConnectedNode);
-            const foundGroup = figma.getNodeById(connectedNodeSpacing[node.id]);
-            if (!foundGroup) {
+            const foundConnectedGroup = figma.getNodeById(
+              connectedNodeSpacing[node.id]
+            );
+            if (!foundConnectedGroup) {
               delete connectedNodeSpacing[node.id];
               setSpacing(foundConnectedNode, connectedNodeSpacing);
             }

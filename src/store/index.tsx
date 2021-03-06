@@ -5,6 +5,7 @@ import EventEmitter from '../shared/EventEmitter';
 import { STORAGE_KEY } from '../shared/constants';
 import {
   FillTypes,
+  NodeSelection,
   SurroundingSettings,
   TooltipPositions,
   TooltipSettings,
@@ -33,7 +34,7 @@ class RootStore {
   visibility = true;
 
   @ignore
-  selection = [];
+  selection: NodeSelection[] = [];
 
   fill: FillTypes = 'stroke';
 

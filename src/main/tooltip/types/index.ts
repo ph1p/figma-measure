@@ -7,7 +7,7 @@ import opacity from './parts/opacity';
 import fontFamily from './parts/fontFamily';
 import fontSize from './parts/fontSize';
 import fontStyle from './parts/fontStyle';
-import pointCount from './parts/points';
+import pointCount from './parts/pointCount';
 import { SetTooltipOptions, TooltipSettings } from '../../../shared/interfaces';
 
 export default function addNode(

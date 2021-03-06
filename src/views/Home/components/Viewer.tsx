@@ -44,7 +44,7 @@ const Wrapper = styled.div`
       &.fill-stroke,
       &.fill {
         fill: ${(props) => props.theme.softColor};
-        fill-opacity: 0.3;
+        fill-opacity: 0.2;
       }
     }
 
@@ -289,20 +289,24 @@ const Viewer: FunctionComponent = observer(() => {
             })
           }
         >
-          <rect
-            x="98"
-            y="113"
-            width="11"
-            height="43"
-            rx="5"
-            transform="rotate(-180 98 113)"
-            fill="transparent"
-            className="background"
-          />
+          {store.labels && (
+            <rect
+              x="98"
+              y="113"
+              width="11"
+              height="43"
+              rx="5"
+              transform="rotate(-180 98 113)"
+              fill="transparent"
+              className="background"
+            />
+          )}
+
           <path
             d="M90 74V75L92 75L92 86H93L93 75L95 75V74H90Z"
             className="element"
           />
+
           <path
             d="M90 108V109H95V108H93L93 97H92L92 108H90Z"
             className="element"
@@ -329,23 +333,22 @@ const Viewer: FunctionComponent = observer(() => {
             fill="transparent"
             className="background"
           />
-
-          {store.labels && (
-            <rect
-              x="151"
-              y="39"
-              width="3"
-              height="11"
-              transform="rotate(90 98.9961 38)"
-              className="element"
-            />
-          )}
           <path
             fillRule="evenodd"
             clipRule="evenodd"
-            d="M75 94H76L76 92L89 92V93L96 93V92L109 92V94H110V92V91V89H109V91L96 91V90L89 90V91L76 91L76 89H75V91V92V94Z"
+            d="M76 94H75V92V91V89H76L76 91L109 91V89H110V91V92V94H109V92L76 92L76 94Z"
             className="element"
           />
+          {store.labels && (
+            <rect
+              x="96"
+              y="93"
+              width="7"
+              height="3"
+              transform="rotate(-180 96 93)"
+              className="element"
+            />
+          )}
         </g>
 
         <g className="tooltip">

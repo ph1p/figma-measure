@@ -8,7 +8,7 @@ class EventEmitter {
   constructor() {
     // MAIN PROCESS
     try {
-      this.emit = (name = '', data) => {
+      this.emit = (name, data) => {
         figma.ui.postMessage({
           name,
           data: data || null,

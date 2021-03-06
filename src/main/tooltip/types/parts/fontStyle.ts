@@ -1,6 +1,6 @@
 import { createTooltipTextNode } from '../../../helper';
 
-export default function style(node, parent, { fontColor = '', fontSize = 0 }) {
+export default function fontStyle(node, parent, { fontColor = '', fontSize = 0 }) {
   const style = node.fontName ? (node?.fontName as FontName).style : undefined;
 
   if (style) {

@@ -2,15 +2,6 @@ import { solidColor, hexToRgb } from '../helper';
 import addNode from './types';
 import { SetTooltipOptions, TooltipPositions } from '../../shared/interfaces';
 
-interface TooltipPluginData {
-  id: any;
-  nodeId: any;
-  directions: {
-    horizontal: string;
-    vertical: string;
-  };
-}
-
 function createArrow(tooltipFrame, settings, { horizontal, vertical }) {
   const arrowFrame = figma.createFrame();
   const arrow = figma.createRectangle();
@@ -58,24 +49,8 @@ function createArrow(tooltipFrame, settings, { horizontal, vertical }) {
   return arrowFrame;
 }
 
-function getTooltipFrame(node, data): FrameNode {
-  let pluginData = tooltipPluginDataByNode(node);
+function getTooltipFrame(node): FrameNode {
   let tooltipFrame;
-
-  // check if plugin data is available
-  if (pluginData) {
-    // search tooltip
-    tooltipFrame = figma.getNodeById(pluginData.id);
-
-    if (!tooltipFrame) {
-      pluginData = null;
-    } else {
-      // reset content
-      try {
-        tooltipFrame.children.map((c) => c.remove());
-      } catch (e) {}
-    }
-  }
 
   if (!tooltipFrame) {
     tooltipFrame = figma.createFrame();
@@ -86,52 +61,7 @@ function getTooltipFrame(node, data): FrameNode {
   tooltipFrame.clipsContent = false;
   tooltipFrame.fills = [];
 
-  // set plugin data
-  const dataForPlugin = {
-    directions: {
-      vertical: data.vertical,
-      horizontal: data.horizontal,
-    },
-  };
-
-  node.setPluginData(
-    'tooltip',
-    JSON.stringify(
-      // new
-      !pluginData
-        ? {
-            id: tooltipFrame.id,
-            nodeId: node.id,
-            ...dataForPlugin,
-          }
-        : //existing
-          {
-            ...pluginData,
-            ...dataForPlugin,
-          }
-    )
-  );
-
   return tooltipFrame;
-}
-
-export function tooltipPluginDataByNode(node: BaseNode): TooltipPluginData {
-  const data = node.getPluginData('tooltip');
-  if (!data) {
-    return null;
-  }
-  const parsedData = JSON.parse(data);
-
-  if (parsedData.nodeId === node.id) {
-    const tooltipNode = figma.getNodeById(parsedData.id);
-
-    if (!tooltipNode) {
-      return null;
-    }
-
-    return parsedData;
-  }
-  return null;
 }
 
 export function setTooltip(options: SetTooltipOptions, specificNode = null) {
@@ -165,7 +95,7 @@ export function setTooltip(options: SetTooltipOptions, specificNode = null) {
       return;
     }
 
-    const tooltipFrame = getTooltipFrame(node, data);
+    const tooltipFrame = getTooltipFrame(node);
     const contentFrame = figma.createFrame();
     tooltipFrame.appendChild(contentFrame);
 

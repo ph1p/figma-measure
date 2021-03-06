@@ -345,6 +345,11 @@ export const drawSpacing = (
     group.expanded = false;
     group.name = `spacing ${rects[0].name} - ${rects[1].name}`;
 
+    group.setPluginData(
+      'connected',
+      JSON.stringify(rects.map((rect) => rect.id))
+    );
+
     rects[0].setPluginData(
       'spacing',
       JSON.stringify({

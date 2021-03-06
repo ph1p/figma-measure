@@ -101,3 +101,10 @@ export interface Store {
   tooltip: TooltipSettings;
   visibility: boolean;
 }
+
+export interface NodeSelection {
+  id: string;
+  type: NodeType;
+  hasSpacing: boolean;
+  data: any;
+}

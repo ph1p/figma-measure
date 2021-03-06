@@ -5,6 +5,7 @@ import { Colors } from '../../components/ColorPicker';
 import { EyeClosedIcon, EyeIcon } from '../../components/icons/EyeIcons';
 import { RefreshIcon } from '../../components/icons/RefreshIcon';
 import { SpacingIcon } from '../../components/icons/SpacingIcon';
+import { TrashIcon } from '../../components/icons/TrashIcon';
 import { Toggle } from '../../components/Toggle';
 
 import Viewer from './components/Viewer';
@@ -43,6 +44,12 @@ const Home: FunctionComponent = observer(() => {
     }
   };
 
+  const removeAllMeasurements = () => {
+    if (confirm('Do you really want to remove all measurements?')) {
+      EventEmitter.emit('remove all measurements');
+    }
+  };
+
   return (
     <>
       <ViewerContainer>
@@ -67,6 +74,10 @@ const Home: FunctionComponent = observer(() => {
         >
           <RefreshIcon />
         </Refresh>
+
+        <Trash onClick={removeAllMeasurements}>
+          <TrashIcon />
+        </Trash>
 
         {hasSpacing && (
           <RemoveSpacing onClick={removeSpacing}>
@@ -176,6 +187,17 @@ const Refresh = styled.div<{ active?: boolean }>`
   }
   &:active {
     border-color: ${(props) => props.theme.color};
+  }
+`;
+
+const Trash = styled(Refresh)`
+  top: initial;
+  left: 12px;
+  bottom: 12px;
+  opacity: 1;
+  z-index: 10;
+  svg {
+    margin: 1px 0 0;
   }
 `;
 
