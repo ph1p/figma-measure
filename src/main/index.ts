@@ -13,6 +13,7 @@ import {
 } from '../shared/interfaces';
 import { VERSION } from '../shared/constants';
 import { drawSpacing, getSpacing, setSpacing } from './spacing';
+import { transformPixelToUnit } from '../shared/helpers';
 
 figma.showUI(__html__, {
   width: 285,
@@ -188,7 +189,7 @@ function createLine(options) {
 
     if (labels) {
       labelFrame = createLabel({
-        text: `${parseFloat(heightOrWidth.toString()).toFixed(0)}${unit}`,
+        text: transformPixelToUnit(heightOrWidth, unit),
         color: mainColor,
       });
     }
