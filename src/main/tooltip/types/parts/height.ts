@@ -1,3 +1,4 @@
+import { transformPixelToUnit } from '../../../../shared/helpers';
 import { createTooltipTextNode } from '../../../helper';
 
 export default function height(
@@ -14,7 +15,7 @@ export default function height(
   });
   textNode.x += 20;
   textNode.y += 1.5;
-  textNode.characters += `${Math.floor(node.height)}${unit}`;
+  textNode.characters += transformPixelToUnit(node.height, unit);
 
   figma.group([iconNode, textNode], parent);
 }

@@ -1,3 +1,4 @@
+import { transformPixelToUnit } from '../../../../shared/helpers';
 import { createTooltipTextNode } from '../../../helper';
 import { createColorNode } from './fills';
 
@@ -20,7 +21,7 @@ export default function strokes(
     textNode.x += 20;
     textNode.y += 1.5;
 
-    textNode.characters += `${Math.floor(node.strokeWeight)}${unit}`;
+    textNode.characters += transformPixelToUnit(node.strokeWeight, unit);
 
     figma.group([iconNode, textNode], parent);
 

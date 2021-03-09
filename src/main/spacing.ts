@@ -1,5 +1,6 @@
 import { addToGlobalGroup, createLabel, getColor } from '.';
 import EventEmitter from '../shared/EventEmitter';
+import { transformPixelToUnit } from '../shared/helpers';
 
 export const getSpacing = (node) =>
   JSON.parse(node.getPluginData('spacing') || '{}');
@@ -207,12 +208,10 @@ export const drawSpacing = (
       spacingGroup.push(
         createLabel({
           baseNode: line1,
-          text: `${distanceBetweenTwoPoints(
-            yellowX1,
-            yellowY1,
-            yellowX2,
-            yellowY2
-          )}${unit}`,
+          text: `${transformPixelToUnit(
+            distanceBetweenTwoPoints(yellowX1, yellowY1, yellowX2, yellowY2),
+            unit
+          )}`,
           color: mainColor,
           isVertical: true,
         })
@@ -324,12 +323,10 @@ export const drawSpacing = (
       spacingGroup.push(
         createLabel({
           baseNode: line4,
-          text: `${distanceBetweenTwoPoints(
-            blueX1,
-            blueY1,
-            blueX2,
-            blueY2
-          )}${unit}`,
+          text: transformPixelToUnit(
+            distanceBetweenTwoPoints(blueX1, blueY1, blueX2, blueY2),
+            unit
+          ),
           color: mainColor,
           isVertical: false,
         })
