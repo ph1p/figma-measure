@@ -1,5 +1,40 @@
+## 2.0.0 (2021-03-09)
+
+* feta(unit): auto transform unit based on 72dpi and unit string ([44ac4ad](https://github.com/ph1p/figma-measure/commit/44ac4ad))
+* fix(colors): update all colors and fix viewer ([6b70788](https://github.com/ph1p/figma-measure/commit/6b70788))
+* fix(number): round number ([5c98713](https://github.com/ph1p/figma-measure/commit/5c98713))
+* fix(opacity): move opacity to fill ([3e73582](https://github.com/ph1p/figma-measure/commit/3e73582))
+* fix(spacing): add absolute transform axes values ([41b7cfb](https://github.com/ph1p/figma-measure/commit/41b7cfb))
+* fix(state): add reaction for selections ([a1f13ee](https://github.com/ph1p/figma-measure/commit/a1f13ee))
+* fix(style): fix input field ([a4a71dc](https://github.com/ph1p/figma-measure/commit/a4a71dc))
+* fix(visibility): check visibility on start ([847fd81](https://github.com/ph1p/figma-measure/commit/847fd81))
+* chore: add new header ([c53b830](https://github.com/ph1p/figma-measure/commit/c53b830))
+* refactor: add new images and refactor some code ([c7b030a](https://github.com/ph1p/figma-measure/commit/c7b030a))
+* refactor(emitter): rename variables and import ([954762e](https://github.com/ph1p/figma-measure/commit/954762e))
+* refactor(main/renderer): remove a lot of code, fix bugs and update styling ([baeefdd](https://github.com/ph1p/figma-measure/commit/baeefdd))
+* refactor(smells): fix bugs and resolve sonar issues ([8d94cfd](https://github.com/ph1p/figma-measure/commit/8d94cfd))
+* refactor(sonar): resolve some issues ([a3c64c3](https://github.com/ph1p/figma-measure/commit/a3c64c3))
+* refactor(structure): order files ([7f1b6b9](https://github.com/ph1p/figma-measure/commit/7f1b6b9))
+* feat(command): add small command to toggle visibility ([b6ae55a](https://github.com/ph1p/figma-measure/commit/b6ae55a))
+* feat(data): connect new UI to main process and fix an ton of bugs ([c5fff9b](https://github.com/ph1p/figma-measure/commit/c5fff9b))
+* feat(refactor): update all dependencies and fix build errors ([3d85942](https://github.com/ph1p/figma-measure/commit/3d85942))
+* feat(spacing): add better distance handling, fix bugs and remove unused code ([a641315](https://github.com/ph1p/figma-measure/commit/a641315))
+* feat(spacing): add correct color and labels ([73f1809](https://github.com/ph1p/figma-measure/commit/73f1809))
+* feat(spacing): add first iteration of measuring spacing ([79ace16](https://github.com/ph1p/figma-measure/commit/79ace16))
+* feat(spacing): fix bugs and add extra icon to remove spacing lines ([b525f9d](https://github.com/ph1p/figma-measure/commit/b525f9d))
+* feat(store): add store for better handling of data ([12b7869](https://github.com/ph1p/figma-measure/commit/12b7869))
+* feat(theme): add theming and change color of gui ([7963d3c](https://github.com/ph1p/figma-measure/commit/7963d3c))
+* feat(tooltip): add new tooltip design and update inputs ([e5a3ce4](https://github.com/ph1p/figma-measure/commit/e5a3ce4))
+* feat(trash): add ability to remove all measurements ([ebb5cd5](https://github.com/ph1p/figma-measure/commit/ebb5cd5))
+* feat(viewer): connect first props with new viewer GUI ([2121ac8](https://github.com/ph1p/figma-measure/commit/2121ac8))
+* feat(visibility): add visibility toggle button and push all measurements to one group ([58af97b](https://github.com/ph1p/figma-measure/commit/58af97b))
+* docs(readme): remove todolist ([9d0d77a](https://github.com/ph1p/figma-measure/commit/9d0d77a))
+
+
+
 ## 1.2.0 (2020-05-01)
 
+* 1.2.0 ([b79d246](https://github.com/ph1p/figma-measure/commit/b79d246))
 * refactor(relaunch-data): remove it ([66eddd6](https://github.com/ph1p/figma-measure/commit/66eddd6))
 
 
@@ -45,8 +80,6 @@
 ## 1.0.0 (2020-02-05)
 
 * 1.0.0 ([201dec2](https://github.com/ph1p/figma-measure/commit/201dec2))
-* feat(router/style): add styled-components and react-router ([bb7b152](https://github.com/ph1p/figma-measure/commit/bb7b152))
-* feat(tooltip/arrow): add surrounding frame and arrow ([b2e6957](https://github.com/ph1p/figma-measure/commit/b2e6957))
 * refactor: add version update structure ([40c7b82](https://github.com/ph1p/figma-measure/commit/40c7b82))
 * refactor: drop unused imports ([410fdaf](https://github.com/ph1p/figma-measure/commit/410fdaf))
 * refactor: strucuture code ([8397e79](https://github.com/ph1p/figma-measure/commit/8397e79))
@@ -56,11 +89,13 @@
 * feat(content): split content parts ([56e7011](https://github.com/ph1p/figma-measure/commit/56e7011))
 * feat(context): add context, split files, simplify main ([f80e350](https://github.com/ph1p/figma-measure/commit/f80e350))
 * feat(lines): find duplications and overwrite them ([75f8a99](https://github.com/ph1p/figma-measure/commit/75f8a99))
+* feat(router/style): add styled-components and react-router ([bb7b152](https://github.com/ph1p/figma-measure/commit/bb7b152))
 * feat(tooltip): add auto sizing, icon and directions ([1823bbc](https://github.com/ph1p/figma-measure/commit/1823bbc))
 * feat(tooltip): add better padding control and add reset button ([18cc8c0](https://github.com/ph1p/figma-measure/commit/18cc8c0))
 * feat(tooltip): add full functional tooltip section ([03f4159](https://github.com/ph1p/figma-measure/commit/03f4159))
 * feat(tooltip): optimize saving and add new options ([98b392e](https://github.com/ph1p/figma-measure/commit/98b392e))
 * feat(tooltip): start to add info tooltip ([575be08](https://github.com/ph1p/figma-measure/commit/575be08))
+* feat(tooltip/arrow): add surrounding frame and arrow ([b2e6957](https://github.com/ph1p/figma-measure/commit/b2e6957))
 * style(range): add figma range slider ([0f53f34](https://github.com/ph1p/figma-measure/commit/0f53f34))
 * docs: add changelog ([aa7dd48](https://github.com/ph1p/figma-measure/commit/aa7dd48))
 * build(deps): upgrade dependencies and typings ([88de9ee](https://github.com/ph1p/figma-measure/commit/88de9ee))
@@ -78,8 +113,8 @@
 ## <small>0.3.1 (2019-08-10)</small>
 
 * 0.3.1 ([193af8b](https://github.com/ph1p/figma-measure/commit/193af8b))
-* feat(angle/presets): add angle option and presets ([eb6d5e9](https://github.com/ph1p/figma-measure/commit/eb6d5e9))
 * feat(angle): add new icons for angles and presets ([2d56598](https://github.com/ph1p/figma-measure/commit/2d56598))
+* feat(angle/presets): add angle option and presets ([eb6d5e9](https://github.com/ph1p/figma-measure/commit/eb6d5e9))
 * feat(error): add error message ([f11b3f3](https://github.com/ph1p/figma-measure/commit/f11b3f3))
 * feat(frames): add frames instead of groups ([c2b047f](https://github.com/ph1p/figma-measure/commit/c2b047f))
 * fix(cap): fix lineCap on presets ([8216610](https://github.com/ph1p/figma-measure/commit/8216610))
@@ -93,8 +128,8 @@
 ## 0.3.0 (2019-08-07)
 
 * 0.3.0 ([38d931b](https://github.com/ph1p/figma-measure/commit/38d931b))
-* fix(height/width): do not allow width or height equals zero ([b29ffb5](https://github.com/ph1p/figma-measure/commit/b29ffb5))
 * feat(rotation): detect rotations ([08c9b63](https://github.com/ph1p/figma-measure/commit/08c9b63))
+* fix(height/width): do not allow width or height equals zero ([b29ffb5](https://github.com/ph1p/figma-measure/commit/b29ffb5))
 * docs(readme): update todolist ([f531979](https://github.com/ph1p/figma-measure/commit/f531979))
 * refactor: remove comment ([2372e8c](https://github.com/ph1p/figma-measure/commit/2372e8c))
 
