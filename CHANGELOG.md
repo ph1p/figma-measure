@@ -1,5 +1,13 @@
+## <small>2.0.2 (2021-03-11)</small>
+
+* perf(add): performance in large files extremely increased ([c248424](https://github.com/ph1p/figma-measure/commit/c248424))
+
+
+
 ## <small>2.0.1 (2021-03-11)</small>
 
+* 2.0.0 ([9f3bbe8](https://github.com/ph1p/figma-measure/commit/9f3bbe8))
+* 2.0.1 ([b9ed417](https://github.com/ph1p/figma-measure/commit/b9ed417))
 * feat(command): add small command to toggle visibility ([b6ae55a](https://github.com/ph1p/figma-measure/commit/b6ae55a))
 * feat(data): connect new UI to main process and fix an ton of bugs ([c5fff9b](https://github.com/ph1p/figma-measure/commit/c5fff9b))
 * feat(refactor): update all dependencies and fix build errors ([3d85942](https://github.com/ph1p/figma-measure/commit/3d85942))
@@ -17,7 +25,6 @@
 * feat(visibility): add visibility toggle button and push all measurements to one group ([58af97b](https://github.com/ph1p/figma-measure/commit/58af97b))
 * docs(readme): add a small preview gif ([9cfae6d](https://github.com/ph1p/figma-measure/commit/9cfae6d))
 * docs(readme): remove todolist ([9d0d77a](https://github.com/ph1p/figma-measure/commit/9d0d77a))
-* 2.0.0 ([9f3bbe8](https://github.com/ph1p/figma-measure/commit/9f3bbe8))
 * fix(colors): update all colors and fix viewer ([6b70788](https://github.com/ph1p/figma-measure/commit/6b70788))
 * fix(number): round number ([5c98713](https://github.com/ph1p/figma-measure/commit/5c98713))
 * fix(opacity): move opacity to fill ([3e73582](https://github.com/ph1p/figma-measure/commit/3e73582))
