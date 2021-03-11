@@ -1,6 +1,5 @@
-## 2.0.0 (2021-03-09)
+## <small>2.0.1 (2021-03-11)</small>
 
-* 2.0.0 ([86c7fad](https://github.com/ph1p/figma-measure/commit/86c7fad))
 * feat(command): add small command to toggle visibility ([b6ae55a](https://github.com/ph1p/figma-measure/commit/b6ae55a))
 * feat(data): connect new UI to main process and fix an ton of bugs ([c5fff9b](https://github.com/ph1p/figma-measure/commit/c5fff9b))
 * feat(refactor): update all dependencies and fix build errors ([3d85942](https://github.com/ph1p/figma-measure/commit/3d85942))
@@ -13,8 +12,12 @@
 * feat(tooltip): add new tooltip design and update inputs ([e5a3ce4](https://github.com/ph1p/figma-measure/commit/e5a3ce4))
 * feat(trash): add ability to remove all measurements ([ebb5cd5](https://github.com/ph1p/figma-measure/commit/ebb5cd5))
 * feat(unit): auto transform unit based on 72dpi and unit string ([1c46137](https://github.com/ph1p/figma-measure/commit/1c46137))
+* feat(units): add more unit calculations (pt, dp) ([118d834](https://github.com/ph1p/figma-measure/commit/118d834))
 * feat(viewer): connect first props with new viewer GUI ([2121ac8](https://github.com/ph1p/figma-measure/commit/2121ac8))
 * feat(visibility): add visibility toggle button and push all measurements to one group ([58af97b](https://github.com/ph1p/figma-measure/commit/58af97b))
+* docs(readme): add a small preview gif ([9cfae6d](https://github.com/ph1p/figma-measure/commit/9cfae6d))
+* docs(readme): remove todolist ([9d0d77a](https://github.com/ph1p/figma-measure/commit/9d0d77a))
+* 2.0.0 ([9f3bbe8](https://github.com/ph1p/figma-measure/commit/9f3bbe8))
 * fix(colors): update all colors and fix viewer ([6b70788](https://github.com/ph1p/figma-measure/commit/6b70788))
 * fix(number): round number ([5c98713](https://github.com/ph1p/figma-measure/commit/5c98713))
 * fix(opacity): move opacity to fill ([3e73582](https://github.com/ph1p/figma-measure/commit/3e73582))
@@ -29,7 +32,6 @@
 * refactor(smells): fix bugs and resolve sonar issues ([8d94cfd](https://github.com/ph1p/figma-measure/commit/8d94cfd))
 * refactor(sonar): resolve some issues ([a3c64c3](https://github.com/ph1p/figma-measure/commit/a3c64c3))
 * refactor(structure): order files ([7f1b6b9](https://github.com/ph1p/figma-measure/commit/7f1b6b9))
-* docs(readme): remove todolist ([9d0d77a](https://github.com/ph1p/figma-measure/commit/9d0d77a))
 
 
 
