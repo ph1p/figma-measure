@@ -104,7 +104,7 @@ const Home: FunctionComponent = observer(() => {
         />
       </InputContainer>
 
-      <InputContainer style={{ paddingTop: 0 }}>
+      <LabelSettings>
         <Toggle
           inline
           checked={store.labelsOutside}
@@ -117,17 +117,31 @@ const Home: FunctionComponent = observer(() => {
           label="Numbers"
           onChange={(e) => store.setLabels(e.currentTarget.checked)}
         />
-        <div className="input" style={{ width: 55, marginLeft: 12 }}>
+        <div className="input" style={{ width: 55 }}>
           <input
             type="text"
             value={store.unit}
             onChange={(e) => store.setUnit(e.currentTarget.value)}
           />
         </div>
-      </InputContainer>
+      </LabelSettings>
     </>
   );
 });
+
+const InputContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  align-items: center;
+  label {
+    font-weight: bold;
+  }
+`;
+
+const LabelSettings = styled(InputContainer)`
+  border-top: 1px solid #eee;
+`;
 
 const ViewerOverlay = styled.div`
   position: absolute;
@@ -142,16 +156,6 @@ const ViewerOverlay = styled.div`
   text-align: center;
   font-weight: bold;
   z-index: 3;
-`;
-
-const InputContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 14px;
-  align-items: center;
-  label {
-    font-weight: bold;
-  }
 `;
 
 const Spacing = styled.div<{ active?: boolean; disable?: boolean }>`
