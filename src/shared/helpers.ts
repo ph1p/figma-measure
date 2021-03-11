@@ -24,6 +24,16 @@ export function transformPixelToUnit(pixel: number, unit: string) {
     result = (pixel / DPI_TO_PIXEL[72]) * 100;
   }
 
+  // dp
+  if (unitWithoutSpaces === 'dp' || unitWithoutSpaces === 'dip') {
+    result = pixel / (DPI_TO_PIXEL[72] / 160);
+  }
+
+  // pt
+  if (unitWithoutSpaces === 'pt') {
+    result = (3 / 4) * pixel;
+  }
+
   // inch
   if (
     unitWithoutSpaces === 'inch' ||
