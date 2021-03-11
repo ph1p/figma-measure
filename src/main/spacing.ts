@@ -1,10 +1,11 @@
-import { addToGlobalGroup, createLabel, getColor } from '.';
 import EventEmitter from '../shared/EventEmitter';
 import { transformPixelToUnit } from '../shared/helpers';
 
-export const getSpacing = (node) =>
+import { addToGlobalGroup, createLabel, getColor } from '.';
+
+export const getSpacing = (node: SceneNode) =>
   JSON.parse(node.getPluginData('spacing') || '{}');
-export const setSpacing = (node, data) =>
+export const setSpacing = (node: SceneNode, data: unknown) =>
   node.setPluginData('spacing', JSON.stringify(data));
 
 EventEmitter.on('remove spacing', () => {
@@ -19,10 +20,14 @@ EventEmitter.on('remove spacing', () => {
       setSpacing(node, spacing);
       try {
         group.remove();
-      } catch {}
+      } catch {
+        console.log('could not remove group');
+      }
 
       // get connected node
-      const foundConnectedNode = figma.getNodeById(connectedNodeId);
+      const foundConnectedNode = (figma.getNodeById(
+        connectedNodeId
+      ) as unknown) as SceneNode;
 
       // node removed
       if (foundConnectedNode) {
@@ -70,7 +75,7 @@ const getShapeValues = (shape: SceneNode) => {
 };
 
 export const drawSpacing = (
-  rects,
+  rects: SceneNode[],
   { color = '', labels = true, unit = '' }
 ) => {
   if (rects.length !== 2) {
@@ -88,14 +93,16 @@ export const drawSpacing = (
   if (spacingData1[rects[1].id]) {
     try {
       figma.getNodeById(spacingData1[rects[1].id]).remove();
-    } catch {}
+    } catch {
+      console.log('Could not remove spacing node');
+    }
   }
 
   const mainColor = getColor(color);
 
   const spacingGroup = [];
 
-  let {
+  const {
     x: x1,
     y: y1,
     w: w1,
@@ -104,7 +111,7 @@ export const drawSpacing = (
     cy: centerY1,
   } = getShapeValues(rects[1]);
 
-  let {
+  const {
     x: x2,
     y: y2,
     w: w2,
@@ -163,7 +170,7 @@ export const drawSpacing = (
 
   // yellow
   if (!cutsHorizontalRectPoints) {
-    let yellowX1, yellowX2, yellowY1, yellowY2;
+    let yellowX1, yellowX2, yellowY2;
 
     // point1
     const widthOfOverlappingRectLeft = Math.abs(x1 - (x2 + w2)) / 2;
@@ -177,7 +184,8 @@ export const drawSpacing = (
       yellowX1 = centerX1;
     }
 
-    yellowY1 = centerY2 + (h2 / 2) * (horizontalDirection === 'top' ? 1 : -1);
+    const yellowY1 =
+      centerY2 + (h2 / 2) * (horizontalDirection === 'top' ? 1 : -1);
 
     // outside
     if (!cutsVerticalRectPoints || (!isLeftCenter && !isRightCenter)) {
@@ -221,11 +229,11 @@ export const drawSpacing = (
 
   if (!cutsHorizontalRectPoints && !cutsVerticalRectPoints) {
     // brown
-    let brownX1, brownX2, brownY1, brownY2;
-    brownX1 = verticalDirection === 'left' ? x1 : x1 + w1;
-    brownX2 = centerX2;
-    brownY1 = centerY1 + (h1 / 2) * (horizontalDirection === 'top' ? -1 : 1);
-    brownY2 = horizontalDirection === 'top' ? y1 : y1 + h1;
+    const brownX1 = verticalDirection === 'left' ? x1 : x1 + w1;
+    const brownX2 = centerX2;
+    const brownY1 =
+      centerY1 + (h1 / 2) * (horizontalDirection === 'top' ? -1 : 1);
+    const brownY2 = horizontalDirection === 'top' ? y1 : y1 + h1;
 
     const line2 = figma.createVector();
 
@@ -240,12 +248,10 @@ export const drawSpacing = (
     spacingGroup.push(line2);
 
     // purple
-
-    let purpleX1, purpleX2, purpleY1, purpleY2;
-    purpleX1 = brownX1;
-    purpleY1 = brownY1;
-    purpleX2 = purpleX1;
-    purpleY2 = centerY2;
+    const purpleX1 = brownX1;
+    const purpleY1 = brownY1;
+    const purpleX2 = purpleX1;
+    const purpleY2 = centerY2;
 
     const line3 = figma.createVector();
 

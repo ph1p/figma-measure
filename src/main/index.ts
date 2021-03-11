@@ -1,8 +1,8 @@
 import './store';
-import { hexToRgb, solidColor } from './helper';
-import { setTooltip } from './tooltip';
 
 import EventEmitter from '../shared/EventEmitter';
+import { VERSION } from '../shared/constants';
+import { transformPixelToUnit } from '../shared/helpers';
 import {
   Alignments,
   FillTypes,
@@ -11,9 +11,10 @@ import {
   Store,
   NodeSelection,
 } from '../shared/interfaces';
-import { VERSION } from '../shared/constants';
+
+import { hexToRgb, solidColor } from './helper';
 import { drawSpacing, getSpacing, setSpacing } from './spacing';
-import { transformPixelToUnit } from '../shared/helpers';
+import { setTooltip } from './tooltip';
 
 figma.showUI(__html__, {
   width: 285,
@@ -52,7 +53,7 @@ export function createLabel({
 }: {
   baseNode?: SceneNode;
   text: string;
-  color: any;
+  color: unknown;
   isVertical?: boolean;
 }) {
   const labelFrame = figma.createFrame();
@@ -116,7 +117,7 @@ export function addToGlobalGroup(node: SceneNode) {
 }
 
 function nodeGroup(node) {
-  let globalGroup = getGlobalGroup();
+  const globalGroup = getGlobalGroup();
 
   if (!globalGroup?.children) {
     return null;
@@ -529,7 +530,9 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
     try {
       data = JSON.parse(node.getPluginData('data') || '{}');
       node.setPluginData('data', '{}');
-    } catch {}
+    } catch {
+      console.log('Could not set data');
+    }
 
     if (data?.connectedNodes?.length) {
       for (const id of data.connectedNodes) {
@@ -553,7 +556,9 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
           }
 
           // get connected node
-          const foundConnectedNode = figma.getNodeById(connectedNodeId);
+          const foundConnectedNode = (figma.getNodeById(
+            connectedNodeId
+          ) as unknown) as SceneNode;
 
           // node removed
           if (!foundConnectedNode) {
@@ -561,7 +566,9 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
               figma.getNodeById(spacing[connectedNodeId]).remove();
               delete spacing[connectedNodeId];
               setSpacing(node, spacing);
-            } catch {}
+            } catch {
+              console.log('Could not remove connected node');
+            }
           } else {
             // check connected node group
             const connectedNodeSpacing = getSpacing(foundConnectedNode);
@@ -577,11 +584,17 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
           }
         })
         .forEach((connectedNodeId) => {
-          drawSpacing([node, figma.getNodeById(connectedNodeId)], {
-            color: store.color,
-            labels: store.labels,
-            unit: store.unit,
-          });
+          drawSpacing(
+            [
+              node,
+              (figma.getNodeById(connectedNodeId) as unknown) as SceneNode,
+            ],
+            {
+              color: store.color,
+              labels: store.labels,
+              unit: store.unit,
+            }
+          );
         });
     }
 

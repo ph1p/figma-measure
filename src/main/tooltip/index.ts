@@ -1,6 +1,7 @@
-import { solidColor, hexToRgb } from '../helper';
-import addNode from './types';
 import { SetTooltipOptions, TooltipPositions } from '../../shared/interfaces';
+import { solidColor, hexToRgb } from '../helper';
+
+import addNode from './types';
 
 function createArrow(tooltipFrame, settings, { horizontal, vertical }) {
   const arrowFrame = figma.createFrame();

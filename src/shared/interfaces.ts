@@ -90,7 +90,7 @@ export interface MainMeasurements {
 export interface Store {
   labels: boolean;
   color: string;
-  selection: any[];
+  selection: unknown[];
   fill: FillTypes;
   opacity: number;
   unit: string;
@@ -106,5 +106,5 @@ export interface NodeSelection {
   id: string;
   type: NodeType;
   hasSpacing: boolean;
-  data: any;
+  data: unknown;
 }

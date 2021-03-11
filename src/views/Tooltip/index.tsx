@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react';
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
-import { Toggle } from '../../components/Toggle';
 
-// components
+import { Toggle } from '../../components/Toggle';
 import { useStore } from '../../store';
+
 import { PreviewTooltip } from './components/PreviewTooltip';
 
 const Tooltip: FunctionComponent = observer(() => {

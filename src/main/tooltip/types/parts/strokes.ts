@@ -1,5 +1,6 @@
 import { transformPixelToUnit } from '../../../../shared/helpers';
 import { createTooltipTextNode } from '../../../helper';
+
 import { createColorNode } from './fills';
 
 export default function strokes(
@@ -25,7 +26,7 @@ export default function strokes(
 
     figma.group([iconNode, textNode], parent);
 
-    const fillColors = (node.strokes as any[])
+    const fillColors = node.strokes
       .filter((s) => s.type === 'SOLID' && s.visible)
       .map((fill) => {
         const fillFrame = figma.createFrame();

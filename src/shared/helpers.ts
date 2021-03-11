@@ -1,4 +1,4 @@
-export function transformPixelToUnit(pixel: number, unit: string) {
+export function transformPixelToUnit(pixel: number, unit: string): string {
   const DPI_TO_PIXEL = {
     72: 28.35,
     100: 39,

@@ -8,7 +8,7 @@ export const solidColor = (r = 255, g = 0, b = 0) => ({
 });
 
 export const hexToRgb = (hex: string) => {
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {
         r: parseInt(result[1], 16),
@@ -19,7 +19,7 @@ export const hexToRgb = (hex: string) => {
 };
 
 export function rgbaToHex(data) {
-  let rgba = data.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
+  const rgba = data.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
   return `#${(
     (1 << 24) +
     (parseInt(rgba[0]) << 16) +

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 
-export const PointsIcon = () => (
+export const PointsIcon: FunctionComponent = () => (
   <svg
     width="16"
     height="16"
@@ -12,7 +12,7 @@ export const PointsIcon = () => (
   </svg>
 );
 
-export const CornerRadiusIcon = () => (
+export const CornerRadiusIcon: FunctionComponent = () => (
   <svg
     width="16"
     height="16"
@@ -30,7 +30,7 @@ export const CornerRadiusIcon = () => (
   </svg>
 );
 
-export const WidthIcon = () => (
+export const WidthIcon: FunctionComponent = () => (
   <svg
     width="16"
     height="16"
@@ -46,7 +46,7 @@ export const WidthIcon = () => (
   </svg>
 );
 
-export const HeightIcon = () => (
+export const HeightIcon: FunctionComponent = () => (
   <svg
     width="16"
     height="16"
@@ -62,7 +62,7 @@ export const HeightIcon = () => (
   </svg>
 );
 
-export const FontSizeIcon = () => (
+export const FontSizeIcon: FunctionComponent = () => (
   <svg
     width="16"
     height="16"

@@ -1,19 +1,19 @@
 import { observer } from 'mobx-react';
 import React, { FunctionComponent, useContext, useMemo } from 'react';
 import styled, { ThemeContext } from 'styled-components';
+
 import { Colors } from '../../components/ColorPicker';
+import { Toggle } from '../../components/Toggle';
 import { EyeClosedIcon, EyeIcon } from '../../components/icons/EyeIcons';
 import { RefreshIcon } from '../../components/icons/RefreshIcon';
 import { SpacingIcon } from '../../components/icons/SpacingIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
-import { Toggle } from '../../components/Toggle';
-
-import Viewer from './components/Viewer';
-
 import EventEmitter from '../../shared/EventEmitter';
 import { useStore } from '../../store';
+
 import CenterChooser from './components/CenterChooser';
 import LineChooser from './components/LineChooser';
+import Viewer from './components/Viewer';
 
 const Home: FunctionComponent = observer(() => {
   const theme = useContext(ThemeContext);

@@ -1,5 +1,5 @@
-import { STORAGE_KEY } from '../shared/constants';
 import EventEmitter from '../shared/EventEmitter';
+import { STORAGE_KEY } from '../shared/constants';
 
 export const getState = async () =>
   JSON.parse(await figma.clientStorage.getAsync(STORAGE_KEY));

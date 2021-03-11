@@ -27,11 +27,7 @@ export const createColorNode = (fill, { fontColor = '', fontSize = 0 }) => {
   return [colorRect, colorRectWithOpacity, textNode];
 };
 
-export default function fills(
-  node,
-  parent,
-  { fontColor = '', fontSize = 0 }
-) {
+export default function fills(node, parent, { fontColor = '', fontSize = 0 }) {
   if (node?.fills !== figma.mixed) {
     const fillsAvailable =
       typeof node.fills !== 'undefined'
@@ -39,7 +35,7 @@ export default function fills(
         : false;
 
     if (fillsAvailable) {
-      (node.fills as any[]).forEach((fill) => {
+      node.fills.forEach((fill) => {
         if (fill.type === 'SOLID') {
           const fillIcon = figma.createNodeFromSvg(
             `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="https://www.w3.org/2000/svg">

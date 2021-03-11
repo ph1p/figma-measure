@@ -1,14 +1,16 @@
-import strokes from './parts/strokes';
-import fills from './parts/fills';
-import width from './parts/width';
-import height from './parts/height';
+import { SetTooltipOptions, TooltipSettings } from '../../../shared/interfaces';
+
 import cornerRadius from './parts/cornerRadius';
-import opacity from './parts/opacity';
+import fills from './parts/fills';
 import fontFamily from './parts/fontFamily';
 import fontSize from './parts/fontSize';
 import fontStyle from './parts/fontStyle';
+import height from './parts/height';
+import opacity from './parts/opacity';
 import pointCount from './parts/pointCount';
-import { SetTooltipOptions, TooltipSettings } from '../../../shared/interfaces';
+import strokes from './parts/strokes';
+import width from './parts/width';
+
 
 export default function addNode(
   parent: SceneNode,

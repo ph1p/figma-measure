@@ -1,6 +1,7 @@
 import { makeAutoObservable, toJS } from 'mobx';
-import React from 'react';
 import { AsyncTrunk, ignore } from 'mobx-sync';
+import React, { FunctionComponent } from 'react';
+
 import EventEmitter from '../shared/EventEmitter';
 import { STORAGE_KEY } from '../shared/constants';
 import {
@@ -179,13 +180,11 @@ export type TStore = RootStore;
 
 const StoreContext = React.createContext<TStore | null>(null);
 
-export const StoreProvider = ({ children }) => {
-  return (
-    <StoreContext.Provider value={rootStore}>{children}</StoreContext.Provider>
-  );
-};
+export const StoreProvider: FunctionComponent = ({ children }) => (
+  <StoreContext.Provider value={rootStore}>{children}</StoreContext.Provider>
+);
 
-export const useStore = () => {
+export const useStore = (): RootStore => {
   const store = React.useContext(StoreContext);
   if (!store) {
     throw new Error('useStore must be used within a StoreProvider.');

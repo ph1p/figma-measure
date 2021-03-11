@@ -9,12 +9,16 @@ import {
 } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 
+import EventEmitter from './shared/EventEmitter';
+import { getStoreFromMain, StoreProvider, trunk, useStore } from './store';
+import {
+  DEFAULT_COLOR,
+  getColorByTypeAndSolidColor,
+  GlobalStyle,
+  theme,
+} from './style';
 import Home from './views/Home';
 import Tooltip from './views/Tooltip';
-
-import { DEFAULT_COLOR, getColorByTypeAndSolidColor, GlobalStyle, theme } from './style';
-import { getStoreFromMain, StoreProvider, trunk, useStore } from './store';
-import EventEmitter from './shared/EventEmitter';
 
 import './ui.css';
 

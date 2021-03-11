@@ -3,7 +3,10 @@
  */
 class EventEmitter {
   messageEvent = new Map();
-  emit: (name: string, data?: object | number | string | Uint8Array) => void;
+  emit: (
+    name: string,
+    data?: Record<string, unknown> | number | string | Uint8Array | unknown[]
+  ) => void;
 
   constructor() {
     // MAIN PROCESS

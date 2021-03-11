@@ -2,6 +2,7 @@ import { reaction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { FunctionComponent, useEffect } from 'react';
 import styled from 'styled-components';
+
 import { PluginNodeData, TooltipPositions } from '../../../shared/interfaces';
 import { useStore } from '../../../store';
 

@@ -3,7 +3,6 @@ import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
 // components
-import { useStore } from '../../../store';
 import {
   ColorIcon,
   CornerRadiusIcon,
@@ -16,6 +15,7 @@ import {
   StrokeIcon,
   WidthIcon,
 } from '../../../components/icons/TooltipIcons';
+import { useStore } from '../../../store';
 
 export const PreviewTooltip: FunctionComponent = observer(() => {
   const store = useStore();

@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react';
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
+
 import { useStore } from '../../../store';
 
 const CenterChooser: FunctionComponent = observer(() => {

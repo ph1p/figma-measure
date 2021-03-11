@@ -63,17 +63,22 @@ const InputWrapper = styled.div`
 export const Toggle: FunctionComponent<
   React.InputHTMLAttributes<HTMLInputElement> & { label?: string }
 > = (props) => {
-  const { label, children, ...rest } = props;
+  const inputProps = {
+    ...props,
+  };
+  delete inputProps.label;
+  delete inputProps.children;
 
-  const id = useMemo<string>(() => label.toLowerCase().replace(/\s/g, '-'), [
-    label,
-  ]);
+  const id = useMemo<string>(
+    () => props.label.toLowerCase().replace(/\s/g, '-'),
+    [props.label]
+  );
 
   return (
     <Wrapper>
-      {label && <label htmlFor={id}>{label}</label>}
+      {props.label && <label htmlFor={id}>{props.label}</label>}
       <InputWrapper>
-        <input id={id} {...rest} type="checkbox" />
+        <input id={id} {...inputProps} type="checkbox" />
         <span></span>
       </InputWrapper>
     </Wrapper>
