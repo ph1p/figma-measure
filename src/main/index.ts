@@ -95,7 +95,7 @@ export function createLabel({
 }
 
 function getGlobalGroup() {
-  return (figma.currentPage.findOne(
+  return (figma.currentPage.children.find(
     (node) => node.getPluginData('isGlobalGroup') === '1'
   ) as unknown) as GroupNode | FrameNode;
 }
@@ -103,11 +103,12 @@ function getGlobalGroup() {
 export function addToGlobalGroup(node: SceneNode) {
   let globalGroup = getGlobalGroup();
 
-  if (!globalGroup) {
+  if (typeof globalGroup === 'undefined') {
     globalGroup = figma.group([node], figma.currentPage);
   } else {
     globalGroup.appendChild(node);
   }
+
   globalGroup.locked = true;
   globalGroup.expanded = false;
   globalGroup.name = `📐 Measurements`;
@@ -115,8 +116,14 @@ export function addToGlobalGroup(node: SceneNode) {
 }
 
 function nodeGroup(node) {
+  let globalGroup = getGlobalGroup();
+
+  if (!globalGroup?.children) {
+    return null;
+  }
+
   return (
-    ((figma.currentPage.findOne(
+    ((globalGroup.children.find(
       (currentNode) => currentNode.getPluginData('parent') === node.id
     ) as unknown) as GroupNode | FrameNode) || null
   );
