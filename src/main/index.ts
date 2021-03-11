@@ -79,15 +79,17 @@ export function createLabel({
   labelFrame.paddingTop = 3;
   labelFrame.paddingBottom = 3;
   labelFrame.counterAxisSizingMode = 'AUTO';
+
   if (baseNode) {
     labelFrame.x = baseNode.x;
     labelFrame.y = baseNode.y;
-    if (!isVertical) {
+
+    if (isVertical) {
+      labelFrame.x -= labelFrame.width / 2;
+      labelFrame.y += baseNode.height / 2 - labelFrame.height / 2;
+    } else {
       labelFrame.x += baseNode.width / 2 - labelFrame.width / 2;
       labelFrame.y -= labelFrame.height / 2;
-    } else {
-      labelFrame.y += baseNode.height / 2 - labelFrame.height / 2;
-      labelFrame.x -= labelFrame.width / 2;
     }
   }
   labelFrame.fills = [].concat(color);
@@ -170,6 +172,7 @@ function createLine(options) {
     unit = '',
     color = '',
     labels = true,
+    labelsOutside = false,
   }: LineParameterTypes = options;
 
   const LINE_OFFSET = offset * -1;
@@ -189,11 +192,9 @@ function createLine(options) {
 
     const paddingTopBottom = 3;
 
-    // margin for top and bottom
-    const DIRECTION_MARGIN = 5;
-
     // LABEL
     let labelFrame;
+    const alignment = isHorizontal ? lineHorizontalAlign : lineVerticalAlign;
 
     if (labels) {
       labelFrame = createLabel({
@@ -205,7 +206,7 @@ function createLine(options) {
     // GROUP
     const group = getLineFrame(node, {
       isHorizontal,
-      alignment: isHorizontal ? lineHorizontalAlign : lineVerticalAlign,
+      alignment,
       labelWidth: labelFrame ? labelFrame.width : 7,
       labelHeight: labelFrame ? labelFrame.height : 7,
     });
@@ -282,22 +283,23 @@ function createLine(options) {
 
         // vertical text align
         if (txtVerticalAlign === Alignments.CENTER) {
-          labelFrame.y = 0;
-        } else if (txtVerticalAlign === Alignments.BOTTOM) {
-          labelFrame.y += DIRECTION_MARGIN;
-        } else if (txtVerticalAlign === Alignments.TOP) {
-          labelFrame.y -= labelFrame.height + DIRECTION_MARGIN;
+          if (labelsOutside) {
+            if (lineHorizontalAlign === Alignments.TOP) {
+              labelFrame.y = (labelFrame.height / 2 - LINE_OFFSET) * -1;
+            } else if (lineHorizontalAlign === Alignments.BOTTOM) {
+              labelFrame.y =
+                labelFrame.height / 2 - LINE_OFFSET + line.strokeWeight;
+            } else {
+              labelFrame.y = 0;
+            }
+          } else {
+            labelFrame.y = 0;
+          }
         }
 
         // horizontal text align
         if (txtHorizontalAlign === Alignments.CENTER) {
           labelFrame.x = nodeWidth / 2 - labelFrame.width / 2;
-        } else if (txtHorizontalAlign === Alignments.LEFT) {
-          labelFrame.x -=
-            nodeWidth / 2 - labelFrame.width / 2 - DIRECTION_MARGIN;
-        } else if (txtHorizontalAlign === Alignments.RIGHT) {
-          labelFrame.x +=
-            nodeWidth / 2 - labelFrame.width / 2 - DIRECTION_MARGIN;
         }
       } else {
         labelFrame.x = 0;
@@ -306,19 +308,22 @@ function createLine(options) {
         // vertical text align
         if (txtVerticalAlign === Alignments.CENTER) {
           labelFrame.y += nodeHeight / 2 - labelFrame.height / 2;
-        } else if (txtVerticalAlign === Alignments.BOTTOM) {
-          labelFrame.y += nodeHeight - labelFrame.height - DIRECTION_MARGIN;
-        } else if (txtVerticalAlign === Alignments.TOP) {
-          labelFrame.y += DIRECTION_MARGIN;
         }
 
         // vertical text align
         if (txtHorizontalAlign === Alignments.CENTER) {
-          labelFrame.x = 0;
-        } else if (txtHorizontalAlign === Alignments.LEFT) {
-          labelFrame.x -= labelFrame.width + DIRECTION_MARGIN;
-        } else if (txtHorizontalAlign === Alignments.RIGHT) {
-          labelFrame.x += DIRECTION_MARGIN;
+          if (labelsOutside) {
+            if (lineVerticalAlign === Alignments.RIGHT) {
+              labelFrame.x = labelFrame.width / 2 - LINE_OFFSET;
+            } else if (lineVerticalAlign === Alignments.LEFT) {
+              labelFrame.x -=
+                labelFrame.width / 2 - LINE_OFFSET + line.strokeWeight;
+            } else {
+              labelFrame.x = 0;
+            }
+          } else {
+            labelFrame.x = 0;
+          }
         }
       }
     }
@@ -592,7 +597,9 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
             {
               color: store.color,
               labels: store.labels,
+              labelsOutside: store.labelsOutside,
               unit: store.unit,
+              strokeOffset: store.strokeOffset,
             }
           );
         });
@@ -634,6 +641,7 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
       unit: store.unit,
       color: store.color,
       labels: store.labels,
+      labelsOutside: store.labelsOutside,
     };
 
     if (store.surrounding.rightBar) {

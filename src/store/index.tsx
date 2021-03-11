@@ -29,6 +29,7 @@ class RootStore {
     makeAutoObservable(this);
   }
 
+  labelsOutside = false;
   labels = true;
   color = DEFAULT_COLOR;
 
@@ -70,6 +71,11 @@ class RootStore {
 
   setLabels(labels: boolean) {
     this.labels = labels;
+    this.sendMeasurements();
+  }
+
+  setLabelsOutside(labelsOutside: boolean) {
+    this.labelsOutside = labelsOutside;
     this.sendMeasurements();
   }
 
@@ -158,6 +164,7 @@ class RootStore {
       EventEmitter.emit(
         'set measurements',
         toJS({
+          labelsOutside: this.labelsOutside,
           labels: this.labels,
           color: this.color,
           fill: this.fill,

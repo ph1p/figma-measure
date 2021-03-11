@@ -33,6 +33,8 @@ const Home: FunctionComponent = observer(() => {
       color: store.color,
       labels: store.labels,
       unit: store.unit,
+      strokeOffset: store.strokeOffset,
+      labelsOutside: store.labelsOutside,
     });
     refreshSelection();
   };
@@ -104,6 +106,13 @@ const Home: FunctionComponent = observer(() => {
 
       <InputContainer style={{ paddingTop: 0 }}>
         <Toggle
+          inline
+          checked={store.labelsOutside}
+          label="Outside"
+          onChange={(e) => store.setLabelsOutside(e.currentTarget.checked)}
+        />
+        <Toggle
+          inline
           checked={store.labels}
           label="Numbers"
           onChange={(e) => store.setLabels(e.currentTarget.checked)}

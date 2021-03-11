@@ -1,15 +1,16 @@
 import React, { FunctionComponent, useMemo } from 'react';
 import styled from 'styled-components';
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ inline?: boolean }>`
   display: flex;
-  justify-content: space-between;
+  justify-content: ${(props) => (props.inline ? 'initial' : 'space-between')};
   align-items: center;
-  width: 100%;
+  width: ${(props) => (props.inline ? 'auto' : '100%')};
   label {
     font-weight: bold;
     user-select: none;
     cursor: pointer;
+    margin-right: ${(props) => (props.inline ? 5 : 0)}px;
   }
 `;
 
@@ -61,13 +62,17 @@ const InputWrapper = styled.div`
 `;
 
 export const Toggle: FunctionComponent<
-  React.InputHTMLAttributes<HTMLInputElement> & { label?: string }
+  React.InputHTMLAttributes<HTMLInputElement> & {
+    label?: string;
+    inline?: boolean;
+  }
 > = (props) => {
   const inputProps = {
     ...props,
   };
   delete inputProps.label;
   delete inputProps.children;
+  delete inputProps.inline;
 
   const id = useMemo<string>(
     () => props.label.toLowerCase().replace(/\s/g, '-'),
@@ -75,7 +80,7 @@ export const Toggle: FunctionComponent<
   );
 
   return (
-    <Wrapper>
+    <Wrapper inline={props.inline}>
       {props.label && <label htmlFor={id}>{props.label}</label>}
       <InputWrapper>
         <input id={id} {...inputProps} type="checkbox" />

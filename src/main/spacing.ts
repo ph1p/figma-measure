@@ -41,7 +41,7 @@ EventEmitter.on('remove spacing', () => {
 });
 
 EventEmitter.on('draw spacing', (settings) => {
-  const rects = figma.currentPage.selection;
+  const rects = figma.currentPage.selection as SceneNode[];
 
   if (rects.length === 2) {
     drawSpacing(rects, settings);
@@ -76,7 +76,13 @@ const getShapeValues = (shape: SceneNode) => {
 
 export const drawSpacing = (
   rects: SceneNode[],
-  { color = '', labels = true, unit = '' }
+  {
+    color = '',
+    labels = true,
+    unit = '',
+    labelsOutside = false,
+    strokeOffset = 0,
+  }
 ) => {
   if (rects.length !== 2) {
     return;
@@ -213,17 +219,23 @@ export const drawSpacing = (
     spacingGroup.push(line1);
 
     if (labels) {
-      spacingGroup.push(
-        createLabel({
-          baseNode: line1,
-          text: `${transformPixelToUnit(
-            distanceBetweenTwoPoints(yellowX1, yellowY1, yellowX2, yellowY2),
-            unit
-          )}`,
-          color: mainColor,
-          isVertical: true,
-        })
-      );
+      const label = createLabel({
+        baseNode: line1,
+        text: `${transformPixelToUnit(
+          distanceBetweenTwoPoints(yellowX1, yellowY1, yellowX2, yellowY2),
+          unit
+        )}`,
+        color: mainColor,
+        isVertical: true,
+      });
+
+      if (labelsOutside) {
+        label.x +=
+          (label.width / 2 + strokeOffset) *
+          (verticalDirection === 'left' ? -1 : 1);
+      }
+
+      spacingGroup.push(label);
     }
   }
 
@@ -326,17 +338,23 @@ export const drawSpacing = (
     spacingGroup.push(line4);
 
     if (labels) {
-      spacingGroup.push(
-        createLabel({
-          baseNode: line4,
-          text: transformPixelToUnit(
-            distanceBetweenTwoPoints(blueX1, blueY1, blueX2, blueY2),
-            unit
-          ),
-          color: mainColor,
-          isVertical: false,
-        })
-      );
+      const label = createLabel({
+        baseNode: line4,
+        text: transformPixelToUnit(
+          distanceBetweenTwoPoints(blueX1, blueY1, blueX2, blueY2),
+          unit
+        ),
+        color: mainColor,
+        isVertical: false,
+      });
+
+      if (labelsOutside) {
+        label.y +=
+          (label.height / 2 + strokeOffset) *
+          (horizontalDirection === 'top' ? -1 : 1);
+      }
+
+      spacingGroup.push(label);
     }
   }
 

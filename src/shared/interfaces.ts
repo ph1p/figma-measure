@@ -32,6 +32,7 @@ export interface LineParameterTypes {
   unit: string;
   color: string;
   labels: boolean;
+  labelsOutside: boolean;
 }
 export interface TooltipSettings {
   width: boolean;
@@ -88,6 +89,7 @@ export interface MainMeasurements {
 }
 
 export interface Store {
+  labelsOutside: boolean;
   labels: boolean;
   color: string;
   selection: unknown[];
