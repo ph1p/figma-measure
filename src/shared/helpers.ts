@@ -1,3 +1,10 @@
+const toFixed = (number: string | number, decimalPlaces: number) => {
+  number = parseFloat(number.toString());
+  return !decimalPlaces
+    ? number.toFixed(decimalPlaces)
+    : number.toFixed(decimalPlaces).replace(/\.?0+$/, '');
+};
+
 export function transformPixelToUnit(pixel: number, unit: string): string {
   const DPI_TO_PIXEL = {
     72: 28.35,
@@ -7,7 +14,7 @@ export function transformPixelToUnit(pixel: number, unit: string): string {
   };
   const INCH_IN_CM = 2.54;
 
-  let result = pixel;
+  let result: string | number = pixel;
   const unitWithoutSpaces = unit.replace(/\s/g, '');
 
   if (isNaN(pixel)) {
@@ -16,22 +23,22 @@ export function transformPixelToUnit(pixel: number, unit: string): string {
 
   // cm
   if (unitWithoutSpaces === 'cm') {
-    result = pixel / DPI_TO_PIXEL[72];
+    result = toFixed(pixel / DPI_TO_PIXEL[72], 2);
   }
 
   // mm
   if (unitWithoutSpaces === 'mm') {
-    result = (pixel / DPI_TO_PIXEL[72]) * 100;
+    result = Math.floor((pixel / DPI_TO_PIXEL[72]) * 100);
   }
 
   // dp
   if (unitWithoutSpaces === 'dp' || unitWithoutSpaces === 'dip') {
-    result = pixel / (DPI_TO_PIXEL[72] / 160);
+    result = Math.floor(pixel / (DPI_TO_PIXEL[72] / 160));
   }
 
   // pt
   if (unitWithoutSpaces === 'pt') {
-    result = (3 / 4) * pixel;
+    result = toFixed((3 / 4) * pixel, 2);
   }
 
   // inch
@@ -40,8 +47,8 @@ export function transformPixelToUnit(pixel: number, unit: string): string {
     unitWithoutSpaces === 'in' ||
     unitWithoutSpaces === '"'
   ) {
-    result = pixel / DPI_TO_PIXEL[72] / INCH_IN_CM;
+    result = toFixed(pixel / DPI_TO_PIXEL[72] / INCH_IN_CM, 2);
   }
 
-  return Math.floor(result) + unit;
+  return result + unit;
 }

@@ -1,9 +1,9 @@
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CreateFileWebpack = require('create-file-webpack');
-const TerserPlugin = require('terser-webpack-plugin');
-const { ESBuildPlugin } = require('esbuild-loader')
+const { ESBuildPlugin } = require('esbuild-loader');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
+const webpack = require('webpack');
 
 const { figmaPlugin } = require('./package.json');
 
