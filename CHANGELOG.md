@@ -1,5 +1,15 @@
+## <small>2.0.3 (2021-03-13)</small>
+
+* feat(decimal): add decimal places to some units ([8a16dc2](https://github.com/ph1p/figma-measure/commit/8a16dc2))
+* feat(eslint): add eslint ([5f011aa](https://github.com/ph1p/figma-measure/commit/5f011aa))
+* feat(label): add functionality to set labels outside ([828ee67](https://github.com/ph1p/figma-measure/commit/828ee67))
+* style: remove margin and add border ([8b6a9f2](https://github.com/ph1p/figma-measure/commit/8b6a9f2))
+
+
+
 ## <small>2.0.2 (2021-03-11)</small>
 
+* 2.0.2 ([c63bdcf](https://github.com/ph1p/figma-measure/commit/c63bdcf))
 * perf(add): performance in large files extremely increased ([c248424](https://github.com/ph1p/figma-measure/commit/c248424))
 
 
