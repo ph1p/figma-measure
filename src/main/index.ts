@@ -16,8 +16,8 @@ import {
 
 import { hexToRgb, solidColor } from './helper';
 import { drawSpacing, getSpacing, setSpacing } from './spacing';
-import { setTooltip } from './tooltip';
 import { getState } from './store';
+import { setTooltip } from './tooltip';
 
 figma.showUI(__html__, {
   width: 285,
@@ -635,10 +635,6 @@ const setMeasurements = (store?: Partial<Store>) => {
       }
     }
 
-    if (!surrounding || Object.keys(surrounding).length === 0) {
-      continue;
-    }
-
     // remove all connected nodes
     if (data?.connectedNodes?.length > 0) {
       for (const id of data.connectedNodes) {
@@ -648,7 +644,6 @@ const setMeasurements = (store?: Partial<Store>) => {
         }
       }
     }
-
     // spacing
     const spacing = getSpacing(node);
     if (Object.keys(spacing).length > 0) {
@@ -704,6 +699,10 @@ const setMeasurements = (store?: Partial<Store>) => {
             }
           );
         });
+    }
+
+    if (!surrounding || Object.keys(surrounding).length === 0) {
+      continue;
     }
 
     const connectedNodes = [];
