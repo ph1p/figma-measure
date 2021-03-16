@@ -1,5 +1,12 @@
+## <small>2.1.1 (2021-03-16)</small>
+
+* fix(auto): fix auto distance update ([c4b9c6d](https://github.com/ph1p/figma-measure/commit/c4b9c6d))
+
+
+
 ## 2.1.0 (2021-03-16)
 
+* 2.1.0 ([2957baa](https://github.com/ph1p/figma-measure/commit/2957baa))
 * fix(loop): add continue instead of return ([2cfe584](https://github.com/ph1p/figma-measure/commit/2cfe584))
 * fix(pixel): add decimal points to pixels, if needed ([c6a211b](https://github.com/ph1p/figma-measure/commit/c6a211b))
 * build(deps): update dependencies ([e5b040c](https://github.com/ph1p/figma-measure/commit/e5b040c))
