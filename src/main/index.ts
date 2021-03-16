@@ -135,6 +135,23 @@ function nodeGroup(node) {
   );
 }
 
+const isNodeInsideGlobalGroup = (node: SceneNode): boolean => {
+  const globalGroup = getGlobalGroup();
+
+  if (globalGroup === node) {
+    return true;
+  }
+
+  const parent = node.parent;
+  if (parent === globalGroup) {
+    return true;
+  } else if (parent.type === 'PAGE') {
+    return false;
+  } else {
+    return isNodeInsideGlobalGroup(parent as SceneNode);
+  }
+};
+
 export function getPluginData(node, name) {
   const data = node.getPluginData(name);
   if (!data) {
@@ -594,6 +611,10 @@ const setMeasurements = (store?: Partial<Store>) => {
   };
 
   for (const node of figma.currentPage.selection) {
+    if (isNodeInsideGlobalGroup(node)) {
+      continue;
+    }
+
     let surrounding: SurroundingSettings = store.surrounding;
 
     try {
@@ -619,7 +640,7 @@ const setMeasurements = (store?: Partial<Store>) => {
     }
 
     // remove all connected nodes
-    if (data?.connectedNodes?.length) {
+    if (data?.connectedNodes?.length > 0) {
       for (const id of data.connectedNodes) {
         const foundNode = figma.getNodeById(id);
         if (foundNode) {
