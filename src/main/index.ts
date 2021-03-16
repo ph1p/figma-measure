@@ -116,6 +116,7 @@ export function addToGlobalGroup(node: SceneNode) {
   }
 
   globalGroup.expanded = false;
+  globalGroup.locked = true;
   globalGroup.name = `📐 Measurements`;
   globalGroup.setPluginData('isGlobalGroup', '1');
 }
@@ -502,7 +503,7 @@ const removeAllMeasurementConnections = () => {
 let changeInterval;
 let previousSelection;
 
-const transformCurrentSelection = () =>
+const currentSelectionAsJSONString = () =>
   JSON.stringify(
     figma.currentPage.selection.reduce(
       (prev, curr) => ({
@@ -516,11 +517,11 @@ const transformCurrentSelection = () =>
 // events
 figma.on('selectionchange', () => {
   if (figma.currentPage.selection.length > 0) {
-    previousSelection = transformCurrentSelection();
+    previousSelection = currentSelectionAsJSONString();
 
     if (!changeInterval) {
       changeInterval = setInterval(async () => {
-        const currentSelection = transformCurrentSelection();
+        const currentSelection = currentSelectionAsJSONString();
 
         if (currentSelection !== previousSelection) {
           const state = await getState();
@@ -537,7 +538,7 @@ figma.on('selectionchange', () => {
             unit: state.unit,
           };
 
-          previousSelection = transformCurrentSelection();
+          previousSelection = currentSelectionAsJSONString();
           setMeasurements(store);
         }
       }, 1000);
