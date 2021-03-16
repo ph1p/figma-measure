@@ -9,7 +9,7 @@ export enum Alignments {
 export interface SetTooltipOptions {
   flags: TooltipSettings;
   unit: string;
-  distance: number;
+  offset: number;
   position: TooltipPositions;
   vertical?: TooltipPositions;
   horizontal?: TooltipPositions;
@@ -28,7 +28,7 @@ export interface LineParameterTypes {
   lineVerticalAlign: Alignments;
   lineHorizontalAlign: Alignments;
   strokeCap: string;
-  offset: number;
+  strokeOffset: number;
   unit: string;
   color: string;
   labels: boolean;
@@ -51,6 +51,19 @@ export interface PluginNodeData {
   version?: number;
   surrounding?: SurroundingSettings;
   connectedNodes?: string[];
+  // strokeCap?: StrokeCap;
+  // strokeOffset?: number;
+  // unit?: string;
+  // color?: string;
+  // labels?: boolean;
+  // labelsOutside?: boolean;
+  // fill?: FillTypes;
+  // opacity?: number;
+  // tooltip: {
+  //   flags: TooltipSettings;
+  //   position: TooltipPositions;
+  //   offset: number;
+  // };
 }
 
 export interface SurroundingSettings {
