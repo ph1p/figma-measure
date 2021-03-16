@@ -595,7 +595,6 @@ const setMeasurements = (store?: Partial<Store>) => {
 
   for (const node of figma.currentPage.selection) {
     let surrounding: SurroundingSettings = store.surrounding;
-    const spacing = getSpacing(node);
 
     try {
       data = JSON.parse(node.getPluginData('data') || '{}');
@@ -611,12 +610,12 @@ const setMeasurements = (store?: Partial<Store>) => {
     } catch {
       console.log('Could not set data');
       if (!store) {
-        return;
+        continue;
       }
     }
 
     if (!surrounding || Object.keys(surrounding).length === 0) {
-      return;
+      continue;
     }
 
     // remove all connected nodes
@@ -630,6 +629,7 @@ const setMeasurements = (store?: Partial<Store>) => {
     }
 
     // spacing
+    const spacing = getSpacing(node);
     if (Object.keys(spacing).length > 0) {
       Object.keys(spacing)
         .filter((connectedNodeId) => {
