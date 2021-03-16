@@ -1,5 +1,4 @@
 const CreateFileWebpack = require('create-file-webpack');
-const { ESBuildPlugin } = require('esbuild-loader');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -65,7 +64,6 @@ module.exports = (env, argv) => ({
     path: path.resolve(__dirname, figmaPlugin.name),
   },
   plugins: [
-    new ESBuildPlugin(),
     new HtmlWebpackPlugin({
       filename: 'ui.html',
       inlineSource: '.(js)$',

@@ -14,12 +14,14 @@ export function transformPixelToUnit(pixel: number, unit: string): string {
   };
   const INCH_IN_CM = 2.54;
 
-  let result: string | number = pixel;
+  let result: string | number;
   const unitWithoutSpaces = unit.replace(/\s/g, '');
 
   if (isNaN(pixel)) {
     pixel = parseInt(pixel.toString(), 10);
   }
+
+  result = toFixed(pixel, 2);
 
   // cm
   if (unitWithoutSpaces === 'cm') {
