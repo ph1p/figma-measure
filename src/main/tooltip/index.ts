@@ -58,7 +58,6 @@ function getTooltipFrame(node): FrameNode {
   }
   tooltipFrame.expanded = false;
   tooltipFrame.name = `Tooltip ${node.name}`;
-  tooltipFrame.locked = true;
   tooltipFrame.clipsContent = false;
   tooltipFrame.fills = [];
 
@@ -99,9 +98,6 @@ export function setTooltip(options: SetTooltipOptions, specificNode = null) {
     const tooltipFrame = getTooltipFrame(node);
     const contentFrame = figma.createFrame();
     tooltipFrame.appendChild(contentFrame);
-
-    // ----
-    contentFrame.locked = true;
 
     // auto-layout
     contentFrame.layoutMode = 'VERTICAL';
@@ -156,10 +152,10 @@ export function setTooltip(options: SetTooltipOptions, specificNode = null) {
 
     switch (data.vertical) {
       case TooltipPositions.TOP:
-        y = (contentFrame.height + data.distance) * -1;
+        y = (contentFrame.height + data.offset) * -1;
         break;
       case TooltipPositions.BOTTOM:
-        y = node.height + data.distance;
+        y = node.height + data.offset;
         break;
     }
 
@@ -167,10 +163,10 @@ export function setTooltip(options: SetTooltipOptions, specificNode = null) {
 
     switch (data.horizontal) {
       case TooltipPositions.LEFT:
-        x = (contentFrame.width + data.distance) * -1;
+        x = (contentFrame.width + data.offset) * -1;
         break;
       case TooltipPositions.RIGHT:
-        x = node.width + data.distance;
+        x = node.width + data.offset;
         break;
     }
 

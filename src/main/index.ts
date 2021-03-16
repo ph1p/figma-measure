@@ -10,11 +10,14 @@ import {
   PluginNodeData,
   Store,
   NodeSelection,
+  SurroundingSettings,
+  TooltipPositions,
 } from '../shared/interfaces';
 
 import { hexToRgb, solidColor } from './helper';
 import { drawSpacing, getSpacing, setSpacing } from './spacing';
 import { setTooltip } from './tooltip';
+import { getState } from './store';
 
 figma.showUI(__html__, {
   width: 285,
@@ -112,8 +115,8 @@ export function addToGlobalGroup(node: SceneNode) {
     globalGroup.appendChild(node);
   }
 
-  globalGroup.locked = true;
   globalGroup.expanded = false;
+  globalGroup.locked = true;
   globalGroup.name = `📐 Measurements`;
   globalGroup.setPluginData('isGlobalGroup', '1');
 }
@@ -131,6 +134,23 @@ function nodeGroup(node) {
     ) as unknown) as GroupNode | FrameNode) || null
   );
 }
+
+const isNodeInsideGlobalGroup = (node: SceneNode): boolean => {
+  const globalGroup = getGlobalGroup();
+
+  if (globalGroup === node) {
+    return true;
+  }
+
+  const parent = node.parent;
+  if (parent === globalGroup) {
+    return true;
+  } else if (parent.type === 'PAGE') {
+    return false;
+  } else {
+    return isNodeInsideGlobalGroup(parent as SceneNode);
+  }
+};
 
 export function getPluginData(node, name) {
   const data = node.getPluginData(name);
@@ -168,14 +188,14 @@ function createLine(options) {
     lineVerticalAlign = Alignments.LEFT,
     lineHorizontalAlign = Alignments.BOTTOM,
     strokeCap = 'NONE',
-    offset = 3,
+    strokeOffset = 3,
     unit = '',
     color = '',
     labels = true,
     labelsOutside = false,
   }: LineParameterTypes = options;
 
-  const LINE_OFFSET = offset * -1;
+  const LINE_OFFSET = strokeOffset * -1;
 
   const mainColor = getColor(color);
 
@@ -465,7 +485,7 @@ const cleanOrphanNodes = () => {
     for (const node of group.children) {
       const foundNode = figma.getNodeById(node.getPluginData('parent'));
 
-      if (!foundNode) {
+      if (!foundNode && !node.getPluginData('connected')) {
         node.remove();
       }
     }
@@ -497,8 +517,54 @@ const removeAllMeasurementConnections = () => {
   }
 };
 
+let changeInterval;
+let previousSelection;
+
+const currentSelectionAsJSONString = () =>
+  JSON.stringify(
+    figma.currentPage.selection.reduce(
+      (prev, curr) => ({
+        ...prev,
+        [curr.id]: `${curr.x}-${curr.y}-${curr.width}-${curr.height}`,
+      }),
+      {}
+    )
+  );
+
 // events
 figma.on('selectionchange', () => {
+  if (figma.currentPage.selection.length > 0) {
+    previousSelection = currentSelectionAsJSONString();
+
+    if (!changeInterval) {
+      changeInterval = setInterval(async () => {
+        const currentSelection = currentSelectionAsJSONString();
+
+        if (currentSelection !== previousSelection) {
+          const state = await getState();
+          const store = {
+            labelsOutside: state.labelsOutside,
+            labels: state.labels,
+            color: state.color,
+            fill: state.fill,
+            opacity: state.opacity,
+            strokeCap: state.strokeCap,
+            strokeOffset: state.strokeOffset,
+            tooltipOffset: state.tooltipOffset,
+            tooltip: state.tooltip,
+            unit: state.unit,
+          };
+
+          previousSelection = currentSelectionAsJSONString();
+          setMeasurements(store);
+        }
+      }, 1000);
+    }
+  } else {
+    clearInterval(changeInterval);
+    changeInterval = undefined;
+    previousSelection = undefined;
+  }
   sendSelection();
 });
 
@@ -526,20 +592,55 @@ EventEmitter.on('remove all measurements', () =>
   removeAllMeasurementConnections()
 );
 
-EventEmitter.on('set measurements', (store: Partial<Store>) => {
+EventEmitter.on('set measurements', (store: Partial<Store>) =>
+  setMeasurements(store)
+);
+
+const setMeasurements = (store?: Partial<Store>) => {
   cleanOrphanNodes();
 
+  let data: PluginNodeData | any = {};
+
+  const settings = {
+    strokeCap: store.strokeCap,
+    strokeOffset: store.strokeOffset,
+    unit: store.unit,
+    color: store.color,
+    labels: store.labels,
+    labelsOutside: store.labelsOutside,
+  };
+
   for (const node of figma.currentPage.selection) {
-    let data: PluginNodeData = {};
+    if (isNodeInsideGlobalGroup(node)) {
+      continue;
+    }
+
+    let surrounding: SurroundingSettings = store.surrounding;
 
     try {
       data = JSON.parse(node.getPluginData('data') || '{}');
       node.setPluginData('data', '{}');
+
+      if (
+        data.surrounding &&
+        Object.keys(data.surrounding).length > 0 &&
+        !store.surrounding
+      ) {
+        surrounding = data.surrounding;
+      }
     } catch {
       console.log('Could not set data');
+      if (!store) {
+        continue;
+      }
     }
 
-    if (data?.connectedNodes?.length) {
+    if (!surrounding || Object.keys(surrounding).length === 0) {
+      continue;
+    }
+
+    // remove all connected nodes
+    if (data?.connectedNodes?.length > 0) {
       for (const id of data.connectedNodes) {
         const foundNode = figma.getNodeById(id);
         if (foundNode) {
@@ -548,8 +649,8 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
       }
     }
 
+    // spacing
     const spacing = getSpacing(node);
-
     if (Object.keys(spacing).length > 0) {
       Object.keys(spacing)
         .filter((connectedNodeId) => {
@@ -595,11 +696,11 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
               (figma.getNodeById(connectedNodeId) as unknown) as SceneNode,
             ],
             {
-              color: store.color,
-              labels: store.labels,
-              labelsOutside: store.labelsOutside,
-              unit: store.unit,
-              strokeOffset: store.strokeOffset,
+              color: settings.color,
+              labels: settings.labels,
+              labelsOutside: settings.labelsOutside,
+              unit: settings.unit,
+              strokeOffset: settings.strokeOffset,
             }
           );
         });
@@ -607,11 +708,11 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
 
     const connectedNodes = [];
 
-    if (store.surrounding.center) {
+    if (surrounding.center) {
       const fillNode = createFill(node, {
         fill: store.fill,
         opacity: store.opacity,
-        color: store.color,
+        color: settings.color,
       });
 
       if (fillNode) {
@@ -619,13 +720,13 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
       }
     }
 
-    if (store.surrounding.tooltip) {
+    if (surrounding.tooltip) {
       const tooltip = setTooltip(
         {
           flags: store.tooltip,
-          unit: store.unit,
-          distance: store.tooltipOffset,
-          position: store.surrounding.tooltip,
+          offset: store.tooltipOffset,
+          position: surrounding.tooltip || TooltipPositions.NONE,
+          unit: settings.unit,
         },
         node
       );
@@ -635,67 +736,58 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
       }
     }
 
-    const strokeSettings = {
-      strokeCap: store.strokeCap,
-      offset: store.strokeOffset,
-      unit: store.unit,
-      color: store.color,
-      labels: store.labels,
-      labelsOutside: store.labelsOutside,
-    };
-
-    if (store.surrounding.rightBar) {
+    if (surrounding.rightBar) {
       connectedNodes.push(
         createLine({
-          ...strokeSettings,
+          ...settings,
           node,
           direction: 'vertical',
-          name: 'vertical line ' + Alignments.RIGHT.toLowerCase(),
+          name: `vertical line ${Alignments.RIGHT.toLowerCase()}`,
           lineVerticalAlign: Alignments.RIGHT,
         })
       );
     }
 
-    if (store.surrounding.leftBar) {
+    if (surrounding.leftBar) {
       connectedNodes.push(
         createLine({
-          ...strokeSettings,
+          ...settings,
           node,
           direction: 'vertical',
-          name: 'vertical line ' + Alignments.LEFT.toLowerCase(),
+          name: `vertical line ${Alignments.LEFT.toLowerCase()}`,
           lineVerticalAlign: Alignments.LEFT,
         })
       );
     }
 
-    if (store.surrounding.topBar) {
+    if (surrounding.topBar) {
       connectedNodes.push(
         createLine({
-          ...strokeSettings,
+          ...settings,
           node,
           direction: 'horizontal',
-          name: 'horizontal line ' + Alignments.TOP.toLowerCase(),
+          name: `horizontal line ${Alignments.TOP.toLowerCase()}`,
           lineHorizontalAlign: Alignments.TOP,
         })
       );
     }
 
-    if (store.surrounding.bottomBar) {
+    if (surrounding.bottomBar) {
       connectedNodes.push(
         createLine({
-          ...strokeSettings,
+          ...settings,
           node,
           direction: 'horizontal',
-          name: 'horizontal line ' + Alignments.BOTTOM.toLowerCase(),
+          name: `horizontal line ${Alignments.BOTTOM.toLowerCase()}`,
           lineHorizontalAlign: Alignments.BOTTOM,
         })
       );
     }
 
-    if (store.surrounding.horizontalBar) {
+    if (surrounding.horizontalBar) {
       connectedNodes.push(
         createLine({
-          ...strokeSettings,
+          ...settings,
           node,
           direction: 'horizontal',
           name: 'horizontal line ' + Alignments.CENTER.toLowerCase(),
@@ -704,10 +796,10 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
       );
     }
 
-    if (store.surrounding.verticalBar) {
+    if (surrounding.verticalBar) {
       connectedNodes.push(
         createLine({
-          ...strokeSettings,
+          ...settings,
           node,
           direction: 'vertical',
           name: 'vertical line ' + Alignments.CENTER.toLowerCase(),
@@ -719,8 +811,8 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
     node.setPluginData(
       'data',
       JSON.stringify({
+        surrounding,
         connectedNodes: connectedNodes.map(({ id }) => id),
-        surrounding: store.surrounding,
         version: VERSION,
       } as PluginNodeData)
     );
@@ -735,7 +827,6 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
         addToGlobalGroup(group);
       } else {
         const measureGroup = figma.group(connectedNodes, figma.currentPage);
-        measureGroup.locked = true;
         measureGroup.expanded = false;
         measureGroup.name = `📏 ${node.name}`;
 
@@ -744,7 +835,7 @@ EventEmitter.on('set measurements', (store: Partial<Store>) => {
       }
     }
   }
-});
+};
 
 function createFill(
   node: SceneNode,
@@ -801,6 +892,9 @@ function createFill(
         cloneNode.strokeWeight = 1;
         break;
     }
+
+    // lock node, because covers the measured node
+    cloneNode.locked = true;
 
     return cloneNode;
   }
