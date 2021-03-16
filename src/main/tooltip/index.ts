@@ -58,7 +58,6 @@ function getTooltipFrame(node): FrameNode {
   }
   tooltipFrame.expanded = false;
   tooltipFrame.name = `Tooltip ${node.name}`;
-  tooltipFrame.locked = true;
   tooltipFrame.clipsContent = false;
   tooltipFrame.fills = [];
 
@@ -99,9 +98,6 @@ export function setTooltip(options: SetTooltipOptions, specificNode = null) {
     const tooltipFrame = getTooltipFrame(node);
     const contentFrame = figma.createFrame();
     tooltipFrame.appendChild(contentFrame);
-
-    // ----
-    contentFrame.locked = true;
 
     // auto-layout
     contentFrame.layoutMode = 'VERTICAL';
