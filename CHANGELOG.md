@@ -1,5 +1,18 @@
+## 2.1.0 (2021-03-16)
+
+* fix(loop): add continue instead of return ([2cfe584](https://github.com/ph1p/figma-measure/commit/2cfe584))
+* fix(pixel): add decimal points to pixels, if needed ([c6a211b](https://github.com/ph1p/figma-measure/commit/c6a211b))
+* build(deps): update dependencies ([e5b040c](https://github.com/ph1p/figma-measure/commit/e5b040c))
+* feat(group): detect if measurement is inside the global group ([fd7890a](https://github.com/ph1p/figma-measure/commit/fd7890a))
+* feat(move): detect element movement and update all measuremnets ([c104afa](https://github.com/ph1p/figma-measure/commit/c104afa))
+* refactor(global-group): lock global group again, but not its children ([2869293](https://github.com/ph1p/figma-measure/commit/2869293))
+* refactor(locked): remove locked state from tooltip ([dd2efe2](https://github.com/ph1p/figma-measure/commit/dd2efe2))
+
+
+
 ## <small>2.0.3 (2021-03-13)</small>
 
+* 2.0.3 ([f3709fc](https://github.com/ph1p/figma-measure/commit/f3709fc))
 * feat(decimal): add decimal places to some units ([8a16dc2](https://github.com/ph1p/figma-measure/commit/8a16dc2))
 * feat(eslint): add eslint ([5f011aa](https://github.com/ph1p/figma-measure/commit/5f011aa))
 * feat(label): add functionality to set labels outside ([828ee67](https://github.com/ph1p/figma-measure/commit/828ee67))
