@@ -1,5 +1,12 @@
+## <small>2.1.3 (2021-03-17)</small>
+
+* fix(center): enable center fill on groups ([744fa0b](https://github.com/ph1p/figma-measure/commit/744fa0b))
+
+
+
 ## <small>2.1.2 (2021-03-17)</small>
 
+* 2.1.2 ([7fce695](https://github.com/ph1p/figma-measure/commit/7fce695))
 * fix(spacing): fix "null" error in spacing ([12329f7](https://github.com/ph1p/figma-measure/commit/12329f7))
 
 
