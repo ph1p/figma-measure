@@ -517,6 +517,10 @@ const removeAllMeasurementConnections = () => {
       node.remove();
     }
   }
+
+  const previousSelection = figma.currentPage.selection;
+  figma.currentPage.selection = [];
+  setTimeout(() => (figma.currentPage.selection = previousSelection), 100);
 };
 
 let changeInterval;
@@ -842,14 +846,15 @@ function createFill(
   node: SceneNode,
   { fill, opacity, color }: { fill: FillTypes; opacity: number; color: string }
 ) {
-  if (node.type !== 'SLICE' && node.type !== 'GROUP') {
+  if (node.type !== 'SLICE') {
     let cloneNode: SceneNode;
 
     if (
       node.type === 'FRAME' ||
       node.type === 'TEXT' ||
       node.type === 'COMPONENT' ||
-      node.type === 'INSTANCE'
+      node.type === 'INSTANCE' ||
+      node.type === 'GROUP'
     ) {
       cloneNode = figma.createRectangle();
       cloneNode.resize(node.width, node.height);
@@ -898,6 +903,8 @@ function createFill(
     cloneNode.locked = true;
 
     return cloneNode;
+  } else {
+    figma.notify('Slices are currently not supported.');
   }
 }
 
