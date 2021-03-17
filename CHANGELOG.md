@@ -1,5 +1,12 @@
+## <small>2.1.2 (2021-03-17)</small>
+
+* fix(spacing): fix "null" error in spacing ([12329f7](https://github.com/ph1p/figma-measure/commit/12329f7))
+
+
+
 ## <small>2.1.1 (2021-03-16)</small>
 
+* 2.1.1 ([46d5b43](https://github.com/ph1p/figma-measure/commit/46d5b43))
 * fix(auto): fix auto distance update ([c4b9c6d](https://github.com/ph1p/figma-measure/commit/c4b9c6d))
 
 
