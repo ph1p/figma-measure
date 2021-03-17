@@ -504,7 +504,9 @@ const removeAllMeasurementConnections = () => {
         for (const connectedNode of connectNodes.map((id: string) =>
           figma.getNodeById(id)
         )) {
-          connectedNode.setPluginData('spacing', '');
+          if (connectedNode) {
+            connectedNode.setPluginData('spacing', '');
+          }
         }
       }
 
