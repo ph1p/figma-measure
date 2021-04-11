@@ -203,6 +203,7 @@ function createLine(options) {
   }: LineParameterTypes = options;
 
   const LINE_OFFSET = strokeOffset * -1;
+  const LABEL_OUTSIDE_MARGIN = 4;
 
   const mainColor = getColor(color);
 
@@ -317,10 +318,10 @@ function createLine(options) {
         if (txtVerticalAlign === Alignments.CENTER) {
           if (labelsOutside) {
             if (lineHorizontalAlign === Alignments.TOP) {
-              labelFrame.y = (labelFrame.height / 2 - LINE_OFFSET) * -1;
+              labelFrame.y = (labelFrame.height / 2 + LABEL_OUTSIDE_MARGIN) * -1;
             } else if (lineHorizontalAlign === Alignments.BOTTOM) {
               labelFrame.y =
-                labelFrame.height / 2 - LINE_OFFSET + line.strokeWeight;
+                labelFrame.height / 2 + LABEL_OUTSIDE_MARGIN + line.strokeWeight;
             } else {
               labelFrame.y = 0;
             }
@@ -346,10 +347,10 @@ function createLine(options) {
         if (txtHorizontalAlign === Alignments.CENTER) {
           if (labelsOutside) {
             if (lineVerticalAlign === Alignments.RIGHT) {
-              labelFrame.x = labelFrame.width / 2 - LINE_OFFSET;
+              labelFrame.x = labelFrame.width / 2 + LABEL_OUTSIDE_MARGIN;
             } else if (lineVerticalAlign === Alignments.LEFT) {
               labelFrame.x -=
-                labelFrame.width / 2 - LINE_OFFSET + line.strokeWeight;
+                labelFrame.width / 2 + LABEL_OUTSIDE_MARGIN + line.strokeWeight;
             } else {
               labelFrame.x = 0;
             }

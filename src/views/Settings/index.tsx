@@ -21,6 +21,7 @@ const Settings: FunctionComponent = observer(() => {
 
   return (
     <Wrapper>
+      <Title>Labels</Title>
       <InputContainer>
         <Toggle
           checked={store.labelsOutside}
@@ -63,6 +64,8 @@ const Settings: FunctionComponent = observer(() => {
           onChange={(e) => store.setPrecesion(+e.currentTarget.value)}
         />
       </InputContainer>
+
+      <Title>General</Title>
       <InputContainer>
         <label htmlFor="color">Color</label>
         <Colors
@@ -75,21 +78,28 @@ const Settings: FunctionComponent = observer(() => {
   );
 });
 
+const Title = styled.h3``;
+
 const InputContainer = styled.div`
   display: flex;
-  padding: 10px 14px;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  width: 100%;
-  label {
-    font-weight: bold;
-  }
+  padding: 3px 0 6px;
 `;
 
 const Wrapper = styled.div`
   position: relative;
   top: 0;
+  overflow: auto;
+  height: 358px;
+  padding: 12px 14px;
+  h3 {
+    margin: 20px 0 5px;
+    &:first-child {
+      margin: 0 0 5px;
+    }
+  }
 `;
 
 export default Settings;

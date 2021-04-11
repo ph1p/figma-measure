@@ -122,7 +122,6 @@ const Main = styled.div`
 `;
 
 const ViewSwitch = styled.div<{ menu: number }>`
-  border-top: 1px solid #e6e6e6;
   display: flex;
   position: relative;
   overflow: hidden;

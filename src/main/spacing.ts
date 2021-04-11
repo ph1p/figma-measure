@@ -83,9 +83,11 @@ export const drawSpacing = (
     precision,
     multiplicator,
     labelsOutside = false,
-    strokeOffset = 0,
+    // strokeOffset = 0,
   }
 ) => {
+  const LABEL_OUTSIDE_MARGIN = 4;
+
   if (rects.length !== 2) {
     return;
   }
@@ -235,7 +237,7 @@ export const drawSpacing = (
 
       if (labelsOutside) {
         label.x +=
-          (label.width / 2 + strokeOffset) *
+          (label.width / 2 + LABEL_OUTSIDE_MARGIN) *
           (verticalDirection === 'left' ? -1 : 1);
       }
 
@@ -356,7 +358,7 @@ export const drawSpacing = (
 
       if (labelsOutside) {
         label.y +=
-          (label.height / 2 + strokeOffset) *
+          (label.height / 2 + LABEL_OUTSIDE_MARGIN) *
           (horizontalDirection === 'top' ? -1 : 1);
       }
 
