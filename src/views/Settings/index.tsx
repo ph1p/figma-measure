@@ -22,58 +22,70 @@ const Settings: FunctionComponent = observer(() => {
   return (
     <Wrapper>
       <Title>Labels</Title>
-      <InputContainer>
-        <Toggle
-          checked={store.labelsOutside}
-          label="Show next to line"
-          onChange={(e) => store.setLabelsOutside(e.currentTarget.checked)}
-        />
-      </InputContainer>
-      <InputContainer>
-        <Toggle
-          checked={store.labels}
-          label="Show label"
-          onChange={(e) => store.setLabels(e.currentTarget.checked)}
-        />
-      </InputContainer>
-      <InputContainer>
-        <Input
-          label="Measurment unit"
-          description='cm, mm, dp, pt, " or custom'
-          value={store.unit}
-          onChange={(e) => store.setUnit(e.currentTarget.value)}
-        />
-      </InputContainer>
-      <InputContainer>
-        <Input
-          label="Multiplicator"
-          placeholder="1"
-          description="if > 1, then no auto calculation"
-          type="number"
-          defaultValue={store.multiplicator}
-          onChange={(e) => store.setMultiplicator(+e.currentTarget.value)}
-        />
-      </InputContainer>
-      <InputContainer>
-        <Input
-          label="Precision"
-          placeholder="0"
-          description="e. g. 2 -> (xx.xx)"
-          type="number"
-          defaultValue={store.precision}
-          onChange={(e) => store.setPrecesion(+e.currentTarget.value)}
-        />
-      </InputContainer>
-
+      <Group>
+        <InputContainer>
+          <Toggle
+            checked={store.labelsOutside}
+            label="Show next to line"
+            onChange={(e) => store.setLabelsOutside(e.currentTarget.checked)}
+          />
+        </InputContainer>
+        <InputContainer>
+          <Toggle
+            checked={store.labels}
+            label="Show label"
+            onChange={(e) => store.setLabels(e.currentTarget.checked)}
+          />
+        </InputContainer>
+      </Group>
+      <Group>
+        <InputContainer>
+          <Toggle
+            checked={store.labels}
+            label="Disable auto unit"
+            onChange={(e) => store.setLabels(e.currentTarget.checked)}
+          />
+        </InputContainer>
+        <InputContainer>
+          <Input
+            label="Measurement unit"
+            description='cm, mm, dp, pt, " or custom'
+            value={store.unit}
+            onChange={(e) => store.setUnit(e.currentTarget.value)}
+          />
+        </InputContainer>
+        <InputContainer>
+          <Input
+            label="Multiplicator"
+            placeholder="1"
+            description="if > 1, then no auto calculation"
+            type="number"
+            defaultValue={store.multiplicator}
+            onChange={(e) => store.setMultiplicator(+e.currentTarget.value)}
+          />
+        </InputContainer>
+        <InputContainer>
+          <Input
+            label="Precision"
+            placeholder="0"
+            description="e. g. 2 -> (xx.xx)"
+            type="number"
+            defaultValue={store.precision}
+            onChange={(e) => store.setPrecesion(+e.currentTarget.value)}
+          />
+        </InputContainer>
+      </Group>
       <Title>General</Title>
-      <InputContainer>
-        <label htmlFor="color">Color</label>
-        <Colors
-          colors={theme.colors}
-          onChange={(color) => store.setColor(color)}
-          color={store.color}
-        />
-      </InputContainer>
+      <Group>
+        <InputContainer>
+          <label htmlFor="color">Color</label>
+          <Colors
+            colors={theme.colors}
+            onChange={(color) => store.setColor(color)}
+            color={store.color}
+          />
+        </InputContainer>
+      </Group>
     </Wrapper>
   );
 });
@@ -85,7 +97,14 @@ const InputContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 3px 0 6px;
+  padding: 3px 0 3px;
+`;
+
+const Group = styled.div`
+  padding: 7px 10px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  margin-top: 10px;
 `;
 
 const Wrapper = styled.div`
@@ -93,7 +112,7 @@ const Wrapper = styled.div`
   top: 0;
   overflow: auto;
   height: 358px;
-  padding: 12px 14px;
+  padding: 12px 8px 12px 14px;
   h3 {
     margin: 20px 0 5px;
     &:first-child {

@@ -50,6 +50,6 @@ const InputWrapper = styled.div.attrs(() => ({
     }
   }
   input {
-    width: 30%;
+    width: 60px;
   }
 `;

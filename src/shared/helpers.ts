@@ -20,7 +20,6 @@ export function transformPixelToUnit(
   }
 
   if (multiplicator !== 1) {
-    console.log(pixel * multiplicator, precision);
     return toFixed(pixel * multiplicator, precision) + unit;
   }
 
