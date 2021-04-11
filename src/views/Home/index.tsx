@@ -16,9 +16,10 @@ import Viewer from './components/Viewer';
 const Home: FunctionComponent = observer(() => {
   const store = useStore();
 
-  const hasSpacing = useMemo(() => {
-    return store.selection.some((selection) => selection.hasSpacing);
-  }, [store.selection]);
+  const hasSpacing = useMemo(
+    () => store.selection.some((selection) => selection.hasSpacing),
+    [store.selection]
+  );
 
   useEffect(() => {
     EventEmitter.emit('resize', {

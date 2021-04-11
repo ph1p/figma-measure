@@ -10,6 +10,7 @@ import {
 import styled, { ThemeProvider } from 'styled-components';
 
 import EventEmitter from './shared/EventEmitter';
+import { PluginNodeData } from './shared/interfaces';
 import { getStoreFromMain, StoreProvider, trunk, useStore } from './store';
 import {
   DEFAULT_COLOR,
@@ -22,6 +23,7 @@ import Settings from './views/Settings';
 import Tooltip from './views/Tooltip';
 
 import './ui.css';
+import { reaction, toJS } from 'mobx';
 
 const App: FunctionComponent = observer(() => {
   const store = useStore();
@@ -44,6 +46,33 @@ const App: FunctionComponent = observer(() => {
 
     return () => EventEmitter.remove('selection');
   }, []);
+
+  // set data from selection
+  useEffect(
+    () =>
+      reaction(
+        () => store.selection.slice(),
+        () => {
+          const selection = toJS(store.selection);
+          if (selection.length > 0) {
+            try {
+              const data: PluginNodeData = selection[0]?.data;
+
+              if (data?.surrounding) {
+                store.setSurrounding(data.surrounding, true);
+              } else {
+                store.resetSurrounding();
+              }
+            } catch {
+              store.resetSurrounding();
+            }
+          } else {
+            store.resetSurrounding();
+          }
+        }
+      ),
+    []
+  );
 
   return (
     <ThemeProvider

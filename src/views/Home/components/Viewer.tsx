@@ -1,9 +1,8 @@
-import { reaction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
-import { PluginNodeData, TooltipPositions } from '../../../shared/interfaces';
+import { TooltipPositions } from '../../../shared/interfaces';
 import { useStore } from '../../../store';
 
 const Wrapper = styled.div`
@@ -93,33 +92,6 @@ const Viewer: FunctionComponent = observer(() => {
       }
     }
   };
-
-  // set data from selection
-  useEffect(
-    () =>
-      reaction(
-        () => store.selection.slice(),
-        () => {
-          const selection = toJS(store.selection);
-          if (selection.length > 0) {
-            try {
-              const data: PluginNodeData = selection[0]?.data;
-
-              if (data?.surrounding) {
-                store.setSurrounding(data.surrounding, true);
-              } else {
-                store.resetSurrounding();
-              }
-            } catch {
-              store.resetSurrounding();
-            }
-          } else {
-            store.resetSurrounding();
-          }
-        }
-      ),
-    []
-  );
 
   const clickCorner = (e) => {
     if (store.selection.length > 0) {

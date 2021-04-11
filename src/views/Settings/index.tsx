@@ -39,7 +39,7 @@ const Settings: FunctionComponent = observer(() => {
       <InputContainer>
         <Input
           label="Measurment unit"
-          description='cm, mm, dp, pt, ", in or custom'
+          description='cm, mm, dp, pt, " or custom'
           value={store.unit}
           onChange={(e) => store.setUnit(e.currentTarget.value)}
         />
