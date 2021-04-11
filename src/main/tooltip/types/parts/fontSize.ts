@@ -14,9 +14,7 @@ export default function fontSize(node, parent, settings) {
     });
     textNode.x += 20;
     textNode.y += 1.5;
-    textNode.characters += `${Math.floor(node.fontSize.toString())}${
-      settings.unit
-    }`;
+    textNode.characters += `${Math.floor(node.fontSize.toString())}`;
 
     figma.group([iconFrame, textNode], parent);
   }

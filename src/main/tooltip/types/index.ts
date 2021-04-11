@@ -2,11 +2,11 @@ import { SetTooltipOptions, TooltipSettings } from '../../../shared/interfaces';
 
 import cornerRadius from './parts/cornerRadius';
 import fills from './parts/fills';
-import fontFamily from './parts/fontFamily';
+import fontName from './parts/font-name';
 import fontSize from './parts/fontSize';
 import height from './parts/height';
 import opacity from './parts/opacity';
-import pointCount from './parts/pointCount';
+import pointCount from './parts/point-count';
 import strokes from './parts/strokes';
 import width from './parts/width';
 
@@ -37,7 +37,7 @@ export default async function addNode(
     opacity(node, parent, settings);
   }
   if (flags.fontName) {
-    await fontFamily(node, parent, settings);
+    await fontName(node, parent, settings);
   }
   if (flags.fontSize) {
     fontSize(node, parent, settings);

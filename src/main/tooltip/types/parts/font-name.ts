@@ -1,7 +1,7 @@
 import { getFontNameData } from '../../../../shared/helpers';
 import { createTooltipTextNode, solidColor } from '../../../helper';
 
-export default async function fontFamily(node, parent, { fontSize = 0 }) {
+export default async function fontName(node, parent, { fontSize = 0 }) {
   const fontFamilyName = node?.fontName;
 
   if (fontFamilyName) {
@@ -17,7 +17,7 @@ export default async function fontFamily(node, parent, { fontSize = 0 }) {
 
     const textNode = createTooltipTextNode({
       fontColor: '#999999',
-      fontSize,
+      fontSize: 10,
     });
 
     textNode.x += 20;
