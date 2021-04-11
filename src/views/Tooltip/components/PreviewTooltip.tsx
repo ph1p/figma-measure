@@ -22,20 +22,15 @@ export const PreviewTooltip: FunctionComponent = observer(() => {
 
   return (
     <Tooltip>
-      {store.tooltip.fontStyle && (
-        <div>
-          <div className="icon">
-            <FontStyleIcon />
-          </div>
-          <span>Medium</span>
-        </div>
-      )}
-      {store.tooltip.fontFamily && (
+      {store.tooltip.fontName && (
         <div>
           <div className="icon">
             <FontFamilyIcon />
           </div>
-          <span>Inter</span>
+          <FontFamily>
+            <span>Inter</span>
+            <p>Medium</p>
+          </FontFamily>
         </div>
       )}
       {store.tooltip.fontSize && (
@@ -105,6 +100,14 @@ export const PreviewTooltip: FunctionComponent = observer(() => {
     </Tooltip>
   );
 });
+
+const FontFamily = styled.div`
+  p {
+    color: #999;
+    font-size: 10px;
+    margin: 0;
+  }
+`;
 
 const Tooltip = styled.div`
   padding: 12px;

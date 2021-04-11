@@ -1,4 +1,4 @@
-export const solidColor = (r = 255, g = 0, b = 0) => ({
+export const solidColor = (r = 255, g = 0, b = 0): Paint => ({
   type: 'SOLID',
   color: {
     r: r / 255,

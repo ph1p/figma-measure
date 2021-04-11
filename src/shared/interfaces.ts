@@ -10,6 +10,8 @@ export interface SetTooltipOptions {
   flags: TooltipSettings;
   unit: string;
   offset: number;
+  precision: number;
+  multiplicator: number;
   position: TooltipPositions;
   vertical?: TooltipPositions;
   horizontal?: TooltipPositions;
@@ -30,6 +32,8 @@ export interface LineParameterTypes {
   strokeCap: string;
   strokeOffset: number;
   unit: string;
+  precision: number;
+  multiplicator: number;
   color: string;
   labels: boolean;
   labelsOutside: boolean;
@@ -37,8 +41,7 @@ export interface LineParameterTypes {
 export interface TooltipSettings {
   width: boolean;
   height: boolean;
-  fontFamily: boolean;
-  fontStyle: boolean;
+  fontName: boolean;
   fontSize: boolean;
   color: boolean;
   opacity: boolean;
@@ -109,6 +112,8 @@ export interface Store {
   fill: FillTypes;
   opacity: number;
   unit: string;
+  multiplicator: number;
+  precision: number;
   strokeCap: StrokeCap | 'STANDARD';
   strokeOffset: number;
   surrounding: SurroundingSettings;

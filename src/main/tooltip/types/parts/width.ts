@@ -4,7 +4,7 @@ import { createTooltipTextNode } from '../../../helper';
 export default function width(
   node: SceneNode,
   parent: SceneNode,
-  { fontColor = '', fontSize = 0, unit = '' }
+  { fontColor = '', fontSize = 0, unit = '', precision, multiplicator }
 ): void {
   const iconNode = figma.createNodeFromSvg(
     `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="https://www.w3.org/2000/svg">
@@ -17,7 +17,12 @@ export default function width(
   });
   textNode.x += 20;
   textNode.y += 1.5;
-  textNode.characters += transformPixelToUnit(node.width, unit);
+  textNode.characters += transformPixelToUnit(
+    node.width,
+    unit,
+    precision,
+    multiplicator
+  );
 
   figma.group([iconNode, textNode], parent);
 }

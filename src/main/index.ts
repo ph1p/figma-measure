@@ -15,13 +15,18 @@ import {
 } from '../shared/interfaces';
 
 import { hexToRgb, solidColor } from './helper';
-import { drawSpacing, getSpacing, setSpacing } from './spacing';
+import {
+  distanceBetweenTwoPoints,
+  drawSpacing,
+  getSpacing,
+  setSpacing,
+} from './spacing';
 import { getState } from './store';
 import { setTooltip } from './tooltip';
 
 figma.showUI(__html__, {
-  width: 285,
-  height: 526,
+  width: 250,
+  height: 429,
   visible: figma.command !== 'visibility',
 });
 
@@ -190,6 +195,8 @@ function createLine(options) {
     strokeCap = 'NONE',
     strokeOffset = 3,
     unit = '',
+    precision,
+    multiplicator,
     color = '',
     labels = true,
     labelsOutside = false,
@@ -218,7 +225,12 @@ function createLine(options) {
 
     if (labels) {
       labelFrame = createLabel({
-        text: transformPixelToUnit(heightOrWidth, unit),
+        text: transformPixelToUnit(
+          heightOrWidth,
+          unit,
+          precision,
+          multiplicator
+        ),
         color: mainColor,
       });
     }
@@ -562,7 +574,7 @@ figma.on('selectionchange', () => {
           };
 
           previousSelection = currentSelectionAsJSONString();
-          setMeasurements(store);
+          await setMeasurements(store);
         }
       }, 1000);
     }
@@ -598,11 +610,11 @@ EventEmitter.on('remove all measurements', () =>
   removeAllMeasurementConnections()
 );
 
-EventEmitter.on('set measurements', (store: Partial<Store>) =>
+EventEmitter.on('set measurements', async (store: Partial<Store>) =>
   setMeasurements(store)
 );
 
-const setMeasurements = (store?: Partial<Store>) => {
+const setMeasurements = async (store?: Partial<Store>) => {
   cleanOrphanNodes();
 
   let data: PluginNodeData | any = {};
@@ -611,6 +623,8 @@ const setMeasurements = (store?: Partial<Store>) => {
     strokeCap: store.strokeCap,
     strokeOffset: store.strokeOffset,
     unit: store.unit,
+    precision: store.precision,
+    multiplicator: store.multiplicator,
     color: store.color,
     labels: store.labels,
     labelsOutside: store.labelsOutside,
@@ -701,6 +715,8 @@ const setMeasurements = (store?: Partial<Store>) => {
               labels: settings.labels,
               labelsOutside: settings.labelsOutside,
               unit: settings.unit,
+              precision: settings.precision,
+              multiplicator: settings.multiplicator,
               strokeOffset: settings.strokeOffset,
             }
           );
@@ -726,12 +742,14 @@ const setMeasurements = (store?: Partial<Store>) => {
     }
 
     if (surrounding.tooltip) {
-      const tooltip = setTooltip(
+      const tooltip = await setTooltip(
         {
           flags: store.tooltip,
           offset: store.tooltipOffset,
           position: surrounding.tooltip || TooltipPositions.NONE,
           unit: settings.unit,
+          precision: settings.precision,
+          multiplicator: settings.multiplicator,
         },
         node
       );
@@ -907,6 +925,95 @@ function createFill(
     figma.notify('Slices are currently not supported.');
   }
 }
+
+EventEmitter.on('outer', ({ direction, depth, unit }) => {
+  const node = figma.currentPage.selection[1] as SceneNode;
+  const parent = figma.currentPage.selection[0] as SceneNode;
+
+  const line = figma.createVector();
+
+  const group = figma.group([line], figma.currentPage);
+  group.name = 'out-group';
+
+  group.relativeTransform = node.absoluteTransform;
+
+  let distance = 0;
+
+  line.name = 'out';
+  line.x = node.absoluteTransform[0][2];
+  line.y = node.absoluteTransform[1][2];
+
+  switch (direction) {
+    case 'LEFT':
+      distance =
+        distanceBetweenTwoPoints(line.x, line.y, parent.x, line.y) * -1;
+      break;
+    case 'RIGHT':
+      line.x += node.width;
+
+      distance = distanceBetweenTwoPoints(
+        line.x,
+        line.y,
+        parent.x + parent.width,
+        line.y
+      );
+      break;
+    case 'TOP':
+      distance =
+        distanceBetweenTwoPoints(line.x, line.y, line.x, parent.y) * -1;
+
+      break;
+    case 'BOTTOM':
+      line.y += node.height;
+
+      distance = distanceBetweenTwoPoints(
+        line.x,
+        line.y,
+        line.x,
+        parent.y + parent.height
+      );
+      break;
+  }
+
+  if (direction === 'LEFT' || direction === 'RIGHT') {
+    line.y += node.height / 2;
+  } else {
+    line.x += node.width / 2;
+  }
+
+  line.vectorPaths = [
+    {
+      windingRule: 'NONE',
+      // M x y L x y Z is close
+      data:
+        direction === 'LEFT' || direction === 'RIGHT'
+          ? `M 0 0 L ${distance} 0 Z`
+          : `M 0 0 L 0 ${distance} Z`,
+    },
+  ];
+
+  line.strokes = [].concat(getColor('#f00000'));
+
+  //LABEL
+  const widthOrHeight = Math.abs(distance);
+  const labelFrame = createLabel({
+    text: transformPixelToUnit(widthOrHeight, unit),
+    color: getColor('#f00000'),
+  });
+
+  labelFrame.relativeTransform = group.absoluteTransform;
+  group.appendChild(labelFrame);
+
+  if (direction === 'LEFT' || direction === 'RIGHT') {
+    labelFrame.y -= labelFrame.height / 2;
+    labelFrame.x += widthOrHeight / 2 - labelFrame.width / 2;
+  } else {
+    labelFrame.y += widthOrHeight / 2 - labelFrame.height / 2;
+    labelFrame.x -= labelFrame.width / 2;
+  }
+
+  // line.resize(20, 1);
+});
 
 (async function main() {
   await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });

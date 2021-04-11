@@ -18,6 +18,7 @@ import {
   theme,
 } from './style';
 import Home from './views/Home';
+import Settings from './views/Settings';
 import Tooltip from './views/Tooltip';
 
 import './ui.css';
@@ -33,10 +34,12 @@ const App: FunctionComponent = observer(() => {
     EventEmitter.ask('get visibility').then((visibility: boolean) => {
       store.setVisibility(visibility);
     });
+
     // check selection
     EventEmitter.ask('current selection').then((data: string[]) =>
       store.setSelection(data)
     );
+
     EventEmitter.on('selection', (data) => store.setSelection(data));
 
     return () => EventEmitter.remove('selection');
@@ -62,6 +65,9 @@ const App: FunctionComponent = observer(() => {
             <Route path="/tooltip">
               <Tooltip />
             </Route>
+            <Route path="/settings">
+              <Settings />
+            </Route>
           </Switch>
         </div>
         <ViewSwitch menu={menu}>
@@ -80,6 +86,14 @@ const App: FunctionComponent = observer(() => {
             }}
           >
             Tooltip
+          </div>
+          <div
+            onClick={() => {
+              setMenu(3);
+              history.push('/settings');
+            }}
+          >
+            Settings
           </div>
         </ViewSwitch>
       </Main>

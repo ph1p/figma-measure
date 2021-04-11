@@ -1,9 +1,7 @@
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useContext, useMemo } from 'react';
-import styled, { ThemeContext } from 'styled-components';
+import React, { FunctionComponent, useEffect, useMemo } from 'react';
+import styled from 'styled-components';
 
-import { Colors } from '../../components/ColorPicker';
-import { Toggle } from '../../components/Toggle';
 import { EyeClosedIcon, EyeIcon } from '../../components/icons/EyeIcons';
 import { RefreshIcon } from '../../components/icons/RefreshIcon';
 import { SpacingIcon } from '../../components/icons/SpacingIcon';
@@ -16,12 +14,18 @@ import LineChooser from './components/LineChooser';
 import Viewer from './components/Viewer';
 
 const Home: FunctionComponent = observer(() => {
-  const theme = useContext(ThemeContext);
   const store = useStore();
 
   const hasSpacing = useMemo(() => {
     return store.selection.some((selection) => selection.hasSpacing);
   }, [store.selection]);
+
+  useEffect(() => {
+    EventEmitter.emit('resize', {
+      width: 250,
+      height: 429,
+    });
+  }, []);
 
   const refreshSelection = () =>
     EventEmitter.ask('current selection').then((data: string[]) =>
@@ -95,53 +99,49 @@ const Home: FunctionComponent = observer(() => {
       <LineChooser />
       <CenterChooser />
 
-      <InputContainer>
-        <label htmlFor="color">Color</label>
-        <Colors
-          colors={theme.colors}
-          onChange={(color) => store.setColor(color)}
-          color={store.color}
-        />
-      </InputContainer>
-
-      <LabelSettings>
-        <Toggle
-          inline
-          checked={store.labelsOutside}
-          label="Outside"
-          onChange={(e) => store.setLabelsOutside(e.currentTarget.checked)}
-        />
-        <Toggle
-          inline
-          checked={store.labels}
-          label="Numbers"
-          onChange={(e) => store.setLabels(e.currentTarget.checked)}
-        />
-        <div className="input" style={{ width: 55 }}>
-          <input
-            type="text"
-            value={store.unit}
-            onChange={(e) => store.setUnit(e.currentTarget.value)}
-          />
-        </div>
-      </LabelSettings>
+      {/* <button
+        onClick={() =>
+          EventEmitter.emit('outer', {
+            direction: 'LEFT',
+            depth: 1,
+          })
+        }
+      >
+        left
+      </button>
+      <button
+        onClick={() =>
+          EventEmitter.emit('outer', {
+            direction: 'RIGHT',
+            depth: 1,
+          })
+        }
+      >
+        right
+      </button>
+      <button
+        onClick={() =>
+          EventEmitter.emit('outer', {
+            direction: 'TOP',
+            depth: 1,
+          })
+        }
+      >
+        top
+      </button>
+      <button
+        onClick={() =>
+          EventEmitter.emit('outer', {
+            direction: 'BOTTOM',
+            depth: 1,
+          })
+        }
+      >
+        bottom
+      </button> */}
     </>
   );
 });
-
-const InputContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 14px;
-  align-items: center;
-  label {
-    font-weight: bold;
-  }
-`;
-
-const LabelSettings = styled(InputContainer)`
-  border-top: 1px solid #eee;
-`;
 
 const ViewerOverlay = styled.div`
   position: absolute;

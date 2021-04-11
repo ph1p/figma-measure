@@ -1,14 +1,22 @@
 import { observer } from 'mobx-react';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { Toggle } from '../../components/Toggle';
+import EventEmitter from '../../shared/EventEmitter';
 import { useStore } from '../../store';
 
 import { PreviewTooltip } from './components/PreviewTooltip';
 
 const Tooltip: FunctionComponent = observer(() => {
   const store = useStore();
+
+  useEffect(() => {
+    EventEmitter.emit('resize', {
+      width: 250,
+      height: 526,
+    });
+  }, []);
 
   return (
     <Wrapper>
@@ -45,14 +53,9 @@ const Tooltip: FunctionComponent = observer(() => {
       </TooltipDistance>
       <ToggleInputs>
         <Toggle
-          checked={store.tooltip.fontStyle}
-          label="Font-Style"
-          onChange={() => store.toggleTooltipSetting('fontStyle')}
-        />
-        <Toggle
-          checked={store.tooltip.fontFamily}
-          label="Font-Family"
-          onChange={() => store.toggleTooltipSetting('fontFamily')}
+          checked={store.tooltip.fontName}
+          label="Font"
+          onChange={() => store.toggleTooltipSetting('fontName')}
         />
         <Toggle
           checked={store.tooltip.fontSize}

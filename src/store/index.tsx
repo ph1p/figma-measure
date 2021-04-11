@@ -46,6 +46,8 @@ class RootStore {
   strokeOffset = 10;
 
   unit = 'px';
+  multiplicator = 1;
+  precision = 2;
 
   @ignore
   surrounding: SurroundingSettings = DEFAULT_SURROUNDING_FLAGS;
@@ -56,8 +58,7 @@ class RootStore {
     points: true,
     width: true,
     height: true,
-    fontFamily: true,
-    fontStyle: true,
+    fontName: true,
     fontSize: true,
     color: true,
     opacity: true,
@@ -111,6 +112,24 @@ class RootStore {
   setUnit(unit: string) {
     this.unit = unit;
     this.sendMeasurements();
+  }
+
+  setMultiplicator(multiplicator: number) {
+    this.multiplicator = multiplicator;
+
+    if (!isNaN(multiplicator) || typeof multiplicator === 'undefined') {
+      this.sendMeasurements();
+    }
+  }
+
+  setPrecesion(precision: number) {
+    this.precision = precision;
+    if (
+      (!isNaN(precision) && precision >= 0) ||
+      typeof precision === 'undefined'
+    ) {
+      this.sendMeasurements();
+    }
   }
 
   setFill(fill) {
@@ -175,6 +194,8 @@ class RootStore {
           tooltipOffset: this.tooltipOffset,
           tooltip: toJS(this.tooltip),
           unit: this.unit,
+          precision: this.precision,
+          multiplicator: this.multiplicator,
         })
       );
     }

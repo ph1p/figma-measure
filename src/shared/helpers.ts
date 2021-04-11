@@ -5,7 +5,25 @@ const toFixed = (number: string | number, decimalPlaces: number) => {
     : number.toFixed(decimalPlaces).replace(/\.?0+$/, '');
 };
 
-export function transformPixelToUnit(pixel: number, unit: string): string {
+export function transformPixelToUnit(
+  pixel: number,
+  unit: string,
+  precision?: number,
+  multiplicator?: number
+): string {
+  if (typeof precision === 'undefined') {
+    precision = 2;
+  }
+
+  if (!multiplicator) {
+    multiplicator = 1;
+  }
+
+  if (multiplicator !== 1) {
+    console.log(pixel * multiplicator, precision);
+    return toFixed(pixel * multiplicator, precision) + unit;
+  }
+
   const DPI_TO_PIXEL = {
     72: 28.35,
     100: 39,
@@ -18,29 +36,29 @@ export function transformPixelToUnit(pixel: number, unit: string): string {
   const unitWithoutSpaces = unit.replace(/\s/g, '');
 
   if (isNaN(pixel)) {
-    pixel = parseInt(pixel.toString(), 10);
+    pixel = parseFloat(pixel.toString());
   }
 
-  result = toFixed(pixel, 2);
+  result = toFixed(pixel, precision);
 
   // cm
   if (unitWithoutSpaces === 'cm') {
-    result = toFixed(pixel / DPI_TO_PIXEL[72], 2);
+    result = toFixed(pixel / DPI_TO_PIXEL[72], precision);
   }
 
   // mm
   if (unitWithoutSpaces === 'mm') {
-    result = Math.floor((pixel / DPI_TO_PIXEL[72]) * 100);
+    result = toFixed((pixel / DPI_TO_PIXEL[72]) * 100, precision);
   }
 
   // dp
   if (unitWithoutSpaces === 'dp' || unitWithoutSpaces === 'dip') {
-    result = Math.floor(pixel / (DPI_TO_PIXEL[72] / 160));
+    result = toFixed(pixel / (DPI_TO_PIXEL[72] / 160), precision);
   }
 
   // pt
   if (unitWithoutSpaces === 'pt') {
-    result = toFixed((3 / 4) * pixel, 2);
+    result = toFixed((3 / 4) * pixel, precision);
   }
 
   // inch
@@ -49,8 +67,44 @@ export function transformPixelToUnit(pixel: number, unit: string): string {
     unitWithoutSpaces === 'in' ||
     unitWithoutSpaces === '"'
   ) {
-    result = toFixed(pixel / DPI_TO_PIXEL[72] / INCH_IN_CM, 2);
+    result = toFixed(pixel / DPI_TO_PIXEL[72] / INCH_IN_CM, precision);
   }
 
   return result + unit;
 }
+
+export const getFontNameData = async (
+  textNode: TextNode
+): Promise<(FontName & { style: [] })[]> => {
+  const fontNameData = [];
+
+  const loadFontAndPush = async (font: FontName) => {
+    if (
+      fontNameData.some(
+        (f) => f.family === font.family && !f.style.includes(font.style)
+      )
+    ) {
+      fontNameData.find((f) => f.family === font.family).style.push(font.style);
+    } else {
+      if (!fontNameData.some((f) => f.family === font.family)) {
+        fontNameData.push({
+          ...font,
+          style: [font.style],
+        });
+      }
+    }
+  };
+
+  if (textNode.fontName === figma.mixed) {
+    const len = textNode.characters.length;
+    for (let i = 0; i < len; i++) {
+      const font = textNode.getRangeFontName(i, i + 1) as FontName;
+
+      await loadFontAndPush(font);
+    }
+  } else {
+    await loadFontAndPush(textNode.fontName);
+  }
+
+  return fontNameData;
+};

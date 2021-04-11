@@ -64,7 +64,7 @@ function getTooltipFrame(node): FrameNode {
   return tooltipFrame;
 }
 
-export function setTooltip(options: SetTooltipOptions, specificNode = null) {
+export async function setTooltip(options: SetTooltipOptions, specificNode = null) {
   const data = {
     vertical: undefined,
     horizontal: undefined,
@@ -127,7 +127,7 @@ export function setTooltip(options: SetTooltipOptions, specificNode = null) {
       case 'POLYGON':
       case 'RECTANGLE':
       case 'TEXT':
-        addNode(contentFrame, node, data);
+        await addNode(contentFrame, node, data);
         break;
       default:
         tooltipFrame.remove();

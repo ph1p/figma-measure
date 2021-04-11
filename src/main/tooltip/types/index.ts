@@ -4,7 +4,6 @@ import cornerRadius from './parts/cornerRadius';
 import fills from './parts/fills';
 import fontFamily from './parts/fontFamily';
 import fontSize from './parts/fontSize';
-import fontStyle from './parts/fontStyle';
 import height from './parts/height';
 import opacity from './parts/opacity';
 import pointCount from './parts/pointCount';
@@ -12,7 +11,7 @@ import strokes from './parts/strokes';
 import width from './parts/width';
 
 
-export default function addNode(
+export default async function addNode(
   parent: SceneNode,
   node: SceneNode,
   settings: SetTooltipOptions
@@ -37,11 +36,8 @@ export default function addNode(
   if (flags.opacity) {
     opacity(node, parent, settings);
   }
-  if (flags.fontFamily) {
-    fontFamily(node, parent, settings);
-  }
-  if (flags.fontStyle) {
-    fontStyle(node, parent, settings);
+  if (flags.fontName) {
+    await fontFamily(node, parent, settings);
   }
   if (flags.fontSize) {
     fontSize(node, parent, settings);

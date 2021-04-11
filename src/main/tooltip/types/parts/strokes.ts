@@ -6,7 +6,7 @@ import { createColorNode } from './fills';
 export default function strokes(
   node,
   parent,
-  { fontColor = '', fontSize = 0, unit = '' }
+  { fontColor = '', fontSize = 0, unit = '', precision, multiplicator }
 ) {
   // Stroke
   if (node?.strokes?.length) {
@@ -22,7 +22,12 @@ export default function strokes(
     textNode.x += 20;
     textNode.y += 1.5;
 
-    textNode.characters += transformPixelToUnit(node.strokeWeight, unit);
+    textNode.characters += transformPixelToUnit(
+      node.strokeWeight,
+      unit,
+      precision,
+      multiplicator
+    );
 
     figma.group([iconNode, textNode], parent);
 

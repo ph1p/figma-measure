@@ -50,7 +50,7 @@ EventEmitter.on('draw spacing', (settings) => {
   }
 });
 
-const distanceBetweenTwoPoints = (x1, y1, x2, y2) =>
+export const distanceBetweenTwoPoints = (x1, y1, x2, y2) =>
   Math.floor(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)));
 
 const getShapeValues = (shape: SceneNode) => {
@@ -80,6 +80,8 @@ export const drawSpacing = (
     color = '',
     labels = true,
     unit = '',
+    precision,
+    multiplicator,
     labelsOutside = false,
     strokeOffset = 0,
   }
@@ -223,7 +225,9 @@ export const drawSpacing = (
         baseNode: line1,
         text: `${transformPixelToUnit(
           distanceBetweenTwoPoints(yellowX1, yellowY1, yellowX2, yellowY2),
-          unit
+          unit,
+          precision,
+          multiplicator
         )}`,
         color: mainColor,
         isVertical: true,
@@ -342,7 +346,9 @@ export const drawSpacing = (
         baseNode: line4,
         text: transformPixelToUnit(
           distanceBetweenTwoPoints(blueX1, blueY1, blueX2, blueY2),
-          unit
+          unit,
+          precision,
+          multiplicator
         ),
         color: mainColor,
         isVertical: false,
