@@ -5,22 +5,48 @@ const toFixed = (number: string | number, decimalPlaces: number) => {
     : number.toFixed(decimalPlaces).replace(/\.?0+$/, '');
 };
 
+export const findAndReplaceNumberPattern = (value: string, num: number) => {
+  let somethingReplaced = false;
+  const regexWithoutCalc = /\((\$)(#*)\)/g;
+  const regexFull = /\(((\$)(#*)(\/|\*)(\d+\.?\d*))\)/g;
+
+  for (const [match, , decimalPlace] of Array.from(
+    value.matchAll(regexWithoutCalc)
+  )) {
+    somethingReplaced = true;
+    value = value.replace(
+      match,
+      toFixed(num, decimalPlace ? decimalPlace.length : 0)
+    );
+  }
+
+  for (const group of Array.from(value.matchAll(regexFull))) {
+    somethingReplaced = true;
+    const [match, , , _decimalPlace, operator, _modificator] = group;
+    let result;
+
+    const decimalPlace = _decimalPlace ? _decimalPlace.length : 0;
+    const modificator = parseFloat(_modificator);
+
+    if (operator === '/') {
+      result = toFixed(num / modificator, decimalPlace);
+    } else if (operator === '*') {
+      result = toFixed(num * modificator, decimalPlace);
+    }
+
+    value = value.replace(match, result);
+  }
+
+  return somethingReplaced ? value : transformPixelToUnit(num, 'px');
+};
+
 export function transformPixelToUnit(
   pixel: number,
   unit: string,
-  precision?: number,
-  multiplicator?: number
+  precision?: number
 ): string {
   if (typeof precision === 'undefined') {
     precision = 2;
-  }
-
-  if (!multiplicator) {
-    multiplicator = 1;
-  }
-
-  if (multiplicator !== 1) {
-    return toFixed(pixel * multiplicator, precision) + unit;
   }
 
   const DPI_TO_PIXEL = {

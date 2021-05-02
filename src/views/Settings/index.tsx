@@ -40,38 +40,11 @@ const Settings: FunctionComponent = observer(() => {
       </Group>
       <Group>
         <InputContainer>
-          <Toggle
-            checked={store.labels}
-            label="Disable auto unit"
-            onChange={(e) => store.setLabels(e.currentTarget.checked)}
-          />
-        </InputContainer>
-        <InputContainer>
           <Input
-            label="Measurement unit"
-            description='cm, mm, dp, pt, " or custom'
-            value={store.unit}
-            onChange={(e) => store.setUnit(e.currentTarget.value)}
-          />
-        </InputContainer>
-        <InputContainer>
-          <Input
-            label="Multiplicator"
-            placeholder="1"
-            description="if > 1, then no auto calculation"
-            type="number"
-            defaultValue={store.multiplicator}
-            onChange={(e) => store.setMultiplicator(+e.currentTarget.value)}
-          />
-        </InputContainer>
-        <InputContainer>
-          <Input
-            label="Precision"
-            placeholder="0"
-            description="e. g. 2 -> (xx.xx)"
-            type="number"
-            defaultValue={store.precision}
-            onChange={(e) => store.setPrecesion(+e.currentTarget.value)}
+            label="Pattern"
+            description="($##/2.5) unit"
+            value={store.labelPattern}
+            onChange={(e) => store.setLabelPattern(e.currentTarget.value)}
           />
         </InputContainer>
       </Group>

@@ -83,7 +83,6 @@ export const drawSpacing = (
     precision,
     multiplicator,
     labelsOutside = false,
-    // strokeOffset = 0,
   }
 ) => {
   const LABEL_OUTSIDE_MARGIN = 4;

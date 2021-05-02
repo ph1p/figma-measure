@@ -8,7 +8,6 @@ import {
   CornerRadiusIcon,
   FontFamilyIcon,
   FontSizeIcon,
-  FontStyleIcon,
   HeightIcon,
   OpacityIcon,
   PointsIcon,
@@ -38,7 +37,7 @@ export const PreviewTooltip: FunctionComponent = observer(() => {
           <div className="icon">
             <FontSizeIcon />
           </div>
-          <span>12{store.unit}</span>
+          <span>12</span>
         </div>
       )}
       {store.tooltip.width && (
@@ -46,7 +45,7 @@ export const PreviewTooltip: FunctionComponent = observer(() => {
           <div className="icon">
             <WidthIcon />
           </div>
-          <span>200{store.unit}</span>
+          <span>200</span>
         </div>
       )}
       {store.tooltip.height && (
@@ -54,7 +53,7 @@ export const PreviewTooltip: FunctionComponent = observer(() => {
           <div className="icon">
             <HeightIcon />
           </div>
-          <span>100{store.unit}</span>
+          <span>100</span>
         </div>
       )}
       {store.tooltip.color && (
@@ -78,7 +77,7 @@ export const PreviewTooltip: FunctionComponent = observer(() => {
           <div className="icon">
             <StrokeIcon />
           </div>
-          <span>5{store.unit}</span>
+          <span>5</span>
         </div>
       )}
       {store.tooltip.cornerRadius && (
@@ -86,7 +85,7 @@ export const PreviewTooltip: FunctionComponent = observer(() => {
           <div className="icon">
             <CornerRadiusIcon />
           </div>
-          <span>7{store.unit}</span>
+          <span>7</span>
         </div>
       )}
       {store.tooltip.points && (

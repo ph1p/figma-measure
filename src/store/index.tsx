@@ -45,9 +45,7 @@ class RootStore {
   strokeCap: StrokeCap | 'STANDARD' = 'STANDARD';
   strokeOffset = 10;
 
-  unit = 'px';
-  multiplicator = 1;
-  precision = 2;
+  labelPattern = '($)px';
 
   @ignore
   surrounding: SurroundingSettings = DEFAULT_SURROUNDING_FLAGS;
@@ -109,27 +107,9 @@ class RootStore {
     };
   }
 
-  setUnit(unit: string) {
-    this.unit = unit;
+  setLabelPattern(labelPattern: string) {
+    this.labelPattern = labelPattern;
     this.sendMeasurements();
-  }
-
-  setMultiplicator(multiplicator: number) {
-    this.multiplicator = multiplicator;
-
-    if (!isNaN(multiplicator) || typeof multiplicator === 'undefined') {
-      this.sendMeasurements();
-    }
-  }
-
-  setPrecesion(precision: number) {
-    this.precision = precision;
-    if (
-      (!isNaN(precision) && precision >= 0) ||
-      typeof precision === 'undefined'
-    ) {
-      this.sendMeasurements();
-    }
   }
 
   setFill(fill) {
@@ -193,9 +173,7 @@ class RootStore {
           surrounding: toJS(this.surrounding),
           tooltipOffset: this.tooltipOffset,
           tooltip: toJS(this.tooltip),
-          unit: this.unit,
-          precision: this.precision,
-          multiplicator: this.multiplicator,
+          labelPattern: this.labelPattern,
         })
       );
     }

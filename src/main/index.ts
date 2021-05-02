@@ -318,10 +318,13 @@ function createLine(options) {
         if (txtVerticalAlign === Alignments.CENTER) {
           if (labelsOutside) {
             if (lineHorizontalAlign === Alignments.TOP) {
-              labelFrame.y = (labelFrame.height / 2 + LABEL_OUTSIDE_MARGIN) * -1;
+              labelFrame.y =
+                (labelFrame.height / 2 + LABEL_OUTSIDE_MARGIN) * -1;
             } else if (lineHorizontalAlign === Alignments.BOTTOM) {
               labelFrame.y =
-                labelFrame.height / 2 + LABEL_OUTSIDE_MARGIN + line.strokeWeight;
+                labelFrame.height / 2 +
+                LABEL_OUTSIDE_MARGIN +
+                line.strokeWeight;
             } else {
               labelFrame.y = 0;
             }
@@ -571,7 +574,6 @@ figma.on('selectionchange', () => {
             strokeOffset: state.strokeOffset,
             tooltipOffset: state.tooltipOffset,
             tooltip: state.tooltip,
-            unit: state.unit,
           };
 
           previousSelection = currentSelectionAsJSONString();
@@ -618,12 +620,11 @@ EventEmitter.on('set measurements', async (store: Partial<Store>) =>
 const setMeasurements = async (store?: Partial<Store>) => {
   cleanOrphanNodes();
 
-  let data: PluginNodeData | any = {};
+  let data: PluginNodeData | unknown = {};
 
   const settings = {
     strokeCap: store.strokeCap,
     strokeOffset: store.strokeOffset,
-    unit: store.unit,
     precision: store.precision,
     multiplicator: store.multiplicator,
     color: store.color,
@@ -715,10 +716,9 @@ const setMeasurements = async (store?: Partial<Store>) => {
               color: settings.color,
               labels: settings.labels,
               labelsOutside: settings.labelsOutside,
-              unit: settings.unit,
               precision: settings.precision,
               multiplicator: settings.multiplicator,
-              strokeOffset: settings.strokeOffset,
+              // strokeOffset: settings.strokeOffset,
             }
           );
         });
@@ -748,7 +748,6 @@ const setMeasurements = async (store?: Partial<Store>) => {
           flags: store.tooltip,
           offset: store.tooltipOffset,
           position: surrounding.tooltip || TooltipPositions.NONE,
-          unit: settings.unit,
           precision: settings.precision,
           multiplicator: settings.multiplicator,
         },
@@ -927,7 +926,7 @@ function createFill(
   }
 }
 
-EventEmitter.on('outer', ({ direction, depth, unit }) => {
+EventEmitter.on('outer', ({ direction, unit }) => {
   const node = figma.currentPage.selection[1] as SceneNode;
   const parent = figma.currentPage.selection[0] as SceneNode;
 

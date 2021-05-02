@@ -8,7 +8,6 @@ export enum Alignments {
 
 export interface SetTooltipOptions {
   flags: TooltipSettings;
-  unit: string;
   offset: number;
   precision: number;
   multiplicator: number;
@@ -31,7 +30,6 @@ export interface LineParameterTypes {
   lineHorizontalAlign: Alignments;
   strokeCap: string;
   strokeOffset: number;
-  unit: string;
   precision: number;
   multiplicator: number;
   color: string;
@@ -101,7 +99,6 @@ export interface MainMeasurements {
   surrounding: SurroundingSettings;
   tooltipOffset: number;
   tooltip: TooltipSettings;
-  unit: string;
 }
 
 export interface Store {
@@ -111,7 +108,7 @@ export interface Store {
   selection: unknown[];
   fill: FillTypes;
   opacity: number;
-  unit: string;
+  labelPattern: string;
   multiplicator: number;
   precision: number;
   strokeCap: StrokeCap | 'STANDARD';

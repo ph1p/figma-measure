@@ -1,10 +1,9 @@
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useEffect, useMemo } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { EyeClosedIcon, EyeIcon } from '../../components/icons/EyeIcons';
 import { RefreshIcon } from '../../components/icons/RefreshIcon';
-import { SpacingIcon } from '../../components/icons/SpacingIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import EventEmitter from '../../shared/EventEmitter';
 import { useStore } from '../../store';
@@ -16,40 +15,12 @@ import Viewer from './components/Viewer';
 const Home: FunctionComponent = observer(() => {
   const store = useStore();
 
-  const hasSpacing = useMemo(
-    () => store.selection.some((selection) => selection.hasSpacing),
-    [store.selection]
-  );
-
   useEffect(() => {
     EventEmitter.emit('resize', {
       width: 250,
-      height: 429,
+      height: 489,
     });
   }, []);
-
-  const refreshSelection = () =>
-    EventEmitter.ask('current selection').then((data: string[]) =>
-      store.setSelection(data)
-    );
-
-  const addSpacing = () => {
-    EventEmitter.emit('draw spacing', {
-      color: store.color,
-      labels: store.labels,
-      unit: store.unit,
-      strokeOffset: store.strokeOffset,
-      labelsOutside: store.labelsOutside,
-    });
-    refreshSelection();
-  };
-
-  const removeSpacing = () => {
-    if (hasSpacing) {
-      EventEmitter.emit('remove spacing');
-      refreshSelection();
-    }
-  };
 
   const removeAllMeasurements = () => {
     if (confirm('Do you really want to remove all measurements?')) {
@@ -60,7 +31,7 @@ const Home: FunctionComponent = observer(() => {
   return (
     <>
       <ViewerContainer>
-        {store.selection.length === 0 && (
+        {/* {store.selection.length === 0 && (
           <ViewerOverlay>
             <span>
               Select a Layer
@@ -68,7 +39,7 @@ const Home: FunctionComponent = observer(() => {
               to get started
             </span>
           </ViewerOverlay>
-        )}
+        )} */}
         <Viewer />
 
         <Visibility onClick={() => store.toggleVisibility()}>
@@ -85,16 +56,6 @@ const Home: FunctionComponent = observer(() => {
         <Trash onClick={removeAllMeasurements}>
           <TrashIcon />
         </Trash>
-
-        {hasSpacing && (
-          <RemoveSpacing onClick={removeSpacing}>
-            <SpacingIcon remove />
-          </RemoveSpacing>
-        )}
-
-        <Spacing active={store.selection.length === 2} onClick={addSpacing}>
-          <SpacingIcon />
-        </Spacing>
       </ViewerContainer>
 
       <LineChooser />
@@ -207,7 +168,7 @@ const Refresh = styled.div<{ active?: boolean }>`
 const Trash = styled(Refresh)`
   top: initial;
   left: 12px;
-  bottom: 12px;
+  top: 12px;
   opacity: 1;
   z-index: 10;
   svg {
@@ -216,7 +177,7 @@ const Trash = styled(Refresh)`
 `;
 
 const Visibility = styled(Refresh)`
-  left: 12px;
+  left: 48px;
   top: 12px;
   z-index: 10;
   opacity: 1;
@@ -224,7 +185,7 @@ const Visibility = styled(Refresh)`
 
 const ViewerContainer = styled.div`
   position: relative;
-  height: 271px;
+  height: 310px;
   display: flex;
   justify-content: center;
   align-items: center;
