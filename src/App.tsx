@@ -1,3 +1,4 @@
+import { reaction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import * as ReactDOM from 'react-dom';
@@ -19,11 +20,9 @@ import {
   theme,
 } from './style';
 import Home from './views/Home';
-import Settings from './views/Settings';
 import Tooltip from './views/Tooltip';
 
 import './ui.css';
-import { reaction, toJS } from 'mobx';
 
 const App: FunctionComponent = observer(() => {
   const store = useStore();
@@ -94,9 +93,6 @@ const App: FunctionComponent = observer(() => {
             <Route path="/tooltip">
               <Tooltip />
             </Route>
-            <Route path="/settings">
-              <Settings />
-            </Route>
           </Switch>
         </div>
         <ViewSwitch menu={menu}>
@@ -115,14 +111,6 @@ const App: FunctionComponent = observer(() => {
             }}
           >
             Tooltip
-          </div>
-          <div
-            onClick={() => {
-              setMenu(3);
-              history.push('/settings');
-            }}
-          >
-            Settings
           </div>
         </ViewSwitch>
       </Main>

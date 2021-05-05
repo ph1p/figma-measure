@@ -74,6 +74,7 @@ class RootStore {
   }
 
   setLabelsOutside(labelsOutside: boolean) {
+    this.labels = true;
     this.labelsOutside = labelsOutside;
     this.sendMeasurements();
   }

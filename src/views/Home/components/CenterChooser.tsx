@@ -153,11 +153,11 @@ const Icons = styled.div`
 `;
 
 const Container = styled.div`
-  padding: 14px;
+  padding: 12px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-width: 1px 0 0;
+  border-width: 1px 0 1px;
   border-color: #eee;
   border-style: solid;
   input {

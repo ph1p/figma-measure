@@ -121,7 +121,16 @@ const Viewer: FunctionComponent = observer(() => {
                 style={{ height: 26 }}
               />
 
-              <OverlayRect className="center">
+              <OverlayRect
+                className={`center ${store.fill}`}
+                active={store.surrounding.center}
+                onClick={() =>
+                  store.setSurrounding({
+                    ...store.surrounding,
+                    center: !store.surrounding.center,
+                  })
+                }
+              >
                 {/* <Line.Vertical
                   labels={store.labels}
                   labelsOutside={store.labelsOutside}
@@ -191,16 +200,16 @@ const Viewer: FunctionComponent = observer(() => {
   );
 });
 
-const OverlayRect = styled.div`
+const OverlayRect = styled.div.attrs<{ active?: boolean }>((props) => ({
+  className: props.active ? 'active' : '',
+}))<{ active?: boolean }>`
   width: 45px;
   height: 45px;
   border: 7px solid transparent;
   margin: 3px;
   border-radius: 10px;
   position: relative;
-  &:hover {
-    border-color: ${(props) => props.theme.hoverColor};
-  }
+  cursor: pointer;
   &::before {
     content: '';
     position: absolute;
@@ -210,6 +219,41 @@ const OverlayRect = styled.div`
     width: calc(100% + 6px);
     height: calc(100% + 6px);
     border-radius: 7px;
+  }
+  &.active {
+    &::before {
+      border-color: ${(props) => props.theme.color};
+    }
+  }
+  &.dashed {
+    &::before {
+      border-style: dashed;
+    }
+  }
+  &.fill {
+    background-color: ${(props) => props.theme.hoverColor};
+    &::before {
+      border-color: transparent;
+    }
+    &.active {
+      background-color: ${(props) => props.theme.color};
+      opacity: 0.5;
+    }
+  }
+  &.fill-stroke  {
+    background-color: ${(props) => props.theme.hoverColor};
+  }
+  &.fill-stroke,
+  &.fill  {
+    &:hover {
+      box-shadow: 0 0 0 3px ${(props) => props.theme.softColor};
+    }
+  }
+  &.dashed,
+  &.stroke {
+    &:hover {
+      border-color: ${(props) => props.theme.hoverColor};
+    }
   }
 `;
 
@@ -357,6 +401,11 @@ const Wrapper = styled.div`
   height: 229px;
   /* width: 145px;
   height: 145px; */
+  .custom-tooltip {
+    color: #fff !important;
+    background-color: #000 !important;
+    padding: 10px;
+  }
 `;
 
 export default Viewer;

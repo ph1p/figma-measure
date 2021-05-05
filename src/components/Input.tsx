@@ -5,6 +5,7 @@ export const Input: FunctionComponent<
   React.InputHTMLAttributes<HTMLInputElement> & {
     label?: string;
     description?: string;
+    width?: number;
   }
 > = (props) => {
   const id = useMemo<string>(
@@ -25,6 +26,7 @@ export const Input: FunctionComponent<
         id={id}
         type={props.type || 'text'}
         value={props.value}
+        style={{ width: props.width || 60 }}
         defaultValue={props.defaultValue}
         placeholder={props.placeholder}
         onChange={props.onChange}
