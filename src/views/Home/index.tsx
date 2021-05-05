@@ -34,9 +34,9 @@ const Home: FunctionComponent = observer(() => {
 
   const labelDotIndex = useMemo(() => {
     if (!store.labels) {
-      return 0;
-    } else if (store.labelsOutside) {
       return 1;
+    } else if (store.labelsOutside) {
+      return 3;
     }
     return 2;
   }, [store.labels, store.labelsOutside]);
@@ -46,10 +46,10 @@ const Home: FunctionComponent = observer(() => {
       case 2:
         store.setLabelsOutside(true);
         break;
-      case 0:
+      case 1:
         store.setLabelsOutside(false);
         break;
-      case 1:
+      case 3:
         store.setLabels(false);
         break;
     }
@@ -120,7 +120,7 @@ const Home: FunctionComponent = observer(() => {
               index={labelDotIndex}
               onClick={() => changeLabel()}
             >
-              <div className="label">{labelDotIndex}</div>
+              <div className="label"></div>
               <div className="dots">
                 <span></span>
                 <span></span>
@@ -129,7 +129,7 @@ const Home: FunctionComponent = observer(() => {
             </LabelControl>
           ))}
         >
-          Show/Hide
+          Change label alignment
         </Tooltip>
       </ViewerContainer>
 
@@ -312,6 +312,49 @@ const LabelControl = styled(Refresh)<{ index?: number }>`
   cursor: pointer;
   border-radius: 7px;
   opacity: 1;
+  .dots {
+    display: flex;
+    width: 85%;
+    justify-content: space-evenly;
+    margin: 0 auto;
+    span {
+      border-radius: 100%;
+      width: 3px;
+      height: 3px;
+      background-color: #e3e3e3;
+      display: inline-block;
+
+      &:nth-child(${(p) => p.index}) {
+        background-color: #000;
+      }
+    }
+  }
+  .label {
+    height: 18px;
+    position: relative;
+    z-index: 5;
+    &::before,
+    &::after {
+      background-color: ${(p) => p.theme.color};
+      content: '';
+      position: absolute;
+    }
+    &::before {
+      left: 4px;
+      width: 20px;
+      height: 1px;
+      top: 10px;
+    }
+    &::after {
+      content: '';
+      display: ${(p) => (p.index === 1 ? 'none' : 'block')};
+      position: absolute;
+      left: 10px;
+      width: 8px;
+      height: 3px;
+      top: ${(p) => (p.index === 3 ? 5 : 9)}px;
+    }
+  }
 `;
 
 const Trash = styled(Refresh)`
