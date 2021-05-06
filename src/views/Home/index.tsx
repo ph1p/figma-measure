@@ -183,7 +183,7 @@ const Home: FunctionComponent = observer(() => {
 });
 
 const UnitDescription = styled.div`
-  width: 220px;
+  width: 200px;
   strong {
     background-color: #fff;
     border-radius: 3px;

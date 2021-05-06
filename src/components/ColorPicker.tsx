@@ -108,7 +108,7 @@ const ColorItem = styled.div<{ color: string; active: boolean }>`
   position: relative;
   width: 22px;
   height: 22px;
-  border-radius: 8px;
+  border-radius: 3px;
   background-color: ${(props) => props.color};
   cursor: pointer;
   &::before {
@@ -133,7 +133,7 @@ const ColorItem = styled.div<{ color: string; active: boolean }>`
 const ColorsWrapper = styled.div`
   display: flex;
   ${ColorItem} {
-    margin-right: 3px;
+    margin-right: 11px;
     &:last-child {
       margin-right: 0;
     }
