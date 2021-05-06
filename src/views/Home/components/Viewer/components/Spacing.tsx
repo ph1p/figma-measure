@@ -24,6 +24,7 @@ export const Spacing: FunctionComponent = observer(() => {
       labels: store.labels,
       strokeOffset: store.strokeOffset,
       labelsOutside: store.labelsOutside,
+      labelPattern: store.labelPattern,
     });
     refreshSelection();
   };

@@ -9,8 +9,7 @@ export enum Alignments {
 export interface SetTooltipOptions {
   flags: TooltipSettings;
   offset: number;
-  precision: number;
-  multiplicator: number;
+  labelPattern: string;
   position: TooltipPositions;
   vertical?: TooltipPositions;
   horizontal?: TooltipPositions;
@@ -30,11 +29,10 @@ export interface LineParameterTypes {
   lineHorizontalAlign: Alignments;
   strokeCap: string;
   strokeOffset: number;
-  precision: number;
-  multiplicator: number;
   color: string;
   labels: boolean;
   labelsOutside: boolean;
+  labelPattern: string;
 }
 export interface TooltipSettings {
   width: boolean;
@@ -109,8 +107,6 @@ export interface Store {
   fill: FillTypes;
   opacity: number;
   labelPattern: string;
-  multiplicator: number;
-  precision: number;
   strokeCap: StrokeCap | 'STANDARD';
   strokeOffset: number;
   surrounding: SurroundingSettings;
@@ -124,4 +120,9 @@ export interface NodeSelection {
   type: NodeType;
   hasSpacing: boolean;
   data: unknown;
+}
+
+export interface ExchangeStoreValues
+  extends Omit<Store, 'selection' | 'visibility' | 'surrounding'> {
+  surrounding?: SurroundingSettings;
 }

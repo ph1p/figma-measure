@@ -2,6 +2,7 @@ import { observer } from 'mobx-react';
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
+import EventEmitter from '../../../../shared/EventEmitter';
 import { TooltipPositions } from '../../../../shared/interfaces';
 import { useStore } from '../../../../store';
 
@@ -113,12 +114,26 @@ const Viewer: FunctionComponent = observer(() => {
                 labelsOutside={store.labelsOutside}
                 className="top"
                 style={{ height: 26 }}
+                onClick={() =>
+                  EventEmitter.emit('outer', {
+                    direction: 'TOP',
+                    labelPattern: store.labelPattern,
+                    depth: 1,
+                  })
+                }
               />
               <Line.Vertical
                 labels={store.labels}
                 labelsOutside={store.labelsOutside}
                 className="bottom"
                 style={{ height: 26 }}
+                onClick={() =>
+                  EventEmitter.emit('outer', {
+                    direction: 'BOTTOM',
+                    labelPattern: store.labelPattern,
+                    depth: 1,
+                  })
+                }
               />
 
               <OverlayRect
@@ -148,12 +163,26 @@ const Viewer: FunctionComponent = observer(() => {
                 labelsOutside={store.labelsOutside}
                 className="left"
                 style={{ width: 26 }}
+                onClick={() =>
+                  EventEmitter.emit('outer', {
+                    direction: 'LEFT',
+                    labelPattern: store.labelPattern,
+                    depth: 1,
+                  })
+                }
               />
               <Line.Horizontal
                 labels={store.labels}
                 labelsOutside={store.labelsOutside}
                 className="right"
                 style={{ width: 26 }}
+                onClick={() =>
+                  EventEmitter.emit('outer', {
+                    direction: 'RIGHT',
+                    labelPattern: store.labelPattern,
+                    depth: 1,
+                  })
+                }
               />
             </OverlayAndPadding>
           </div>

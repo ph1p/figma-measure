@@ -1,5 +1,5 @@
 import EventEmitter from '../shared/EventEmitter';
-import { transformPixelToUnit } from '../shared/helpers';
+import { findAndReplaceNumberPattern } from '../shared/helpers';
 
 import { addToGlobalGroup, createLabel, getColor } from '.';
 
@@ -79,9 +79,7 @@ export const drawSpacing = (
   {
     color = '',
     labels = true,
-    unit = '',
-    precision,
-    multiplicator,
+    labelPattern = '',
     labelsOutside = false,
   }
 ) => {
@@ -224,12 +222,10 @@ export const drawSpacing = (
     if (labels) {
       const label = createLabel({
         baseNode: line1,
-        text: `${transformPixelToUnit(
-          distanceBetweenTwoPoints(yellowX1, yellowY1, yellowX2, yellowY2),
-          unit,
-          precision,
-          multiplicator
-        )}`,
+        text: findAndReplaceNumberPattern(
+          labelPattern,
+          distanceBetweenTwoPoints(yellowX1, yellowY1, yellowX2, yellowY2)
+        ),
         color: mainColor,
         isVertical: true,
       });
@@ -345,11 +341,9 @@ export const drawSpacing = (
     if (labels) {
       const label = createLabel({
         baseNode: line4,
-        text: transformPixelToUnit(
-          distanceBetweenTwoPoints(blueX1, blueY1, blueX2, blueY2),
-          unit,
-          precision,
-          multiplicator
+        text: findAndReplaceNumberPattern(
+          labelPattern,
+          distanceBetweenTwoPoints(blueX1, blueY1, blueX2, blueY2)
         ),
         color: mainColor,
         isVertical: false,

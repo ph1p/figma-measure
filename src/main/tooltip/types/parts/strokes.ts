@@ -1,4 +1,3 @@
-import { transformPixelToUnit } from '../../../../shared/helpers';
 import { createTooltipTextNode } from '../../../helper';
 
 import { createColorNode } from './fills';
@@ -6,7 +5,7 @@ import { createColorNode } from './fills';
 export default function strokes(
   node,
   parent,
-  { fontColor = '', fontSize = 0, unit = '', precision, multiplicator }
+  { fontColor = '', fontSize = 0 }
 ) {
   // Stroke
   if (node?.strokes?.length) {
@@ -22,12 +21,7 @@ export default function strokes(
     textNode.x += 20;
     textNode.y += 1.5;
 
-    textNode.characters += transformPixelToUnit(
-      node.strokeWeight,
-      unit,
-      precision,
-      multiplicator
-    );
+    textNode.characters += node.strokeWeight;
 
     figma.group([iconNode, textNode], parent);
 

@@ -5,22 +5,22 @@ const toFixed = (number: string | number, decimalPlaces: number) => {
     : number.toFixed(decimalPlaces).replace(/\.?0+$/, '');
 };
 
-export const findAndReplaceNumberPattern = (value: string, num: number) => {
+export const findAndReplaceNumberPattern = (pattern: string, num: number) => {
   let somethingReplaced = false;
   const regexWithoutCalc = /\((\$)(#*)\)/g;
   const regexFull = /\(((\$)(#*)(\/|\*)(\d+\.?\d*))\)/g;
 
   for (const [match, , decimalPlace] of Array.from(
-    value.matchAll(regexWithoutCalc)
+    pattern.matchAll(regexWithoutCalc)
   )) {
     somethingReplaced = true;
-    value = value.replace(
+    pattern = pattern.replace(
       match,
       toFixed(num, decimalPlace ? decimalPlace.length : 0)
     );
   }
 
-  for (const group of Array.from(value.matchAll(regexFull))) {
+  for (const group of Array.from(pattern.matchAll(regexFull))) {
     somethingReplaced = true;
     const [match, , , _decimalPlace, operator, _modificator] = group;
     let result;
@@ -34,10 +34,12 @@ export const findAndReplaceNumberPattern = (value: string, num: number) => {
       result = toFixed(num * modificator, decimalPlace);
     }
 
-    value = value.replace(match, result);
+    pattern = pattern.replace(match, result);
   }
 
-  return somethingReplaced ? value : transformPixelToUnit(num, 'px');
+  console.log(somethingReplaced);
+
+  return somethingReplaced ? pattern : transformPixelToUnit(num, pattern);
 };
 
 export function transformPixelToUnit(

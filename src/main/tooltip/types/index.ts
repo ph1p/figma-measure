@@ -10,7 +10,6 @@ import pointCount from './parts/point-count';
 import strokes from './parts/strokes';
 import width from './parts/width';
 
-
 export default async function addNode(
   parent: SceneNode,
   node: SceneNode,
@@ -37,7 +36,7 @@ export default async function addNode(
     opacity(node, parent, settings);
   }
   if (flags.fontName) {
-    await fontName(node, parent, settings);
+    await fontName(node, parent);
   }
   if (flags.fontSize) {
     fontSize(node, parent, settings);

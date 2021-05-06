@@ -58,7 +58,7 @@ const Home: FunctionComponent = observer(() => {
   return (
     <>
       <ViewerContainer>
-        {/* {store.selection.length === 0 && (
+        {store.selection.length === 0 && (
           <ViewerOverlay>
             <span>
               Select a Layer
@@ -66,7 +66,7 @@ const Home: FunctionComponent = observer(() => {
               to get started
             </span>
           </ViewerOverlay>
-        )} */}
+        )}
         <Viewer />
 
         <Tooltip
@@ -106,11 +106,17 @@ const Home: FunctionComponent = observer(() => {
           Remove all measurements
         </Tooltip>
 
-        {/* <Colors
-          colors={theme.colors}
-          onChange={(color) => store.setColor(color)}
-          color={store.color}
-        /> */}
+        <Tooltip
+          handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
+            <ColorControl ref={ref} />
+          ))}
+        >
+          <Colors
+            colors={theme.colors}
+            onChange={(color) => store.setColor(color)}
+            color={store.color}
+          />
+        </Tooltip>
 
         <Tooltip
           hover
@@ -136,21 +142,6 @@ const Home: FunctionComponent = observer(() => {
       <LineChooser />
       <CenterChooser />
 
-      {/* <InputContainer>
-        <Toggle
-          checked={store.labelsOutside}
-          label="Show next to line"
-          onChange={(e) => store.setLabelsOutside(e.currentTarget.checked)}
-        />
-      </InputContainer>
-      <InputContainer>
-        <Toggle
-          checked={store.labels}
-          label="Show label"
-          onChange={(e) => store.setLabels(e.currentTarget.checked)}
-        />
-      </InputContainer> */}
-
       <InputContainer>
         <Input
           width={140}
@@ -166,21 +157,17 @@ const Home: FunctionComponent = observer(() => {
             </div>
           ))}
         >
-          <div style={{ width: 200 }}>
-            Units will be generated as followed
+          <UnitDescription>
+            You can write a "complex" pattern like this{' '}
+            <strong>($###*2.5)</strong> or a simple one <strong>($)</strong>
             <p>
-              <strong>($###*2.5)px</strong>
-            </p>
-            the base structure is always
-            <p>
-              <strong>($)px</strong>
-            </p>
-            <p>
-              <strong>$</strong> is the origin value, after that you can add a
-              multiplier or divider (‘*’ or ‘/’) the <strong>#</strong> symbol
-              is used to round numbers after the comma and how many decimal
-              places you wanna have. Last but not least you can add whichever
-              unit you like (mm,px,pt..)
+              <strong>$</strong> represents the value, after that you can add a
+              multiplier or divider (<strong>*</strong> or <strong>/</strong>)
+              the repetition of the <strong>#</strong> symbol indicates the
+              number of digits after the decimal point.
+              <br /> You can also fill the field with only one unit of
+              measurement and everything will be automatically calculated based
+              on 72dpi. (cm,mm,px,pt,dp,",in)
             </p>
             <h3>Example</h3>
             <p>
@@ -188,53 +175,26 @@ const Home: FunctionComponent = observer(() => {
               measurement will be 8x as the result.
             </p>
             <strong>($###/8)x</strong>
-          </div>
+          </UnitDescription>
         </Tooltip>
       </InputContainer>
-
-      {/* <button
-        onClick={() =>
-          EventEmitter.emit('outer', {
-            direction: 'LEFT',
-            depth: 1,
-          })
-        }
-      >
-        left
-      </button>
-      <button
-        onClick={() =>
-          EventEmitter.emit('outer', {
-            direction: 'RIGHT',
-            depth: 1,
-          })
-        }
-      >
-        right
-      </button>
-      <button
-        onClick={() =>
-          EventEmitter.emit('outer', {
-            direction: 'TOP',
-            depth: 1,
-          })
-        }
-      >
-        top
-      </button>
-      <button
-        onClick={() =>
-          EventEmitter.emit('outer', {
-            direction: 'BOTTOM',
-            depth: 1,
-          })
-        }
-      >
-        bottom
-      </button> */}
     </>
   );
 });
+
+const UnitDescription = styled.div`
+  width: 220px;
+  strong {
+    background-color: #fff;
+    border-radius: 3px;
+    padding: 1px 3px;
+    color: #000;
+    display: inline-block;
+  }
+  h3 {
+    margin: 5px 0 8px;
+  }
+`;
 
 const InputContainer = styled.div`
   display: flex;
@@ -303,6 +263,26 @@ const Refresh = styled.div<{ active?: boolean }>`
   }
 `;
 
+const ColorControl = styled(Refresh)`
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  top: initial;
+  opacity: 1;
+  z-index: 4;
+  &::before {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 9px;
+    background-color: ${(p) => p.theme.color};
+    box-shadow: inset 0 0 4px ${(p) => p.theme.hoverColor};
+  }
+`;
+
 const LabelControl = styled(Refresh)<{ index?: number }>`
   position: absolute;
   right: 12px;
@@ -312,6 +292,7 @@ const LabelControl = styled(Refresh)<{ index?: number }>`
   cursor: pointer;
   border-radius: 7px;
   opacity: 1;
+  z-index: 2;
   .dots {
     display: flex;
     width: 85%;

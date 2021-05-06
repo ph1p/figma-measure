@@ -2,16 +2,16 @@ import './store';
 
 import EventEmitter from '../shared/EventEmitter';
 import { VERSION } from '../shared/constants';
-import { transformPixelToUnit } from '../shared/helpers';
+import { findAndReplaceNumberPattern } from '../shared/helpers';
 import {
   Alignments,
   FillTypes,
   LineParameterTypes,
   PluginNodeData,
-  Store,
   NodeSelection,
   SurroundingSettings,
   TooltipPositions,
+  ExchangeStoreValues,
 } from '../shared/interfaces';
 
 import { hexToRgb, solidColor } from './helper';
@@ -194,12 +194,10 @@ function createLine(options) {
     lineHorizontalAlign = Alignments.BOTTOM,
     strokeCap = 'NONE',
     strokeOffset = 3,
-    unit = '',
-    precision,
-    multiplicator,
     color = '',
     labels = true,
     labelsOutside = false,
+    labelPattern = '',
   }: LineParameterTypes = options;
 
   const LINE_OFFSET = strokeOffset * -1;
@@ -226,12 +224,7 @@ function createLine(options) {
 
     if (labels) {
       labelFrame = createLabel({
-        text: transformPixelToUnit(
-          heightOrWidth,
-          unit,
-          precision,
-          multiplicator
-        ),
+        text: findAndReplaceNumberPattern(labelPattern, heightOrWidth),
         color: mainColor,
       });
     }
@@ -564,7 +557,7 @@ figma.on('selectionchange', () => {
 
         if (currentSelection !== previousSelection) {
           const state = await getState();
-          const store = {
+          const store: ExchangeStoreValues = {
             labelsOutside: state.labelsOutside,
             labels: state.labels,
             color: state.color,
@@ -574,6 +567,7 @@ figma.on('selectionchange', () => {
             strokeOffset: state.strokeOffset,
             tooltipOffset: state.tooltipOffset,
             tooltip: state.tooltip,
+            labelPattern: state.labelPattern,
           };
 
           previousSelection = currentSelectionAsJSONString();
@@ -613,23 +607,24 @@ EventEmitter.on('remove all measurements', () =>
   removeAllMeasurementConnections()
 );
 
-EventEmitter.on('set measurements', async (store: Partial<Store>) =>
+EventEmitter.on('set measurements', async (store: ExchangeStoreValues) =>
   setMeasurements(store)
 );
 
-const setMeasurements = async (store?: Partial<Store>) => {
+const setMeasurements = async (store?: ExchangeStoreValues) => {
   cleanOrphanNodes();
 
-  let data: PluginNodeData | unknown = {};
+  let data: PluginNodeData = {};
 
   const settings = {
-    strokeCap: store.strokeCap,
-    strokeOffset: store.strokeOffset,
-    precision: store.precision,
-    multiplicator: store.multiplicator,
-    color: store.color,
-    labels: store.labels,
-    labelsOutside: store.labelsOutside,
+    ...store,
+    // strokeCap: store.strokeCap,
+    // strokeOffset: store.strokeOffset,
+    // precision: store.precision,
+    // multiplicator: store.multiplicator,
+    // color: store.color,
+    // labels: store.labels,
+    // labelsOutside: store.labelsOutside,
   };
 
   for (const node of figma.currentPage.selection) {
@@ -716,8 +711,7 @@ const setMeasurements = async (store?: Partial<Store>) => {
               color: settings.color,
               labels: settings.labels,
               labelsOutside: settings.labelsOutside,
-              precision: settings.precision,
-              multiplicator: settings.multiplicator,
+              labelPattern: settings.labelPattern,
               // strokeOffset: settings.strokeOffset,
             }
           );
@@ -748,8 +742,7 @@ const setMeasurements = async (store?: Partial<Store>) => {
           flags: store.tooltip,
           offset: store.tooltipOffset,
           position: surrounding.tooltip || TooltipPositions.NONE,
-          precision: settings.precision,
-          multiplicator: settings.multiplicator,
+          labelPattern: settings.labelPattern,
         },
         node
       );
@@ -926,9 +919,33 @@ function createFill(
   }
 }
 
-EventEmitter.on('outer', ({ direction, unit }) => {
-  const node = figma.currentPage.selection[1] as SceneNode;
-  const parent = figma.currentPage.selection[0] as SceneNode;
+EventEmitter.on('outer', ({ direction, labelPattern }) => {
+  let node = figma.currentPage.selection[0] as SceneNode;
+  let parentNode: SceneNode;
+
+  if (figma.currentPage.selection.length === 1) {
+    if (node.parent && node.parent.type !== 'PAGE') {
+      parentNode = node.parent as SceneNode;
+    } else {
+      figma.notify('No parent element found');
+      return;
+    }
+  } else {
+    parentNode = figma.currentPage.selection[1] as SceneNode;
+
+    if (node.x > parentNode.x && node.y > parentNode.x) {
+      parentNode = figma.currentPage.selection[1] as SceneNode;
+      node = figma.currentPage.selection[0] as SceneNode;
+    }
+  }
+
+  if (
+    Math.floor(node.rotation) !== 0 ||
+    Math.floor(parentNode.rotation) !== 0
+  ) {
+    figma.notify('Rotated elements are currently not supported');
+    return;
+  }
 
   const line = figma.createVector();
 
@@ -946,7 +963,7 @@ EventEmitter.on('outer', ({ direction, unit }) => {
   switch (direction) {
     case 'LEFT':
       distance =
-        distanceBetweenTwoPoints(line.x, line.y, parent.x, line.y) * -1;
+        distanceBetweenTwoPoints(line.x, line.y, parentNode.x, line.y) * -1;
       break;
     case 'RIGHT':
       line.x += node.width;
@@ -954,13 +971,13 @@ EventEmitter.on('outer', ({ direction, unit }) => {
       distance = distanceBetweenTwoPoints(
         line.x,
         line.y,
-        parent.x + parent.width,
+        parentNode.x + parentNode.width,
         line.y
       );
       break;
     case 'TOP':
       distance =
-        distanceBetweenTwoPoints(line.x, line.y, line.x, parent.y) * -1;
+        distanceBetweenTwoPoints(line.x, line.y, line.x, parentNode.y) * -1;
 
       break;
     case 'BOTTOM':
@@ -970,7 +987,7 @@ EventEmitter.on('outer', ({ direction, unit }) => {
         line.x,
         line.y,
         line.x,
-        parent.y + parent.height
+        parentNode.y + parentNode.height
       );
       break;
   }
@@ -997,7 +1014,7 @@ EventEmitter.on('outer', ({ direction, unit }) => {
   //LABEL
   const widthOrHeight = Math.abs(distance);
   const labelFrame = createLabel({
-    text: transformPixelToUnit(widthOrHeight, unit),
+    text: findAndReplaceNumberPattern(labelPattern, widthOrHeight),
     color: getColor('#f00000'),
   });
 
