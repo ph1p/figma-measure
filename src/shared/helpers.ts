@@ -37,8 +37,6 @@ export const findAndReplaceNumberPattern = (pattern: string, num: number) => {
     pattern = pattern.replace(match, result);
   }
 
-  console.log(somethingReplaced);
-
   return somethingReplaced ? pattern : transformPixelToUnit(num, pattern);
 };
 

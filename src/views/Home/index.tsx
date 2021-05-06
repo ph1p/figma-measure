@@ -21,8 +21,8 @@ const Home: FunctionComponent = observer(() => {
 
   useEffect(() => {
     EventEmitter.emit('resize', {
-      width: 270,
-      height: 520,
+      width: 250,
+      height: 515,
     });
   }, []);
 
@@ -202,9 +202,6 @@ const InputContainer = styled.div`
   justify-content: space-between;
   width: 100%;
   padding: 12px 14px;
-  border-width: 0 0 1px;
-  border-color: #eee;
-  border-style: solid;
   position: relative;
   .question {
     background-color: ${(props) => props.theme.hoverColor};

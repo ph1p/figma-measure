@@ -143,6 +143,9 @@ const ViewSwitch = styled.div<{ menu: number }>`
   position: relative;
   overflow: hidden;
   height: 42px;
+  border-width: 1px 0 0;
+  border-color: #eee;
+  border-style: solid;
   div {
     transition: font-weight 0.3s;
     position: relative;
