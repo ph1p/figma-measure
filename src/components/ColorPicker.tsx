@@ -108,32 +108,22 @@ const ColorItem = styled.div<{ color: string; active: boolean }>`
   position: relative;
   width: 22px;
   height: 22px;
-  border-radius: 3px;
+  border-radius: 8px;
   background-color: ${(props) => props.color};
   cursor: pointer;
-  &::before {
-    content: '';
-    width: 8px;
-    height: 8px;
-    position: absolute;
-    top: 7px;
-    left: 7px;
-    border-radius: 100%;
-    transition: background-color 0.3s;
-    background-color: ${(props) => (props.active ? '#fff' : 'transparent')};
-  }
+  transition: box-shadow 0.3s;
+  box-shadow: 0px 0px 0px 3px inset
+    ${(props) => (props.active ? 'rgba(255, 255, 255, 0.8)' : 'transparent')};
   &:hover {
-    &::before {
-      background-color: ${(props) =>
-        props.active ? '#fff' : 'rgba(0, 0, 0, 0.2)'};
-    }
+    box-shadow: 0px 0px 0px 3px inset
+      ${(props) => (props.active ? '#fff' : 'rgba(0, 0, 0, 0.2)')};
   }
 `;
 
 const ColorsWrapper = styled.div`
   display: flex;
   ${ColorItem} {
-    margin-right: 11px;
+    margin-right: 4px;
     &:last-child {
       margin-right: 0;
     }

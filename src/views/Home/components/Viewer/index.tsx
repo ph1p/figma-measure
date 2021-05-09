@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useMemo, useMemo } from 'react';
 import styled from 'styled-components';
 
 import EventEmitter from '../../../../shared/EventEmitter';
@@ -43,6 +43,11 @@ const Viewer: FunctionComponent = observer(() => {
     }
   };
 
+  const hasSpacing = useMemo(
+    () => store.selection.some((selection) => selection.hasSpacing),
+    [store.selection]
+  );
+
   return (
     <Wrapper>
       <Tooltips>
@@ -67,7 +72,7 @@ const Viewer: FunctionComponent = observer(() => {
           active={store.surrounding.tooltip === TooltipPositions.RIGHT}
         />
 
-        <Lines>
+        <Lines selection={store.selection.length} hasSpacing={hasSpacing}>
           <Line.Corner
             labels={store.labels}
             labelsOutside={store.labelsOutside}
@@ -114,11 +119,11 @@ const Viewer: FunctionComponent = observer(() => {
                 labelsOutside={store.labelsOutside}
                 className="top"
                 style={{ height: 26 }}
+                active={store.surrounding.topPadding}
                 onClick={() =>
-                  EventEmitter.emit('outer', {
-                    direction: 'TOP',
-                    labelPattern: store.labelPattern,
-                    depth: 1,
+                  store.setSurrounding({
+                    ...store.surrounding,
+                    topPadding: !store.surrounding.topPadding,
                   })
                 }
               />
@@ -127,11 +132,11 @@ const Viewer: FunctionComponent = observer(() => {
                 labelsOutside={store.labelsOutside}
                 className="bottom"
                 style={{ height: 26 }}
+                active={store.surrounding.bottomPadding}
                 onClick={() =>
-                  EventEmitter.emit('outer', {
-                    direction: 'BOTTOM',
-                    labelPattern: store.labelPattern,
-                    depth: 1,
+                  store.setSurrounding({
+                    ...store.surrounding,
+                    bottomPadding: !store.surrounding.bottomPadding,
                   })
                 }
               />
@@ -163,11 +168,11 @@ const Viewer: FunctionComponent = observer(() => {
                 labelsOutside={store.labelsOutside}
                 className="left"
                 style={{ width: 26 }}
+                active={store.surrounding.leftPadding}
                 onClick={() =>
-                  EventEmitter.emit('outer', {
-                    direction: 'LEFT',
-                    labelPattern: store.labelPattern,
-                    depth: 1,
+                  store.setSurrounding({
+                    ...store.surrounding,
+                    leftPadding: !store.surrounding.leftPadding,
                   })
                 }
               />
@@ -176,11 +181,11 @@ const Viewer: FunctionComponent = observer(() => {
                 labelsOutside={store.labelsOutside}
                 className="right"
                 style={{ width: 26 }}
+                active={store.surrounding.rightPadding}
                 onClick={() =>
-                  EventEmitter.emit('outer', {
-                    direction: 'RIGHT',
-                    labelPattern: store.labelPattern,
-                    depth: 1,
+                  store.setSurrounding({
+                    ...store.surrounding,
+                    rightPadding: !store.surrounding.rightPadding,
                   })
                 }
               />
@@ -409,14 +414,15 @@ const OverlayAndPadding = styled.div`
   }
 `;
 
-const Lines = styled.div`
+const Lines = styled.div<{ selection: number; hasSpacing: boolean }>`
   grid-area: center;
   display: grid;
   grid-template-rows: 21px 1fr 21px;
   grid-template-columns: 21px 1fr 21px;
   height: 100%;
-  width: 171px;
-  height: 171px;
+  transition: height 0.3s, width 0.3s;
+  width: ${(p) => (p.selection === 2 || p.hasSpacing ? 171 : 145)}px;
+  height: ${(p) => (p.selection === 2 || p.hasSpacing ? 171 : 145)}px;
   margin: 0 auto;
   > div {
     position: relative;
@@ -426,8 +432,6 @@ const Lines = styled.div`
 `;
 
 const Wrapper = styled.div`
-  width: 229px;
-  height: 229px;
   /* width: 145px;
   height: 145px; */
   .custom-tooltip {

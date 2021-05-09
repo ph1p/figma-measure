@@ -1,9 +1,8 @@
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
 import { Toggle } from '../../components/Toggle';
-import EventEmitter from '../../shared/EventEmitter';
 import { useStore } from '../../store';
 
 import { PreviewTooltip } from './components/PreviewTooltip';
@@ -11,19 +10,12 @@ import { PreviewTooltip } from './components/PreviewTooltip';
 const Tooltip: FunctionComponent = observer(() => {
   const store = useStore();
 
-  useEffect(() => {
-    EventEmitter.emit('resize', {
-      width: 250,
-      height: 526,
-    });
-  }, []);
-
   return (
     <Wrapper>
       <Preview>
         <PreviewTooltip />
       </Preview>
-      <TooltipDistance>
+      <Header>
         <label htmlFor="tooltip-distance">Distance</label>
         <div className="input icon" style={{ width: 75 }}>
           <input
@@ -50,7 +42,7 @@ const Tooltip: FunctionComponent = observer(() => {
             </svg>
           </div>
         </div>
-      </TooltipDistance>
+      </Header>
       <ToggleInputs>
         <Toggle
           checked={store.tooltip.fontName}
@@ -102,7 +94,7 @@ const Tooltip: FunctionComponent = observer(() => {
   );
 });
 
-const TooltipDistance = styled.div`
+const Header = styled.div`
   position: relative;
   top: 0;
   display: flex;
@@ -113,6 +105,7 @@ const TooltipDistance = styled.div`
   border-bottom: 1px solid #e6e6e6;
   label {
     font-weight: bold;
+    margin-right: 10px;
   }
 `;
 
@@ -123,7 +116,7 @@ const Wrapper = styled.div`
 
 const ToggleInputs = styled.div`
   overflow: auto;
-  height: 150px;
+  height: 220px;
   padding: 12px;
   > div {
     margin-bottom: 10px;

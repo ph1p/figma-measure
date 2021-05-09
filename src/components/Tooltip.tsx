@@ -15,6 +15,8 @@ interface Props {
   style?: unknown;
   offsetHorizontal?: number;
   placement?: 'top' | 'bottom';
+  padding?: number;
+  borderRadius?: number;
 }
 
 const TooltipComponent = React.forwardRef<unknown, Props>((props, ref) => {
@@ -39,7 +41,7 @@ const TooltipComponent = React.forwardRef<unknown, Props>((props, ref) => {
       {
         name: 'offset',
         options: {
-          offset: [0, props.hover ? 10 : 15],
+          offset: [0, props.padding || (props.hover ? 10 : 15)],
         },
       },
       {
@@ -84,20 +86,29 @@ const TooltipComponent = React.forwardRef<unknown, Props>((props, ref) => {
           hover={props.hover}
           ref={setPopperElement}
           style={styles.popper}
+          borderRadius={props.borderRadius}
           {...attributes.popper}
         >
-          <TooltipContent hover={props.hover} style={props.style}>
+          <TooltipContent
+            padding={props.padding}
+            hover={props.hover}
+            style={props.style}
+          >
             {props.children}
           </TooltipContent>
-          <Arrow ref={setArrowElement} hover={props.hover} style={styles.arrow} />
+          <Arrow
+            ref={setArrowElement}
+            hover={props.hover}
+            style={styles.arrow}
+          />
         </Tooltip>
       )}
     </div>
   );
 });
 
-const TooltipContent = styled.div<{ hover: boolean }>`
-  padding: ${(p) => (p.hover ? '5px 10px' : 15)};
+const TooltipContent = styled.div<{ hover: boolean; padding?: number }>`
+  padding: ${(p) => p.padding || (p.hover ? '5px 10px' : 15)};
   position: relative;
   z-index: 1;
   font-weight: normal;
@@ -122,10 +133,14 @@ const Arrow = styled.div<{ hover: boolean }>`
   }
 `;
 
-const Tooltip = styled.div<{ hover: boolean; isOpen: boolean }>`
+const Tooltip = styled.div<{
+  hover: boolean;
+  isOpen: boolean;
+  borderRadius?: number;
+}>`
   position: fixed;
   background-color: #000;
-  border-radius: ${(p) => (p.hover ? 3 : 4)}px;
+  border-radius: ${(p) => p.borderRadius || (p.hover ? 3 : 4)}px;
   visibility: ${(p) => (p.isOpen ? 'visible' : 'hidden')};
   pointer-events: ${(p) => (p.isOpen ? 'all' : 'none')};
   z-index: 99;
@@ -149,12 +164,12 @@ const Tooltip = styled.div<{ hover: boolean; isOpen: boolean }>`
 
   &[data-popper-placement^='top'] {
     ${Arrow} {
-      bottom: ${(p) => (p.hover ? -1 : -4)}px;
+      bottom: ${(p) => (p.hover ? -1 : -1)}px;
     }
   }
   &[data-popper-placement^='bottom'] {
     ${Arrow} {
-      top: ${(p) => (p.hover ? -1 : -4)}px;
+      top: ${(p) => (p.hover ? -1 : -1)}px;
     }
   }
   &.place-left {

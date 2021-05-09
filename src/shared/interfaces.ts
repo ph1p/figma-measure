@@ -71,6 +71,10 @@ export interface SurroundingSettings {
   leftBar: boolean;
   rightBar: boolean;
   bottomBar: boolean;
+  topPadding: boolean;
+  leftPadding: boolean;
+  rightPadding: boolean;
+  bottomPadding: boolean;
   horizontalBar: boolean;
   verticalBar: boolean;
   center: boolean;

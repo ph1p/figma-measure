@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useEffect, useMemo } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 import styled from 'styled-components';
 
 import { Colors } from '../../components/ColorPicker';
@@ -18,13 +18,6 @@ import Viewer from './components/Viewer';
 
 const Home: FunctionComponent = observer(() => {
   const store = useStore();
-
-  useEffect(() => {
-    EventEmitter.emit('resize', {
-      width: 250,
-      height: 515,
-    });
-  }, []);
 
   const removeAllMeasurements = () => {
     if (confirm('Do you really want to remove all measurements?')) {
@@ -107,6 +100,8 @@ const Home: FunctionComponent = observer(() => {
         </Tooltip>
 
         <Tooltip
+          padding={6}
+          borderRadius={12}
           handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
             <ColorControl ref={ref} />
           ))}
@@ -145,7 +140,7 @@ const Home: FunctionComponent = observer(() => {
       <InputContainer>
         <Input
           width={140}
-          label="Unit-Pattern"
+          label="Units"
           value={store.labelPattern}
           onChange={(e) => store.setLabelPattern(e.currentTarget.value)}
         />
@@ -206,7 +201,7 @@ const InputContainer = styled.div`
   .question {
     background-color: ${(props) => props.theme.hoverColor};
     position: absolute;
-    right: 21px;
+    left: 50px;
     top: 19px;
     width: 16px;
     height: 16px;
@@ -355,7 +350,7 @@ const Visibility = styled(Refresh)`
 
 const ViewerContainer = styled.div`
   position: relative;
-  height: 310px;
+  height: 389px;
   display: flex;
   justify-content: center;
   align-items: center;

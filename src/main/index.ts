@@ -25,8 +25,8 @@ import { getState } from './store';
 import { setTooltip } from './tooltip';
 
 figma.showUI(__html__, {
-  width: 250,
-  height: 515,
+  width: 285,
+  height: 596,
   visible: figma.command !== 'visibility',
 });
 
@@ -618,13 +618,6 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
 
   const settings = {
     ...store,
-    // strokeCap: store.strokeCap,
-    // strokeOffset: store.strokeOffset,
-    // precision: store.precision,
-    // multiplicator: store.multiplicator,
-    // color: store.color,
-    // labels: store.labels,
-    // labelsOutside: store.labelsOutside,
   };
 
   for (const node of figma.currentPage.selection) {
@@ -824,6 +817,15 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
       );
     }
 
+    if (surrounding.topPadding) {
+      connectedNodes.push(
+        createOuterLine({
+          ...settings,
+          direction: Alignments.TOP,
+        })
+      );
+    }
+
     node.setPluginData(
       'data',
       JSON.stringify({
@@ -919,7 +921,10 @@ function createFill(
   }
 }
 
-EventEmitter.on('outer', ({ direction, labelPattern }) => {
+function createOuterLine({
+  direction,
+  labelPattern,
+}: { direction: Alignments } & ExchangeStoreValues) {
   let node = figma.currentPage.selection[0] as SceneNode;
   let parentNode: SceneNode;
 
@@ -950,7 +955,7 @@ EventEmitter.on('outer', ({ direction, labelPattern }) => {
   const line = figma.createVector();
 
   const group = figma.group([line], figma.currentPage);
-  group.name = 'out-group';
+  group.name = `padding-line-${direction.toLowerCase()}`;
 
   group.relativeTransform = node.absoluteTransform;
 
@@ -961,11 +966,11 @@ EventEmitter.on('outer', ({ direction, labelPattern }) => {
   line.y = node.absoluteTransform[1][2];
 
   switch (direction) {
-    case 'LEFT':
+    case Alignments.LEFT:
       distance =
         distanceBetweenTwoPoints(line.x, line.y, parentNode.x, line.y) * -1;
       break;
-    case 'RIGHT':
+    case Alignments.RIGHT:
       line.x += node.width;
 
       distance = distanceBetweenTwoPoints(
@@ -975,12 +980,12 @@ EventEmitter.on('outer', ({ direction, labelPattern }) => {
         line.y
       );
       break;
-    case 'TOP':
+    case Alignments.TOP:
       distance =
         distanceBetweenTwoPoints(line.x, line.y, line.x, parentNode.y) * -1;
 
       break;
-    case 'BOTTOM':
+    case Alignments.BOTTOM:
       line.y += node.height;
 
       distance = distanceBetweenTwoPoints(
@@ -1029,11 +1034,34 @@ EventEmitter.on('outer', ({ direction, labelPattern }) => {
     labelFrame.x -= labelFrame.width / 2;
   }
 
-  // line.resize(20, 1);
-});
+  return group;
+}
+
+EventEmitter.on('outer', (options) => createOuterLine(options));
 
 (async function main() {
   await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
   await figma.loadFontAsync({ family: 'Inter', style: 'Bold' });
   await figma.loadFontAsync({ family: 'Inter', style: 'Regular' });
 })();
+
+// EventEmitter.answer('export pdf', async () => {
+//   const selection = figma.currentPage.selection;
+//   const nodes = [];
+
+//   for (const node of selection) {
+//     const data = JSON.parse(node.getPluginData('data') || '{}');
+
+//     if (data?.connectedNodes?.length > 0) {
+//       for (const id of data.connectedNodes) {
+//         nodes.push(figma.getNodeById(id));
+//       }
+//     }
+//   }
+
+//   console.log(nodes);
+
+//   return figma.group([...selection, ...nodes], figma.currentPage).exportAsync({
+//     format: 'PDF',
+//   });
+// });

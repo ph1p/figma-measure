@@ -95,7 +95,7 @@ const Wrapper = styled.div.attrs<{ enabled?: boolean; active?: boolean }>(
   border-radius: 20px;
   width: 127px;
   height: 127px;
-  opacity: 0.3;
+  opacity: 0;
   &.enabled {
     opacity: 1;
     cursor: pointer;
