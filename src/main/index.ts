@@ -817,14 +817,22 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
       );
     }
 
-    if (surrounding.topPadding) {
-      connectedNodes.push(
-        createOuterLine({
-          ...settings,
-          direction: Alignments.TOP,
-        })
-      );
-    }
+    Object.keys(Alignments)
+      .filter((k) => k !== Alignments.CENTER)
+      .forEach((direction: Alignments) => {
+        const surroundingKey = `${direction.toLowerCase()}Padding`;
+        if (surrounding[surroundingKey]) {
+          const paddingLine = createOuterLine({
+            ...settings,
+            direction,
+          });
+          if (paddingLine) {
+            connectedNodes.push(paddingLine);
+          } else {
+            surrounding.topPadding = false;
+          }
+        }
+      });
 
     node.setPluginData(
       'data',
@@ -938,15 +946,15 @@ function createOuterLine({
   } else {
     parentNode = figma.currentPage.selection[1] as SceneNode;
 
-    if (node.x > parentNode.x && node.y > parentNode.x) {
-      parentNode = figma.currentPage.selection[1] as SceneNode;
-      node = figma.currentPage.selection[0] as SceneNode;
+    if (parentNode.x <= node.x && parentNode.y <= node.y) {
+      parentNode = figma.currentPage.selection[0] as SceneNode;
+      node = figma.currentPage.selection[1] as SceneNode;
     }
   }
 
   if (
-    Math.floor(node.rotation) !== 0 ||
-    Math.floor(parentNode.rotation) !== 0
+    Math.round(node.rotation) !== 0 ||
+    Math.round(parentNode.rotation) !== 0
   ) {
     figma.notify('Rotated elements are currently not supported');
     return;
