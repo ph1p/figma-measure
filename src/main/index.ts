@@ -106,9 +106,9 @@ export function createLabel({
 }
 
 function getGlobalGroup() {
-  return (figma.currentPage.children.find(
+  return figma.currentPage.children.find(
     (node) => node.getPluginData('isGlobalGroup') === '1'
-  ) as unknown) as GroupNode | FrameNode;
+  ) as unknown as GroupNode | FrameNode;
 }
 
 export function addToGlobalGroup(node: SceneNode) {
@@ -134,9 +134,9 @@ function nodeGroup(node) {
   }
 
   return (
-    ((globalGroup.children.find(
+    (globalGroup.children.find(
       (currentNode) => currentNode.getPluginData('parent') === node.id
-    ) as unknown) as GroupNode | FrameNode) || null
+    ) as unknown as GroupNode | FrameNode) || null
   );
 }
 
@@ -667,9 +667,9 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
           }
 
           // get connected node
-          const foundConnectedNode = (figma.getNodeById(
+          const foundConnectedNode = figma.getNodeById(
             connectedNodeId
-          ) as unknown) as SceneNode;
+          ) as unknown as SceneNode;
 
           // node removed
           if (!foundConnectedNode) {
@@ -696,10 +696,7 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
         })
         .forEach((connectedNodeId) => {
           drawSpacing(
-            [
-              node,
-              (figma.getNodeById(connectedNodeId) as unknown) as SceneNode,
-            ],
+            [node, figma.getNodeById(connectedNodeId) as unknown as SceneNode],
             {
               color: settings.color,
               labels: settings.labels,
@@ -817,12 +814,13 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
       );
     }
 
+    // Paddding
     Object.keys(Alignments)
       .filter((k) => k !== Alignments.CENTER)
       .forEach((direction: Alignments) => {
         const surroundingKey = `${direction.toLowerCase()}Padding`;
         if (surrounding[surroundingKey]) {
-          const paddingLine = createOuterLine({
+          const paddingLine = createPaddingLine({
             ...settings,
             direction,
           });
@@ -929,7 +927,22 @@ function createFill(
   }
 }
 
-function createOuterLine({
+function contains(node1, node2) {
+  const x1 = node1.absoluteTransform[0][2];
+  const y1 = node1.absoluteTransform[1][2];
+
+  const x2 = node2.absoluteTransform[0][2];
+  const y2 = node2.absoluteTransform[1][2];
+
+  return !(
+    x2 < x1 ||
+    y2 < y1 ||
+    x2 + node2.width > x1 + node1.width ||
+    y2 + node2.height > y1 + node1.height
+  );
+}
+
+function createPaddingLine({
   direction,
   labelPattern,
 }: { direction: Alignments } & ExchangeStoreValues) {
@@ -943,13 +956,21 @@ function createOuterLine({
       figma.notify('No parent element found');
       return;
     }
-  } else {
+  } else if (figma.currentPage.selection.length === 2) {
     parentNode = figma.currentPage.selection[1] as SceneNode;
 
-    if (parentNode.x <= node.x && parentNode.y <= node.y) {
-      parentNode = figma.currentPage.selection[0] as SceneNode;
-      node = figma.currentPage.selection[1] as SceneNode;
+    if (!contains(node, parentNode) && !contains(parentNode, node)) {
+      figma.notify('The element does not contain the other one');
+      return;
     }
+
+    if (contains(node, parentNode)) {
+      parentNode = figma.currentPage.selection[0];
+      node = figma.currentPage.selection[1];
+    }
+  } else {
+    figma.notify('Please select only two elements');
+    return;
   }
 
   if (
@@ -965,7 +986,7 @@ function createOuterLine({
   const group = figma.group([line], figma.currentPage);
   group.name = `padding-line-${direction.toLowerCase()}`;
 
-  group.relativeTransform = node.absoluteTransform;
+  // group.relativeTransform = node.absoluteTransform;
 
   let distance = 0;
 
@@ -973,10 +994,13 @@ function createOuterLine({
   line.x = node.absoluteTransform[0][2];
   line.y = node.absoluteTransform[1][2];
 
+  const parentNodeX = parentNode.absoluteTransform[0][2];
+  const parentNodeY = parentNode.absoluteTransform[1][2];
+
   switch (direction) {
     case Alignments.LEFT:
       distance =
-        distanceBetweenTwoPoints(line.x, line.y, parentNode.x, line.y) * -1;
+        distanceBetweenTwoPoints(line.x, line.y, parentNodeX, line.y) * -1;
       break;
     case Alignments.RIGHT:
       line.x += node.width;
@@ -984,13 +1008,13 @@ function createOuterLine({
       distance = distanceBetweenTwoPoints(
         line.x,
         line.y,
-        parentNode.x + parentNode.width,
+        parentNodeX + parentNode.width,
         line.y
       );
       break;
     case Alignments.TOP:
       distance =
-        distanceBetweenTwoPoints(line.x, line.y, line.x, parentNode.y) * -1;
+        distanceBetweenTwoPoints(line.x, line.y, line.x, parentNodeY) * -1;
 
       break;
     case Alignments.BOTTOM:
@@ -1000,7 +1024,7 @@ function createOuterLine({
         line.x,
         line.y,
         line.x,
-        parentNode.y + parentNode.height
+        parentNodeY + parentNode.height
       );
       break;
   }
@@ -1042,10 +1066,16 @@ function createOuterLine({
     labelFrame.x -= labelFrame.width / 2;
   }
 
+  if (widthOrHeight === 0) {
+    figma.notify('The distance is zero');
+    group.remove();
+    return;
+  }
+
   return group;
 }
 
-EventEmitter.on('outer', (options) => createOuterLine(options));
+// EventEmitter.on('outer', (options) => createPaddingLine(options));
 
 (async function main() {
   await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
