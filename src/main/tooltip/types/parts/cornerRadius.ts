@@ -1,3 +1,4 @@
+import { toFixed } from '../../../../shared/helpers';
 import { createTooltipTextNode } from '../../../helper';
 
 export default function cornerRadius(
@@ -17,9 +18,15 @@ export default function cornerRadius(
     textNode.y += 1.5;
 
     if (node.cornerRadius !== figma.mixed) {
-      textNode.characters += `${node.cornerRadius}px`;
+      textNode.characters += `${toFixed(node.cornerRadius, 2)}`;
     } else {
-      textNode.characters += `${node.topLeftRadius}px ${node.topRightRadius}px ${node.bottomLeftRadius}px ${node.bottomRightRadius}px`;
+      textNode.characters += `${toFixed(node.topLeftRadius, 2)} ${toFixed(
+        node.topRightRadius,
+        2
+      )} ${toFixed(node.bottomLeftRadius, 2)} ${toFixed(
+        node.bottomRightRadius,
+        2
+      )}`;
     }
 
     figma.group([cornerRadiusIcon, textNode], parent);

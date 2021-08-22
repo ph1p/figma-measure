@@ -65,6 +65,7 @@ class RootStore {
     color: true,
     opacity: true,
     stroke: true,
+    name: true,
   };
 
   setColor(color: string) {

@@ -16,6 +16,7 @@ export interface SetTooltipOptions {
   backgroundColor?: string;
   fontColor?: string;
   fontSize?: number;
+  name?: string;
 }
 export interface LineParameterTypes {
   left: number;
@@ -44,6 +45,7 @@ export interface TooltipSettings {
   stroke: boolean;
   cornerRadius: boolean;
   points: boolean;
+  name: boolean;
 }
 
 export interface PluginNodeData {

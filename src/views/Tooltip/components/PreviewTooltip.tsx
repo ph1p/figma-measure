@@ -9,6 +9,7 @@ import {
   FontFamilyIcon,
   FontSizeIcon,
   HeightIcon,
+  NameIcon,
   OpacityIcon,
   PointsIcon,
   StrokeIcon,
@@ -21,6 +22,14 @@ export const PreviewTooltip: FunctionComponent = observer(() => {
 
   return (
     <Tooltip>
+      {store.tooltip.name && (
+        <div>
+          <div className="icon">
+            <NameIcon />
+          </div>
+          <span>Rectangle 1</span>
+        </div>
+      )}
       {store.tooltip.fontName && (
         <div>
           <div className="icon">

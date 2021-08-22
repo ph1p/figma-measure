@@ -5,6 +5,7 @@ import fills from './parts/fills';
 import fontName from './parts/font-name';
 import fontSize from './parts/fontSize';
 import height from './parts/height';
+import name from './parts/name';
 import opacity from './parts/opacity';
 import pointCount from './parts/point-count';
 import strokes from './parts/strokes';
@@ -17,6 +18,9 @@ export default async function addNode(
 ) {
   const flags: TooltipSettings = settings.flags;
   // Add content to parent
+  if (flags.name) {
+    name(node, parent, settings);
+  }
   if (flags.width) {
     width(node, parent, settings);
   }
