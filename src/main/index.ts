@@ -15,12 +15,8 @@ import {
 } from '../shared/interfaces';
 
 import { hexToRgb, solidColor } from './helper';
-import {
-  distanceBetweenTwoPoints,
-  drawSpacing,
-  getSpacing,
-  setSpacing,
-} from './spacing';
+import './padding';
+import { drawSpacing, getSpacing, setSpacing } from './spacing';
 import { getState } from './store';
 import { setTooltip } from './tooltip';
 
@@ -507,17 +503,30 @@ const removeAllMeasurementConnections = () => {
   if (group) {
     for (const node of group.children) {
       const foundNode = figma.getNodeById(node.getPluginData('parent'));
-      const connectNodes = JSON.parse(node.getPluginData('connected') || '[]');
+      const spacingConnectedNodes = JSON.parse(
+        node.getPluginData('connected') || '[]'
+      );
+      // const paddingNodes = JSON.parse(
+      //   node.getPluginData('padding-connected') || '[]'
+      // );
 
-      if (connectNodes.length > 0) {
-        for (const connectedNode of connectNodes.map((id: string) =>
-          figma.getNodeById(id)
+      if (spacingConnectedNodes.length > 0) {
+        for (const spacingConnectedNode of spacingConnectedNodes.map(
+          (id: string) => figma.getNodeById(id)
         )) {
-          if (connectedNode) {
-            connectedNode.setPluginData('spacing', '');
+          if (spacingConnectedNode) {
+            spacingConnectedNode.setPluginData('spacing', '');
           }
         }
       }
+
+      // if (paddingNodes.length > 0) {
+      //   for (const paddingNode of paddingNodes) {
+      //     if (paddingNode) {
+      //       paddingNode.setPluginData('padding', '');
+      //     }
+      //   }
+      // }
 
       if (foundNode) {
         foundNode.setPluginData('data', '');
@@ -814,22 +823,11 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
       );
     }
 
-    // Paddding
+    // Padding
     Object.keys(Alignments)
       .filter((k) => k !== Alignments.CENTER)
       .forEach((direction: Alignments) => {
-        const surroundingKey = `${direction.toLowerCase()}Padding`;
-        if (surrounding[surroundingKey]) {
-          const paddingLine = createPaddingLine({
-            ...settings,
-            direction,
-          });
-          if (paddingLine) {
-            connectedNodes.push(paddingLine);
-          } else {
-            surrounding.topPadding = false;
-          }
-        }
+        // set paddings
       });
 
     node.setPluginData(
@@ -927,179 +925,8 @@ function createFill(
   }
 }
 
-function contains(node1, node2) {
-  const x1 = node1.absoluteTransform[0][2];
-  const y1 = node1.absoluteTransform[1][2];
-
-  const x2 = node2.absoluteTransform[0][2];
-  const y2 = node2.absoluteTransform[1][2];
-
-  return !(
-    x2 < x1 ||
-    y2 < y1 ||
-    x2 + node2.width > x1 + node1.width ||
-    y2 + node2.height > y1 + node1.height
-  );
-}
-
-function createPaddingLine({
-  direction,
-  labelPattern,
-}: { direction: Alignments } & ExchangeStoreValues) {
-  let node = figma.currentPage.selection[0] as SceneNode;
-  let parentNode: SceneNode;
-
-  if (figma.currentPage.selection.length === 1) {
-    if (node.parent && node.parent.type !== 'PAGE') {
-      parentNode = node.parent as SceneNode;
-    } else {
-      figma.notify('No parent element found');
-      return;
-    }
-  } else if (figma.currentPage.selection.length === 2) {
-    parentNode = figma.currentPage.selection[1] as SceneNode;
-
-    if (!contains(node, parentNode) && !contains(parentNode, node)) {
-      figma.notify('The element does not contain the other one');
-      return;
-    }
-
-    if (contains(node, parentNode)) {
-      parentNode = figma.currentPage.selection[0];
-      node = figma.currentPage.selection[1];
-    }
-  } else {
-    figma.notify('Please select only two elements');
-    return;
-  }
-
-  if (
-    Math.round(node.rotation) !== 0 ||
-    Math.round(parentNode.rotation) !== 0
-  ) {
-    figma.notify('Rotated elements are currently not supported');
-    return;
-  }
-
-  const line = figma.createVector();
-
-  const group = figma.group([line], figma.currentPage);
-  group.name = `padding-line-${direction.toLowerCase()}`;
-
-  // group.relativeTransform = node.absoluteTransform;
-
-  let distance = 0;
-
-  line.name = 'out';
-  line.x = node.absoluteTransform[0][2];
-  line.y = node.absoluteTransform[1][2];
-
-  const parentNodeX = parentNode.absoluteTransform[0][2];
-  const parentNodeY = parentNode.absoluteTransform[1][2];
-
-  switch (direction) {
-    case Alignments.LEFT:
-      distance =
-        distanceBetweenTwoPoints(line.x, line.y, parentNodeX, line.y) * -1;
-      break;
-    case Alignments.RIGHT:
-      line.x += node.width;
-
-      distance = distanceBetweenTwoPoints(
-        line.x,
-        line.y,
-        parentNodeX + parentNode.width,
-        line.y
-      );
-      break;
-    case Alignments.TOP:
-      distance =
-        distanceBetweenTwoPoints(line.x, line.y, line.x, parentNodeY) * -1;
-
-      break;
-    case Alignments.BOTTOM:
-      line.y += node.height;
-
-      distance = distanceBetweenTwoPoints(
-        line.x,
-        line.y,
-        line.x,
-        parentNodeY + parentNode.height
-      );
-      break;
-  }
-
-  if (direction === 'LEFT' || direction === 'RIGHT') {
-    line.y += node.height / 2;
-  } else {
-    line.x += node.width / 2;
-  }
-
-  line.vectorPaths = [
-    {
-      windingRule: 'NONE',
-      // M x y L x y Z is close
-      data:
-        direction === 'LEFT' || direction === 'RIGHT'
-          ? `M 0 0 L ${distance} 0 Z`
-          : `M 0 0 L 0 ${distance} Z`,
-    },
-  ];
-
-  line.strokes = [].concat(getColor('#f00000'));
-
-  //LABEL
-  const widthOrHeight = Math.abs(distance);
-  const labelFrame = createLabel({
-    text: findAndReplaceNumberPattern(labelPattern, widthOrHeight),
-    color: getColor('#f00000'),
-  });
-
-  labelFrame.relativeTransform = group.absoluteTransform;
-  group.appendChild(labelFrame);
-
-  if (direction === 'LEFT' || direction === 'RIGHT') {
-    labelFrame.y -= labelFrame.height / 2;
-    labelFrame.x += widthOrHeight / 2 - labelFrame.width / 2;
-  } else {
-    labelFrame.y += widthOrHeight / 2 - labelFrame.height / 2;
-    labelFrame.x -= labelFrame.width / 2;
-  }
-
-  if (widthOrHeight === 0) {
-    figma.notify('The distance is zero');
-    group.remove();
-    return;
-  }
-
-  return group;
-}
-
-// EventEmitter.on('outer', (options) => createPaddingLine(options));
-
 (async function main() {
   await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
   await figma.loadFontAsync({ family: 'Inter', style: 'Bold' });
   await figma.loadFontAsync({ family: 'Inter', style: 'Regular' });
 })();
-
-// EventEmitter.answer('export pdf', async () => {
-//   const selection = figma.currentPage.selection;
-//   const nodes = [];
-
-//   for (const node of selection) {
-//     const data = JSON.parse(node.getPluginData('data') || '{}');
-
-//     if (data?.connectedNodes?.length > 0) {
-//       for (const id of data.connectedNodes) {
-//         nodes.push(figma.getNodeById(id));
-//       }
-//     }
-//   }
-
-//   console.log(nodes);
-
-//   return figma.group([...selection, ...nodes], figma.currentPage).exportAsync({
-//     format: 'PDF',
-//   });
-// });

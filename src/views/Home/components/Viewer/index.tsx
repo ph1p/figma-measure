@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useMemo, useMemo } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 import styled from 'styled-components';
 
 import EventEmitter from '../../../../shared/EventEmitter';
-import { TooltipPositions } from '../../../../shared/interfaces';
+import { Alignments, TooltipPositions } from '../../../../shared/interfaces';
 import { useStore } from '../../../../store';
 
 import Line from './components/Line';
@@ -47,6 +47,19 @@ const Viewer: FunctionComponent = observer(() => {
     () => store.selection.some((selection) => selection.hasSpacing),
     [store.selection]
   );
+
+  const addPadding = (direction) => {
+    EventEmitter.emit('add padding', {
+      direction,
+      settings: {
+        color: store.color,
+        labels: store.labels,
+        strokeOffset: store.strokeOffset,
+        labelsOutside: store.labelsOutside,
+        labelPattern: store.labelPattern,
+      },
+    });
+  };
 
   return (
     <Wrapper>
@@ -120,11 +133,14 @@ const Viewer: FunctionComponent = observer(() => {
                 className="top"
                 style={{ height: 26 }}
                 active={store.surrounding.topPadding}
-                onClick={() =>
-                  store.setSurrounding({
-                    ...store.surrounding,
-                    topPadding: !store.surrounding.topPadding,
-                  })
+                onClick={
+                  () => {
+                    addPadding(Alignments.TOP);
+                  }
+                  // store.setSurrounding({
+                  //   ...store.surrounding,
+                  //   topPadding: !store.surrounding.topPadding,
+                  // })
                 }
               />
               <Line.Vertical
