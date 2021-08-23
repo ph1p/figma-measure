@@ -4,7 +4,13 @@ import { Alignments, ExchangeStoreValues } from '../shared/interfaces';
 
 import { distanceBetweenTwoPoints } from './spacing';
 
-import { getColor, createLabel, addToGlobalGroup } from '.';
+import {
+  getColor,
+  createLabel,
+  addToGlobalGroup,
+  getGlobalGroup,
+  sendSelection,
+} from '.';
 
 function contains(node1, node2) {
   const x1 = node1.absoluteTransform[0][2];
@@ -21,12 +27,34 @@ function contains(node1, node2) {
   );
 }
 
-export const getPadding = (node: SceneNode, direction: Alignments) => {
-  const padding = JSON.parse(node.getPluginData('padding') || '{}');
+export const removePaddingGroup = (currentNode, direction) => {
+  const group = getGlobalGroup();
 
-  return Object.keys(padding[`${node.id}-${direction}`] || {}).length > 0
-    ? padding[`${node.id}-${direction}`]
-    : null;
+  if (group) {
+    for (const node of group.children) {
+      if (!node.getPluginData('padding-parent')) {
+        continue;
+      }
+
+      try {
+        const paddingGroup = JSON.parse(node.getPluginData('padding-parent'));
+
+        if (
+          paddingGroup.parentId === currentNode.id &&
+          paddingGroup.direction === direction
+        ) {
+          node.remove();
+        }
+        // eslint-disable-next-line no-empty
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }
+};
+
+export const getPadding = (node: SceneNode) => {
+  return JSON.parse(node.getPluginData('padding') || '{}');
 };
 
 EventEmitter.on('add padding', ({ direction, settings }) => {
@@ -36,54 +64,47 @@ EventEmitter.on('add padding', ({ direction, settings }) => {
 
   if (nodeData && nodeData.node && nodeData.parentNode) {
     // Padding
-    let pluginDataPadding = getPadding(nodeData.node, direction);
-    const paddingGroups = JSON.parse(
-      nodeData.node.getPluginData('padding-groups') || '[]'
-    );
-    nodeData.node.setPluginData('padding-groups', '[]');
+    let pluginDataPadding = getPadding(nodeData.node);
 
-    // remove paddings
-    if (pluginDataPadding) {
-      // try {
-      //   delete pluginDataPadding[`${node.id}-${direction}`];
-      //   node.setPluginData('padding', JSON.stringify(pluginDataPadding));
-      //   // eslint-disable-next-line no-empty
-      // } catch {}
-      for (const groupId of paddingGroups) {
-        try {
-          if (groupId) {
-            figma.getNodeById(groupId).remove();
-          }
-          // eslint-disable-next-line no-empty
-        } catch (err) {
-          console.log(err);
+    if (pluginDataPadding[direction]) {
+      try {
+        removePaddingGroup(nodeData.node, direction);
+
+        delete pluginDataPadding[direction];
+
+        nodeData.node.setPluginData(
+          'padding',
+          JSON.stringify(pluginDataPadding)
+        );
+        // eslint-disable-next-line no-empty
+      } catch {}
+    } else {
+      nodeData.node.setPluginData(
+        'padding',
+        JSON.stringify({
+          ...pluginDataPadding,
+          [direction]: nodeData.parentNode.id,
+        })
+      );
+
+      pluginDataPadding = getPadding(nodeData.node);
+
+      if (pluginDataPadding[direction]) {
+        for (const parentId of pluginDataPadding[direction]) {
+          addToGlobalGroup(
+            createPaddingLine({
+              ...settings,
+              direction,
+              node: nodeData.node,
+              parent: figma.getNodeById(parentId),
+            })
+          );
         }
       }
     }
-
-    nodeData.node.setPluginData(
-      'padding',
-      JSON.stringify({
-        ...JSON.parse(nodeData.node.getPluginData('padding') || '{}'),
-        [`${nodeData.node.id}-${direction}`]: Array.from(
-          new Set([...(pluginDataPadding || []), nodeData.parentNode.id])
-        ),
-      })
-    );
-
-    pluginDataPadding = getPadding(nodeData.node, direction);
-
-    for (const parent of pluginDataPadding) {
-      addToGlobalGroup(
-        createPaddingLine({
-          ...settings,
-          direction,
-          node: nodeData.node,
-          parent: figma.getNodeById(parent),
-        })
-      );
-    }
   }
+
+  sendSelection();
 });
 
 const getNodeAndParentNode = (
@@ -237,16 +258,12 @@ export function createPaddingLine({
     return;
   }
 
-  node.setPluginData(
-    'padding-groups',
-    JSON.stringify(
-      Array.from(
-        new Set([
-          ...JSON.parse(node.getPluginData('padding-groups') || '[]'),
-          group.id,
-        ])
-      )
-    )
+  group.setPluginData(
+    'padding-parent',
+    JSON.stringify({
+      direction,
+      parentId: node.id,
+    })
   );
 
   return group;

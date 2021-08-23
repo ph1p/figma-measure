@@ -126,6 +126,7 @@ export interface NodeSelection {
   type: NodeType;
   hasSpacing: boolean;
   data: unknown;
+  padding: Record<Alignments, string>;
 }
 
 export interface ExchangeStoreValues

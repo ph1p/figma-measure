@@ -15,7 +15,7 @@ import {
 } from '../shared/interfaces';
 
 import { hexToRgb, solidColor } from './helper';
-import './padding';
+import { getPadding, createPaddingLine, removePaddingGroup } from './padding';
 import { drawSpacing, getSpacing, setSpacing } from './spacing';
 import { getState } from './store';
 import { setTooltip } from './tooltip';
@@ -101,7 +101,7 @@ export function createLabel({
   return labelFrame;
 }
 
-function getGlobalGroup() {
+export function getGlobalGroup() {
   return figma.currentPage.children.find(
     (node) => node.getPluginData('isGlobalGroup') === '1'
   ) as unknown as GroupNode | FrameNode;
@@ -475,13 +475,15 @@ function getSelectionArray(): NodeSelection[] {
     return {
       id: node.id,
       type: node.type,
+      padding: getPadding(node),
       hasSpacing: Object.keys(getSpacing(node)).length > 0,
       data,
     };
   });
 }
 
-const sendSelection = () => EventEmitter.emit('selection', getSelectionArray());
+export const sendSelection = () =>
+  EventEmitter.emit('selection', getSelectionArray());
 
 const cleanOrphanNodes = () => {
   const group = getGlobalGroup();
@@ -489,8 +491,11 @@ const cleanOrphanNodes = () => {
   if (group) {
     for (const node of group.children) {
       const foundNode = figma.getNodeById(node.getPluginData('parent'));
+      const foundPaddingNode = figma.getNodeById(
+        JSON.parse(node.getPluginData('padding-parent') || '{}').parentId
+      );
 
-      if (!foundNode && !node.getPluginData('connected')) {
+      if (!foundNode && !node.getPluginData('connected') && !foundPaddingNode) {
         node.remove();
       }
     }
@@ -506,9 +511,6 @@ const removeAllMeasurementConnections = () => {
       const spacingConnectedNodes = JSON.parse(
         node.getPluginData('connected') || '[]'
       );
-      // const paddingNodes = JSON.parse(
-      //   node.getPluginData('padding-connected') || '[]'
-      // );
 
       if (spacingConnectedNodes.length > 0) {
         for (const spacingConnectedNode of spacingConnectedNodes.map(
@@ -519,14 +521,6 @@ const removeAllMeasurementConnections = () => {
           }
         }
       }
-
-      // if (paddingNodes.length > 0) {
-      //   for (const paddingNode of paddingNodes) {
-      //     if (paddingNode) {
-      //       paddingNode.setPluginData('padding', '');
-      //     }
-      //   }
-      // }
 
       if (foundNode) {
         foundNode.setPluginData('data', '');
@@ -717,6 +711,27 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
         });
     }
 
+    // Padding
+    const padding = getPadding(node);
+    if (padding) {
+      Object.keys(Alignments)
+        .filter((k) => k !== Alignments.CENTER && padding[k])
+        .forEach((direction: Alignments) => {
+          removePaddingGroup(node, direction);
+
+          const paddingLine = createPaddingLine({
+            ...settings,
+            direction,
+            currentNode: node,
+            parent: figma.getNodeById(padding[direction]) as SceneNode,
+          });
+
+          if (paddingLine) {
+            addToGlobalGroup(paddingLine);
+          }
+        });
+    }
+
     if (!surrounding || Object.keys(surrounding).length === 0) {
       continue;
     }
@@ -822,13 +837,6 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
         })
       );
     }
-
-    // Padding
-    Object.keys(Alignments)
-      .filter((k) => k !== Alignments.CENTER)
-      .forEach((direction: Alignments) => {
-        // set paddings
-      });
 
     node.setPluginData(
       'data',

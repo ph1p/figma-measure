@@ -133,15 +133,7 @@ const Viewer: FunctionComponent = observer(() => {
                 className="top"
                 style={{ height: 26 }}
                 active={store.surrounding.topPadding}
-                onClick={
-                  () => {
-                    addPadding(Alignments.TOP);
-                  }
-                  // store.setSurrounding({
-                  //   ...store.surrounding,
-                  //   topPadding: !store.surrounding.topPadding,
-                  // })
-                }
+                onClick={() => addPadding(Alignments.TOP)}
               />
               <Line.Vertical
                 labels={store.labels}
@@ -149,12 +141,7 @@ const Viewer: FunctionComponent = observer(() => {
                 className="bottom"
                 style={{ height: 26 }}
                 active={store.surrounding.bottomPadding}
-                onClick={() =>
-                  store.setSurrounding({
-                    ...store.surrounding,
-                    bottomPadding: !store.surrounding.bottomPadding,
-                  })
-                }
+                onClick={() => addPadding(Alignments.BOTTOM)}
               />
 
               <OverlayRect
@@ -185,12 +172,7 @@ const Viewer: FunctionComponent = observer(() => {
                 className="left"
                 style={{ width: 26 }}
                 active={store.surrounding.leftPadding}
-                onClick={() =>
-                  store.setSurrounding({
-                    ...store.surrounding,
-                    leftPadding: !store.surrounding.leftPadding,
-                  })
-                }
+                onClick={() => addPadding(Alignments.LEFT)}
               />
               <Line.Horizontal
                 labels={store.labels}
@@ -198,12 +180,7 @@ const Viewer: FunctionComponent = observer(() => {
                 className="right"
                 style={{ width: 26 }}
                 active={store.surrounding.rightPadding}
-                onClick={() =>
-                  store.setSurrounding({
-                    ...store.surrounding,
-                    rightPadding: !store.surrounding.rightPadding,
-                  })
-                }
+                onClick={() => addPadding(Alignments.RIGHT)}
               />
             </OverlayAndPadding>
           </div>

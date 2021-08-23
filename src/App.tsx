@@ -11,7 +11,7 @@ import {
 import styled, { ThemeProvider } from 'styled-components';
 
 import EventEmitter from './shared/EventEmitter';
-import { PluginNodeData } from './shared/interfaces';
+import { Alignments, PluginNodeData } from './shared/interfaces';
 import { getStoreFromMain, StoreProvider, trunk, useStore } from './store';
 import {
   DEFAULT_COLOR,
@@ -55,9 +55,27 @@ const App: FunctionComponent = observer(() => {
           const selection = toJS(store.selection);
           if (selection.length > 0) {
             try {
-              const data: PluginNodeData = selection[0]?.data;
+              const padding = selection[0]?.padding || {};
+              const data: PluginNodeData = selection[0]?.data || {};
 
-              if (data?.surrounding) {
+              // padding
+              if (Object.keys(padding).length > 0) {
+                if (!data.surrounding) {
+                  // @ts-expect-error it filled afterwarts
+                  data.surrounding = {};
+                }
+
+                for (const direction of Object.keys(Alignments)) {
+                  data.surrounding[`${direction.toLowerCase()}Padding`] =
+                    !!padding[direction];
+                }
+              } else {
+                for (const direction of Object.keys(Alignments)) {
+                  data.surrounding[`${direction.toLowerCase()}Padding`] = false;
+                }
+              }
+
+              if (Object.keys(data?.surrounding).length > 0) {
                 store.setSurrounding(data.surrounding, true);
               } else {
                 store.resetSurrounding();
