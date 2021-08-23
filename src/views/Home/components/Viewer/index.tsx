@@ -154,16 +154,34 @@ const Viewer: FunctionComponent = observer(() => {
                   })
                 }
               >
-                {/* <Line.Vertical
+                <Line.Vertical
                   labels={store.labels}
                   labelsOutside={store.labelsOutside}
-                  style={{ height: 29, left: 12, top: 3 }}
+                  style={{ height: 29, left: 10, top: 1 }}
+                  active={store.surrounding.verticalBar}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    store.setSurrounding({
+                      ...store.surrounding,
+                      verticalBar: !store.surrounding.verticalBar,
+                    });
+                  }}
                 />
                 <Line.Horizontal
                   labels={store.labels}
                   labelsOutside={store.labelsOutside}
-                  style={{ width: 29, right: 0, top: -17 }}
-                /> */}
+                  style={{ width: 29, right: 0, top: -19 }}
+                  active={store.surrounding.horizontalBar}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    store.setSurrounding({
+                      ...store.surrounding,
+                      horizontalBar: !store.surrounding.horizontalBar,
+                    });
+                  }}
+                />
               </OverlayRect>
 
               <Line.Horizontal
