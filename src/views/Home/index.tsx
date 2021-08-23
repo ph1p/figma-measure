@@ -350,7 +350,7 @@ const Visibility = styled(Refresh)`
 
 const ViewerContainer = styled.div`
   position: relative;
-  height: 389px;
+  height: 305px;
   display: flex;
   justify-content: center;
   align-items: center;

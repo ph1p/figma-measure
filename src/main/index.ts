@@ -22,7 +22,7 @@ import { setTooltip } from './tooltip';
 
 figma.showUI(__html__, {
   width: 285,
-  height: 596,
+  height: 512,
   visible: figma.command !== 'visibility',
 });
 

@@ -146,6 +146,9 @@ const getNodeAndParentNode = (
 export function createPaddingLine({
   direction,
   labelPattern,
+  labelsOutside = false,
+  labels = true,
+  color,
   currentNode,
   parent = null,
 }: {
@@ -154,6 +157,7 @@ export function createPaddingLine({
   currentNode?: SceneNode;
 } & ExchangeStoreValues) {
   const nodeData = getNodeAndParentNode(currentNode, parent);
+  const mainColor = getColor(color);
 
   if (!nodeData || !nodeData.node || !nodeData.parentNode) return;
 
@@ -232,26 +236,35 @@ export function createPaddingLine({
     },
   ];
 
-  line.strokes = [].concat(getColor('#f00000'));
+  line.strokes = [].concat(mainColor);
 
   //LABEL
   const widthOrHeight = Math.abs(distance);
-  const labelFrame = createLabel({
-    text: findAndReplaceNumberPattern(labelPattern, widthOrHeight),
-    color: getColor('#f00000'),
-  });
+  if (labels) {
+    const labelFrame = createLabel({
+      text: findAndReplaceNumberPattern(labelPattern, widthOrHeight),
+      color: mainColor,
+    });
 
-  labelFrame.relativeTransform = group.absoluteTransform;
-  group.appendChild(labelFrame);
+    labelFrame.relativeTransform = group.absoluteTransform;
+    group.appendChild(labelFrame);
 
-  if (direction === 'LEFT' || direction === 'RIGHT') {
-    labelFrame.y -= labelFrame.height / 2;
-    labelFrame.x += widthOrHeight / 2 - labelFrame.width / 2;
-  } else {
-    labelFrame.y += widthOrHeight / 2 - labelFrame.height / 2;
-    labelFrame.x -= labelFrame.width / 2;
+    if (direction === 'LEFT' || direction === 'RIGHT') {
+      labelFrame.y -= labelFrame.height / 2;
+      labelFrame.x += widthOrHeight / 2 - labelFrame.width / 2;
+
+      if (labelsOutside) {
+        labelFrame.y += labelFrame.height / 2 + 4;
+      }
+    } else {
+      labelFrame.y += widthOrHeight / 2 - labelFrame.height / 2;
+      labelFrame.x -= labelFrame.width / 2;
+
+      if (labelsOutside) {
+        labelFrame.x += labelFrame.width / 2 + 4;
+      }
+    }
   }
-
   if (widthOrHeight === 0) {
     figma.notify('The distance is zero');
     group.remove();
