@@ -8,7 +8,7 @@ You can find it here: https://www.figma.com/community/plugin/739918456607459153/
 
 ### Preview
 
-![preview](https://user-images.githubusercontent.com/15351728/110489203-7e557180-80ef-11eb-9983-ad14fb890bf7.gif)
+![measure-demo](https://user-images.githubusercontent.com/15351728/130680299-b5897b27-2451-41b9-b618-572b1a2887d6.gif)
 
 ### How to use?
 
