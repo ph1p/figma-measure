@@ -111,39 +111,42 @@ const getNodeAndParentNode = (
   node?: SceneNode,
   parentNode?: SceneNode
 ): { node?: SceneNode; parentNode?: SceneNode } => {
-  node = figma.currentPage.selection[0] as SceneNode;
+  let currentNode = node ?? (figma.currentPage.selection[0] as SceneNode);
 
   if (figma.currentPage.selection.length === 1 && !parentNode) {
-    if (node.parent && node.parent.type !== 'PAGE') {
-      parentNode = node.parent as SceneNode;
+    if (currentNode.parent && currentNode.parent.type !== 'PAGE') {
+      parentNode = currentNode.parent as SceneNode;
     } else {
       figma.notify('No parent element found');
       return;
     }
-  } else if (figma.currentPage.selection.length === 2 || (node && parentNode)) {
+  } else if (
+    figma.currentPage.selection.length === 2 ||
+    (currentNode && parentNode)
+  ) {
     if (!parentNode) {
       parentNode = figma.currentPage.selection[1] as SceneNode;
     }
 
     const isContained = [];
 
-    if (!contains(node, parentNode)) {
+    if (!contains(currentNode, parentNode)) {
       isContained.push(1);
     }
 
-    if (!contains(parentNode, node)) {
+    if (!contains(parentNode, currentNode)) {
       isContained.push(1);
     }
 
-    if (contains(node, parentNode)) {
+    if (contains(currentNode, parentNode)) {
       const dummyParentNode = parentNode;
-      parentNode = node;
-      node = dummyParentNode;
+      parentNode = currentNode;
+      currentNode = dummyParentNode;
     }
 
     if (isContained.length === 2) {
       figma.notify('The element does not contain the other one');
-      node.setPluginData('padding', '');
+      currentNode.setPluginData('padding', '');
       sendSelection();
       return;
     }
@@ -152,7 +155,10 @@ const getNodeAndParentNode = (
     return;
   }
 
-  return { node, parentNode };
+  return {
+    node: currentNode,
+    parentNode,
+  };
 };
 
 export function createPaddingLine({
@@ -187,8 +193,6 @@ export function createPaddingLine({
 
   const group = figma.group([line], figma.currentPage);
   group.name = `padding-line-${direction.toLowerCase()}`;
-
-  // group.relativeTransform = node.absoluteTransform;
 
   let distance = 0;
 

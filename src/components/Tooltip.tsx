@@ -19,7 +19,7 @@ interface Props {
   borderRadius?: number;
 }
 
-const TooltipComponent = React.forwardRef<unknown, Props>((props, ref) => {
+const Tooltip = React.forwardRef<unknown, Props>((props, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const { handler: HandlerComp } = props;
 
@@ -81,7 +81,7 @@ const TooltipComponent = React.forwardRef<unknown, Props>((props, ref) => {
       </div>
 
       {isOpen && (
-        <Tooltip
+        <Wrapper
           isOpen={isOpen}
           hover={props.hover}
           ref={setPopperElement}
@@ -101,7 +101,7 @@ const TooltipComponent = React.forwardRef<unknown, Props>((props, ref) => {
             hover={props.hover}
             style={styles.arrow}
           />
-        </Tooltip>
+        </Wrapper>
       )}
     </div>
   );
@@ -128,12 +128,12 @@ const Arrow = styled.div<{ hover: boolean }>`
     transform: rotate(45deg);
     top: 0px;
     left: 0px;
-    border-radius: ${(p) => (p.hover ? 2 : 2)}px;
+    border-radius: 2px;
     z-index: -1;
   }
 `;
 
-const Tooltip = styled.div<{
+const Wrapper = styled.div<{
   hover: boolean;
   isOpen: boolean;
   borderRadius?: number;
@@ -164,12 +164,12 @@ const Tooltip = styled.div<{
 
   &[data-popper-placement^='top'] {
     ${Arrow} {
-      bottom: ${(p) => (p.hover ? -1 : -1)}px;
+      bottom: -1px;
     }
   }
   &[data-popper-placement^='bottom'] {
     ${Arrow} {
-      top: ${(p) => (p.hover ? -1 : -1)}px;
+      top: -1px;
     }
   }
   &.place-left {
@@ -179,4 +179,4 @@ const Tooltip = styled.div<{
   }
 `;
 
-export default TooltipComponent;
+export default Tooltip;
