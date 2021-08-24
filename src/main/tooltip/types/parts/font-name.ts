@@ -1,7 +1,7 @@
 import { getFontNameData } from '../../../../shared/helpers';
 import { createTooltipTextNode, solidColor } from '../../../helper';
 
-export default async function fontName(node, parent) {
+export default async function fontName(node, parent, showFontSize) {
   const fontFamilyName = node?.fontName;
 
   if (fontFamilyName) {
@@ -27,9 +27,12 @@ export default async function fontName(node, parent) {
     let start = 0;
 
     fontData.forEach((font, i) => {
-      const text = `${font.family}\n${font.style.join(', ')}${
-        i === fontData.length - 1 ? '' : '\n'
-      }`;
+      let text = `${font.family}\n`;
+      text += `${font.style.join(', ')}`;
+      if (showFontSize) {
+        text += `\nSizes: ${font.fontSize.join(', ')}`;
+      }
+      text += `${i === fontData.length - 1 ? '' : '\n'}`;
 
       textNode.characters += text;
 

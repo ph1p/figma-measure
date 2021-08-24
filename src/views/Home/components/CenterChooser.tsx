@@ -68,7 +68,7 @@ const CenterChooser: FunctionComponent = observer(() => {
               height="21"
               rx="5.5"
               stroke="#A1A1A1"
-              stroke-dasharray="2 2"
+              strokeDasharray="2 2"
             />
           </svg>
         </svg>

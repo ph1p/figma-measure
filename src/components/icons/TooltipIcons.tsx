@@ -24,7 +24,7 @@ export const CornerRadiusIcon: FunctionComponent = () => (
       fillRule="evenodd"
       clipRule="evenodd"
       d="M5 10V11H6V10C6 7.79086 7.79086 6 10 6H10.6667C10.7789 6 10.8901 6.00462 11 6.01369V5.01093C10.8898 5.00368 10.7787 5 10.6667 5H10C7.23858 5 5 7.23857 5 10Z"
-      fill="black"
+      fill="#8C8C8C"
       fillOpacity="0.8"
     />
   </svg>

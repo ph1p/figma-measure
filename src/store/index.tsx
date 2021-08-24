@@ -91,9 +91,14 @@ class RootStore {
       }
     }).length;
 
+    if (key === 'fontSize' && !this.tooltip['fontName']) {
+      return;
+    }
+
     if (truthyFlags > 1 || !this.tooltip[key]) {
       this.tooltip = {
         ...this.tooltip,
+        ...(key === 'fontName' && this.tooltip[key] ? { fontSize: false } : {}),
         [key]: !this.tooltip[key],
       };
     }

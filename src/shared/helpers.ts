@@ -100,7 +100,7 @@ export function transformPixelToUnit(
 
 export const getFontNameData = async (
   textNode: TextNode
-): Promise<(FontName & { style: [] })[]> => {
+): Promise<(FontName & { style: []; fontSize: number[] })[]> => {
   const fontNameData = [];
 
   const loadFontAndPush = async (font: FontName) => {
@@ -115,6 +115,7 @@ export const getFontNameData = async (
         fontNameData.push({
           ...font,
           style: [font.style],
+          fontSize: getFontSizeData(textNode, font.family),
         });
       }
     }
@@ -134,15 +135,22 @@ export const getFontNameData = async (
   return fontNameData;
 };
 
-export const getFontSizeData = (textNode: TextNode) => {
-  const fonSizeData = [];
+export const getFontSizeData = (textNode: TextNode, fontName: string) => {
+  const fonts = {};
 
   if (textNode.fontName === figma.mixed) {
     const len = textNode.characters.length;
     for (let i = 0; i < len; i++) {
-      fonSizeData.push(textNode.getRangeFontSize(i, i + 1) as number);
+      const font = (textNode.getRangeFontName(i, i + 1) as FontName).family;
+      const fontSize = textNode.getRangeFontSize(i, i + 1) as number;
+
+      if (fonts[font]) {
+        fonts[font] = Array.from(new Set(fonts[font].concat(fontSize)));
+      } else {
+        fonts[font] = [fontSize];
+      }
     }
   }
 
-  return Array.from(new Set(fonSizeData));
+  return fontName ? fonts[fontName] : fonts;
 };

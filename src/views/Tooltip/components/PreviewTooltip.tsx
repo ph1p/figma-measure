@@ -37,16 +37,16 @@ export const PreviewTooltip: FunctionComponent = observer(() => {
           </div>
           <FontFamily>
             <span>Inter</span>
-            <p>Medium</p>
+            <p>
+              Medium
+              {store.tooltip.fontSize && (
+                <>
+                  <br />
+                  Sizes: 12, 14
+                </>
+              )}
+            </p>
           </FontFamily>
-        </div>
-      )}
-      {store.tooltip.fontSize && (
-        <div>
-          <div className="icon">
-            <FontSizeIcon />
-          </div>
-          <span>12</span>
         </div>
       )}
       {store.tooltip.width && (
