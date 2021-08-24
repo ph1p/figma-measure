@@ -133,3 +133,16 @@ export const getFontNameData = async (
 
   return fontNameData;
 };
+
+export const getFontSizeData = (textNode: TextNode) => {
+  const fonSizeData = [];
+
+  if (textNode.fontName === figma.mixed) {
+    const len = textNode.characters.length;
+    for (let i = 0; i < len; i++) {
+      fonSizeData.push(textNode.getRangeFontSize(i, i + 1) as number);
+    }
+  }
+
+  return Array.from(new Set(fonSizeData));
+};

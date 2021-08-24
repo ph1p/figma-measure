@@ -125,15 +125,27 @@ const getNodeAndParentNode = (
       parentNode = figma.currentPage.selection[1] as SceneNode;
     }
 
-    if (!contains(node, parentNode) && !contains(parentNode, node)) {
-      figma.notify('The element does not contain the other one');
-      return;
+    const isContained = [];
+
+    if (!contains(node, parentNode)) {
+      isContained.push(1);
+    }
+
+    if (!contains(parentNode, node)) {
+      isContained.push(1);
     }
 
     if (contains(node, parentNode)) {
       const dummyParentNode = parentNode;
       parentNode = node;
       node = dummyParentNode;
+    }
+
+    if (isContained.length === 2) {
+      figma.notify('The element does not contain the other one');
+      node.setPluginData('padding', '');
+      sendSelection();
+      return;
     }
   } else {
     figma.notify('Please select only two elements');
