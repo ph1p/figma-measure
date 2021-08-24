@@ -19,7 +19,7 @@ export const hexToRgb = (hex: string) => {
 };
 
 export function rgbaToHex(data) {
-  const rgba = data.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
+  const rgba = data.replace(/rgba?\(|\s+|\)/g, '').split(',');
   return `#${(
     (1 << 24) +
     (parseInt(rgba[0]) << 16) +

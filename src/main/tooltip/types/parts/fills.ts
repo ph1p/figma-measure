@@ -1,3 +1,4 @@
+import { toFixed } from '../../../../shared/helpers';
 import { createTooltipTextNode, colorString, rgbaToHex } from '../../../helper';
 
 export const createColorNode = (fill, { fontColor = '', fontSize = 0 }) => {
@@ -9,6 +10,9 @@ export const createColorNode = (fill, { fontColor = '', fontSize = 0 }) => {
   textNode.y += 1.5;
 
   textNode.characters += rgbaToHex(colorString(fill.color, fill.opacity));
+  if (fill.opacity !== 1) {
+    textNode.characters += ` · ${toFixed(fill.opacity * 100, 2)}%`;
+  }
 
   const colorRect = figma.createRectangle();
   colorRect.resize(8, 16);
