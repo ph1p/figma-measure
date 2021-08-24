@@ -1,3 +1,4 @@
+import { reaction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import * as ReactDOM from 'react-dom';
@@ -10,6 +11,7 @@ import {
 import styled, { ThemeProvider } from 'styled-components';
 
 import EventEmitter from './shared/EventEmitter';
+import { Alignments, PluginNodeData } from './shared/interfaces';
 import { getStoreFromMain, StoreProvider, trunk, useStore } from './store';
 import {
   DEFAULT_COLOR,
@@ -33,14 +35,61 @@ const App: FunctionComponent = observer(() => {
     EventEmitter.ask('get visibility').then((visibility: boolean) => {
       store.setVisibility(visibility);
     });
+
     // check selection
     EventEmitter.ask('current selection').then((data: string[]) =>
       store.setSelection(data)
     );
+
     EventEmitter.on('selection', (data) => store.setSelection(data));
 
     return () => EventEmitter.remove('selection');
   }, []);
+
+  // set data from selection
+  useEffect(
+    () =>
+      reaction(
+        () => store.selection.slice(),
+        () => {
+          const selection = toJS(store.selection);
+          if (selection.length > 0) {
+            try {
+              const padding = selection[0]?.padding || {};
+              const data: PluginNodeData = selection[0]?.data || {};
+
+              // padding
+              if (Object.keys(padding).length > 0) {
+                if (!data.surrounding) {
+                  // @ts-expect-error it filled afterwarts
+                  data.surrounding = {};
+                }
+
+                for (const direction of Object.keys(Alignments)) {
+                  data.surrounding[`${direction.toLowerCase()}Padding`] =
+                    !!padding[direction];
+                }
+              } else {
+                for (const direction of Object.keys(Alignments)) {
+                  data.surrounding[`${direction.toLowerCase()}Padding`] = false;
+                }
+              }
+
+              if (Object.keys(data?.surrounding).length > 0) {
+                store.setSurrounding(data.surrounding, true);
+              } else {
+                store.resetSurrounding();
+              }
+            } catch {
+              store.resetSurrounding();
+            }
+          } else {
+            store.resetSurrounding();
+          }
+        }
+      ),
+    []
+  );
 
   return (
     <ThemeProvider
@@ -108,11 +157,13 @@ const Main = styled.div`
 `;
 
 const ViewSwitch = styled.div<{ menu: number }>`
-  border-top: 1px solid #e6e6e6;
   display: flex;
   position: relative;
   overflow: hidden;
   height: 42px;
+  border-width: 1px 0 0;
+  border-color: #eee;
+  border-style: solid;
   div {
     transition: font-weight 0.3s;
     position: relative;

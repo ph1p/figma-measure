@@ -1,3 +1,4 @@
+import { toFixed } from '../../../../shared/helpers';
 import { createTooltipTextNode } from '../../../helper';
 
 export default function opacity(
@@ -17,7 +18,7 @@ export default function opacity(
     });
     textNode.x += 20;
     textNode.y += 1.5;
-    textNode.characters += `${node.opacity * 100}%`;
+    textNode.characters += `${toFixed(node.opacity * 100, 2)}%`;
 
     figma.group([iconFrame, textNode], parent);
   }

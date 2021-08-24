@@ -1,10 +1,10 @@
-import { transformPixelToUnit } from '../../../../shared/helpers';
+import { findAndReplaceNumberPattern } from '../../../../shared/helpers';
 import { createTooltipTextNode } from '../../../helper';
 
 export default function width(
   node: SceneNode,
   parent: SceneNode,
-  { fontColor = '', fontSize = 0, unit = '' }
+  { fontColor = '', fontSize = 0, labelPattern }
 ): void {
   const iconNode = figma.createNodeFromSvg(
     `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="https://www.w3.org/2000/svg">
@@ -17,7 +17,7 @@ export default function width(
   });
   textNode.x += 20;
   textNode.y += 1.5;
-  textNode.characters += transformPixelToUnit(node.width, unit);
+  textNode.characters += findAndReplaceNumberPattern(labelPattern, node.width);
 
   figma.group([iconNode, textNode], parent);
 }

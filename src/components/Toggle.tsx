@@ -7,7 +7,7 @@ const Wrapper = styled.div<{ inline?: boolean }>`
   align-items: center;
   width: ${(props) => (props.inline ? 'auto' : '100%')};
   label {
-    font-weight: bold;
+    font-weight: normal;
     user-select: none;
     cursor: pointer;
     margin-right: ${(props) => (props.inline ? 5 : 0)}px;

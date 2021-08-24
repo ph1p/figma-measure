@@ -8,14 +8,15 @@ export enum Alignments {
 
 export interface SetTooltipOptions {
   flags: TooltipSettings;
-  unit: string;
   offset: number;
+  labelPattern: string;
   position: TooltipPositions;
   vertical?: TooltipPositions;
   horizontal?: TooltipPositions;
   backgroundColor?: string;
   fontColor?: string;
   fontSize?: number;
+  name?: string;
 }
 export interface LineParameterTypes {
   left: number;
@@ -29,22 +30,22 @@ export interface LineParameterTypes {
   lineHorizontalAlign: Alignments;
   strokeCap: string;
   strokeOffset: number;
-  unit: string;
   color: string;
   labels: boolean;
   labelsOutside: boolean;
+  labelPattern: string;
 }
 export interface TooltipSettings {
   width: boolean;
   height: boolean;
-  fontFamily: boolean;
-  fontStyle: boolean;
+  fontName: boolean;
   fontSize: boolean;
   color: boolean;
   opacity: boolean;
   stroke: boolean;
   cornerRadius: boolean;
   points: boolean;
+  name: boolean;
 }
 
 export interface PluginNodeData {
@@ -72,6 +73,10 @@ export interface SurroundingSettings {
   leftBar: boolean;
   rightBar: boolean;
   bottomBar: boolean;
+  topPadding: boolean;
+  leftPadding: boolean;
+  rightPadding: boolean;
+  bottomPadding: boolean;
   horizontalBar: boolean;
   verticalBar: boolean;
   center: boolean;
@@ -98,7 +103,6 @@ export interface MainMeasurements {
   surrounding: SurroundingSettings;
   tooltipOffset: number;
   tooltip: TooltipSettings;
-  unit: string;
 }
 
 export interface Store {
@@ -108,7 +112,7 @@ export interface Store {
   selection: unknown[];
   fill: FillTypes;
   opacity: number;
-  unit: string;
+  labelPattern: string;
   strokeCap: StrokeCap | 'STANDARD';
   strokeOffset: number;
   surrounding: SurroundingSettings;
@@ -122,4 +126,10 @@ export interface NodeSelection {
   type: NodeType;
   hasSpacing: boolean;
   data: unknown;
+  padding: Record<Alignments, string>;
+}
+
+export interface ExchangeStoreValues
+  extends Omit<Store, 'selection' | 'visibility' | 'surrounding'> {
+  surrounding?: SurroundingSettings;
 }

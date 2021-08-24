@@ -1,54 +1,50 @@
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useContext, useMemo } from 'react';
-import styled, { ThemeContext } from 'styled-components';
+import React, { FunctionComponent, useMemo } from 'react';
+import styled from 'styled-components';
 
 import { Colors } from '../../components/ColorPicker';
-import { Toggle } from '../../components/Toggle';
+import { Input } from '../../components/Input';
+import Tooltip from '../../components/Tooltip';
 import { EyeClosedIcon, EyeIcon } from '../../components/icons/EyeIcons';
 import { RefreshIcon } from '../../components/icons/RefreshIcon';
-import { SpacingIcon } from '../../components/icons/SpacingIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import EventEmitter from '../../shared/EventEmitter';
 import { useStore } from '../../store';
+import { theme } from '../../style';
 
 import CenterChooser from './components/CenterChooser';
 import LineChooser from './components/LineChooser';
 import Viewer from './components/Viewer';
 
 const Home: FunctionComponent = observer(() => {
-  const theme = useContext(ThemeContext);
   const store = useStore();
-
-  const hasSpacing = useMemo(() => {
-    return store.selection.some((selection) => selection.hasSpacing);
-  }, [store.selection]);
-
-  const refreshSelection = () =>
-    EventEmitter.ask('current selection').then((data: string[]) =>
-      store.setSelection(data)
-    );
-
-  const addSpacing = () => {
-    EventEmitter.emit('draw spacing', {
-      color: store.color,
-      labels: store.labels,
-      unit: store.unit,
-      strokeOffset: store.strokeOffset,
-      labelsOutside: store.labelsOutside,
-    });
-    refreshSelection();
-  };
-
-  const removeSpacing = () => {
-    if (hasSpacing) {
-      EventEmitter.emit('remove spacing');
-      refreshSelection();
-    }
-  };
 
   const removeAllMeasurements = () => {
     if (confirm('Do you really want to remove all measurements?')) {
       EventEmitter.emit('remove all measurements');
+    }
+  };
+
+  const labelDotIndex = useMemo(() => {
+    if (!store.labels) {
+      return 1;
+    } else if (store.labelsOutside) {
+      return 3;
+    }
+    return 2;
+  }, [store.labels, store.labelsOutside]);
+
+  const changeLabel = () => {
+    switch (labelDotIndex) {
+      case 2:
+        store.setLabelsOutside(true);
+        break;
+      case 1:
+        store.setLabelsOutside(false);
+        break;
+      case 3:
+        store.setLabels(false);
+        break;
     }
   };
 
@@ -66,81 +62,159 @@ const Home: FunctionComponent = observer(() => {
         )}
         <Viewer />
 
-        <Visibility onClick={() => store.toggleVisibility()}>
-          {store.visibility ? <EyeIcon /> : <EyeClosedIcon />}
-        </Visibility>
-
-        <Refresh
-          active={store.selection.length > 0}
-          onClick={() => store.sendMeasurements()}
+        <Tooltip
+          hover
+          handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
+            <Visibility ref={ref} onClick={() => store.toggleVisibility()}>
+              {store.visibility ? <EyeIcon /> : <EyeClosedIcon />}
+            </Visibility>
+          ))}
         >
-          <RefreshIcon />
-        </Refresh>
+          Show/Hide
+        </Tooltip>
 
-        <Trash onClick={removeAllMeasurements}>
-          <TrashIcon />
-        </Trash>
+        <Tooltip
+          hover
+          handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
+            <Refresh
+              ref={ref}
+              active={store.selection.length > 0}
+              onClick={() => store.sendMeasurements()}
+            >
+              <RefreshIcon />
+            </Refresh>
+          ))}
+        >
+          Reload measurements
+        </Tooltip>
 
-        {hasSpacing && (
-          <RemoveSpacing onClick={removeSpacing}>
-            <SpacingIcon remove />
-          </RemoveSpacing>
-        )}
+        <Tooltip
+          hover
+          handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
+            <Trash ref={ref} onClick={removeAllMeasurements}>
+              <TrashIcon />
+            </Trash>
+          ))}
+        >
+          Remove all measurements
+        </Tooltip>
 
-        <Spacing active={store.selection.length === 2} onClick={addSpacing}>
-          <SpacingIcon />
-        </Spacing>
+        <Tooltip
+          padding={6}
+          borderRadius={12}
+          handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
+            <ColorControl ref={ref} />
+          ))}
+        >
+          <Colors
+            colors={theme.colors}
+            onChange={(color) => store.setColor(color)}
+            color={store.color}
+          />
+        </Tooltip>
+
+        <Tooltip
+          hover
+          handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
+            <LabelControl
+              ref={ref}
+              index={labelDotIndex}
+              onClick={() => changeLabel()}
+            >
+              <div className="label"></div>
+              <div className="dots">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </LabelControl>
+          ))}
+        >
+          Change label alignment
+        </Tooltip>
       </ViewerContainer>
 
       <LineChooser />
       <CenterChooser />
 
       <InputContainer>
-        <label htmlFor="color">Color</label>
-        <Colors
-          colors={theme.colors}
-          onChange={(color) => store.setColor(color)}
-          color={store.color}
+        <Input
+          width={140}
+          label="Units"
+          value={store.labelPattern}
+          onChange={(e) => store.setLabelPattern(e.currentTarget.value)}
         />
-      </InputContainer>
 
-      <LabelSettings>
-        <Toggle
-          inline
-          checked={store.labelsOutside}
-          label="Outside"
-          onChange={(e) => store.setLabelsOutside(e.currentTarget.checked)}
-        />
-        <Toggle
-          inline
-          checked={store.labels}
-          label="Numbers"
-          onChange={(e) => store.setLabels(e.currentTarget.checked)}
-        />
-        <div className="input" style={{ width: 55 }}>
-          <input
-            type="text"
-            value={store.unit}
-            onChange={(e) => store.setUnit(e.currentTarget.value)}
-          />
-        </div>
-      </LabelSettings>
+        <Tooltip
+          handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
+            <div ref={ref} className="question">
+              ?
+            </div>
+          ))}
+        >
+          <UnitDescription>
+            You can write a "complex" pattern like this{' '}
+            <strong>($###*2.5)</strong> or a simple one <strong>($)</strong>
+            <p>
+              <strong>$</strong> represents the value, after that you can add a
+              multiplier or divider (<strong>*</strong> or <strong>/</strong>)
+              the repetition of the <strong>#</strong> symbol indicates the
+              number of digits after the decimal point.
+              <br /> You can also fill the field with only one unit of
+              measurement and everything will be automatically calculated based
+              on 72dpi. (cm,mm,px,pt,dp,",in)
+            </p>
+            <h3>Example</h3>
+            <p>
+              Imagine your base unit is 8px=1x. So when a square is 64px the
+              measurement will be 8x as the result.
+            </p>
+            <strong>($###/8)x</strong>
+          </UnitDescription>
+        </Tooltip>
+      </InputContainer>
     </>
   );
 });
 
-const InputContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 14px;
-  align-items: center;
-  label {
-    font-weight: bold;
+const UnitDescription = styled.div`
+  width: 200px;
+  strong {
+    background-color: #fff;
+    border-radius: 3px;
+    padding: 1px 3px;
+    color: #000;
+    display: inline-block;
+  }
+  h3 {
+    margin: 5px 0 8px;
   }
 `;
 
-const LabelSettings = styled(InputContainer)`
-  border-top: 1px solid #eee;
+const InputContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 14px;
+  position: relative;
+  .question {
+    background-color: ${(props) => props.theme.hoverColor};
+    position: absolute;
+    left: 50px;
+    top: 19px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    border-radius: 4px;
+    color: ${(props) => props.theme.color};
+    text-align: center;
+    cursor: pointer;
+    &:hover {
+      background-color: ${(props) => props.theme.color};
+      color: ${(props) => props.theme.hoverColor};
+    }
+  }
 `;
 
 const ViewerOverlay = styled.div`
@@ -156,28 +230,6 @@ const ViewerOverlay = styled.div`
   text-align: center;
   font-weight: bold;
   z-index: 3;
-`;
-
-const Spacing = styled.div<{ active?: boolean; disable?: boolean }>`
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  cursor: pointer;
-  opacity: ${(props) => (props.active ? 1 : 0.5)};
-  border-radius: 7px;
-  line {
-    stroke: ${(props) => props.theme.color};
-  }
-  &:hover {
-    rect {
-      stroke: ${(props) => props.theme.color};
-    }
-  }
-`;
-
-const RemoveSpacing = styled(Spacing)`
-  right: 54px;
-  opacity: 1;
 `;
 
 const Refresh = styled.div<{ active?: boolean }>`
@@ -203,10 +255,84 @@ const Refresh = styled.div<{ active?: boolean }>`
   }
 `;
 
+const ColorControl = styled(Refresh)`
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  top: initial;
+  opacity: 1;
+  z-index: 4;
+  &::before {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 7px;
+    background-color: ${(p) => p.theme.color};
+  }
+`;
+
+const LabelControl = styled(Refresh)<{ index?: number }>`
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  left: initial;
+  top: initial;
+  cursor: pointer;
+  border-radius: 7px;
+  opacity: 1;
+  z-index: 2;
+  .dots {
+    display: flex;
+    width: 85%;
+    justify-content: space-evenly;
+    margin: 0 auto;
+    span {
+      border-radius: 100%;
+      width: 3px;
+      height: 3px;
+      background-color: #e3e3e3;
+      display: inline-block;
+
+      &:nth-child(${(p) => p.index}) {
+        background-color: #000;
+      }
+    }
+  }
+  .label {
+    height: 18px;
+    position: relative;
+    z-index: 5;
+    &::before,
+    &::after {
+      background-color: ${(p) => p.theme.color};
+      content: '';
+      position: absolute;
+    }
+    &::before {
+      left: 4px;
+      width: 20px;
+      height: 1px;
+      top: 10px;
+    }
+    &::after {
+      content: '';
+      display: ${(p) => (p.index === 1 ? 'none' : 'block')};
+      position: absolute;
+      left: 10px;
+      width: 8px;
+      height: 3px;
+      top: ${(p) => (p.index === 3 ? 5 : 9)}px;
+    }
+  }
+`;
+
 const Trash = styled(Refresh)`
   top: initial;
   left: 12px;
-  bottom: 12px;
+  top: 12px;
   opacity: 1;
   z-index: 10;
   svg {
@@ -215,7 +341,7 @@ const Trash = styled(Refresh)`
 `;
 
 const Visibility = styled(Refresh)`
-  left: 12px;
+  left: 48px;
   top: 12px;
   z-index: 10;
   opacity: 1;
@@ -223,7 +349,7 @@ const Visibility = styled(Refresh)`
 
 const ViewerContainer = styled.div`
   position: relative;
-  height: 271px;
+  height: 355px;
   display: flex;
   justify-content: center;
   align-items: center;

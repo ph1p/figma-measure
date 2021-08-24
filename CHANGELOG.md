@@ -1,5 +1,34 @@
+## 3.0.0 (2021-08-24)
+
+* refactor: update settings page and add fix label spacing ([6895693](https://github.com/ph1p/figma-measure/commit/6895693))
+* refactor(font): rename files and update font-size ([b978b7d](https://github.com/ph1p/figma-measure/commit/b978b7d))
+* refactor(sonar): remove some bugs and code smells ([d87d65d](https://github.com/ph1p/figma-measure/commit/d87d65d))
+* refactor(style): fix some styles and prepare padding integration ([e5b62b4](https://github.com/ph1p/figma-measure/commit/e5b62b4))
+* feat(font-size): add multiple font sizes ([17313ec](https://github.com/ph1p/figma-measure/commit/17313ec))
+* feat(font-size): move font-size to font section and handle tooltip switches ([6c9a067](https://github.com/ph1p/figma-measure/commit/6c9a067))
+* feat(label): add new label control ([600424c](https://github.com/ph1p/figma-measure/commit/600424c))
+* feat(lines): add center lines ([b6e63f3](https://github.com/ph1p/figma-measure/commit/b6e63f3))
+* feat(padding): add line configuration and fix some styles ([85d0bb0](https://github.com/ph1p/figma-measure/commit/85d0bb0))
+* feat(padding): add new padding data to elements ([cf381b0](https://github.com/ph1p/figma-measure/commit/cf381b0))
+* feat(padding): finish first version to add padding ([8a9d55d](https://github.com/ph1p/figma-measure/commit/8a9d55d))
+* feat(padding): fix some bugs and add node containment checks ([a1f77f3](https://github.com/ph1p/figma-measure/commit/a1f77f3))
+* feat(pattern): add label pattern and add first methods for padding ([43ad122](https://github.com/ph1p/figma-measure/commit/43ad122))
+* feat(settings): add precision, mulitplicator on a settings page and fix font tooltip ([20a6db6](https://github.com/ph1p/figma-measure/commit/20a6db6))
+* feat(tooltip): add new name property ([f23eeae](https://github.com/ph1p/figma-measure/commit/f23eeae))
+* feat(tooltip): add tooltip to show informations ([751df89](https://github.com/ph1p/figma-measure/commit/751df89))
+* feat(viewer): start to implement new viewer design ([d208dca](https://github.com/ph1p/figma-measure/commit/d208dca))
+* styles(radius): update some border radius and add new images ([743de06](https://github.com/ph1p/figma-measure/commit/743de06))
+* fix(opacity): add correct decimal points ([ae31f83](https://github.com/ph1p/figma-measure/commit/ae31f83))
+* fix(selection): change surroundings correctly on router change ([d4edd4d](https://github.com/ph1p/figma-measure/commit/d4edd4d))
+* fix(size): add correct width and height ([f747e9a](https://github.com/ph1p/figma-measure/commit/f747e9a))
+* style: update colors tooltip ([0296e0e](https://github.com/ph1p/figma-measure/commit/0296e0e))
+* style(settings): add groups ([6f19935](https://github.com/ph1p/figma-measure/commit/6f19935))
+
+
+
 ## <small>2.1.3 (2021-03-17)</small>
 
+* 2.1.3 ([2e410e9](https://github.com/ph1p/figma-measure/commit/2e410e9))
 * fix(center): enable center fill on groups ([744fa0b](https://github.com/ph1p/figma-measure/commit/744fa0b))
 
 

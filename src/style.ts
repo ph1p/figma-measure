@@ -145,17 +145,21 @@ h4 {
 }
 
 ::-webkit-scrollbar {
-  width: 4px;
-  &:horizontal {
-    height: 4px;
-  }
+  width: 14px;
+}
+
+::-webkit-scrollbar:horizontal {
+  height: 14px;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: #e9e9e9;
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #000000;
+  border-radius: 35px;
+  background-color: rgba(0,0,0,0.7);
+  border: 5px solid transparent;
+  background-clip: content-box;
 }
 `;

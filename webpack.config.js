@@ -9,6 +9,9 @@ const { figmaPlugin } = require('./package.json');
 module.exports = (env, argv) => ({
   mode: argv.mode === 'production' ? 'production' : 'development',
   devtool: argv.mode === 'production' ? false : 'inline-source-map',
+  devServer: {
+    https: true,
+  },
   optimization: {
     minimize: argv.mode === 'production',
     minimizer:

@@ -15,7 +15,7 @@ const Tooltip: FunctionComponent = observer(() => {
       <Preview>
         <PreviewTooltip />
       </Preview>
-      <TooltipDistance>
+      <Header>
         <label htmlFor="tooltip-distance">Distance</label>
         <div className="input icon" style={{ width: 75 }}>
           <input
@@ -42,17 +42,17 @@ const Tooltip: FunctionComponent = observer(() => {
             </svg>
           </div>
         </div>
-      </TooltipDistance>
+      </Header>
       <ToggleInputs>
         <Toggle
-          checked={store.tooltip.fontStyle}
-          label="Font-Style"
-          onChange={() => store.toggleTooltipSetting('fontStyle')}
+          checked={store.tooltip.name}
+          label="Name"
+          onChange={() => store.toggleTooltipSetting('name')}
         />
         <Toggle
-          checked={store.tooltip.fontFamily}
-          label="Font-Family"
-          onChange={() => store.toggleTooltipSetting('fontFamily')}
+          checked={store.tooltip.fontName}
+          label="Font"
+          onChange={() => store.toggleTooltipSetting('fontName')}
         />
         <Toggle
           checked={store.tooltip.fontSize}
@@ -99,7 +99,7 @@ const Tooltip: FunctionComponent = observer(() => {
   );
 });
 
-const TooltipDistance = styled.div`
+const Header = styled.div`
   position: relative;
   top: 0;
   display: flex;
@@ -110,6 +110,7 @@ const TooltipDistance = styled.div`
   border-bottom: 1px solid #e6e6e6;
   label {
     font-weight: bold;
+    margin-right: 10px;
   }
 `;
 
@@ -120,7 +121,7 @@ const Wrapper = styled.div`
 
 const ToggleInputs = styled.div`
   overflow: auto;
-  height: 150px;
+  height: 186px;
   padding: 12px;
   > div {
     margin-bottom: 10px;

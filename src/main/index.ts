@@ -2,26 +2,27 @@ import './store';
 
 import EventEmitter from '../shared/EventEmitter';
 import { VERSION } from '../shared/constants';
-import { transformPixelToUnit } from '../shared/helpers';
+import { findAndReplaceNumberPattern } from '../shared/helpers';
 import {
   Alignments,
   FillTypes,
   LineParameterTypes,
   PluginNodeData,
-  Store,
   NodeSelection,
   SurroundingSettings,
   TooltipPositions,
+  ExchangeStoreValues,
 } from '../shared/interfaces';
 
 import { hexToRgb, solidColor } from './helper';
+import { getPadding, createPaddingLine, removePaddingGroup } from './padding';
 import { drawSpacing, getSpacing, setSpacing } from './spacing';
 import { getState } from './store';
 import { setTooltip } from './tooltip';
 
 figma.showUI(__html__, {
   width: 285,
-  height: 526,
+  height: 562,
   visible: figma.command !== 'visibility',
 });
 
@@ -100,10 +101,10 @@ export function createLabel({
   return labelFrame;
 }
 
-function getGlobalGroup() {
-  return (figma.currentPage.children.find(
+export function getGlobalGroup() {
+  return figma.currentPage.children.find(
     (node) => node.getPluginData('isGlobalGroup') === '1'
-  ) as unknown) as GroupNode | FrameNode;
+  ) as unknown as GroupNode | FrameNode;
 }
 
 export function addToGlobalGroup(node: SceneNode) {
@@ -129,9 +130,9 @@ function nodeGroup(node) {
   }
 
   return (
-    ((globalGroup.children.find(
+    (globalGroup.children.find(
       (currentNode) => currentNode.getPluginData('parent') === node.id
-    ) as unknown) as GroupNode | FrameNode) || null
+    ) as unknown as GroupNode | FrameNode) || null
   );
 }
 
@@ -189,13 +190,14 @@ function createLine(options) {
     lineHorizontalAlign = Alignments.BOTTOM,
     strokeCap = 'NONE',
     strokeOffset = 3,
-    unit = '',
     color = '',
     labels = true,
     labelsOutside = false,
+    labelPattern = '',
   }: LineParameterTypes = options;
 
   const LINE_OFFSET = strokeOffset * -1;
+  const LABEL_OUTSIDE_MARGIN = 4;
 
   const mainColor = getColor(color);
 
@@ -218,7 +220,7 @@ function createLine(options) {
 
     if (labels) {
       labelFrame = createLabel({
-        text: transformPixelToUnit(heightOrWidth, unit),
+        text: findAndReplaceNumberPattern(labelPattern, heightOrWidth),
         color: mainColor,
       });
     }
@@ -305,10 +307,13 @@ function createLine(options) {
         if (txtVerticalAlign === Alignments.CENTER) {
           if (labelsOutside) {
             if (lineHorizontalAlign === Alignments.TOP) {
-              labelFrame.y = (labelFrame.height / 2 - LINE_OFFSET) * -1;
+              labelFrame.y =
+                (labelFrame.height / 2 + LABEL_OUTSIDE_MARGIN) * -1;
             } else if (lineHorizontalAlign === Alignments.BOTTOM) {
               labelFrame.y =
-                labelFrame.height / 2 - LINE_OFFSET + line.strokeWeight;
+                labelFrame.height / 2 +
+                LABEL_OUTSIDE_MARGIN +
+                line.strokeWeight;
             } else {
               labelFrame.y = 0;
             }
@@ -334,10 +339,10 @@ function createLine(options) {
         if (txtHorizontalAlign === Alignments.CENTER) {
           if (labelsOutside) {
             if (lineVerticalAlign === Alignments.RIGHT) {
-              labelFrame.x = labelFrame.width / 2 - LINE_OFFSET;
+              labelFrame.x = labelFrame.width / 2 + LABEL_OUTSIDE_MARGIN;
             } else if (lineVerticalAlign === Alignments.LEFT) {
               labelFrame.x -=
-                labelFrame.width / 2 - LINE_OFFSET + line.strokeWeight;
+                labelFrame.width / 2 + LABEL_OUTSIDE_MARGIN + line.strokeWeight;
             } else {
               labelFrame.x = 0;
             }
@@ -470,13 +475,15 @@ function getSelectionArray(): NodeSelection[] {
     return {
       id: node.id,
       type: node.type,
+      padding: getPadding(node),
       hasSpacing: Object.keys(getSpacing(node)).length > 0,
       data,
     };
   });
 }
 
-const sendSelection = () => EventEmitter.emit('selection', getSelectionArray());
+export const sendSelection = () =>
+  EventEmitter.emit('selection', getSelectionArray());
 
 const cleanOrphanNodes = () => {
   const group = getGlobalGroup();
@@ -484,8 +491,11 @@ const cleanOrphanNodes = () => {
   if (group) {
     for (const node of group.children) {
       const foundNode = figma.getNodeById(node.getPluginData('parent'));
+      const foundPaddingNode = figma.getNodeById(
+        JSON.parse(node.getPluginData('padding-parent') || '{}').parentId
+      );
 
-      if (!foundNode && !node.getPluginData('connected')) {
+      if (!foundNode && !node.getPluginData('connected') && !foundPaddingNode) {
         node.remove();
       }
     }
@@ -498,14 +508,16 @@ const removeAllMeasurementConnections = () => {
   if (group) {
     for (const node of group.children) {
       const foundNode = figma.getNodeById(node.getPluginData('parent'));
-      const connectNodes = JSON.parse(node.getPluginData('connected') || '[]');
+      const spacingConnectedNodes = JSON.parse(
+        node.getPluginData('connected') || '[]'
+      );
 
-      if (connectNodes.length > 0) {
-        for (const connectedNode of connectNodes.map((id: string) =>
-          figma.getNodeById(id)
+      if (spacingConnectedNodes.length > 0) {
+        for (const spacingConnectedNode of spacingConnectedNodes.map(
+          (id: string) => figma.getNodeById(id)
         )) {
-          if (connectedNode) {
-            connectedNode.setPluginData('spacing', '');
+          if (spacingConnectedNode) {
+            spacingConnectedNode.setPluginData('spacing', '');
           }
         }
       }
@@ -548,7 +560,7 @@ figma.on('selectionchange', () => {
 
         if (currentSelection !== previousSelection) {
           const state = await getState();
-          const store = {
+          const store: ExchangeStoreValues = {
             labelsOutside: state.labelsOutside,
             labels: state.labels,
             color: state.color,
@@ -558,11 +570,11 @@ figma.on('selectionchange', () => {
             strokeOffset: state.strokeOffset,
             tooltipOffset: state.tooltipOffset,
             tooltip: state.tooltip,
-            unit: state.unit,
+            labelPattern: state.labelPattern,
           };
 
           previousSelection = currentSelectionAsJSONString();
-          setMeasurements(store);
+          await setMeasurements(store);
         }
       }, 1000);
     }
@@ -598,22 +610,17 @@ EventEmitter.on('remove all measurements', () =>
   removeAllMeasurementConnections()
 );
 
-EventEmitter.on('set measurements', (store: Partial<Store>) =>
+EventEmitter.on('set measurements', async (store: ExchangeStoreValues) =>
   setMeasurements(store)
 );
 
-const setMeasurements = (store?: Partial<Store>) => {
+const setMeasurements = async (store?: ExchangeStoreValues) => {
   cleanOrphanNodes();
 
-  let data: PluginNodeData | any = {};
+  let data: PluginNodeData = {};
 
   const settings = {
-    strokeCap: store.strokeCap,
-    strokeOffset: store.strokeOffset,
-    unit: store.unit,
-    color: store.color,
-    labels: store.labels,
-    labelsOutside: store.labelsOutside,
+    ...store,
   };
 
   for (const node of figma.currentPage.selection) {
@@ -663,9 +670,9 @@ const setMeasurements = (store?: Partial<Store>) => {
           }
 
           // get connected node
-          const foundConnectedNode = (figma.getNodeById(
+          const foundConnectedNode = figma.getNodeById(
             connectedNodeId
-          ) as unknown) as SceneNode;
+          ) as unknown as SceneNode;
 
           // node removed
           if (!foundConnectedNode) {
@@ -692,18 +699,36 @@ const setMeasurements = (store?: Partial<Store>) => {
         })
         .forEach((connectedNodeId) => {
           drawSpacing(
-            [
-              node,
-              (figma.getNodeById(connectedNodeId) as unknown) as SceneNode,
-            ],
+            [node, figma.getNodeById(connectedNodeId) as unknown as SceneNode],
             {
               color: settings.color,
               labels: settings.labels,
               labelsOutside: settings.labelsOutside,
-              unit: settings.unit,
-              strokeOffset: settings.strokeOffset,
+              labelPattern: settings.labelPattern,
+              // strokeOffset: settings.strokeOffset,
             }
           );
+        });
+    }
+
+    // Padding
+    const padding = getPadding(node);
+    if (padding) {
+      Object.keys(Alignments)
+        .filter((k) => k !== Alignments.CENTER && padding[k])
+        .forEach((direction: Alignments) => {
+          removePaddingGroup(node, direction);
+
+          const paddingLine = createPaddingLine({
+            ...settings,
+            direction,
+            currentNode: node,
+            parent: figma.getNodeById(padding[direction]) as SceneNode,
+          });
+
+          if (paddingLine) {
+            addToGlobalGroup(paddingLine);
+          }
         });
     }
 
@@ -726,12 +751,12 @@ const setMeasurements = (store?: Partial<Store>) => {
     }
 
     if (surrounding.tooltip) {
-      const tooltip = setTooltip(
+      const tooltip = await setTooltip(
         {
           flags: store.tooltip,
           offset: store.tooltipOffset,
           position: surrounding.tooltip || TooltipPositions.NONE,
-          unit: settings.unit,
+          labelPattern: settings.labelPattern,
         },
         node
       );

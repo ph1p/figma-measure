@@ -19,6 +19,10 @@ const DEFAULT_SURROUNDING_FLAGS: SurroundingSettings = {
   leftBar: false,
   rightBar: false,
   bottomBar: false,
+  topPadding: false,
+  leftPadding: false,
+  rightPadding: false,
+  bottomPadding: false,
   horizontalBar: false,
   verticalBar: false,
   center: false,
@@ -45,7 +49,7 @@ class RootStore {
   strokeCap: StrokeCap | 'STANDARD' = 'STANDARD';
   strokeOffset = 10;
 
-  unit = 'px';
+  labelPattern = '($)px';
 
   @ignore
   surrounding: SurroundingSettings = DEFAULT_SURROUNDING_FLAGS;
@@ -56,12 +60,12 @@ class RootStore {
     points: true,
     width: true,
     height: true,
-    fontFamily: true,
-    fontStyle: true,
+    fontName: true,
     fontSize: true,
     color: true,
     opacity: true,
     stroke: true,
+    name: true,
   };
 
   setColor(color: string) {
@@ -75,6 +79,7 @@ class RootStore {
   }
 
   setLabelsOutside(labelsOutside: boolean) {
+    this.labels = true;
     this.labelsOutside = labelsOutside;
     this.sendMeasurements();
   }
@@ -86,9 +91,14 @@ class RootStore {
       }
     }).length;
 
+    if (key === 'fontSize' && !this.tooltip['fontName']) {
+      return;
+    }
+
     if (truthyFlags > 1 || !this.tooltip[key]) {
       this.tooltip = {
         ...this.tooltip,
+        ...(key === 'fontName' && this.tooltip[key] ? { fontSize: false } : {}),
         [key]: !this.tooltip[key],
       };
     }
@@ -108,8 +118,8 @@ class RootStore {
     };
   }
 
-  setUnit(unit: string) {
-    this.unit = unit;
+  setLabelPattern(labelPattern: string) {
+    this.labelPattern = labelPattern;
     this.sendMeasurements();
   }
 
@@ -174,7 +184,7 @@ class RootStore {
           surrounding: toJS(this.surrounding),
           tooltipOffset: this.tooltipOffset,
           tooltip: toJS(this.tooltip),
-          unit: this.unit,
+          labelPattern: this.labelPattern,
         })
       );
     }

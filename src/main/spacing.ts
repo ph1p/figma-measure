@@ -1,5 +1,5 @@
 import EventEmitter from '../shared/EventEmitter';
-import { transformPixelToUnit } from '../shared/helpers';
+import { findAndReplaceNumberPattern } from '../shared/helpers';
 
 import { addToGlobalGroup, createLabel, getColor } from '.';
 
@@ -50,7 +50,7 @@ EventEmitter.on('draw spacing', (settings) => {
   }
 });
 
-const distanceBetweenTwoPoints = (x1, y1, x2, y2) =>
+export const distanceBetweenTwoPoints = (x1, y1, x2, y2) =>
   Math.floor(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)));
 
 const getShapeValues = (shape: SceneNode) => {
@@ -79,11 +79,12 @@ export const drawSpacing = (
   {
     color = '',
     labels = true,
-    unit = '',
+    labelPattern = '',
     labelsOutside = false,
-    strokeOffset = 0,
   }
 ) => {
+  const LABEL_OUTSIDE_MARGIN = 4;
+
   if (rects.length !== 2) {
     return;
   }
@@ -221,17 +222,17 @@ export const drawSpacing = (
     if (labels) {
       const label = createLabel({
         baseNode: line1,
-        text: `${transformPixelToUnit(
-          distanceBetweenTwoPoints(yellowX1, yellowY1, yellowX2, yellowY2),
-          unit
-        )}`,
+        text: findAndReplaceNumberPattern(
+          labelPattern,
+          distanceBetweenTwoPoints(yellowX1, yellowY1, yellowX2, yellowY2)
+        ),
         color: mainColor,
         isVertical: true,
       });
 
       if (labelsOutside) {
         label.x +=
-          (label.width / 2 + strokeOffset) *
+          (label.width / 2 + LABEL_OUTSIDE_MARGIN) *
           (verticalDirection === 'left' ? -1 : 1);
       }
 
@@ -340,9 +341,9 @@ export const drawSpacing = (
     if (labels) {
       const label = createLabel({
         baseNode: line4,
-        text: transformPixelToUnit(
-          distanceBetweenTwoPoints(blueX1, blueY1, blueX2, blueY2),
-          unit
+        text: findAndReplaceNumberPattern(
+          labelPattern,
+          distanceBetweenTwoPoints(blueX1, blueY1, blueX2, blueY2)
         ),
         color: mainColor,
         isVertical: false,
@@ -350,7 +351,7 @@ export const drawSpacing = (
 
       if (labelsOutside) {
         label.y +=
-          (label.height / 2 + strokeOffset) *
+          (label.height / 2 + LABEL_OUTSIDE_MARGIN) *
           (horizontalDirection === 'top' ? -1 : 1);
       }
 

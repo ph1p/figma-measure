@@ -1,4 +1,4 @@
-export const solidColor = (r = 255, g = 0, b = 0) => ({
+export const solidColor = (r = 255, g = 0, b = 0): Paint => ({
   type: 'SOLID',
   color: {
     r: r / 255,
@@ -19,7 +19,7 @@ export const hexToRgb = (hex: string) => {
 };
 
 export function rgbaToHex(data) {
-  const rgba = data.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
+  const rgba = data.replace(/rgba?\(|\s+|\)/g, '').split(',');
   return `#${(
     (1 << 24) +
     (parseInt(rgba[0]) << 16) +

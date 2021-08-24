@@ -152,7 +152,7 @@ const Icons = styled.div`
 `;
 
 const Container = styled.div`
-  padding: 14px;
+  padding: 12px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
