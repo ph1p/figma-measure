@@ -326,16 +326,16 @@ const Tooltip = styled.div.attrs<{ active?: boolean }>((props) => ({
     position: absolute;
   }
   &::before {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     border: 1px solid ${(props) => props.theme.softColor};
-    border-radius: 2px;
+    border-radius: 1px;
     transform: rotate(45deg);
     z-index: -1;
   }
   &::after {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     background-color: #fff;
     z-index: 1;
     transform: rotate(45deg);
@@ -351,45 +351,45 @@ const Tooltip = styled.div.attrs<{ active?: boolean }>((props) => ({
   &[data-direction='TOP'] {
     grid-area: top;
     &::before {
-      left: 4px;
-      bottom: -4px;
-    }
-    &::after {
       left: 5px;
       bottom: -3px;
+    }
+    &::after {
+      left: 6px;
+      bottom: -2px;
     }
   }
   &[data-direction='BOTTOM'] {
     grid-area: bottom;
     &::before {
-      left: 4px;
-      top: -4px;
-    }
-    &::after {
       left: 5px;
       top: -3px;
+    }
+    &::after {
+      left: 6px;
+      top: -2px;
     }
   }
   &[data-direction='LEFT'] {
     grid-area: left;
     &::before {
-      right: -4px;
-      top: 4px;
-    }
-    &::after {
       right: -3px;
       top: 5px;
+    }
+    &::after {
+      right: -2px;
+      top: 6px;
     }
   }
   &[data-direction='RIGHT'] {
     grid-area: right;
     &::before {
-      top: 4px;
-      left: -4px;
-    }
-    &::after {
       top: 5px;
       left: -3px;
+    }
+    &::after {
+      top: 6px;
+      left: -2px;
     }
   }
 `;

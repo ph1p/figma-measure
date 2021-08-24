@@ -269,9 +269,8 @@ const ColorControl = styled(Refresh)`
     top: 3px;
     width: 22px;
     height: 22px;
-    border-radius: 9px;
+    border-radius: 7px;
     background-color: ${(p) => p.theme.color};
-    box-shadow: inset 0 0 4px ${(p) => p.theme.hoverColor};
   }
 `;
 

@@ -113,7 +113,7 @@ const ColorItem = styled.div<{ color: string; active: boolean }>`
   cursor: pointer;
   transition: box-shadow 0.3s;
   box-shadow: 0px 0px 0px 3px inset
-    ${(props) => (props.active ? 'rgba(255, 255, 255, 0.8)' : 'transparent')};
+    ${(props) => (props.active ? 'rgba(255, 255, 255, 0.5)' : 'transparent')};
   &:hover {
     box-shadow: 0px 0px 0px 3px inset
       ${(props) => (props.active ? '#fff' : 'rgba(0, 0, 0, 0.2)')};

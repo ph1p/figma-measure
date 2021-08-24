@@ -128,7 +128,7 @@ const Arrow = styled.div<{ hover: boolean }>`
     transform: rotate(45deg);
     top: 0px;
     left: 0px;
-    border-radius: ${(p) => (p.hover ? 3 : 4)}px;
+    border-radius: ${(p) => (p.hover ? 2 : 2)}px;
     z-index: -1;
   }
 `;
