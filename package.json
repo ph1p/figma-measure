@@ -43,6 +43,9 @@
     "main": "code.js",
     "ui": "ui.html",
     "enableProposedApi": false,
+    "editorType": [
+      "figma"
+    ],
     "relaunchButtons": [
       {
         "command": "open",
