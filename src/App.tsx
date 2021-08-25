@@ -120,7 +120,7 @@ const App: FunctionComponent = observer(() => {
               history.push('/');
             }}
           >
-            Measure
+            Redlines
           </div>
           <div
             onClick={() => {

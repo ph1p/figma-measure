@@ -472,11 +472,13 @@ function getSelectionArray(): NodeSelection[] {
       data = {};
     }
 
+    const spacings = Object.keys(getSpacing(node)).length;
+
     return {
       id: node.id,
       type: node.type,
       padding: getPadding(node),
-      hasSpacing: Object.keys(getSpacing(node)).length > 0,
+      hasSpacing: spacings > 0 && figma.currentPage.selection.length === 1,
       data,
     };
   });

@@ -5,6 +5,7 @@ import { addToGlobalGroup, createLabel, getColor } from '.';
 
 export const getSpacing = (node: SceneNode) =>
   JSON.parse(node.getPluginData('spacing') || '{}');
+
 export const setSpacing = (node: SceneNode, data: unknown) =>
   node.setPluginData('spacing', JSON.stringify(data));
 
