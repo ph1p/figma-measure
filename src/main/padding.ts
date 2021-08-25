@@ -118,7 +118,7 @@ const getNodeAndParentNode = (
       parentNode = currentNode.parent as SceneNode;
     } else {
       figma.notify('No parent element found');
-      return;
+      return null;
     }
   } else if (
     figma.currentPage.selection.length === 2 ||
@@ -128,14 +128,12 @@ const getNodeAndParentNode = (
       parentNode = figma.currentPage.selection[1] as SceneNode;
     }
 
-    const isContained = [];
-
-    if (!contains(currentNode, parentNode)) {
-      isContained.push(1);
-    }
-
-    if (!contains(parentNode, currentNode)) {
-      isContained.push(1);
+    if (
+      !contains(currentNode, parentNode) &&
+      !contains(parentNode, currentNode)
+    ) {
+      figma.notify('The element does not contain the other one');
+      return null;
     }
 
     if (contains(currentNode, parentNode)) {
@@ -143,16 +141,9 @@ const getNodeAndParentNode = (
       parentNode = currentNode;
       currentNode = dummyParentNode;
     }
-
-    if (isContained.length === 2) {
-      figma.notify('The element does not contain the other one');
-      currentNode.setPluginData('padding', '');
-      sendSelection();
-      return;
-    }
   } else {
     figma.notify('Please select only two elements');
-    return;
+    return null;
   }
 
   return {
@@ -177,7 +168,18 @@ export function createPaddingLine({
   const nodeData = getNodeAndParentNode(currentNode, parent);
   const mainColor = getColor(color);
 
-  if (!nodeData || !nodeData.node || !nodeData.parentNode) return;
+  if (!nodeData || !nodeData.node || !nodeData.parentNode) {
+    try {
+      const padding = getPadding(currentNode);
+      delete padding[direction];
+      currentNode.setPluginData('padding', JSON.stringify(padding));
+      sendSelection();
+      // eslint-disable-next-line no-empty
+    } catch(e) {
+      console.log(e);
+    }
+    return;
+  }
 
   const { node, parentNode } = nodeData;
 
