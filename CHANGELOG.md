@@ -1,5 +1,17 @@
+## <small>3.0.1 (2021-09-03)</small>
+
+* fix(package): add editor type ([a3c75fe](https://github.com/ph1p/figma-measure/commit/a3c75fe))
+* fix(padding): remove lines correct ([bf08fed](https://github.com/ph1p/figma-measure/commit/bf08fed))
+* fix(sonar): fix regex and add fill opacity ([76a84ab](https://github.com/ph1p/figma-measure/commit/76a84ab))
+* fix(spacing): let spacing only delete on single selection ([09dfcc1](https://github.com/ph1p/figma-measure/commit/09dfcc1))
+* fix(tooltip): fix font-size detection ([f88fb15](https://github.com/ph1p/figma-measure/commit/f88fb15))
+* chore: add gif to readme ([f502d94](https://github.com/ph1p/figma-measure/commit/f502d94))
+
+
+
 ## 3.0.0 (2021-08-24)
 
+* 3.0.0 ([f2894f9](https://github.com/ph1p/figma-measure/commit/f2894f9))
 * refactor: update settings page and add fix label spacing ([6895693](https://github.com/ph1p/figma-measure/commit/6895693))
 * refactor(font): rename files and update font-size ([b978b7d](https://github.com/ph1p/figma-measure/commit/b978b7d))
 * refactor(sonar): remove some bugs and code smells ([d87d65d](https://github.com/ph1p/figma-measure/commit/d87d65d))
