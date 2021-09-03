@@ -30,7 +30,7 @@ export default async function fontName(node, parent, showFontSize) {
       let text = `${font.family}\n`;
       text += `${font.style.join(', ')}`;
       if (showFontSize) {
-        text += `\nSizes: ${font.fontSize.join(', ')}`;
+        text += `\nSizes: ${font.fontSize || font.fontSize.join(', ')}`;
       }
       text += `${i === fontData.length - 1 ? '' : '\n'}`;
 

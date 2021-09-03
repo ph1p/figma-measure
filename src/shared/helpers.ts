@@ -138,17 +138,15 @@ export const getFontNameData = async (
 export const getFontSizeData = (textNode: TextNode, fontName: string) => {
   const fonts = {};
 
-  if (textNode.fontName === figma.mixed) {
-    const len = textNode.characters.length;
-    for (let i = 0; i < len; i++) {
-      const font = (textNode.getRangeFontName(i, i + 1) as FontName).family;
-      const fontSize = textNode.getRangeFontSize(i, i + 1) as number;
+  const len = textNode.characters.length;
+  for (let i = 0; i < len; i++) {
+    const font = (textNode.getRangeFontName(i, i + 1) as FontName).family;
+    const fontSize = textNode.getRangeFontSize(i, i + 1) as number;
 
-      if (fonts[font]) {
-        fonts[font] = Array.from(new Set(fonts[font].concat(fontSize)));
-      } else {
-        fonts[font] = [fontSize];
-      }
+    if (fonts[font]) {
+      fonts[font] = Array.from(new Set(fonts[font].concat(fontSize)));
+    } else {
+      fonts[font] = [fontSize];
     }
   }
 
