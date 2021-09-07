@@ -104,9 +104,7 @@ export function createLabel({
 }
 export function getGlobalGroup() {
   if (!__globalGroupCache__ || !figma.getNodeById(__globalGroupCache__.id)) {
-    __globalGroupCache__ = figma.currentPage.children.find(
-      (node) => node.getPluginData('isGlobalGroup') === '1'
-    ) as unknown as GroupNode | FrameNode;
+    __globalGroupCache__ = null;
   }
 
   return __globalGroupCache__;
@@ -124,7 +122,7 @@ export function addToGlobalGroup(node: SceneNode) {
   globalGroup.expanded = false;
   globalGroup.locked = true;
   globalGroup.name = `📐 Measurements`;
-  globalGroup.setPluginData('isGlobalGroup', '1');
+  __globalGroupCache__ = globalGroup;
 }
 
 function nodeGroup(node) {

@@ -35,6 +35,7 @@ const VerticalLine = styled.div.attrs<Props>((props) => ({
   position: relative;
   cursor: pointer;
   margin: auto 0;
+  z-index: 10;
   &:hover {
     z-index: 4;
     background-color: ${(props) => props.theme.hoverColor};
