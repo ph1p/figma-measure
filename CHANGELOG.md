@@ -1,5 +1,12 @@
+## <small>3.0.2 (2021-09-07)</small>
+
+* perf(measure): add global group cache variabel to gain better performance ([db76fbf](https://github.com/ph1p/figma-measure/commit/db76fbf))
+
+
+
 ## <small>3.0.1 (2021-09-03)</small>
 
+* 3.0.1 ([f6f0eaf](https://github.com/ph1p/figma-measure/commit/f6f0eaf))
 * fix(package): add editor type ([a3c75fe](https://github.com/ph1p/figma-measure/commit/a3c75fe))
 * fix(padding): remove lines correct ([bf08fed](https://github.com/ph1p/figma-measure/commit/bf08fed))
 * fix(sonar): fix regex and add fill opacity ([76a84ab](https://github.com/ph1p/figma-measure/commit/76a84ab))
