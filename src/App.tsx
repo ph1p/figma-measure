@@ -1,6 +1,7 @@
 import { reaction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'preact/hooks';
+import React, { FunctionComponent } from 'react';
 import * as ReactDOM from 'react-dom';
 import {
   MemoryRouter as Router,

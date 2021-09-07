@@ -395,15 +395,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^17.0.9":
-  version: 17.0.9
-  resolution: "@types/react-dom@npm:17.0.9"
-  dependencies:
-    "@types/react": "*"
-  checksum: b7e898e1a22643a371f58e801a3d1d8cf13a82d77063c24be73e840ef8d877ca1d04adc5db168d0dac3167dc050a26b1d70efc5fe8566a7f46a3c488a8322989
-  languageName: node
-  linkType: hard
-
 "@types/react-router-dom@npm:^5.1.8":
   version: 5.1.8
   resolution: "@types/react-router-dom@npm:5.1.8"
@@ -433,17 +424,6 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: d29f2a33ed69fae9d9f42f8b39b40352e3209eb821f827d566330adfdffb48d2dc730982356cd50a7fda6171e6bc7deca793f7b105c95fce615a45ab313ecf41
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:^17.0.20":
-  version: 17.0.20
-  resolution: "@types/react@npm:17.0.20"
-  dependencies:
-    "@types/prop-types": "*"
-    "@types/scheduler": "*"
-    csstype: ^3.0.2
-  checksum: e342bfaa4fe052fc3a445ea49f746f3fd82cfc9c8028eae139a3e0763ead1871f353bd40da2a472f23d2b52544d2781d40e3159c0703e7e2ff08c13f067a3b9c
   languageName: node
   linkType: hard
 
@@ -1906,8 +1886,6 @@ __metadata:
     "@figma/plugin-typings": ^1.33.0
     "@popperjs/core": ^2.10.1
     "@types/node": ^16.7.13
-    "@types/react": ^17.0.20
-    "@types/react-dom": ^17.0.9
     "@types/react-router-dom": ^5.1.8
     "@types/styled-components": ^5.1.14
     "@typescript-eslint/eslint-plugin": ^4.31.0
@@ -1923,8 +1901,7 @@ __metadata:
     mobx: ^6.3.3
     mobx-react: ^7.2.0
     mobx-sync: ^3.0.0
-    react: ^17.0.2
-    react-dom: ^17.0.2
+    preact: ^10.5.14
     react-popper: ^2.2.5
     react-router-dom: ^5.3.0
     style-loader: ^3.2.1
@@ -2735,7 +2712,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0, loose-envify@npm:^1.2.0, loose-envify@npm:^1.3.1, loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.0.0, loose-envify@npm:^1.2.0, loose-envify@npm:^1.3.1, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -3381,6 +3358,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"preact@npm:^10.5.14":
+  version: 10.5.14
+  resolution: "preact@npm:10.5.14"
+  checksum: d936f83a2afad13aa5870812d7fa8fec111d4a1bb6b0bea6485f2656a062bcc01717398d8184c4bc589cba455f3b2def8e43ba23db846b208d9823e3804658ad
+  languageName: node
+  linkType: hard
+
 "prelude-ls@npm:^1.2.1":
   version: 1.2.1
   resolution: "prelude-ls@npm:1.2.1"
@@ -3446,19 +3430,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^17.0.2":
-  version: 17.0.2
-  resolution: "react-dom@npm:17.0.2"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-    scheduler: ^0.20.2
-  peerDependencies:
-    react: 17.0.2
-  checksum: 1c1eaa3bca7c7228d24b70932e3d7c99e70d1d04e13bb0843bbf321582bc25d7961d6b8a6978a58a598af2af496d1cedcfb1bf65f6b0960a0a8161cb8dab743c
-  languageName: node
-  linkType: hard
-
 "react-fast-compare@npm:^3.0.1":
   version: 3.2.0
   resolution: "react-fast-compare@npm:3.2.0"
@@ -3520,16 +3491,6 @@ __metadata:
   peerDependencies:
     react: ">=15"
   checksum: 7daae084bf64531eb619cc5f4cc40ce5ae0a541b64f71d74ec71a38cbf6130ebdbb7cf38f157303fad5846deec259401f96c4d6c7386466dcc989719e01f9aaa
-  languageName: node
-  linkType: hard
-
-"react@npm:^17.0.2":
-  version: 17.0.2
-  resolution: "react@npm:17.0.2"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-  checksum: b254cc17ce3011788330f7bbf383ab653c6848902d7936a87b09d835d091e3f295f7e9dd1597c6daac5dc80f90e778c8230218ba8ad599f74adcc11e33b9d61b
   languageName: node
   linkType: hard
 
@@ -3715,16 +3676,6 @@ resolve@^2.0.0-next.3:
   version: 5.2.1
   resolution: "safe-buffer@npm:5.2.1"
   checksum: b99c4b41fdd67a6aaf280fcd05e9ffb0813654894223afb78a31f14a19ad220bba8aba1cb14eddce1fcfb037155fe6de4e861784eb434f7d11ed58d1e70dd491
-  languageName: node
-  linkType: hard
-
-"scheduler@npm:^0.20.2":
-  version: 0.20.2
-  resolution: "scheduler@npm:0.20.2"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-  checksum: c4b35cf967c8f0d3e65753252d0f260271f81a81e427241295c5a7b783abf4ea9e905f22f815ab66676f5313be0a25f47be582254db8f9241b259213e999b8fc
   languageName: node
   linkType: hard
 

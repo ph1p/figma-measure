@@ -1,10 +1,5 @@
-import React, {
-  RefAttributes,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useImperativeHandle, useRef, useState } from 'preact/hooks';
+import React, { RefAttributes } from 'react';
 import { usePopper } from 'react-popper';
 import styled from 'styled-components';
 
@@ -19,12 +14,12 @@ interface Props {
   borderRadius?: number;
 }
 
-const Tooltip = React.forwardRef<unknown, Props>((props, ref) => {
+const Tooltip = React.forwardRef<HTMLElement, Props>((props, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const { handler: HandlerComp } = props;
 
-  const wrapperRef = useRef(null);
-  const handlerRef = useRef(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const handlerRef = useRef<HTMLElement>(null);
 
   const [popperElement, setPopperElement] = useState(null);
   const [arrowElement, setArrowElement] = useState(null);
@@ -60,7 +55,7 @@ const Tooltip = React.forwardRef<unknown, Props>((props, ref) => {
   useEffect(() => {
     if (!props.hover) {
       const handleClick = (event) => {
-        if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        if (!wrapperRef.current?.contains(event.target)) {
           setIsOpen(false);
         }
       };

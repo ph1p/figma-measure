@@ -7,19 +7,19 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
   labelsOutside?: boolean;
 }
 
-const Horizontal: FunctionComponent<Props> = (props: Props) => (
+const Horizontal: FunctionComponent<Props> = (props) => (
   <HorizontalLine {...props}>
     <div></div>
   </HorizontalLine>
 );
 
-const Vertical: FunctionComponent<Props> = (props: Props) => (
+const Vertical: FunctionComponent<Props> = (props) => (
   <VerticalLine {...props}>
     <div></div>
   </VerticalLine>
 );
 
-const Corner: FunctionComponent<Props> = (props: Props) => (
+const Corner: FunctionComponent<Props> = (props) => (
   <CornerLine {...props}>
     <div></div>
   </CornerLine>
@@ -151,7 +151,7 @@ const CornerLine = styled.div.attrs<Props>((props) => ({
     border-color: ${(props) => props.theme.softColor};
     &::after {
       content: '';
-      display: ${(props) => (props.labels ? 'block' : 'none')};
+      display: 'block';
       position: absolute;
       left: -5px;
       width: 9px;

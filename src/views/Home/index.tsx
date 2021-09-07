@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useMemo } from 'react';
+import { useRef, useMemo } from 'preact/hooks';
+import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
 import { Colors } from '../../components/ColorPicker';
@@ -18,6 +19,7 @@ import Viewer from './components/Viewer';
 
 const Home: FunctionComponent = observer(() => {
   const store = useStore();
+  const labelControlRef = useRef(null);
 
   const removeAllMeasurements = () => {
     if (confirm('Do you really want to remove all measurements?')) {
@@ -115,11 +117,15 @@ const Home: FunctionComponent = observer(() => {
 
         <Tooltip
           hover
+          ref={labelControlRef}
           handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
             <LabelControl
               ref={ref}
               index={labelDotIndex}
-              onClick={() => changeLabel()}
+              onClick={() => {
+                labelControlRef.current.hide();
+                changeLabel();
+              }}
             >
               <div className="label"></div>
               <div className="dots">
@@ -229,7 +235,7 @@ const ViewerOverlay = styled.div`
   justify-content: center;
   text-align: center;
   font-weight: bold;
-  z-index: 3;
+  z-index: 11;
 `;
 
 const Refresh = styled.div<{ active?: boolean }>`
