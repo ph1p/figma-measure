@@ -235,7 +235,7 @@ const ViewerOverlay = styled.div`
   justify-content: center;
   text-align: center;
   font-weight: bold;
-  z-index: 11;
+  z-index: 20;
 `;
 
 const Refresh = styled.div<{ active?: boolean }>`

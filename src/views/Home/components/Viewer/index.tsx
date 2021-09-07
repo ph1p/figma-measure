@@ -157,7 +157,7 @@ const Viewer: FunctionComponent = observer(() => {
                 <Line.Vertical
                   labels={store.labels}
                   labelsOutside={store.labelsOutside}
-                  style={{ height: 29, left: 10, top: 1 }}
+                  style={{ height: 29, left: 10, top: 1, zIndex: 15 }}
                   active={store.surrounding.verticalBar}
                   onClick={(e) => {
                     e.preventDefault();
@@ -171,7 +171,7 @@ const Viewer: FunctionComponent = observer(() => {
                 <Line.Horizontal
                   labels={store.labels}
                   labelsOutside={store.labelsOutside}
-                  style={{ width: 29, right: 0, top: -19 }}
+                  style={{ width: 29, right: 0, top: -19, zIndex: 15 }}
                   active={store.surrounding.horizontalBar}
                   onClick={(e) => {
                     e.preventDefault();
