@@ -20,6 +20,8 @@ import { drawSpacing, getSpacing, setSpacing } from './spacing';
 import { getState } from './store';
 import { setTooltip } from './tooltip';
 
+let __globalGroupCache__: GroupNode | FrameNode = null;
+
 figma.showUI(__html__, {
   width: 285,
   height: 562,
@@ -100,17 +102,20 @@ export function createLabel({
 
   return labelFrame;
 }
-
 export function getGlobalGroup() {
-  return figma.currentPage.children.find(
-    (node) => node.getPluginData('isGlobalGroup') === '1'
-  ) as unknown as GroupNode | FrameNode;
+  if (!__globalGroupCache__ || !figma.getNodeById(__globalGroupCache__.id)) {
+    __globalGroupCache__ = figma.currentPage.children.find(
+      (node) => node.getPluginData('isGlobalGroup') === '1'
+    ) as unknown as GroupNode | FrameNode;
+  }
+
+  return __globalGroupCache__;
 }
 
 export function addToGlobalGroup(node: SceneNode) {
   let globalGroup = getGlobalGroup();
 
-  if (typeof globalGroup === 'undefined') {
+  if (!globalGroup) {
     globalGroup = figma.group([node], figma.currentPage);
   } else {
     globalGroup.appendChild(node);
@@ -873,7 +878,13 @@ function createFill(
   node: SceneNode,
   { fill, opacity, color }: { fill: FillTypes; opacity: number; color: string }
 ) {
-  if (node.type !== 'SLICE') {
+  if (
+    node.type !== 'SLICE' &&
+    node.type !== 'STICKY' &&
+    node.type !== 'CONNECTOR' &&
+    node.type !== 'STAMP' &&
+    node.type !== 'SHAPE_WITH_TEXT'
+  ) {
     let cloneNode: SceneNode;
 
     if (
