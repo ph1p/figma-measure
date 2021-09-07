@@ -1,5 +1,12 @@
+## <small>3.0.3 (2021-09-07)</small>
+
+* perf: remove search for global group ([7733f89](https://github.com/ph1p/figma-measure/commit/7733f89))
+
+
+
 ## <small>3.0.2 (2021-09-07)</small>
 
+* 3.0.2 ([913e9b7](https://github.com/ph1p/figma-measure/commit/913e9b7))
 * perf(measure): add global group cache variabel to gain better performance ([db76fbf](https://github.com/ph1p/figma-measure/commit/db76fbf))
 
 
