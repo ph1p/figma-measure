@@ -2,15 +2,10 @@ import EventEmitter from '../shared/EventEmitter';
 import { findAndReplaceNumberPattern } from '../shared/helpers';
 import { Alignments, ExchangeStoreValues } from '../shared/interfaces';
 
+import { getGlobalGroup, addToGlobalGroup } from './measure-group';
 import { distanceBetweenTwoPoints } from './spacing';
 
-import {
-  getColor,
-  createLabel,
-  addToGlobalGroup,
-  getGlobalGroup,
-  sendSelection,
-} from '.';
+import { getColor, createLabel, sendSelection } from '.';
 
 function contains(node1, node2) {
   const x1 = node1.absoluteTransform[0][2];
@@ -175,7 +170,7 @@ export function createPaddingLine({
       currentNode.setPluginData('padding', JSON.stringify(padding));
       sendSelection();
       // eslint-disable-next-line no-empty
-    } catch(e) {
+    } catch (e) {
       console.log(e);
     }
     return;

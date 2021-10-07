@@ -15,25 +15,19 @@ import {
 } from '../shared/interfaces';
 
 import { hexToRgb, solidColor } from './helper';
+import {
+  addToGlobalGroup,
+  getGlobalGroup,
+  initMeasureGroup,
+  isNodeInsideGlobalGroup,
+  nodeGroup,
+} from './measure-group';
 import { getPadding, createPaddingLine, removePaddingGroup } from './padding';
 import { drawSpacing, getSpacing, setSpacing } from './spacing';
 import { getState } from './store';
 import { setTooltip } from './tooltip';
 
-let __globalGroupCache__ = figma.getNodeById(
-  figma.root.getPluginData('measurement-group')
-) as GroupNode | FrameNode;
-
-if (!__globalGroupCache__) {
-  const oldGroup = figma.currentPage.children.find(
-    (node) => node.getPluginData('isGlobalGroup') === '1'
-  ) as GroupNode | FrameNode;
-
-  if (oldGroup) {
-    __globalGroupCache__ = oldGroup;
-    figma.root.setPluginData('measurement-group', __globalGroupCache__.id);
-  }
-}
+initMeasureGroup();
 
 figma.showUI(__html__, {
   width: 285,
@@ -115,60 +109,6 @@ export function createLabel({
 
   return labelFrame;
 }
-export function getGlobalGroup() {
-  if (!__globalGroupCache__ || !figma.getNodeById(__globalGroupCache__.id)) {
-    __globalGroupCache__ = null;
-  }
-
-  return __globalGroupCache__;
-}
-
-export function addToGlobalGroup(node: SceneNode) {
-  let globalGroup = getGlobalGroup();
-
-  if (!globalGroup) {
-    globalGroup = figma.group([node], figma.currentPage);
-  } else {
-    globalGroup.appendChild(node);
-  }
-
-  globalGroup.expanded = false;
-  globalGroup.locked = true;
-  globalGroup.name = `📐 Measurements`;
-  __globalGroupCache__ = globalGroup;
-  figma.root.setPluginData('measurement-group', globalGroup.id);
-}
-
-function nodeGroup(node) {
-  const globalGroup = getGlobalGroup();
-
-  if (!globalGroup?.children) {
-    return null;
-  }
-
-  return (
-    (globalGroup.children.find(
-      (currentNode) => currentNode.getPluginData('parent') === node.id
-    ) as unknown as GroupNode | FrameNode) || null
-  );
-}
-
-const isNodeInsideGlobalGroup = (node: SceneNode): boolean => {
-  const globalGroup = getGlobalGroup();
-
-  if (globalGroup === node) {
-    return true;
-  }
-
-  const parent = node.parent;
-  if (parent === globalGroup) {
-    return true;
-  } else if (parent.type === 'PAGE') {
-    return false;
-  } else {
-    return isNodeInsideGlobalGroup(parent as SceneNode);
-  }
-};
 
 export function getPluginData(node, name) {
   const data = node.getPluginData(name);

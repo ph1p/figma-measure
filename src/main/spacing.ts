@@ -1,7 +1,9 @@
 import EventEmitter from '../shared/EventEmitter';
 import { findAndReplaceNumberPattern } from '../shared/helpers';
 
-import { addToGlobalGroup, createLabel, getColor } from '.';
+import { addToGlobalGroup } from './measure-group';
+
+import { createLabel, getColor } from '.';
 
 export const getSpacing = (node: SceneNode) =>
   JSON.parse(node.getPluginData('spacing') || '{}');
@@ -26,9 +28,9 @@ EventEmitter.on('remove spacing', () => {
       }
 
       // get connected node
-      const foundConnectedNode = (figma.getNodeById(
+      const foundConnectedNode = figma.getNodeById(
         connectedNodeId
-      ) as unknown) as SceneNode;
+      ) as unknown as SceneNode;
 
       // node removed
       if (foundConnectedNode) {
@@ -77,12 +79,7 @@ const getShapeValues = (shape: SceneNode) => {
 
 export const drawSpacing = (
   rects: SceneNode[],
-  {
-    color = '',
-    labels = true,
-    labelPattern = '',
-    labelsOutside = false,
-  }
+  { color = '', labels = true, labelPattern = '', labelsOutside = false }
 ) => {
   const LABEL_OUTSIDE_MARGIN = 4;
 
