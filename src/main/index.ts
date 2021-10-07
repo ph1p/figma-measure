@@ -20,7 +20,20 @@ import { drawSpacing, getSpacing, setSpacing } from './spacing';
 import { getState } from './store';
 import { setTooltip } from './tooltip';
 
-let __globalGroupCache__: GroupNode | FrameNode = null;
+let __globalGroupCache__ = figma.getNodeById(
+  figma.root.getPluginData('measurement-group')
+) as GroupNode | FrameNode;
+
+if (!__globalGroupCache__) {
+  const oldGroup = figma.currentPage.children.find(
+    (node) => node.getPluginData('isGlobalGroup') === '1'
+  ) as GroupNode | FrameNode;
+
+  if (oldGroup) {
+    __globalGroupCache__ = oldGroup;
+    figma.root.setPluginData('measurement-group', __globalGroupCache__.id);
+  }
+}
 
 figma.showUI(__html__, {
   width: 285,
@@ -123,6 +136,7 @@ export function addToGlobalGroup(node: SceneNode) {
   globalGroup.locked = true;
   globalGroup.name = `📐 Measurements`;
   __globalGroupCache__ = globalGroup;
+  figma.root.setPluginData('measurement-group', globalGroup.id);
 }
 
 function nodeGroup(node) {

@@ -340,7 +340,7 @@ const Trash = styled(Refresh)`
   left: 12px;
   top: 12px;
   opacity: 1;
-  z-index: 10;
+  z-index: 21;
   svg {
     margin: 1px 0 0;
   }
@@ -349,7 +349,7 @@ const Trash = styled(Refresh)`
 const Visibility = styled(Refresh)`
   left: 48px;
   top: 12px;
-  z-index: 10;
+  z-index: 21;
   opacity: 1;
 `;
 
