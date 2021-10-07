@@ -1,5 +1,15 @@
+## 3.1.0 (2021-10-07)
+
+* fix(group): add fallback ([48d3b4e](https://github.com/ph1p/figma-measure/commit/48d3b4e))
+* fix(group): now its possible again to measure on different pages ([bd7bb02](https://github.com/ph1p/figma-measure/commit/bd7bb02))
+* style: fix zIndex ([7ea010c](https://github.com/ph1p/figma-measure/commit/7ea010c))
+* perf(preact): use preact instead of react and save ~110kb ([88b7d9e](https://github.com/ph1p/figma-measure/commit/88b7d9e))
+
+
+
 ## <small>3.0.3 (2021-09-07)</small>
 
+* 3.0.3 ([75c8121](https://github.com/ph1p/figma-measure/commit/75c8121))
 * perf: remove search for global group ([7733f89](https://github.com/ph1p/figma-measure/commit/7733f89))
 
 
