@@ -44,6 +44,8 @@ const App: FunctionComponent = observer(() => {
 
     EventEmitter.on('selection', (data) => store.setSelection(data));
 
+    EventEmitter.on('set visibility', (data) => store.setVisibility(data));
+
     return () => EventEmitter.remove('selection');
   }, []);
 

@@ -38,6 +38,7 @@ class RootStore {
   labels = true;
   color = DEFAULT_COLOR;
 
+  @ignore
   visibility = true;
 
   @ignore
@@ -163,7 +164,7 @@ class RootStore {
 
   toggleVisibility() {
     this.visibility = !this.visibility;
-    EventEmitter.emit('toggle visibility');
+    EventEmitter.emit('toggle visibility', this.visibility);
   }
 
   setVisibility(visibility: boolean) {

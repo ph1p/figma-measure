@@ -19,7 +19,8 @@ import Viewer from './components/Viewer';
 
 const Home: FunctionComponent = observer(() => {
   const store = useStore();
-  const labelControlRef = useRef(null);
+  const labelControlRef = useRef<any>(null);
+  const visibilityRef = useRef<any>(null);
 
   const removeAllMeasurements = () => {
     if (confirm('Do you really want to remove all measurements?')) {
@@ -66,11 +67,20 @@ const Home: FunctionComponent = observer(() => {
 
         <Tooltip
           hover
-          handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
-            <Visibility ref={ref} onClick={() => store.toggleVisibility()}>
-              {store.visibility ? <EyeIcon /> : <EyeClosedIcon />}
-            </Visibility>
-          ))}
+          ref={visibilityRef}
+          handler={observer(
+            React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
+              <Visibility
+                ref={ref}
+                onClick={() => {
+                  store.toggleVisibility();
+                  visibilityRef.current.hide();
+                }}
+              >
+                {store.visibility ? <EyeIcon /> : <EyeClosedIcon />}
+              </Visibility>
+            ))
+          )}
         >
           Show/Hide
         </Tooltip>

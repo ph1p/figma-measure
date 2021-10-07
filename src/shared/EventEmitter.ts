@@ -5,7 +5,13 @@ class EventEmitter {
   messageEvent = new Map();
   emit: (
     name: string,
-    data?: Record<string, unknown> | number | string | Uint8Array | unknown[]
+    data?:
+      | Record<string, unknown>
+      | number
+      | string
+      | Uint8Array
+      | boolean
+      | unknown[]
   ) => void;
 
   constructor() {

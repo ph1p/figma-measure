@@ -1,13 +1,17 @@
+import EventEmitter from '../shared/EventEmitter';
 let __globalGroupCache__ = null;
 
 figma.on('currentpagechange', () => {
   initMeasureGroup();
 });
 
-export const initMeasureGroup = () => {
-  __globalGroupCache__ = figma.currentPage.children.find((node) =>
-    node.getPluginData('measurement-group')
+const getMeasureGroup = () =>
+  figma.currentPage.children.find(
+    (node) => node.id === figma.root.getPluginData('measurement-group')
   ) as GroupNode | FrameNode;
+
+export const initMeasureGroup = () => {
+  __globalGroupCache__ = getMeasureGroup();
 
   if (!__globalGroupCache__) {
     const oldGroup = figma.currentPage.children.find(
@@ -18,7 +22,17 @@ export const initMeasureGroup = () => {
       __globalGroupCache__ = oldGroup;
       figma.root.setPluginData('measurement-group', __globalGroupCache__.id);
     }
+  } else {
+    figma.root.setPluginData('measurement-group', __globalGroupCache__.id);
   }
+
+  const group = getGlobalGroup();
+
+  figma.currentPage.children.find(
+    (node) => node.id === figma.root.getPluginData('measurement-group')
+  ) as GroupNode | FrameNode;
+
+  EventEmitter.emit('set visibility', group ? group.visible : true);
 };
 
 export const nodeGroup = (node) => {
@@ -36,7 +50,7 @@ export const nodeGroup = (node) => {
 };
 
 export const getGlobalGroup = () => {
-  if (!__globalGroupCache__ || !figma.getNodeById(__globalGroupCache__.id)) {
+  if (!__globalGroupCache__ || !getMeasureGroup()) {
     __globalGroupCache__ = null;
   }
 

@@ -27,8 +27,6 @@ import { drawSpacing, getSpacing, setSpacing } from './spacing';
 import { getState } from './store';
 import { setTooltip } from './tooltip';
 
-initMeasureGroup();
-
 figma.showUI(__html__, {
   width: 285,
   height: 562,
@@ -39,6 +37,8 @@ figma.root.setRelaunchData({
   open: '',
   visibility: '',
 });
+
+initMeasureGroup();
 
 if (figma.command === 'visibility') {
   const group = getGlobalGroup();
