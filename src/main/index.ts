@@ -831,6 +831,10 @@ function createFill(
   { fill, opacity, color }: { fill: FillTypes; opacity: number; color: string }
 ) {
   if (
+    node.type !== 'WIDGET' &&
+    node.type !== 'CODE_BLOCK' &&
+    node.type !== 'EMBED' &&
+    node.type !== 'LINK_UNFURL' &&
     node.type !== 'SLICE' &&
     node.type !== 'STICKY' &&
     node.type !== 'CONNECTOR' &&
@@ -859,6 +863,7 @@ function createFill(
     cloneNode.fills = [];
     cloneNode.strokes = [];
     cloneNode.opacity = 1;
+    cloneNode.locked = false;
 
     const { r, g, b } = hexToRgb(color);
 
@@ -888,9 +893,6 @@ function createFill(
         cloneNode.strokeWeight = 1;
         break;
     }
-
-    // lock node, because covers the measured node
-    cloneNode.locked = true;
 
     return cloneNode;
   } else {
