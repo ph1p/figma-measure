@@ -533,7 +533,7 @@ figma.on('selectionchange', () => {
           };
 
           previousSelection = currentSelectionAsJSONString();
-          await setMeasurements(store);
+          await setMeasurements({ store, shouldIncludeGroups: true });
         }
       }, 1000);
     }
@@ -570,10 +570,18 @@ EventEmitter.on('remove all measurements', () =>
 );
 
 EventEmitter.on('set measurements', async (store: ExchangeStoreValues) =>
-  setMeasurements(store)
+  setMeasurements({ store })
 );
 
-const setMeasurements = async (store?: ExchangeStoreValues) => {
+const setMeasurements = async ({
+  shouldIncludeGroups = false,
+  store,
+  nodes,
+}: {
+  shouldIncludeGroups?: boolean;
+  store?: ExchangeStoreValues;
+  nodes?: readonly SceneNode[];
+}) => {
   cleanOrphanNodes();
 
   let data: PluginNodeData = {};
@@ -582,9 +590,22 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
     ...store,
   };
 
-  for (const node of figma.currentPage.selection) {
+  for (const node of nodes || figma.currentPage.selection) {
     if (isNodeInsideGlobalGroup(node)) {
       continue;
+    }
+
+    if (
+      (node.type === 'GROUP' || node.type === 'FRAME') &&
+      shouldIncludeGroups
+    ) {
+      if (node.children.length > 0) {
+        setMeasurements({
+          store,
+          nodes: node.children,
+          shouldIncludeGroups,
+        });
+      }
     }
 
     let surrounding: SurroundingSettings = store.surrounding;
