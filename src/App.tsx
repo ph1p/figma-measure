@@ -59,29 +59,65 @@ const App: FunctionComponent = observer(() => {
           if (selection.length > 0) {
             try {
               const padding = selection[0]?.padding || {};
-              const data: PluginNodeData = selection[0]?.data || {};
+              const data: PluginNodeData = selection[0]?.data || null;
 
-              // padding
-              if (Object.keys(padding).length > 0) {
-                if (!data.surrounding) {
-                  // @ts-expect-error it filled afterwarts
-                  data.surrounding = {};
+              if (data) {
+                // padding
+                if (Object.keys(padding).length > 0) {
+                  if (!data.surrounding) {
+                    // @ts-expect-error it filled afterwarts
+                    data.surrounding = {};
+                  }
+
+                  for (const direction of Object.keys(Alignments)) {
+                    data.surrounding[`${direction.toLowerCase()}Padding`] =
+                      !!padding[direction];
+                  }
+                } else {
+                  for (const direction of Object.keys(Alignments)) {
+                    data.surrounding[`${direction.toLowerCase()}Padding`] =
+                      false;
+                  }
                 }
 
-                for (const direction of Object.keys(Alignments)) {
-                  data.surrounding[`${direction.toLowerCase()}Padding`] =
-                    !!padding[direction];
+                if (Object.keys(data?.surrounding).length > 0) {
+                  store.setSurrounding(data.surrounding, true);
+                } else {
+                  store.resetSurrounding();
                 }
-              } else {
-                for (const direction of Object.keys(Alignments)) {
-                  data.surrounding[`${direction.toLowerCase()}Padding`] = false;
-                }
-              }
 
-              if (Object.keys(data?.surrounding).length > 0) {
-                store.setSurrounding(data.surrounding, true);
-              } else {
-                store.resetSurrounding();
+                //
+
+                if (data.strokeCap) {
+                  store.setStrokeCap(data.strokeCap);
+                }
+                if (data.strokeOffset) {
+                  store.setStrokeOffset(data.strokeOffset);
+                }
+                if (data.opacity) {
+                  store.setOpacity(data.opacity);
+                }
+                if (data.labelsOutside) {
+                  store.setLabelsOutside(data.labelsOutside);
+                }
+                if (data.labels) {
+                  store.setLabels(data.labels);
+                }
+                if (data.fill) {
+                  store.setFill(data.fill);
+                }
+                if (data.color) {
+                  store.setColor(data.color);
+                }
+                if (data.tooltip) {
+                  store.setTooltipSettings(data.tooltip);
+                }
+                if (data.tooltipOffset) {
+                  store.setTooltipOffset(data.tooltipOffset);
+                }
+                if (data.labelPattern) {
+                  store.setLabelPattern(data.labelPattern);
+                }
               }
             } catch {
               store.resetSurrounding();

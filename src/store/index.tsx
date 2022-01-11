@@ -1,6 +1,6 @@
 import { makeAutoObservable, toJS } from 'mobx';
 import { AsyncTrunk, ignore } from 'mobx-sync';
-import { useContext } from "preact/hooks";
+import { useContext } from 'preact/hooks';
 import React, { FunctionComponent } from 'react';
 
 import EventEmitter from '../shared/EventEmitter';
@@ -171,11 +171,11 @@ class RootStore {
     this.visibility = visibility;
   }
 
-  sendMeasurements() {
+  sendMeasurements(reload = false) {
     if (this.selection.length > 0) {
-      EventEmitter.emit(
-        'set measurements',
-        toJS({
+      EventEmitter.emit('set measurements', {
+        reload,
+        data: toJS({
           labelsOutside: this.labelsOutside,
           labels: this.labels,
           color: this.color,
@@ -187,8 +187,8 @@ class RootStore {
           tooltipOffset: this.tooltipOffset,
           tooltip: toJS(this.tooltip),
           labelPattern: this.labelPattern,
-        })
-      );
+        }),
+      });
     }
   }
 }

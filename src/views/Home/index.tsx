@@ -91,7 +91,7 @@ const Home: FunctionComponent = observer(() => {
             <Refresh
               ref={ref}
               active={store.selection.length > 0}
-              onClick={() => store.sendMeasurements()}
+              onClick={() => store.sendMeasurements(true)}
             >
               <RefreshIcon />
             </Refresh>

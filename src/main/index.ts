@@ -569,8 +569,27 @@ EventEmitter.on('remove all measurements', () =>
   removeAllMeasurementConnections()
 );
 
-EventEmitter.on('set measurements', async (store: ExchangeStoreValues) =>
-  setMeasurements({ store })
+EventEmitter.on(
+  'set measurements',
+  async ({ reload, data }: { reload: boolean; data: ExchangeStoreValues }) => {
+    setMeasurements({
+      store: reload
+        ? {
+            labelsOutside: data.labelsOutside,
+            labels: data.labels,
+            color: data.color,
+            fill: data.fill,
+            opacity: data.opacity,
+            strokeCap: data.strokeCap,
+            strokeOffset: data.strokeOffset,
+            tooltipOffset: data.tooltipOffset,
+            tooltip: data.tooltip,
+            labelPattern: data.labelPattern,
+          }
+        : data,
+      shouldIncludeGroups: reload,
+    });
+  }
 );
 
 const setMeasurements = async ({
@@ -586,7 +605,7 @@ const setMeasurements = async ({
 
   let data: PluginNodeData = {};
 
-  const settings = {
+  let settings = {
     ...store,
   };
 
@@ -612,7 +631,6 @@ const setMeasurements = async ({
 
     try {
       data = JSON.parse(node.getPluginData('data') || '{}');
-      node.setPluginData('data', '{}');
 
       if (
         data.surrounding &&
@@ -620,8 +638,13 @@ const setMeasurements = async ({
         !store.surrounding
       ) {
         surrounding = data.surrounding;
+        settings = {
+          ...settings,
+          ...data,
+        };
       }
     } catch {
+      node.setPluginData('data', '{}');
       console.log('Could not set data');
       if (!store) {
         continue;
@@ -821,7 +844,8 @@ const setMeasurements = async ({
     node.setPluginData(
       'data',
       JSON.stringify({
-        surrounding,
+        ...settings,
+        //
         connectedNodes: connectedNodes.map(({ id }) => id),
         version: VERSION,
       } as PluginNodeData)

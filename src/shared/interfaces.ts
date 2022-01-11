@@ -52,19 +52,17 @@ export interface PluginNodeData {
   version?: number;
   surrounding?: SurroundingSettings;
   connectedNodes?: string[];
-  // strokeCap?: StrokeCap;
-  // strokeOffset?: number;
-  // unit?: string;
-  // color?: string;
-  // labels?: boolean;
-  // labelsOutside?: boolean;
-  // fill?: FillTypes;
-  // opacity?: number;
-  // tooltip: {
-  //   flags: TooltipSettings;
-  //   position: TooltipPositions;
-  //   offset: number;
-  // };
+  strokeCap?: StrokeCap;
+  strokeOffset?: number;
+  unit?: string;
+  color?: string;
+  labels?: boolean;
+  labelsOutside?: boolean;
+  tooltipOffset: number;
+  fill?: FillTypes;
+  opacity?: number;
+  labelPattern: string;
+  tooltip: TooltipSettings;
 }
 
 export interface SurroundingSettings {
@@ -125,7 +123,7 @@ export interface NodeSelection {
   id: string;
   type: NodeType;
   hasSpacing: boolean;
-  data: unknown;
+  data: PluginNodeData;
   padding: Record<Alignments, string>;
 }
 
