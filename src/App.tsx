@@ -5,9 +5,9 @@ import React, { FunctionComponent } from 'react';
 import * as ReactDOM from 'react-dom';
 import {
   MemoryRouter as Router,
-  Switch,
   Route,
-  useHistory,
+  useNavigate,
+  Routes,
 } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 
@@ -29,7 +29,7 @@ const App: FunctionComponent = observer(() => {
   const store = useStore();
 
   const [menu, setMenu] = useState(1);
-  const history = useHistory();
+  const history = useNavigate();
 
   useEffect(() => {
     // check visibility
@@ -106,21 +106,15 @@ const App: FunctionComponent = observer(() => {
       <GlobalStyle />
 
       <Main>
-        <div>
-          <Switch>
-            <Route path="/" exact>
-              <Home />
-            </Route>
-            <Route path="/tooltip">
-              <Tooltip />
-            </Route>
-          </Switch>
-        </div>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/tooltip" element={<Tooltip />} />
+        </Routes>
         <ViewSwitch menu={menu}>
           <div
             onClick={() => {
               setMenu(1);
-              history.push('/');
+              history('/');
             }}
           >
             Redlines
@@ -128,7 +122,7 @@ const App: FunctionComponent = observer(() => {
           <div
             onClick={() => {
               setMenu(2);
-              history.push('/tooltip');
+              history('/tooltip');
             }}
           >
             Tooltip
