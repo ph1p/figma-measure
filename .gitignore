@@ -2,3 +2,10 @@ figma-measure/
 Figma Measure/
 node_modules
 *.zip
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
