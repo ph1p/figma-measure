@@ -2,10 +2,12 @@ import EventEmitter from '../shared/EventEmitter';
 import { findAndReplaceNumberPattern } from '../shared/helpers';
 import { Alignments, ExchangeStoreValues } from '../shared/interfaces';
 
+import { getColor } from './helper';
+import { createLabel } from './line';
 import { getGlobalGroup, addToGlobalGroup } from './measure-group';
 import { distanceBetweenTwoPoints } from './spacing';
 
-import { getColor, createLabel, sendSelection } from '.';
+import { sendSelection } from '.';
 
 function contains(node1, node2) {
   const x1 = node1.absoluteTransform[0][2];

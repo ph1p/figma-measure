@@ -30,6 +30,15 @@ export function rgbaToHex(data) {
     .slice(1)}`;
 }
 
+export function getColor(color: string) {
+  if (color) {
+    const { r, g, b } = hexToRgb(color);
+    return solidColor(r, g, b);
+  } else {
+    return solidColor();
+  }
+}
+
 export const setTitleBold = (content) => {
   let chars = 0;
   for (const line of content.characters.split('\n')) {

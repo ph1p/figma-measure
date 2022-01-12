@@ -123,7 +123,7 @@ export interface NodeSelection {
   id: string;
   type: NodeType;
   hasSpacing: boolean;
-  data: PluginNodeData;
+  data: Partial<PluginNodeData>;
   padding: Record<Alignments, string>;
 }
 

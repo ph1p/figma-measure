@@ -1,9 +1,9 @@
 import EventEmitter from '../shared/EventEmitter';
 import { findAndReplaceNumberPattern } from '../shared/helpers';
 
+import { getColor } from './helper';
+import { createLabel } from './line';
 import { addToGlobalGroup } from './measure-group';
-
-import { createLabel, getColor } from '.';
 
 export const getSpacing = (node: SceneNode) =>
   JSON.parse(node.getPluginData('spacing') || '{}');
