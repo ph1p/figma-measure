@@ -97,12 +97,6 @@ const App: FunctionComponent = observer(() => {
                 if (data.opacity) {
                   store.setOpacity(data.opacity);
                 }
-                if (data.labelsOutside) {
-                  store.setLabelsOutside(data.labelsOutside);
-                }
-                if (data.labels) {
-                  store.setLabels(data.labels);
-                }
                 if (data.fill) {
                   store.setFill(data.fill);
                 }
@@ -115,6 +109,15 @@ const App: FunctionComponent = observer(() => {
                 if (data.tooltipOffset) {
                   store.setTooltipOffset(data.tooltipOffset);
                 }
+
+                if (data.labelsOutside) {
+                  store.setLabelsOutside(data.labelsOutside);
+                } else {
+                  if (data.labels) {
+                    store.setLabels(data.labels);
+                  }
+                }
+
                 if (data.labelPattern) {
                   store.setLabelPattern(data.labelPattern);
                 }

@@ -603,7 +603,7 @@ const setMeasurements = async ({
 }) => {
   cleanOrphanNodes();
 
-  let data: PluginNodeData = {};
+  let data: PluginNodeData = null;
 
   let settings = {
     ...store,
