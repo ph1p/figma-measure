@@ -8,6 +8,7 @@ import { STORAGE_KEY } from '../shared/constants';
 import {
   FillTypes,
   NodeSelection,
+  PluginNodeData,
   SurroundingSettings,
   TooltipPositions,
   TooltipSettings,
@@ -69,6 +70,19 @@ class RootStore {
     stroke: true,
     name: true,
   };
+
+  setAllNodeMeasurementData(data: PluginNodeData) {
+    this.strokeCap = data.strokeCap ?? this.strokeCap;
+    this.strokeOffset = data.strokeOffset ?? this.strokeOffset;
+    this.opacity = data.opacity ?? this.opacity;
+    this.fill = data.fill ?? this.fill;
+    this.color = data.color ?? this.color;
+    this.tooltip = data.tooltip ?? this.tooltip;
+    this.tooltipOffset = data.tooltipOffset ?? this.tooltipOffset;
+    this.labelPattern = data.labelPattern ?? this.labelPattern;
+    this.labelsOutside = data.labelsOutside ?? this.labelsOutside;
+    this.labels = data.labels ?? this.labels;
+  }
 
   setColor(color: string) {
     this.color = color;

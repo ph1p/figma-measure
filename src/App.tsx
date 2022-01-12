@@ -86,41 +86,7 @@ const App: FunctionComponent = observer(() => {
                   store.resetSurrounding();
                 }
 
-                //
-
-                if (data.strokeCap) {
-                  store.setStrokeCap(data.strokeCap);
-                }
-                if (data.strokeOffset) {
-                  store.setStrokeOffset(data.strokeOffset);
-                }
-                if (data.opacity) {
-                  store.setOpacity(data.opacity);
-                }
-                if (data.fill) {
-                  store.setFill(data.fill);
-                }
-                if (data.color) {
-                  store.setColor(data.color);
-                }
-                if (data.tooltip) {
-                  store.setTooltipSettings(data.tooltip);
-                }
-                if (data.tooltipOffset) {
-                  store.setTooltipOffset(data.tooltipOffset);
-                }
-
-                if (data.labelsOutside) {
-                  store.setLabelsOutside(data.labelsOutside);
-                } else {
-                  if (data.labels) {
-                    store.setLabels(data.labels);
-                  }
-                }
-
-                if (data.labelPattern) {
-                  store.setLabelPattern(data.labelPattern);
-                }
+                store.setAllNodeMeasurementData(data);
               }
             } catch {
               store.resetSurrounding();
