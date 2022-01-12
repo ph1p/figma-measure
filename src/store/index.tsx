@@ -50,7 +50,10 @@ class RootStore {
   opacity = 50;
 
   strokeCap: StrokeCap | 'STANDARD' = 'STANDARD';
+
   strokeOffset = 10;
+
+  decoupled = false;
 
   labelPattern = '($)px';
 
@@ -71,7 +74,7 @@ class RootStore {
     name: true,
   };
 
-  setAllNodeMeasurementData(data: PluginNodeData) {
+  setAllNodeMeasurementData(data: Partial<PluginNodeData>) {
     this.strokeCap = data.strokeCap ?? this.strokeCap;
     this.strokeOffset = data.strokeOffset ?? this.strokeOffset;
     this.opacity = data.opacity ?? this.opacity;
@@ -82,10 +85,21 @@ class RootStore {
     this.labelPattern = data.labelPattern ?? this.labelPattern;
     this.labelsOutside = data.labelsOutside ?? this.labelsOutside;
     this.labels = data.labels ?? this.labels;
+    this.decoupled = data.decoupled ?? this.decoupled;
   }
 
   setColor(color: string) {
     this.color = color;
+    this.sendMeasurements();
+  }
+
+  setDecoupled(decoupled: boolean) {
+    this.decoupled = decoupled;
+
+    // if (decoupled) {
+    //   this.resetSurrounding();
+    // }
+    // EventEmitter.emit('set selection decoupled', decoupled);
     this.sendMeasurements();
   }
 
@@ -201,6 +215,7 @@ class RootStore {
           tooltipOffset: this.tooltipOffset,
           tooltip: toJS(this.tooltip),
           labelPattern: this.labelPattern,
+          decoupled: this.decoupled,
         }),
       });
     }

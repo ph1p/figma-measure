@@ -53,6 +53,7 @@ const Home: FunctionComponent = observer(() => {
 
   return (
     <>
+      {store.decoupled.toString()}
       <ViewerContainer>
         {store.selection.length === 0 && (
           <ViewerOverlay>
@@ -98,6 +99,22 @@ const Home: FunctionComponent = observer(() => {
           ))}
         >
           Reload measurements
+        </Tooltip>
+
+        <Tooltip
+          hover
+          handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
+            <Decouple
+              ref={ref}
+              onClick={() => {
+                store.setDecoupled(!store.decoupled);
+              }}
+            >
+              {store.decoupled.toString()}
+            </Decouple>
+          ))}
+        >
+          Decouple measurements
         </Tooltip>
 
         <Tooltip
@@ -348,6 +365,17 @@ const LabelControl = styled(Refresh)<{ index?: number }>`
 const Trash = styled(Refresh)`
   top: initial;
   left: 12px;
+  top: 12px;
+  opacity: 1;
+  z-index: 21;
+  svg {
+    margin: 1px 0 0;
+  }
+`;
+
+const Decouple = styled(Refresh)`
+  top: initial;
+  left: 84px;
   top: 12px;
   opacity: 1;
   z-index: 21;

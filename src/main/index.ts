@@ -169,6 +169,7 @@ figma.on('selectionchange', () => {
             tooltipOffset: state.tooltipOffset,
             tooltip: state.tooltip,
             labelPattern: state.labelPattern,
+            decoupled: state.decoupled,
           };
 
           previousSelection = currentSelectionAsJSONString();
@@ -223,6 +224,7 @@ EventEmitter.on(
             tooltipOffset: data.tooltipOffset,
             tooltip: data.tooltip,
             labelPattern: data.labelPattern,
+            decoupled: data.decoupled,
           }
         : data,
       shouldIncludeGroups: reload,
@@ -480,22 +482,23 @@ const setMeasurements = async ({
       );
     }
 
-    if (NODE_COUPLING_DISABLED && Object.keys(data).length === 0) {
+    // if (data.decoupled && Object.keys(data).length === 0) {
+    node.setPluginData(
+      'data',
+      JSON.stringify({
+        ...settings,
+        //
+        connectedNodes: connectedNodes.map(({ id }) => id),
+        version: VERSION,
+      } as PluginNodeData)
+    );
+
+    if (data.decoupled) {
       if (connectedNodes.length > 0) {
         const decoupledGroup = figma.group(connectedNodes, node.parent);
         decoupledGroup.name = '📏 Decoupled measurements';
       }
     } else {
-      node.setPluginData(
-        'data',
-        JSON.stringify({
-          ...settings,
-          //
-          connectedNodes: connectedNodes.map(({ id }) => id),
-          version: VERSION,
-        } as PluginNodeData)
-      );
-
       if (connectedNodes.length > 0) {
         const group = nodeGroup(node);
 

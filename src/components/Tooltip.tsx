@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import { useEffect, useImperativeHandle, useRef, useState } from 'preact/hooks';
 import React, { RefAttributes } from 'react';
 import { usePopper } from 'react-popper';
@@ -14,93 +15,99 @@ interface Props {
   borderRadius?: number;
 }
 
-const Tooltip = React.forwardRef<HTMLElement, Props>((props, ref) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { handler: HandlerComp } = props;
+const Tooltip = observer(
+  React.forwardRef<HTMLElement, Props>((props, ref) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const { handler: HandlerComp } = props;
 
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const handlerRef = useRef<HTMLElement>(null);
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const handlerRef = useRef<HTMLElement>(null);
 
-  const [popperElement, setPopperElement] = useState(null);
-  const [arrowElement, setArrowElement] = useState(null);
-  const { styles, attributes } = usePopper(handlerRef.current, popperElement, {
-    placement: props.placement || 'top',
-    strategy: 'fixed',
-    modifiers: [
+    const [popperElement, setPopperElement] = useState(null);
+    const [arrowElement, setArrowElement] = useState(null);
+    const { styles, attributes } = usePopper(
+      handlerRef.current,
+      popperElement,
       {
-        name: 'arrow',
-        options: {
-          element: arrowElement,
-        },
-      },
-      {
-        name: 'offset',
-        options: {
-          offset: [0, props.padding || (props.hover ? 10 : 15)],
-        },
-      },
-      {
-        name: 'preventOverflow',
-        options: {
-          padding: props.offsetHorizontal || 10,
-        },
-      },
-    ],
-  });
+        placement: props.placement || 'top',
+        strategy: 'fixed',
+        modifiers: [
+          {
+            name: 'arrow',
+            options: {
+              element: arrowElement,
+            },
+          },
+          {
+            name: 'offset',
+            options: {
+              offset: [0, props.padding || (props.hover ? 10 : 15)],
+            },
+          },
+          {
+            name: 'preventOverflow',
+            options: {
+              padding: props.offsetHorizontal || 10,
+            },
+          },
+        ],
+      }
+    );
 
-  useImperativeHandle(ref, () => ({
-    hide: () => setIsOpen(false),
-  }));
+    useImperativeHandle(ref, () => ({
+      hide: () => setIsOpen(false),
+    }));
 
-  useEffect(() => {
-    if (!props.hover) {
-      const handleClick = (event) => {
-        if (!wrapperRef.current?.contains(event.target)) {
-          setIsOpen(false);
-        }
-      };
+    useEffect(() => {
+      if (!props.hover) {
+        const handleClick = (event) => {
+          if (!wrapperRef.current?.contains(event.target)) {
+            setIsOpen(false);
+          }
+        };
 
-      document.addEventListener('mousedown', handleClick);
-      return () => document.removeEventListener('mousedown', handleClick);
-    }
-  }, [wrapperRef]);
+        document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+      }
+    }, [wrapperRef]);
 
-  return (
-    <div ref={wrapperRef}>
-      <div
-        onClick={() => !props.hover && setIsOpen(!isOpen)}
-        onMouseEnter={() => props.hover && setIsOpen(!isOpen)}
-        onMouseLeave={() => props.hover && setIsOpen(!isOpen)}
-      >
-        <HandlerComp ref={handlerRef} />
-      </div>
-
-      {isOpen && (
-        <Wrapper
-          isOpen={isOpen}
-          hover={props.hover}
-          ref={setPopperElement}
-          style={styles.popper}
-          borderRadius={props.borderRadius}
-          {...attributes.popper}
+    return (
+      <div ref={wrapperRef}>
+        <div
+          onClick={() => !props.hover && setIsOpen(!isOpen)}
+          onMouseEnter={() => props.hover && setIsOpen(!isOpen)}
+          onMouseLeave={() => props.hover && setIsOpen(!isOpen)}
         >
-          <TooltipContent
-            padding={props.padding}
+          <HandlerComp ref={handlerRef} />
+        </div>
+
+        {isOpen && (
+          <Wrapper
+            isOpen={isOpen}
             hover={props.hover}
-            style={props.style}
+            ref={setPopperElement}
+            style={styles.popper}
+            borderRadius={props.borderRadius}
+            {...attributes.popper}
           >
-            {props.children}
-          </TooltipContent>
-          <Arrow
-            ref={setArrowElement}
-            hover={props.hover}
-            style={styles.arrow}
-          />
-        </Wrapper>
-      )}
-    </div>
-  );
-});
+            <TooltipContent
+              padding={props.padding}
+              hover={props.hover}
+              style={props.style}
+            >
+              {props.children}
+            </TooltipContent>
+            <Arrow
+              ref={setArrowElement}
+              hover={props.hover}
+              style={styles.arrow}
+            />
+          </Wrapper>
+        )}
+      </div>
+    );
+  })
+);
 
 const TooltipContent = styled.div<{ hover: boolean; padding?: number }>`
   padding: ${(p) => p.padding || (p.hover ? '5px 10px' : 15)};

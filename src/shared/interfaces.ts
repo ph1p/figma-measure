@@ -63,6 +63,7 @@ export interface PluginNodeData {
   opacity?: number;
   labelPattern: string;
   tooltip: TooltipSettings;
+  decoupled?: boolean;
 }
 
 export interface SurroundingSettings {
@@ -117,6 +118,7 @@ export interface Store {
   tooltipOffset: number;
   tooltip: TooltipSettings;
   visibility: boolean;
+  decoupled: boolean;
 }
 
 export interface NodeSelection {

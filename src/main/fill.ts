@@ -41,6 +41,11 @@ export function createFill(
     cloneNode.opacity = 1;
     cloneNode.locked = false;
 
+    cloneNode.setPluginData('data', '');
+    cloneNode.setPluginData('spacing', '');
+    cloneNode.setPluginData('parent', '');
+    cloneNode.setPluginData('padding', '');
+
     const { r, g, b } = hexToRgb(color);
 
     switch (fill) {

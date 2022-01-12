@@ -59,7 +59,7 @@ const App: FunctionComponent = observer(() => {
           if (selection.length > 0) {
             try {
               const padding = selection[0]?.padding || {};
-              const data: PluginNodeData = selection[0]?.data || null;
+              const data: Partial<PluginNodeData> = selection[0]?.data || null;
 
               if (data) {
                 // padding
