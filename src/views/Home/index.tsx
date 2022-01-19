@@ -6,12 +6,12 @@ import styled from 'styled-components';
 import { Colors } from '../../components/ColorPicker';
 import { Input } from '../../components/Input';
 import Tooltip from '../../components/Tooltip';
-import { EyeClosedIcon, EyeIcon } from '../../components/icons/EyeIcons';
-import { RefreshIcon } from '../../components/icons/RefreshIcon';
 import {
   CoupledIcon,
   DecoupledIcon,
-} from '../../components/icons/RefreshIcons';
+} from '../../components/icons/CoupledIcons';
+import { EyeClosedIcon, EyeIcon } from '../../components/icons/EyeIcons';
+import { RefreshIcon } from '../../components/icons/RefreshIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import EventEmitter from '../../shared/EventEmitter';
 import { useStore } from '../../store';
