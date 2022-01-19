@@ -7,7 +7,6 @@ import {
   ColorIcon,
   CornerRadiusIcon,
   FontFamilyIcon,
-  FontSizeIcon,
   HeightIcon,
   NameIcon,
   OpacityIcon,

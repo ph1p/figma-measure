@@ -12,6 +12,7 @@ import {
 } from '../shared/interfaces';
 
 import { createFill } from './fill';
+import isPartOfInstance from './helper';
 import { createLine } from './line';
 import {
   addToGlobalGroup,
@@ -28,7 +29,23 @@ import { setTooltip } from './tooltip';
 let changeInterval;
 let previousSelection;
 
-const NODE_COUPLING_DISABLED = false;
+// const NODE_COUPLING_DISABLED = false;
+
+// enum MeasurementTypes {
+//   LINE,
+//   FILL,
+//   SPACING,
+//   PADDING,
+//   TOOLTIP,
+// }
+
+// const measurementNodes = [{
+//   id: '3213:1231',
+//   type: MeasurementTypes.LINE,
+//   settings: {
+
+//   }
+// }]
 
 figma.showUI(__html__, {
   width: 285,
@@ -91,12 +108,20 @@ const cleanOrphanNodes = () => {
 
   if (group) {
     for (const node of group.children) {
-      const foundNode = figma.getNodeById(node.getPluginData('parent'));
-      const foundPaddingNode = figma.getNodeById(
-        JSON.parse(node.getPluginData('padding-parent') || '{}').parentId
-      );
+      try {
+        const foundNode = figma.getNodeById(node.getPluginData('parent'));
+        const foundPaddingNode = figma.getNodeById(
+          JSON.parse(node.getPluginData('padding-parent') || '{}').parentId
+        );
 
-      if (!foundNode && !node.getPluginData('connected') && !foundPaddingNode) {
+        if (
+          !foundNode &&
+          !node.getPluginData('connected') &&
+          !foundPaddingNode
+        ) {
+          node.remove();
+        }
+      } catch {
         node.remove();
       }
     }
@@ -255,7 +280,10 @@ const setMeasurements = async ({
     }
 
     if (
-      (node.type === 'GROUP' || node.type === 'FRAME') &&
+      (node.type === 'GROUP' ||
+        node.type === 'FRAME' ||
+        node.type === 'INSTANCE' ||
+        node.type === 'COMPONENT_SET') &&
       shouldIncludeGroups
     ) {
       if (node.children.length > 0) {
@@ -495,7 +523,11 @@ const setMeasurements = async ({
 
     if (data.decoupled) {
       if (connectedNodes.length > 0) {
-        const decoupledGroup = figma.group(connectedNodes, node.parent);
+        let parent = node.parent;
+        if (isPartOfInstance(node)) {
+          parent = figma.currentPage;
+        }
+        const decoupledGroup = figma.group(connectedNodes, parent);
         decoupledGroup.name = '📏 Decoupled measurements';
       }
     } else {

@@ -19,8 +19,8 @@ import Viewer from './components/Viewer';
 
 const Home: FunctionComponent = observer(() => {
   const store = useStore();
-  const labelControlRef = useRef<any>(null);
-  const visibilityRef = useRef<any>(null);
+  const labelControlRef = useRef<React.ElementRef<typeof Tooltip>>(null);
+  const visibilityRef = useRef<React.ElementRef<typeof Tooltip>>(null);
 
   const removeAllMeasurements = () => {
     if (confirm('Do you really want to remove all measurements?')) {

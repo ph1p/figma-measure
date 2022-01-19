@@ -285,11 +285,11 @@ const OverlayRect = styled.div.attrs<{ active?: boolean }>((props) => ({
       opacity: 0.5;
     }
   }
-  &.fill-stroke  {
+  &.fill-stroke {
     background-color: ${(props) => props.theme.hoverColor};
   }
   &.fill-stroke,
-  &.fill  {
+  &.fill {
     &:hover {
       box-shadow: 0 0 0 3px ${(props) => props.theme.softColor};
     }

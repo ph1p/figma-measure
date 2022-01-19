@@ -15,8 +15,12 @@ interface Props {
   borderRadius?: number;
 }
 
+type TooltipHandle = {
+  hide: () => void;
+};
+
 const Tooltip = observer(
-  React.forwardRef<HTMLElement, Props>((props, ref) => {
+  React.forwardRef<TooltipHandle, Props>((props, ref) => {
     const [isOpen, setIsOpen] = useState(false);
     const { handler: HandlerComp } = props;
 

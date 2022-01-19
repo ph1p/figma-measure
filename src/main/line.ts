@@ -25,6 +25,7 @@ export function createLabel({
   label.fontSize = 10;
   label.fills = [].concat(solidColor(255, 255, 255));
 
+
   labelFrame.appendChild(label);
   labelFrame.name = 'label';
 
@@ -128,8 +129,24 @@ export function createLine(options) {
 
     group.appendChild(line);
 
+    if (isHorizontal) {
+      line.constraints = {
+        vertical: 'CENTER',
+        horizontal: 'STRETCH',
+      };
+    } else {
+      line.constraints = {
+        vertical: 'STRETCH',
+        horizontal: 'CENTER',
+      };
+    }
+
     // add label frame
     if (labelFrame) {
+      labelFrame.constraints = {
+        vertical: 'CENTER',
+        horizontal: 'CENTER',
+      };
       group.appendChild(labelFrame);
     }
 
@@ -182,10 +199,32 @@ export function createLine(options) {
           secondMeasureLine.x += nodeWidth;
           secondMeasureLine.y = line.y + strokeCapWidth / 2;
         }
+
+        if (isHorizontal) {
+          firstMeasureLine.constraints = {
+            vertical: 'CENTER',
+            horizontal: 'MIN',
+          };
+          secondMeasureLine.constraints = {
+            vertical: 'CENTER',
+            horizontal: 'MAX',
+          };
+        } else {
+          firstMeasureLine.constraints = {
+            vertical: 'MIN',
+            horizontal: 'CENTER',
+          };
+          secondMeasureLine.constraints = {
+            vertical: 'MAX',
+            horizontal: 'CENTER',
+          };
+        }
       }
     } else {
       line.strokeCap = strokeCap as StrokeCap;
     }
+
+    line.handleMirroring = 'ANGLE_AND_LENGTH';
 
     // x, y for text box
     const boxTop = paddingTopBottom / 2;
@@ -349,6 +388,8 @@ export function createLine(options) {
     ];
 
     group.relativeTransform = transformPosition;
+
+
 
     return group;
   }
