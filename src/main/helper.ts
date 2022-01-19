@@ -88,3 +88,121 @@ export default function isPartOfInstance(node: SceneNode): boolean {
     return isPartOfInstance(parent as SceneNode);
   }
 }
+
+export const getFontNameData = async (
+  textNode: TextNode
+): Promise<(FontName & { style: []; fontSize: number[] })[]> => {
+  const fontNameData = [];
+
+  const loadFontAndPush = async (font: FontName) => {
+    if (
+      fontNameData.some(
+        (f) => f.family === font.family && !f.style.includes(font.style)
+      )
+    ) {
+      fontNameData.find((f) => f.family === font.family).style.push(font.style);
+    } else {
+      if (!fontNameData.some((f) => f.family === font.family)) {
+        fontNameData.push({
+          ...font,
+          style: [font.style],
+          fontSize: getFontSizeData(textNode, font.family),
+        });
+      }
+    }
+  };
+
+  if (textNode.fontName === figma.mixed) {
+    const len = textNode.characters.length;
+    for (let i = 0; i < len; i++) {
+      const font = textNode.getRangeFontName(i, i + 1) as FontName;
+
+      await loadFontAndPush(font);
+    }
+  } else {
+    await loadFontAndPush(textNode.fontName);
+  }
+
+  return fontNameData;
+};
+
+type FontFill = Paint & {
+  styleId?: string | null;
+  name?: string | null;
+};
+export const getFontFillsAndStyles = (textNode: TextNode) => {
+  const fills: FontFill[] = [];
+  const styles = [];
+
+  const len = textNode.characters.length;
+  for (let i = 0; i < len; i++) {
+    const textStyleId = textNode.getRangeTextStyleId(i, i + 1);
+    const fillStyleId = textNode.getRangeFillStyleId(i, i + 1);
+    const fill = textNode.getRangeFills(i, i + 1);
+
+    if (fillStyleId && fillStyleId !== figma.mixed) {
+      const style = figma.getStyleById(fillStyleId) as PaintStyle;
+
+      if (style && style.type === 'PAINT') {
+        for (const paint of style.paints as FontFill[]) {
+          if (!fills.find((f) => f.styleId === style.id)) {
+            fills.push({
+              ...paint,
+              name: style.name || null,
+              styleId: style.id || null,
+            });
+          }
+        }
+      }
+    }
+
+    if (!fillStyleId && fill !== figma.mixed && fill.length === 1) {
+      if (!fills.find((f) => JSON.stringify(f) === JSON.stringify(fill[0]))) {
+        fills.push(fill[0]);
+      }
+    }
+
+    if (
+      textStyleId !== figma.mixed &&
+      !styles.some((s) => s.id === textStyleId)
+    ) {
+      const textStyle = figma.getStyleById(textStyleId) as TextStyle;
+
+      if (textStyle.type === 'TEXT') {
+        const { id, name, fontName, fontSize, lineHeight, letterSpacing } =
+          textStyle;
+
+        styles.push({
+          id,
+          name,
+          fontName,
+          fontSize,
+          lineHeight,
+          letterSpacing,
+        });
+      }
+    }
+  }
+
+  return {
+    fills,
+    styles,
+  };
+};
+export const getFontSizeData = (textNode: TextNode, fontName: string) => {
+  const fonts = {};
+
+  const len = textNode.characters.length;
+  for (let i = 0; i < len; i++) {
+    const font = (textNode.getRangeFontName(i, i + 1) as FontName).family;
+    const fontSize = textNode.getRangeFontSize(i, i + 1) as number;
+
+    if (fonts[font]) {
+      fonts[font] = Array.from(new Set(fonts[font].concat(fontSize)));
+    } else {
+      fonts[font] = [fontSize];
+    }
+  }
+
+  return fontName ? fonts[fontName] : fonts;
+};
