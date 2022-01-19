@@ -53,7 +53,6 @@ const Home: FunctionComponent = observer(() => {
 
   return (
     <>
-      {store.decoupled.toString()}
       <ViewerContainer>
         {store.selection.length === 0 && (
           <ViewerOverlay>
