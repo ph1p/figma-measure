@@ -61,7 +61,7 @@ const App: FunctionComponent = observer(() => {
               const padding = selection[0]?.padding || {};
               const data: Partial<PluginNodeData> = selection[0]?.data || null;
 
-              if (data) {
+              if (data && !store.decoupled) {
                 // padding
                 if (Object.keys(padding).length > 0) {
                   if (!data.surrounding) {

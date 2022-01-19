@@ -85,7 +85,6 @@ class RootStore {
     this.labelPattern = data.labelPattern ?? this.labelPattern;
     this.labelsOutside = data.labelsOutside ?? this.labelsOutside;
     this.labels = data.labels ?? this.labels;
-    this.decoupled = data.decoupled ?? this.decoupled;
   }
 
   setColor(color: string) {
@@ -218,6 +217,9 @@ class RootStore {
           decoupled: this.decoupled,
         }),
       });
+      if (this.decoupled) {
+        this.resetSurrounding();
+      }
     }
   }
 }

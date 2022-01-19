@@ -194,7 +194,6 @@ figma.on('selectionchange', () => {
             tooltipOffset: state.tooltipOffset,
             tooltip: state.tooltip,
             labelPattern: state.labelPattern,
-            decoupled: state.decoupled,
           };
 
           previousSelection = currentSelectionAsJSONString();
@@ -249,7 +248,6 @@ EventEmitter.on(
             tooltipOffset: data.tooltipOffset,
             tooltip: data.tooltip,
             labelPattern: data.labelPattern,
-            decoupled: data.decoupled,
           }
         : data,
       shouldIncludeGroups: reload,
@@ -266,6 +264,7 @@ const setMeasurements = async ({
   store?: ExchangeStoreValues;
   nodes?: readonly SceneNode[];
 }) => {
+  const state = await getState();
   cleanOrphanNodes();
 
   let data: PluginNodeData = null;
@@ -297,25 +296,27 @@ const setMeasurements = async ({
 
     let surrounding: SurroundingSettings = store.surrounding;
 
-    try {
-      data = JSON.parse(node.getPluginData('data') || '{}');
+    if (!state.decoupled) {
+      try {
+        data = JSON.parse(node.getPluginData('data') || '{}');
 
-      if (
-        data.surrounding &&
-        Object.keys(data.surrounding).length > 0 &&
-        !store.surrounding
-      ) {
-        surrounding = data.surrounding;
-        settings = {
-          ...settings,
-          ...data,
-        };
-      }
-    } catch {
-      node.setPluginData('data', '{}');
-      console.log('Could not set data');
-      if (!store) {
-        continue;
+        if (
+          data.surrounding &&
+          Object.keys(data.surrounding).length > 0 &&
+          !store.surrounding
+        ) {
+          surrounding = data.surrounding;
+          settings = {
+            ...settings,
+            ...data,
+          };
+        }
+      } catch {
+        node.setPluginData('data', '{}');
+        console.log('Could not set data');
+        if (!store) {
+          continue;
+        }
       }
     }
 
@@ -511,17 +512,8 @@ const setMeasurements = async ({
     }
 
     // if (data.decoupled && Object.keys(data).length === 0) {
-    node.setPluginData(
-      'data',
-      JSON.stringify({
-        ...settings,
-        //
-        connectedNodes: connectedNodes.map(({ id }) => id),
-        version: VERSION,
-      } as PluginNodeData)
-    );
 
-    if (data.decoupled) {
+    if (state.decoupled) {
       if (connectedNodes.length > 0) {
         let parent = node.parent;
         if (isPartOfInstance(node)) {
@@ -529,8 +521,19 @@ const setMeasurements = async ({
         }
         const decoupledGroup = figma.group(connectedNodes, parent);
         decoupledGroup.name = '📏 Decoupled measurements';
+        decoupledGroup.expanded = false;
       }
     } else {
+      node.setPluginData(
+        'data',
+        JSON.stringify({
+          ...settings,
+          //
+          connectedNodes: connectedNodes.map(({ id }) => id),
+          version: VERSION,
+        } as PluginNodeData)
+      );
+
       if (connectedNodes.length > 0) {
         const group = nodeGroup(node);
 

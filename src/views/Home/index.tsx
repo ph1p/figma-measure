@@ -8,6 +8,10 @@ import { Input } from '../../components/Input';
 import Tooltip from '../../components/Tooltip';
 import { EyeClosedIcon, EyeIcon } from '../../components/icons/EyeIcons';
 import { RefreshIcon } from '../../components/icons/RefreshIcon';
+import {
+  CoupledIcon,
+  DecoupledIcon,
+} from '../../components/icons/RefreshIcons';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import EventEmitter from '../../shared/EventEmitter';
 import { useStore } from '../../store';
@@ -21,6 +25,7 @@ const Home: FunctionComponent = observer(() => {
   const store = useStore();
   const labelControlRef = useRef<React.ElementRef<typeof Tooltip>>(null);
   const visibilityRef = useRef<React.ElementRef<typeof Tooltip>>(null);
+  const coupleRef = useRef<React.ElementRef<typeof Tooltip>>(null);
 
   const removeAllMeasurements = () => {
     if (confirm('Do you really want to remove all measurements?')) {
@@ -102,18 +107,22 @@ const Home: FunctionComponent = observer(() => {
 
         <Tooltip
           hover
-          handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
-            <Decouple
-              ref={ref}
-              onClick={() => {
-                store.setDecoupled(!store.decoupled);
-              }}
-            >
-              {store.decoupled.toString()}
-            </Decouple>
-          ))}
+          ref={coupleRef}
+          handler={observer(
+            React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
+              <Decouple
+                ref={ref}
+                onClick={() => {
+                  store.setDecoupled(!store.decoupled);
+                  coupleRef.current.hide();
+                }}
+              >
+                {store.decoupled ? <DecoupledIcon /> : <CoupledIcon />}
+              </Decouple>
+            ))
+          )}
         >
-          Decouple measurements
+          {store.decoupled ? 'Couple' : 'Decouple'} measurements
         </Tooltip>
 
         <Tooltip
@@ -378,8 +387,13 @@ const Decouple = styled(Refresh)`
   top: 12px;
   opacity: 1;
   z-index: 21;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   svg {
-    margin: 1px 0 0;
+    margin: 0;
+    width: 16px;
+    height: 16px;
   }
 `;
 
