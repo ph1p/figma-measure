@@ -130,6 +130,31 @@ type FontFill = Paint & {
   styleId?: string | null;
   name?: string | null;
 };
+
+export const getFillsByFillStyleId = (
+  fillStyleId: string | typeof figma.mixed
+) => {
+  const fills: FontFill[] = [];
+
+  if (fillStyleId && fillStyleId !== figma.mixed) {
+    const style = figma.getStyleById(fillStyleId) as PaintStyle;
+
+    if (style && style.type === 'PAINT') {
+      for (const paint of style.paints as FontFill[]) {
+        if (!fills.find((f) => f.styleId === style.id)) {
+          fills.push({
+            ...paint,
+            name: style.name || null,
+            styleId: style.id || null,
+          });
+        }
+      }
+    }
+  }
+
+  return fills;
+};
+
 export const getFontFillsAndStyles = (textNode: TextNode) => {
   const fills: FontFill[] = [];
   const styles = [];
@@ -140,19 +165,11 @@ export const getFontFillsAndStyles = (textNode: TextNode) => {
     const fillStyleId = textNode.getRangeFillStyleId(i, i + 1);
     const fill = textNode.getRangeFills(i, i + 1);
 
-    if (fillStyleId && fillStyleId !== figma.mixed) {
-      const style = figma.getStyleById(fillStyleId) as PaintStyle;
+    const fillStyles = getFillsByFillStyleId(fillStyleId);
 
-      if (style && style.type === 'PAINT') {
-        for (const paint of style.paints as FontFill[]) {
-          if (!fills.find((f) => f.styleId === style.id)) {
-            fills.push({
-              ...paint,
-              name: style.name || null,
-              styleId: style.id || null,
-            });
-          }
-        }
+    for (const fillStyle of fillStyles) {
+      if (!fills.find((f) => f.styleId === fillStyle.styleId)) {
+        fills.push(fillStyle);
       }
     }
 

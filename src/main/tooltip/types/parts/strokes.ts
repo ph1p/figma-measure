@@ -1,6 +1,10 @@
-import { createTooltipTextNode } from '../../../helper';
+import { createTooltipTextNode, getFillsByFillStyleId } from '../../../helper';
 
 import { createColorNode } from './fills';
+
+const ICON = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="https://www.w3.org/2000/svg">
+<path d="M11.5 9H3.5V7H11.5V9Z" fill="#8C8C8C"/>
+</svg>`;
 
 export default function strokes(
   node,
@@ -8,12 +12,7 @@ export default function strokes(
   { fontColor = '', fontSize = 0 }
 ) {
   // Stroke
-  if (node?.strokes?.length) {
-    const iconNode = figma.createNodeFromSvg(
-      `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="https://www.w3.org/2000/svg">
-      <path d="M11.5 9H3.5V7H11.5V9Z" fill="#8C8C8C"/>
-      </svg>`
-    );
+  if (node?.strokes?.length && node.strokeWeight) {
     const textNode = createTooltipTextNode({
       fontColor,
       fontSize,
@@ -23,27 +22,28 @@ export default function strokes(
 
     textNode.characters += node.strokeWeight;
 
-    figma.group([iconNode, textNode], parent);
+    textNode.characters += ` · ${node.strokeAlign.toLowerCase()}`;
 
-    const fillColors = node.strokes
-      .filter((s) => s.type === 'SOLID' && s.visible)
-      .map((fill) => {
-        const fillFrame = figma.createFrame();
+    figma.group([figma.createNodeFromSvg(ICON), textNode], parent);
 
-        for (const colorNode of createColorNode(fill, {
-          fontColor,
-          fontSize,
-        })) {
-          fillFrame.appendChild(colorNode);
-        }
+    let fills = null;
 
-        fillFrame.x += 20;
-        fillFrame.resize(fillFrame.width, 16);
-        return fillFrame;
-      });
+    if (node.strokeStyleId) {
+      fills = getFillsByFillStyleId(node.strokeStyleId);
+    }
 
-    if (fillColors.length > 0) {
-      figma.group(fillColors, parent);
+    if (!fills) {
+      fills = node.strokes.filter((s) => s.type === 'SOLID' && s.visible);
+    }
+
+    for (const fill of fills) {
+      figma.group(
+        [
+          figma.createNodeFromSvg(ICON),
+          ...createColorNode(fill, { fontColor, fontSize }),
+        ],
+        parent
+      );
     }
   }
 }

@@ -4,6 +4,8 @@ import {
   getFontFillsAndStyles,
   colorString,
   rgbaToHex,
+  getFillsByFillStyleId,
+  solidColor,
 } from '../../../helper';
 
 const ICON = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="https://www.w3.org/2000/svg">
@@ -28,8 +30,18 @@ export const createColorNode = (fill, { fontColor = '', fontSize = 0 }) => {
   textNode.x += 40;
   textNode.y += 1.5;
 
-  textNode.characters +=
-    name || rgbaToHex(colorString(fill.color, fill.opacity));
+  textNode.characters += rgbaToHex(colorString(fill.color, fill.opacity));
+
+  if (name) {
+    const start = textNode.characters.length;
+    textNode.characters += `\n${name}`;
+
+    textNode.setRangeFontSize(start, textNode.characters.length, 10);
+    textNode.setRangeFills(start, textNode.characters.length, [
+      solidColor(153, 153, 153),
+    ]);
+  }
+
   if (fill.opacity !== 1) {
     textNode.characters += ` · ${toFixed(fill.opacity * 100, 2)}%`;
   }
@@ -62,7 +74,11 @@ export default async function fills(
 
     fills = fontData.fills;
   } else {
-    if (node?.fills !== figma.mixed) {
+    if (node.fillStyleId) {
+      fills = getFillsByFillStyleId(node.fillStyleId);
+    }
+
+    if (!fills && node?.fills !== figma.mixed) {
       const fillsAvailable =
         typeof node.fills !== 'undefined'
           ? node.fills.some((f) => f.type !== 'IMAGE')
