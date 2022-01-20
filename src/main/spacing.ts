@@ -1,9 +1,10 @@
 import EventEmitter from '../shared/EventEmitter';
 import { findAndReplaceNumberPattern } from '../shared/helpers';
 
-import { getColor } from './helper';
+import isPartOfInstance, { getColor } from './helper';
 import { createLabel } from './line';
 import { addToGlobalGroup } from './measure-group';
+import { getState } from './store';
 
 export const getSpacing = (node: SceneNode) =>
   JSON.parse(node.getPluginData('spacing') || '{}');
@@ -77,10 +78,11 @@ const getShapeValues = (shape: SceneNode) => {
   };
 };
 
-export const drawSpacing = (
+export const drawSpacing = async (
   rects: SceneNode[],
   { color = '', labels = true, labelPattern = '', labelsOutside = false }
 ) => {
+  const state = await getState();
   const LABEL_OUTSIDE_MARGIN = 4;
 
   if (rects.length !== 2) {
@@ -357,7 +359,13 @@ export const drawSpacing = (
     }
   }
 
-  if (spacingGroup.length > 0) {
+  if (state.decoupled) {
+    const decoupledGroup = figma.group(spacingGroup, figma.currentPage);
+    decoupledGroup.name = '📏 Decoupled measurements';
+    decoupledGroup.expanded = false;
+  }
+
+  if (!state.decoupled && spacingGroup.length > 0) {
     const group = figma.group(spacingGroup, figma.currentPage);
     group.locked = true;
     group.expanded = false;

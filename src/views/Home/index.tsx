@@ -26,6 +26,7 @@ const Home: FunctionComponent = observer(() => {
   const labelControlRef = useRef<React.ElementRef<typeof Tooltip>>(null);
   const visibilityRef = useRef<React.ElementRef<typeof Tooltip>>(null);
   const coupleRef = useRef<React.ElementRef<typeof Tooltip>>(null);
+  const trashRef = useRef<React.ElementRef<typeof Tooltip>>(null);
 
   const removeAllMeasurements = () => {
     if (confirm('Do you really want to remove all measurements?')) {
@@ -113,8 +114,8 @@ const Home: FunctionComponent = observer(() => {
               <Decouple
                 ref={ref}
                 onClick={() => {
-                  store.setDecoupled(!store.decoupled);
                   coupleRef.current.hide();
+                  store.setDecoupled(!store.decoupled);
                 }}
               >
                 {store.decoupled ? <DecoupledIcon /> : <CoupledIcon />}
@@ -127,8 +128,12 @@ const Home: FunctionComponent = observer(() => {
 
         <Tooltip
           hover
+          ref={trashRef}
           handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
-            <Trash ref={ref} onClick={removeAllMeasurements}>
+            <Trash ref={ref} onClick={() => {
+              removeAllMeasurements();
+              trashRef.current.hide();
+            }}>
               <TrashIcon />
             </Trash>
           ))}

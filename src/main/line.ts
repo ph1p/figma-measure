@@ -25,7 +25,6 @@ export function createLabel({
   label.fontSize = 10;
   label.fills = [].concat(solidColor(255, 255, 255));
 
-
   labelFrame.appendChild(label);
   labelFrame.name = 'label';
 
@@ -72,6 +71,67 @@ export function getLineFrame(node, data) {
 
   return lineFrame;
 }
+
+export const createStandardCap = ({
+  group,
+  line,
+  isHorizontal,
+  height,
+  width,
+  mainColor,
+}) => {
+  const strokeCapWidth = 6 + line.strokeWeight;
+  if (strokeCapWidth >= 0.01) {
+    const firstMeasureLine = figma.createLine();
+    const secondMeasureLine = figma.createLine();
+
+    group.appendChild(firstMeasureLine);
+    group.appendChild(secondMeasureLine);
+
+    firstMeasureLine.strokes = [].concat(mainColor);
+    secondMeasureLine.strokes = [].concat(mainColor);
+    firstMeasureLine.resize(strokeCapWidth, 0);
+    secondMeasureLine.resize(strokeCapWidth, 0);
+
+    if (!isHorizontal) {
+      firstMeasureLine.x =
+        group.width / 2 - strokeCapWidth / 2 - line.strokeWeight / 2;
+      firstMeasureLine.y += 1;
+
+      secondMeasureLine.x =
+        group.width / 2 - strokeCapWidth / 2 - line.strokeWeight / 2;
+      secondMeasureLine.y += height;
+    } else {
+      firstMeasureLine.rotation = 90;
+      firstMeasureLine.x += 1;
+      firstMeasureLine.y = line.y + strokeCapWidth / 2;
+
+      secondMeasureLine.rotation = 90;
+      secondMeasureLine.x += width;
+      secondMeasureLine.y = line.y + strokeCapWidth / 2;
+    }
+
+    if (isHorizontal) {
+      firstMeasureLine.constraints = {
+        vertical: 'CENTER',
+        horizontal: 'MIN',
+      };
+      secondMeasureLine.constraints = {
+        vertical: 'CENTER',
+        horizontal: 'MAX',
+      };
+    } else {
+      firstMeasureLine.constraints = {
+        vertical: 'MIN',
+        horizontal: 'CENTER',
+      };
+      secondMeasureLine.constraints = {
+        vertical: 'MAX',
+        horizontal: 'CENTER',
+      };
+    }
+  }
+};
 
 export function createLine(options) {
   const {
@@ -169,57 +229,14 @@ export function createLine(options) {
 
     // STROKE CAP
     if (strokeCap === 'STANDARD') {
-      const strokeCapWidth = 6 + line.strokeWeight;
-      if (strokeCapWidth >= 0.01) {
-        const firstMeasureLine = figma.createLine();
-        const secondMeasureLine = figma.createLine();
-
-        group.appendChild(firstMeasureLine);
-        group.appendChild(secondMeasureLine);
-
-        firstMeasureLine.strokes = [].concat(mainColor);
-        secondMeasureLine.strokes = [].concat(mainColor);
-        firstMeasureLine.resize(strokeCapWidth, 0);
-        secondMeasureLine.resize(strokeCapWidth, 0);
-
-        if (!isHorizontal) {
-          firstMeasureLine.x =
-            group.width / 2 - strokeCapWidth / 2 - line.strokeWeight / 2;
-          firstMeasureLine.y += 1;
-
-          secondMeasureLine.x =
-            group.width / 2 - strokeCapWidth / 2 - line.strokeWeight / 2;
-          secondMeasureLine.y += nodeHeight;
-        } else {
-          firstMeasureLine.rotation = 90;
-          firstMeasureLine.x += 1;
-          firstMeasureLine.y = line.y + strokeCapWidth / 2;
-
-          secondMeasureLine.rotation = 90;
-          secondMeasureLine.x += nodeWidth;
-          secondMeasureLine.y = line.y + strokeCapWidth / 2;
-        }
-
-        if (isHorizontal) {
-          firstMeasureLine.constraints = {
-            vertical: 'CENTER',
-            horizontal: 'MIN',
-          };
-          secondMeasureLine.constraints = {
-            vertical: 'CENTER',
-            horizontal: 'MAX',
-          };
-        } else {
-          firstMeasureLine.constraints = {
-            vertical: 'MIN',
-            horizontal: 'CENTER',
-          };
-          secondMeasureLine.constraints = {
-            vertical: 'MAX',
-            horizontal: 'CENTER',
-          };
-        }
-      }
+      createStandardCap({
+        group,
+        line,
+        isHorizontal,
+        mainColor,
+        width: nodeWidth,
+        height: nodeHeight,
+      });
     } else {
       line.strokeCap = strokeCap as StrokeCap;
     }
@@ -388,8 +405,6 @@ export function createLine(options) {
     ];
 
     group.relativeTransform = transformPosition;
-
-
 
     return group;
   }

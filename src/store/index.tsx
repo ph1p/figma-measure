@@ -95,11 +95,14 @@ class RootStore {
   setDecoupled(decoupled: boolean) {
     this.decoupled = decoupled;
 
-    // if (decoupled) {
-    //   this.resetSurrounding();
-    // }
-    // EventEmitter.emit('set selection decoupled', decoupled);
-    this.sendMeasurements();
+    if (this.decoupled) {
+      this.resetSurrounding();
+    }
+
+    EventEmitter.ask('current selection').then((data: string[]) => {
+      this.setSelection(data);
+      this.sendMeasurements();
+    });
   }
 
   setLabels(labels: boolean) {
@@ -217,9 +220,10 @@ class RootStore {
           decoupled: this.decoupled,
         }),
       });
-      if (this.decoupled) {
-        this.resetSurrounding();
-      }
+    }
+
+    if (this.decoupled) {
+      this.resetSurrounding();
     }
   }
 }

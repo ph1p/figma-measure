@@ -265,7 +265,9 @@ const setMeasurements = async ({
   nodes?: readonly SceneNode[];
 }) => {
   const state = await getState();
-  cleanOrphanNodes();
+  if (!state.decoupled) {
+    cleanOrphanNodes();
+  }
 
   let data: PluginNodeData = null;
 
@@ -299,6 +301,7 @@ const setMeasurements = async ({
     if (!state.decoupled) {
       try {
         data = JSON.parse(node.getPluginData('data') || '{}');
+        console.log(node.getPluginData('data'));
 
         if (
           data.surrounding &&
@@ -311,28 +314,29 @@ const setMeasurements = async ({
             ...data,
           };
         }
-      } catch {
+      } catch (e) {
+        console.log(e);
         node.setPluginData('data', '{}');
         console.log('Could not set data');
         if (!store) {
           continue;
         }
       }
-    }
 
-    // remove all connected nodes
-    if (data?.connectedNodes?.length > 0) {
-      for (const id of data.connectedNodes) {
-        const foundNode = figma.getNodeById(id);
-        if (foundNode) {
-          foundNode.remove();
+      // remove all connected nodes
+      if (data?.connectedNodes?.length > 0) {
+        for (const id of data.connectedNodes) {
+          const foundNode = figma.getNodeById(id);
+          if (foundNode) {
+            foundNode.remove();
+          }
         }
       }
     }
 
     // spacing
     const spacing = getSpacing(node);
-    if (Object.keys(spacing).length > 0) {
+    if (Object.keys(spacing).length > 0 && !state.decoupled) {
       Object.keys(spacing)
         .filter((connectedNodeId) => {
           // check if group exists
@@ -386,7 +390,7 @@ const setMeasurements = async ({
 
     // Padding
     const padding = getPadding(node);
-    if (padding) {
+    if (padding && !state.decoupled) {
       Object.keys(Alignments)
         .filter((k) => k !== Alignments.CENTER && padding[k])
         .forEach((direction: Alignments) => {

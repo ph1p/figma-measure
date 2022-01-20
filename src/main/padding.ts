@@ -3,9 +3,10 @@ import { findAndReplaceNumberPattern } from '../shared/helpers';
 import { Alignments, ExchangeStoreValues } from '../shared/interfaces';
 
 import { getColor } from './helper';
-import { createLabel } from './line';
+import { createLabel, createStandardCap } from './line';
 import { getGlobalGroup, addToGlobalGroup } from './measure-group';
 import { distanceBetweenTwoPoints } from './spacing';
+import { getState } from './store';
 
 import { sendSelection } from '.';
 
@@ -54,48 +55,69 @@ export const getPadding = (node: SceneNode) => {
   return JSON.parse(node.getPluginData('padding') || '{}');
 };
 
-EventEmitter.on('add padding', ({ direction, settings }) => {
+EventEmitter.on('add padding', async ({ direction, settings }) => {
+  const state = await getState();
   const currentNode = figma.currentPage.selection[0];
 
   const nodeData = getNodeAndParentNode(currentNode);
 
   if (nodeData && nodeData.node && nodeData.parentNode) {
-    // Padding
-    let pluginDataPadding = getPadding(nodeData.node);
-
-    if (pluginDataPadding[direction]) {
-      try {
-        removePaddingGroup(nodeData.node, direction);
-
-        delete pluginDataPadding[direction];
-
-        nodeData.node.setPluginData(
-          'padding',
-          JSON.stringify(pluginDataPadding)
-        );
-        // eslint-disable-next-line no-empty
-      } catch {}
-    } else {
-      nodeData.node.setPluginData(
-        'padding',
-        JSON.stringify({
-          ...pluginDataPadding,
-          [direction]: nodeData.parentNode.id,
-        })
+    if (state.decoupled) {
+      const decoupledGroup = figma.group(
+        [
+          createPaddingLine({
+            ...settings,
+            direction,
+            decoupled: state.decoupled,
+            strokeCap: state.strokeCap,
+            node: nodeData.node,
+            parent: figma.getNodeById(nodeData.parentNode.id),
+          }),
+        ],
+        figma.currentPage
       );
-
-      pluginDataPadding = getPadding(nodeData.node);
+      decoupledGroup.name = '📏 Decoupled measurements';
+      decoupledGroup.expanded = false;
+    } else {
+      // Padding
+      let pluginDataPadding = getPadding(nodeData.node);
 
       if (pluginDataPadding[direction]) {
-        for (const parentId of pluginDataPadding[direction]) {
-          addToGlobalGroup(
-            createPaddingLine({
-              ...settings,
-              direction,
-              node: nodeData.node,
-              parent: figma.getNodeById(parentId),
-            })
+        try {
+          removePaddingGroup(nodeData.node, direction);
+
+          delete pluginDataPadding[direction];
+
+          nodeData.node.setPluginData(
+            'padding',
+            JSON.stringify(pluginDataPadding)
           );
+          // eslint-disable-next-line no-empty
+        } catch {}
+      } else {
+        nodeData.node.setPluginData(
+          'padding',
+          JSON.stringify({
+            ...pluginDataPadding,
+            [direction]: nodeData.parentNode.id,
+          })
+        );
+
+        pluginDataPadding = getPadding(nodeData.node);
+
+        if (pluginDataPadding[direction]) {
+          for (const parentId of pluginDataPadding[direction]) {
+            addToGlobalGroup(
+              createPaddingLine({
+                ...settings,
+                direction,
+                decoupled: state.decoupled,
+                strokeCap: state.strokeCap,
+                node: nodeData.node,
+                parent: figma.getNodeById(parentId),
+              })
+            );
+          }
         }
       }
     }
@@ -157,6 +179,8 @@ export function createPaddingLine({
   color,
   currentNode,
   parent = null,
+  decoupled = false,
+  strokeCap = 'NONE',
 }: {
   direction: Alignments;
   parent?: SceneNode;
@@ -165,11 +189,15 @@ export function createPaddingLine({
   const nodeData = getNodeAndParentNode(currentNode, parent);
   const mainColor = getColor(color);
 
+  const IS_HORIZONTAL = direction === 'LEFT' || direction === 'RIGHT';
+
   if (!nodeData || !nodeData.node || !nodeData.parentNode) {
     try {
-      const padding = getPadding(currentNode);
-      delete padding[direction];
-      currentNode.setPluginData('padding', JSON.stringify(padding));
+      if (!decoupled) {
+        const padding = getPadding(currentNode);
+        delete padding[direction];
+        currentNode.setPluginData('padding', JSON.stringify(padding));
+      }
       sendSelection();
       // eslint-disable-next-line no-empty
     } catch (e) {
@@ -188,16 +216,17 @@ export function createPaddingLine({
     return;
   }
 
-  const line = figma.createVector();
+  const group = figma.createFrame();
 
-  const group = figma.group([line], figma.currentPage);
-  group.name = `padding-line-${direction.toLowerCase()}`;
+  group.clipsContent = false;
+  group.backgrounds = [];
+  group.name = `Padding line ${direction.toLowerCase()}`;
+  group.expanded = false;
 
   let distance = 0;
 
-  line.name = 'out';
-  line.x = node.absoluteTransform[0][2];
-  line.y = node.absoluteTransform[1][2];
+  group.x = node.absoluteTransform[0][2];
+  group.y = node.absoluteTransform[1][2];
 
   const parentNodeX = parentNode.absoluteTransform[0][2];
   const parentNodeY = parentNode.absoluteTransform[1][2];
@@ -205,72 +234,71 @@ export function createPaddingLine({
   switch (direction) {
     case Alignments.LEFT:
       distance =
-        distanceBetweenTwoPoints(line.x, line.y, parentNodeX, line.y) * -1;
+        distanceBetweenTwoPoints(group.x, group.y, parentNodeX, group.y) * -1;
       break;
     case Alignments.RIGHT:
-      line.x += node.width;
+      group.x += node.width;
 
       distance = distanceBetweenTwoPoints(
-        line.x,
-        line.y,
+        group.x,
+        group.y,
         parentNodeX + parentNode.width,
-        line.y
+        group.y
       );
       break;
     case Alignments.TOP:
       distance =
-        distanceBetweenTwoPoints(line.x, line.y, line.x, parentNodeY) * -1;
+        distanceBetweenTwoPoints(group.x, group.y, group.x, parentNodeY) * -1;
 
       break;
     case Alignments.BOTTOM:
-      line.y += node.height;
+      group.y += node.height;
 
       distance = distanceBetweenTwoPoints(
-        line.x,
-        line.y,
-        line.x,
+        group.x,
+        group.y,
+        group.x,
         parentNodeY + parentNode.height
       );
       break;
   }
 
-  if (direction === 'LEFT' || direction === 'RIGHT') {
-    line.y += node.height / 2;
-  } else {
-    line.x += node.width / 2;
-  }
+  const widthOrHeight = Math.abs(distance);
+  const line = figma.createVector();
+  line.name = 'out';
+  line.strokes = [].concat(mainColor);
 
   line.vectorPaths = [
     {
       windingRule: 'NONE',
       // M x y L x y Z is close
-      data:
-        direction === 'LEFT' || direction === 'RIGHT'
-          ? `M 0 0 L ${distance} 0 Z`
-          : `M 0 0 L 0 ${distance} Z`,
+      data: IS_HORIZONTAL
+        ? `M 0 0 L ${widthOrHeight} 0 Z`
+        : `M 0 0 L 0 ${widthOrHeight} Z`,
     },
   ];
-
-  line.strokes = [].concat(mainColor);
+  group.appendChild(line);
 
   //LABEL
-  const widthOrHeight = Math.abs(distance);
+  let labelFrame = null;
   if (labels) {
-    const labelFrame = createLabel({
+    labelFrame = createLabel({
       text: findAndReplaceNumberPattern(labelPattern, widthOrHeight),
       color: mainColor,
     });
 
-    labelFrame.relativeTransform = group.absoluteTransform;
     group.appendChild(labelFrame);
 
-    if (direction === 'LEFT' || direction === 'RIGHT') {
+    if (IS_HORIZONTAL) {
       labelFrame.y -= labelFrame.height / 2;
       labelFrame.x += widthOrHeight / 2 - labelFrame.width / 2;
 
       if (labelsOutside) {
         labelFrame.y += labelFrame.height / 2 + 4;
       }
+
+      group.y -= labelFrame.height / 2;
+      group.resize(widthOrHeight, labelFrame.height);
     } else {
       labelFrame.y += widthOrHeight / 2 - labelFrame.height / 2;
       labelFrame.x -= labelFrame.width / 2;
@@ -278,21 +306,248 @@ export function createPaddingLine({
       if (labelsOutside) {
         labelFrame.x += labelFrame.width / 2 + 4;
       }
+
+      group.x -= labelFrame.width / 2;
+      group.resize(labelFrame.width, widthOrHeight);
+    }
+
+    labelFrame.constraints = {
+      vertical: 'CENTER',
+      horizontal: 'CENTER',
+    };
+  } else {
+    if (IS_HORIZONTAL) {
+      group.resize(widthOrHeight, 1);
+    } else {
+      group.resize(1, widthOrHeight);
     }
   }
+
+  if (IS_HORIZONTAL) {
+    group.y += node.height / 2;
+    if (direction === 'LEFT') {
+      group.x += distance;
+    }
+    //
+    line.constraints = {
+      vertical: 'CENTER',
+      horizontal: 'STRETCH',
+    };
+    line.x = 0;
+    line.y = group.height / 2 + line.strokeWeight / 2;
+    //
+    if (labels) {
+      labelFrame.y += group.height / 2;
+    }
+  } else {
+    group.x += node.width / 2;
+    if (direction === 'TOP') {
+      group.y += distance;
+    }
+    //
+    line.constraints = {
+      vertical: 'STRETCH',
+      horizontal: 'CENTER',
+    };
+    line.x = group.width / 2 - line.strokeWeight / 2;
+    line.y = 0;
+    //
+    if (labels) {
+      labelFrame.x += group.width / 2;
+    }
+  }
+
+  if (strokeCap === 'STANDARD') {
+    createStandardCap({
+      group,
+      line,
+      isHorizontal: IS_HORIZONTAL,
+      mainColor,
+      width: widthOrHeight,
+      height: widthOrHeight,
+    });
+  } else {
+    line.strokeCap = strokeCap;
+  }
+
   if (widthOrHeight === 0) {
     figma.notify('The distance is zero');
     group.remove();
     return;
   }
 
-  group.setPluginData(
-    'padding-parent',
-    JSON.stringify({
-      direction,
-      parentId: node.id,
-    })
-  );
+  if (!decoupled) {
+    console.log('padding-parent');
+    group.setPluginData(
+      'padding-parent',
+      JSON.stringify({
+        direction,
+        parentId: node.id,
+      })
+    );
+  }
 
   return group;
 }
+
+// export function createPaddingLine({
+//   direction,
+//   labelPattern,
+//   labelsOutside = false,
+//   labels = true,
+//   color,
+//   currentNode,
+//   parent = null,
+//   decoupled = false,
+//   strokeCap = 'NONE',
+// }: {
+//   direction: Alignments;
+//   parent?: SceneNode;
+//   currentNode?: SceneNode;
+// } & ExchangeStoreValues) {
+//   const nodeData = getNodeAndParentNode(currentNode, parent);
+//   const mainColor = getColor(color);
+
+//   if (!nodeData || !nodeData.node || !nodeData.parentNode) {
+//     try {
+//       if (!decoupled) {
+//         const padding = getPadding(currentNode);
+//         delete padding[direction];
+//         currentNode.setPluginData('padding', JSON.stringify(padding));
+//       }
+//       sendSelection();
+//       // eslint-disable-next-line no-empty
+//     } catch (e) {
+//       console.log(e);
+//     }
+//     return;
+//   }
+
+//   const { node, parentNode } = nodeData;
+
+//   if (
+//     Math.round(node.rotation) !== 0 ||
+//     Math.round(parentNode.rotation) !== 0
+//   ) {
+//     figma.notify('Rotated elements are currently not supported');
+//     return;
+//   }
+
+//   const line = figma.createVector();
+
+//   const group = figma.group([line], figma.currentPage);
+//   group.name = `padding-line-${direction.toLowerCase()}`;
+
+//   let distance = 0;
+
+//   line.name = 'out';
+//   line.constraints = {
+//     vertical: 'CENTER',
+//     horizontal: 'CENTER',
+//   };
+//   if (strokeCap !== 'STANDARD') {
+//     line.strokeCap = strokeCap;
+//   }
+
+//   line.x = node.absoluteTransform[0][2];
+//   line.y = node.absoluteTransform[1][2];
+
+//   const parentNodeX = parentNode.absoluteTransform[0][2];
+//   const parentNodeY = parentNode.absoluteTransform[1][2];
+
+//   switch (direction) {
+//     case Alignments.LEFT:
+//       distance =
+//         distanceBetweenTwoPoints(line.x, line.y, parentNodeX, line.y) * -1;
+//       break;
+//     case Alignments.RIGHT:
+//       line.x += node.width;
+
+//       distance = distanceBetweenTwoPoints(
+//         line.x,
+//         line.y,
+//         parentNodeX + parentNode.width,
+//         line.y
+//       );
+//       break;
+//     case Alignments.TOP:
+//       distance =
+//         distanceBetweenTwoPoints(line.x, line.y, line.x, parentNodeY) * -1;
+
+//       break;
+//     case Alignments.BOTTOM:
+//       line.y += node.height;
+
+//       distance = distanceBetweenTwoPoints(
+//         line.x,
+//         line.y,
+//         line.x,
+//         parentNodeY + parentNode.height
+//       );
+//       break;
+//   }
+
+//   if (direction === 'LEFT' || direction === 'RIGHT') {
+//     line.y += node.height / 2;
+//   } else {
+//     line.x += node.width / 2;
+//   }
+
+//   line.vectorPaths = [
+//     {
+//       windingRule: 'NONE',
+//       // M x y L x y Z is close
+//       data:
+//         direction === 'LEFT' || direction === 'RIGHT'
+//           ? `M 0 0 L ${distance} 0 Z`
+//           : `M 0 0 L 0 ${distance} Z`,
+//     },
+//   ];
+
+//   line.strokes = [].concat(mainColor);
+
+//   //LABEL
+//   const widthOrHeight = Math.abs(distance);
+//   if (labels) {
+//     const labelFrame = createLabel({
+//       text: findAndReplaceNumberPattern(labelPattern, widthOrHeight),
+//       color: mainColor,
+//     });
+
+//     labelFrame.relativeTransform = group.absoluteTransform;
+//     group.appendChild(labelFrame);
+
+//     if (direction === 'LEFT' || direction === 'RIGHT') {
+//       labelFrame.y -= labelFrame.height / 2;
+//       labelFrame.x += widthOrHeight / 2 - labelFrame.width / 2;
+
+//       if (labelsOutside) {
+//         labelFrame.y += labelFrame.height / 2 + 4;
+//       }
+//     } else {
+//       labelFrame.y += widthOrHeight / 2 - labelFrame.height / 2;
+//       labelFrame.x -= labelFrame.width / 2;
+
+//       if (labelsOutside) {
+//         labelFrame.x += labelFrame.width / 2 + 4;
+//       }
+//     }
+//   }
+//   if (widthOrHeight === 0) {
+//     figma.notify('The distance is zero');
+//     group.remove();
+//     return;
+//   }
+
+//   if (!decoupled) {
+//     group.setPluginData(
+//       'padding-parent',
+//       JSON.stringify({
+//         direction,
+//         parentId: node.id,
+//       })
+//     );
+//   }
+
+//   return group;
+// }
