@@ -78,7 +78,8 @@ export function getPluginData(node, name) {
   return JSON.parse(data);
 }
 
-function getSelectionArray(): NodeSelection[] {
+async function getSelectionArray(): Promise<NodeSelection[]> {
+  const state = await getState();
   return figma.currentPage.selection.map((node) => {
     let data = {};
 
@@ -88,7 +89,7 @@ function getSelectionArray(): NodeSelection[] {
       data = {};
     }
 
-    const spacings = Object.keys(getSpacing(node)).length;
+    const spacings = state.decoupled ? 0 : Object.keys(getSpacing(node)).length;
 
     return {
       id: node.id,
@@ -101,7 +102,9 @@ function getSelectionArray(): NodeSelection[] {
 }
 
 export const sendSelection = () =>
-  EventEmitter.emit('selection', getSelectionArray());
+  getSelectionArray().then((selection) =>
+    EventEmitter.emit('selection', selection)
+  );
 
 const cleanOrphanNodes = () => {
   const group = getGlobalGroup();
@@ -301,7 +304,6 @@ const setMeasurements = async ({
     if (!state.decoupled) {
       try {
         data = JSON.parse(node.getPluginData('data') || '{}');
-        console.log(node.getPluginData('data'));
 
         if (
           data.surrounding &&
