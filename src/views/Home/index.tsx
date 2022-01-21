@@ -282,7 +282,7 @@ const ViewerOverlay = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-weight: bold;
+  font-weight: 500;
   z-index: 20;
 `;
 

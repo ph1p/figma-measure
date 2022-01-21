@@ -109,7 +109,7 @@ const Header = styled.div`
   padding: 14px;
   border-bottom: 1px solid #e6e6e6;
   label {
-    font-weight: bold;
+    font-weight: 500;
     margin-right: 10px;
   }
 `;

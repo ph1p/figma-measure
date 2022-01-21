@@ -43,7 +43,7 @@ const InputWrapper = styled.div.attrs(() => ({
   width: 100%;
   align-items: center;
   label {
-    font-weight: bold;
+    font-weight: 500;
     p {
       color: #999;
       font-size: 11px;

@@ -151,7 +151,7 @@ const Wrapper = styled.div<{
   pointer-events: ${(p) => (p.isOpen ? 'all' : 'none')};
   z-index: 99;
   color: #fff;
-  font-weight: bold;
+  font-weight: 500;
 
   &-enter {
     opacity: 0;
