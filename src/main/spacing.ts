@@ -1,7 +1,7 @@
 import EventEmitter from '../shared/EventEmitter';
 import { findAndReplaceNumberPattern } from '../shared/helpers';
 
-import isPartOfInstance, { getColor } from './helper';
+import { appendElementsToDetatchedGroup, getColor } from './helper';
 import { createLabel } from './line';
 import { addToGlobalGroup } from './measure-group';
 import { getState } from './store';
@@ -360,9 +360,11 @@ export const drawSpacing = async (
   }
 
   if (state.detached) {
-    const detachedGroup = figma.group(spacingGroup, figma.currentPage);
-    detachedGroup.name = '📏 Measurements';
-    detachedGroup.expanded = false;
+    const spacingFrame = figma.createFrame();
+    spacingFrame.expanded = false;
+    spacingFrame.clipsContent = false;
+    spacingGroup.forEach((n) => spacingFrame.appendChild(n));
+    appendElementsToDetatchedGroup(rects[0], [spacingFrame]);
   }
 
   if (!state.detached && spacingGroup.length > 0) {

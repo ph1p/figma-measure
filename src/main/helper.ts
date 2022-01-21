@@ -1,3 +1,42 @@
+import { GROUP_NAME_DETACHED } from '../shared/constants';
+
+export const appendElementsToDetatchedGroup = (node, nodes: any[]) => {
+  if (nodes.length > 0) {
+    const parent = getNearestParentNode(node);
+    let existingGroup = null;
+    let children = [];
+
+    for (const child of parent.children) {
+      if (child.name === GROUP_NAME_DETACHED && Boolean(parent.children)) {
+        existingGroup = child;
+        children = child.children;
+        break;
+      }
+    }
+
+    const detachedGroup = figma.group([...nodes, ...children], parent);
+    detachedGroup.name = GROUP_NAME_DETACHED;
+    detachedGroup.expanded = false;
+    existingGroup.children = [];
+  }
+};
+
+export const getNearestParentNode = (node: SceneNode) => {
+  const parent = node.parent;
+
+  console.log(parent, parent.type);
+  if (
+    (parent.type === 'FRAME' ||
+      parent.type === 'PAGE' ||
+      (parent.type !== 'INSTANCE' && Boolean(parent.children))) &&
+    !isPartOfInstance(node)
+  ) {
+    return parent;
+  } else {
+    return getNearestParentNode(parent as SceneNode);
+  }
+};
+
 export const solidColor = (r = 255, g = 0, b = 0): Paint => ({
   type: 'SOLID',
   color: {

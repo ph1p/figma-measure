@@ -24,10 +24,10 @@ import {
   theme,
 } from './style';
 import Home from './views/Home';
+import How from './views/How';
 import Tooltip from './views/Tooltip';
 
 import './ui.css';
-import How from './views/How';
 
 function CustomLink({ children, to, ...props }: LinkProps) {
   const resolved = useResolvedPath(to);

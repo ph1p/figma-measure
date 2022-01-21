@@ -12,7 +12,7 @@ import {
 } from '../shared/interfaces';
 
 import { createFill } from './fill';
-import isPartOfInstance from './helper';
+import isPartOfInstance, { appendElementsToDetatchedGroup } from './helper';
 import { createLine } from './line';
 import {
   addToGlobalGroup,
@@ -521,13 +521,7 @@ const setMeasurements = async ({
 
     if (state.detached) {
       if (connectedNodes.length > 0) {
-        let parent = node.parent;
-        if (isPartOfInstance(node)) {
-          parent = figma.currentPage;
-        }
-        const detachedGroup = figma.group(connectedNodes, parent);
-        detachedGroup.name = '📏 Detached measurements';
-        detachedGroup.expanded = false;
+        appendElementsToDetatchedGroup(node, connectedNodes);
       }
     } else {
       node.setPluginData(

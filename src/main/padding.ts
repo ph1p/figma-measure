@@ -2,7 +2,7 @@ import EventEmitter from '../shared/EventEmitter';
 import { findAndReplaceNumberPattern } from '../shared/helpers';
 import { Alignments, ExchangeStoreValues } from '../shared/interfaces';
 
-import { getColor } from './helper';
+import { appendElementsToDetatchedGroup, getColor } from './helper';
 import { createLabel, createStandardCap } from './line';
 import { getGlobalGroup, addToGlobalGroup } from './measure-group';
 import { distanceBetweenTwoPoints } from './spacing';
@@ -63,21 +63,16 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
 
   if (nodeData && nodeData.node && nodeData.parentNode) {
     if (state.detached) {
-      const detachedGroup = figma.group(
-        [
-          createPaddingLine({
-            ...settings,
-            direction,
-            detached: state.detached,
-            strokeCap: state.strokeCap,
-            node: nodeData.node,
-            parent: figma.getNodeById(nodeData.parentNode.id),
-          }),
-        ],
-        figma.currentPage
-      );
-      detachedGroup.name = '📏 Detached measurements';
-      detachedGroup.expanded = false;
+      appendElementsToDetatchedGroup(currentNode, [
+        createPaddingLine({
+          ...settings,
+          direction,
+          detached: state.detached,
+          strokeCap: state.strokeCap,
+          node: nodeData.node,
+          parent: figma.getNodeById(nodeData.parentNode.id),
+        }),
+      ]);
     } else {
       // Padding
       let pluginDataPadding = getPadding(nodeData.node);
