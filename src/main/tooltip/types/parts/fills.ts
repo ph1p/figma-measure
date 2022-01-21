@@ -13,11 +13,14 @@ const ICON = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns=
 </svg>`;
 
 export const createColorNode = (fill, { fontColor = '', fontSize = 0 }) => {
+  const elements = [];
   let name = '';
+  let styleId = '';
 
   // if has name or id
   if (fill.styleId || fill.name) {
     name = fill.name;
+    styleId = fill.styleId;
 
     delete fill.styleId;
     delete fill.name;
@@ -30,37 +33,55 @@ export const createColorNode = (fill, { fontColor = '', fontSize = 0 }) => {
   textNode.x += 40;
   textNode.y += 1.5;
 
-  textNode.characters += rgbaToHex(colorString(fill.color, fill.opacity));
+  if (fill.type === 'SOLID') {
+    textNode.characters += `${rgbaToHex(
+      colorString(fill.color, fill.opacity)
+    )} ${name ? '\n' : ''}`;
+  }
 
   if (name) {
     const start = textNode.characters.length;
-    textNode.characters += `\n${name}`;
+    textNode.characters += `${name}`;
 
-    textNode.setRangeFontSize(start, textNode.characters.length, 10);
-    textNode.setRangeFills(start, textNode.characters.length, [
-      solidColor(153, 153, 153),
-    ]);
+    if (fill.type === 'SOLID') {
+      textNode.setRangeFontSize(start, textNode.characters.length, 10);
+      textNode.setRangeFills(start, textNode.characters.length, [
+        solidColor(153, 153, 153),
+      ]);
+    }
   }
 
   if (fill.opacity !== 1) {
     textNode.characters += ` · ${toFixed(fill.opacity * 100, 2)}%`;
   }
 
-  const colorRect = figma.createRectangle();
-  colorRect.resize(8, 16);
-  colorRect.x += 20;
-  colorRect.topLeftRadius = 3;
-  colorRect.bottomLeftRadius = 3;
-  colorRect.fills = [{ ...fill, opacity: 1 }];
+  if (!styleId) {
+    const colorRect = figma.createRectangle();
+    colorRect.resize(8, 16);
+    colorRect.x += 20;
+    colorRect.topLeftRadius = 3;
+    colorRect.bottomLeftRadius = 3;
+    colorRect.fills = [{ ...fill, opacity: 1 }];
+    elements.push(colorRect);
 
-  const colorRectWithOpacity = figma.createRectangle();
-  colorRectWithOpacity.resize(8, 16);
-  colorRectWithOpacity.x += 28;
-  colorRectWithOpacity.topRightRadius = 3;
-  colorRectWithOpacity.bottomRightRadius = 3;
-  colorRectWithOpacity.fills = [fill];
+    const colorRectWithOpacity = figma.createRectangle();
+    colorRectWithOpacity.resize(8, 16);
+    colorRectWithOpacity.x += 28;
+    colorRectWithOpacity.topRightRadius = 3;
+    colorRectWithOpacity.bottomRightRadius = 3;
+    colorRectWithOpacity.fills = [fill];
+    elements.push(colorRectWithOpacity);
+  } else {
+    const styleRect = figma.createRectangle();
+    styleRect.resize(16, 16);
+    styleRect.x += 20;
+    styleRect.cornerRadius = 3;
+    styleRect.fillStyleId = styleId;
+    elements.push(styleRect);
+  }
+  elements.push(textNode);
 
-  return [colorRect, colorRectWithOpacity, textNode];
+  return elements;
 };
 
 export default async function fills(
@@ -92,13 +113,14 @@ export default async function fills(
 
   if (fills) {
     fills.forEach((fill) => {
-      if (fill.type === 'SOLID') {
+      if (fill.type === 'SOLID' || fill.styleId) {
         const fillIcon = figma.createNodeFromSvg(ICON);
 
-        figma.group(
+        const g = figma.group(
           [fillIcon, ...createColorNode(fill, { fontColor, fontSize })],
           parent
         );
+        g.expanded = false;
       }
     });
   }

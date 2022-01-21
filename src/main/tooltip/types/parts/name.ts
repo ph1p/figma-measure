@@ -14,5 +14,6 @@ export default function name(node, parent, { fontColor = '', fontSize = 0 }) {
   textNode.y += 1.5;
   textNode.characters = node.name;
 
-  figma.group([iconNode, textNode], parent);
+  const g = figma.group([iconNode, textNode], parent);
+  g.expanded = false;
 }

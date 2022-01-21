@@ -17,5 +17,6 @@ export default function height(
   textNode.y += 1.5;
   textNode.characters += findAndReplaceNumberPattern(labelPattern, node.height);
 
-  figma.group([iconNode, textNode], parent);
+  const g = figma.group([iconNode, textNode], parent);
+  g.expanded = false;
 }

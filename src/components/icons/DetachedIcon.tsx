@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 
-export const DecoupledIcon: FunctionComponent = () => (
+export const DetachedIcon: FunctionComponent = () => (
   <svg
     width="24"
     height="24"

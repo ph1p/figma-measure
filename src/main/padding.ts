@@ -62,13 +62,13 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
   const nodeData = getNodeAndParentNode(currentNode);
 
   if (nodeData && nodeData.node && nodeData.parentNode) {
-    if (state.decoupled) {
-      const decoupledGroup = figma.group(
+    if (state.detached) {
+      const detachedGroup = figma.group(
         [
           createPaddingLine({
             ...settings,
             direction,
-            decoupled: state.decoupled,
+            detached: state.detached,
             strokeCap: state.strokeCap,
             node: nodeData.node,
             parent: figma.getNodeById(nodeData.parentNode.id),
@@ -76,8 +76,8 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
         ],
         figma.currentPage
       );
-      decoupledGroup.name = '📏 Decoupled measurements';
-      decoupledGroup.expanded = false;
+      detachedGroup.name = '📏 Detached measurements';
+      detachedGroup.expanded = false;
     } else {
       // Padding
       let pluginDataPadding = getPadding(nodeData.node);
@@ -111,7 +111,7 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
               createPaddingLine({
                 ...settings,
                 direction,
-                decoupled: state.decoupled,
+                detached: state.detached,
                 strokeCap: state.strokeCap,
                 node: nodeData.node,
                 parent: figma.getNodeById(parentId),
@@ -179,7 +179,7 @@ export function createPaddingLine({
   color,
   currentNode,
   parent = null,
-  decoupled = false,
+  detached = false,
   strokeCap = 'NONE',
 }: {
   direction: Alignments;
@@ -193,7 +193,7 @@ export function createPaddingLine({
 
   if (!nodeData || !nodeData.node || !nodeData.parentNode) {
     try {
-      if (!decoupled) {
+      if (!detached) {
         const padding = getPadding(currentNode);
         delete padding[direction];
         currentNode.setPluginData('padding', JSON.stringify(padding));
@@ -376,7 +376,7 @@ export function createPaddingLine({
     return;
   }
 
-  if (!decoupled) {
+  if (!detached) {
     console.log('padding-parent');
     group.setPluginData(
       'padding-parent',
@@ -398,7 +398,7 @@ export function createPaddingLine({
 //   color,
 //   currentNode,
 //   parent = null,
-//   decoupled = false,
+//   detached = false,
 //   strokeCap = 'NONE',
 // }: {
 //   direction: Alignments;
@@ -410,7 +410,7 @@ export function createPaddingLine({
 
 //   if (!nodeData || !nodeData.node || !nodeData.parentNode) {
 //     try {
-//       if (!decoupled) {
+//       if (!detached) {
 //         const padding = getPadding(currentNode);
 //         delete padding[direction];
 //         currentNode.setPluginData('padding', JSON.stringify(padding));
@@ -539,7 +539,7 @@ export function createPaddingLine({
 //     return;
 //   }
 
-//   if (!decoupled) {
+//   if (!detached) {
 //     group.setPluginData(
 //       'padding-parent',
 //       JSON.stringify({

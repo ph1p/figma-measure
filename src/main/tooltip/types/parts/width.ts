@@ -2,8 +2,8 @@ import { findAndReplaceNumberPattern } from '../../../../shared/helpers';
 import { createTooltipTextNode } from '../../../helper';
 
 export default function width(
-  node: SceneNode,
-  parent: SceneNode,
+  node,
+  parent,
   { fontColor = '', fontSize = 0, labelPattern }
 ): void {
   const iconNode = figma.createNodeFromSvg(
@@ -19,5 +19,6 @@ export default function width(
   textNode.y += 1.5;
   textNode.characters += findAndReplaceNumberPattern(labelPattern, node.width);
 
-  figma.group([iconNode, textNode], parent);
+  const g = figma.group([iconNode, textNode], parent);
+  g.expanded = false;
 }

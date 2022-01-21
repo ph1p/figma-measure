@@ -6,10 +6,7 @@ import styled from 'styled-components';
 import { Colors } from '../../components/ColorPicker';
 import { Input } from '../../components/Input';
 import Tooltip from '../../components/Tooltip';
-import {
-  CoupledIcon,
-  DecoupledIcon,
-} from '../../components/icons/CoupledIcons';
+import { CoupledIcon, DetachedIcon } from '../../components/icons/DetachedIcon';
 import { EyeClosedIcon, EyeIcon } from '../../components/icons/EyeIcons';
 import { RefreshIcon } from '../../components/icons/RefreshIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
@@ -71,69 +68,75 @@ const Home: FunctionComponent = observer(() => {
         )}
         <Viewer />
 
-        <Tooltip
-          hover
-          ref={visibilityRef}
-          handler={observer(
-            React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
-              <Visibility
-                ref={ref}
-                onClick={() => {
-                  store.toggleVisibility();
-                  visibilityRef.current.hide();
-                }}
-              >
-                {store.visibility ? <EyeIcon /> : <EyeClosedIcon />}
-              </Visibility>
-            ))
-          )}
-        >
-          Show/Hide
-        </Tooltip>
+        {!store.detached && (
+          <Tooltip
+            hover
+            ref={visibilityRef}
+            handler={observer(
+              React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
+                <Visibility
+                  ref={ref}
+                  onClick={() => {
+                    store.toggleVisibility();
+                    visibilityRef.current.hide();
+                  }}
+                >
+                  {store.visibility ? <EyeIcon /> : <EyeClosedIcon />}
+                </Visibility>
+              ))
+            )}
+          >
+            {store.visibility ? 'Hide' : 'Show'}
+          </Tooltip>
+        )}
 
-        <Tooltip
-          hover
-          handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
-            <Refresh
-              ref={ref}
-              active={store.selection.length > 0}
-              onClick={() => store.sendMeasurements(true)}
-            >
-              <RefreshIcon />
-            </Refresh>
-          ))}
-        >
-          Reload measurements
-        </Tooltip>
+        {!store.detached && (
+          <Tooltip
+            hover
+            handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
+              <Refresh
+                ref={ref}
+                active={store.selection.length > 0}
+                onClick={() => store.sendMeasurements(true)}
+              >
+                <RefreshIcon />
+              </Refresh>
+            ))}
+          >
+            Reload measurements
+          </Tooltip>
+        )}
 
         <Tooltip
           hover
           ref={coupleRef}
           handler={observer(
             React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
-              <Decouple
+              <Detached
                 ref={ref}
                 onClick={() => {
-                  coupleRef.current.hide();
-                  store.setDecoupled(!store.decoupled);
+                  store.setDetached(!store.detached);
                 }}
               >
-                {store.decoupled ? <DecoupledIcon /> : <CoupledIcon />}
-              </Decouple>
+                {store.detached ? <DetachedIcon /> : <CoupledIcon />}
+              </Detached>
             ))
           )}
         >
-          {store.decoupled ? 'Couple' : 'Decouple'} measurements
+          {store.detached ? 'Attach' : 'Detach'} measurements
         </Tooltip>
 
         <Tooltip
           hover
           ref={trashRef}
           handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
-            <Trash ref={ref} onClick={() => {
-              removeAllMeasurements();
-              trashRef.current.hide();
-            }}>
+            <Trash
+              ref={ref}
+              onClick={() => {
+                removeAllMeasurements();
+                trashRef.current.hide();
+              }}
+            >
               <TrashIcon />
             </Trash>
           ))}
@@ -386,9 +389,9 @@ const Trash = styled(Refresh)`
   }
 `;
 
-const Decouple = styled(Refresh)`
+const Detached = styled(Refresh)`
   top: initial;
-  left: 84px;
+  left: 48px;
   top: 12px;
   opacity: 1;
   z-index: 21;
@@ -403,7 +406,7 @@ const Decouple = styled(Refresh)`
 `;
 
 const Visibility = styled(Refresh)`
-  left: 48px;
+  left: 84px;
   top: 12px;
   z-index: 21;
   opacity: 1;

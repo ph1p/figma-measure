@@ -52,6 +52,7 @@ export default async function fontName(node, parent, showFontSize) {
       textNode.setRangeFills(range.from, range.to, [solidColor(0, 0, 0)]);
     }
 
-    figma.group([iconFrame, textNode], parent);
+    const g = figma.group([iconFrame, textNode], parent);
+    g.expanded = false;
   }
 }

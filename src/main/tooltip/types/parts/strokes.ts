@@ -24,7 +24,8 @@ export default function strokes(
 
     textNode.characters += ` · ${node.strokeAlign.toLowerCase()}`;
 
-    figma.group([figma.createNodeFromSvg(ICON), textNode], parent);
+    const gr = figma.group([figma.createNodeFromSvg(ICON), textNode], parent);
+    gr.expanded = false;
 
     let fills = null;
 
@@ -37,13 +38,14 @@ export default function strokes(
     }
 
     for (const fill of fills) {
-      figma.group(
+      const g = figma.group(
         [
           figma.createNodeFromSvg(ICON),
           ...createColorNode(fill, { fontColor, fontSize }),
         ],
         parent
       );
+      g.expanded = false;
     }
   }
 }

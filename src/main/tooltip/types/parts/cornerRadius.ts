@@ -29,6 +29,7 @@ export default function cornerRadius(
       )}`;
     }
 
-    figma.group([cornerRadiusIcon, textNode], parent);
+    const g = figma.group([cornerRadiusIcon, textNode], parent);
+    g.expanded = false;
   }
 }

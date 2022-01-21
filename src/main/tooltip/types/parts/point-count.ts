@@ -19,6 +19,7 @@ export default function pointCount(
     textNode.y += 1.5;
     textNode.characters += `${node.pointCount}`;
 
-    figma.group([iconNode, textNode], parent);
+    const g = figma.group([iconNode, textNode], parent);
+    g.expanded = false;
   }
 }

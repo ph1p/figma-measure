@@ -89,7 +89,7 @@ async function getSelectionArray(): Promise<NodeSelection[]> {
       data = {};
     }
 
-    const spacings = state.decoupled ? 0 : Object.keys(getSpacing(node)).length;
+    const spacings = state.detached ? 0 : Object.keys(getSpacing(node)).length;
 
     return {
       id: node.id,
@@ -268,7 +268,7 @@ const setMeasurements = async ({
   nodes?: readonly SceneNode[];
 }) => {
   const state = await getState();
-  if (!state.decoupled) {
+  if (!state.detached) {
     cleanOrphanNodes();
   }
 
@@ -301,7 +301,7 @@ const setMeasurements = async ({
 
     let surrounding: SurroundingSettings = store.surrounding;
 
-    if (!state.decoupled) {
+    if (!state.detached) {
       try {
         data = JSON.parse(node.getPluginData('data') || '{}');
 
@@ -338,7 +338,7 @@ const setMeasurements = async ({
 
     // spacing
     const spacing = getSpacing(node);
-    if (Object.keys(spacing).length > 0 && !state.decoupled) {
+    if (Object.keys(spacing).length > 0 && !state.detached) {
       Object.keys(spacing)
         .filter((connectedNodeId) => {
           // check if group exists
@@ -392,7 +392,7 @@ const setMeasurements = async ({
 
     // Padding
     const padding = getPadding(node);
-    if (padding && !state.decoupled) {
+    if (padding && !state.detached) {
       Object.keys(Alignments)
         .filter((k) => k !== Alignments.CENTER && padding[k])
         .forEach((direction: Alignments) => {
@@ -517,17 +517,17 @@ const setMeasurements = async ({
       );
     }
 
-    // if (data.decoupled && Object.keys(data).length === 0) {
+    // if (data.detached && Object.keys(data).length === 0) {
 
-    if (state.decoupled) {
+    if (state.detached) {
       if (connectedNodes.length > 0) {
         let parent = node.parent;
         if (isPartOfInstance(node)) {
           parent = figma.currentPage;
         }
-        const decoupledGroup = figma.group(connectedNodes, parent);
-        decoupledGroup.name = '📏 Decoupled measurements';
-        decoupledGroup.expanded = false;
+        const detachedGroup = figma.group(connectedNodes, parent);
+        detachedGroup.name = '📏 Detached measurements';
+        detachedGroup.expanded = false;
       }
     } else {
       node.setPluginData(

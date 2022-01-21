@@ -53,7 +53,7 @@ class RootStore {
 
   strokeOffset = 10;
 
-  decoupled = false;
+  detached = false;
 
   labelPattern = '($)px';
 
@@ -92,10 +92,10 @@ class RootStore {
     this.sendMeasurements();
   }
 
-  setDecoupled(decoupled: boolean) {
-    this.decoupled = decoupled;
+  setDetached(detached: boolean) {
+    this.detached = detached;
 
-    if (this.decoupled) {
+    if (this.detached) {
       this.resetSurrounding();
     }
 
@@ -217,12 +217,12 @@ class RootStore {
           tooltipOffset: this.tooltipOffset,
           tooltip: toJS(this.tooltip),
           labelPattern: this.labelPattern,
-          decoupled: this.decoupled,
+          detached: this.detached,
         }),
       });
     }
 
-    if (this.decoupled) {
+    if (this.detached) {
       this.resetSurrounding();
     }
   }

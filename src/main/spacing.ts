@@ -359,13 +359,13 @@ export const drawSpacing = async (
     }
   }
 
-  if (state.decoupled) {
-    const decoupledGroup = figma.group(spacingGroup, figma.currentPage);
-    decoupledGroup.name = '📏 Decoupled measurements';
-    decoupledGroup.expanded = false;
+  if (state.detached) {
+    const detachedGroup = figma.group(spacingGroup, figma.currentPage);
+    detachedGroup.name = '📏 Measurements';
+    detachedGroup.expanded = false;
   }
 
-  if (!state.decoupled && spacingGroup.length > 0) {
+  if (!state.detached && spacingGroup.length > 0) {
     const group = figma.group(spacingGroup, figma.currentPage);
     group.locked = true;
     group.expanded = false;

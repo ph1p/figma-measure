@@ -20,6 +20,7 @@ export default function opacity(
     textNode.y += 1.5;
     textNode.characters += `${toFixed(node.opacity * 100, 2)}%`;
 
-    figma.group([iconFrame, textNode], parent);
+    const g = figma.group([iconFrame, textNode], parent);
+    g.expanded = false;
   }
 }
