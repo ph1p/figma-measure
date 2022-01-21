@@ -144,12 +144,24 @@ const CenterChooser: FunctionComponent = observer(() => {
             fill="none"
             xmlns="https://www.w3.org/2000/svg"
           >
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M6 0H4V1H6V0ZM8.5 9H9V8.5H10V9V10H9H8.5V9ZM1 4V6H0V4H1ZM9 1.5V1H8.5V0H9H10V1V1.5H9ZM9 4V6H10V4H9ZM1 1.5V1H1.5V0H1H0V1V1.5H1ZM0 9V8.5H1V9H1.5V10H1H0V9ZM6 9H4V10H6V9Z"
-              fill="black"
+            <rect
+              width="10"
+              height="10"
+              fill="url(#paint0_linear_3051_64305)"
             />
+            <defs>
+              <linearGradient
+                id="paint0_linear_3051_64305"
+                x1="5"
+                y1="0"
+                x2="5"
+                y2="10"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stop-color="#C4C4C4" />
+                <stop offset="1" stop-color="#C4C4C4" stop-opacity="0" />
+              </linearGradient>
+            </defs>
           </svg>
         </div>
       </div>

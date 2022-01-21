@@ -6,7 +6,10 @@ import styled from 'styled-components';
 import { Colors } from '../../components/ColorPicker';
 import { Input } from '../../components/Input';
 import Tooltip from '../../components/Tooltip';
-import { CoupledIcon, DetachedIcon } from '../../components/icons/DetachedIcon';
+import {
+  AttachedIcon,
+  DetachedIcon,
+} from '../../components/icons/DetachedIcon';
 import { EyeClosedIcon, EyeIcon } from '../../components/icons/EyeIcons';
 import { RefreshIcon } from '../../components/icons/RefreshIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
@@ -118,7 +121,7 @@ const Home: FunctionComponent = observer(() => {
                   store.setDetached(!store.detached);
                 }}
               >
-                {store.detached ? <DetachedIcon /> : <CoupledIcon />}
+                {store.detached ? <DetachedIcon /> : <AttachedIcon />}
               </Detached>
             ))
           )}
@@ -126,23 +129,25 @@ const Home: FunctionComponent = observer(() => {
           {store.detached ? 'Attach' : 'Detach'} measurements
         </Tooltip>
 
-        <Tooltip
-          hover
-          ref={trashRef}
-          handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
-            <Trash
-              ref={ref}
-              onClick={() => {
-                removeAllMeasurements();
-                trashRef.current.hide();
-              }}
-            >
-              <TrashIcon />
-            </Trash>
-          ))}
-        >
-          Remove all measurements
-        </Tooltip>
+        {!store.detached && (
+          <Tooltip
+            hover
+            ref={trashRef}
+            handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
+              <Trash
+                ref={ref}
+                onClick={() => {
+                  removeAllMeasurements();
+                  trashRef.current.hide();
+                }}
+              >
+                <TrashIcon />
+              </Trash>
+            ))}
+          >
+            Remove all measurements
+          </Tooltip>
+        )}
 
         <Tooltip
           padding={6}
@@ -292,10 +297,10 @@ const Refresh = styled.div<{ active?: boolean }>`
   border: 1px solid #e8e8e8;
   overflow: hidden;
   opacity: ${(props) => (props.active ? 1 : 0.5)};
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  svg {
-    margin: -2px 0 0 -2px;
-  }
   &:hover {
     background-color: ${(props) => props.theme.hoverColor};
   }
@@ -324,13 +329,14 @@ const ColorControl = styled(Refresh)`
 `;
 
 const LabelControl = styled(Refresh)<{ index?: number }>`
+  display: block;
   position: absolute;
   right: 12px;
   bottom: 12px;
   left: initial;
   top: initial;
   cursor: pointer;
-  border-radius: 7px;
+  border-radius: 10px;
   opacity: 1;
   z-index: 2;
   .dots {
@@ -380,33 +386,25 @@ const LabelControl = styled(Refresh)<{ index?: number }>`
 
 const Trash = styled(Refresh)`
   top: initial;
+  right: 48px;
+  top: 12px;
+  opacity: 1;
+  z-index: 21;
+`;
+
+const Detached = styled(Refresh)`
+  top: initial;
   left: 12px;
   top: 12px;
   opacity: 1;
   z-index: 21;
   svg {
-    margin: 1px 0 0;
-  }
-`;
-
-const Detached = styled(Refresh)`
-  top: initial;
-  left: 48px;
-  top: 12px;
-  opacity: 1;
-  z-index: 21;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  svg {
     margin: 0;
-    width: 16px;
-    height: 16px;
   }
 `;
 
 const Visibility = styled(Refresh)`
-  left: 84px;
+  right: 84px;
   top: 12px;
   z-index: 21;
   opacity: 1;

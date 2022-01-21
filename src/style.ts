@@ -116,7 +116,7 @@ h4 {
 .input {
   position: relative;
   input {
-    border-radius: 3px;
+    border-radius: 6px;
     border: 1px solid #E6E6E6;
     outline: none;
     padding: 7px 10px;

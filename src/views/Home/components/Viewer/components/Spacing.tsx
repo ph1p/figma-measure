@@ -19,14 +19,16 @@ export const Spacing: FunctionComponent = observer(() => {
     );
 
   const addSpacing = () => {
-    EventEmitter.emit('draw spacing', {
-      color: store.color,
-      labels: store.labels,
-      strokeOffset: store.strokeOffset,
-      labelsOutside: store.labelsOutside,
-      labelPattern: store.labelPattern,
-    });
-    refreshSelection();
+    if (store.selection.length > 1) {
+      EventEmitter.emit('draw spacing', {
+        color: store.color,
+        labels: store.labels,
+        strokeOffset: store.strokeOffset,
+        labelsOutside: store.labelsOutside,
+        labelPattern: store.labelPattern,
+      });
+      refreshSelection();
+    }
   };
 
   const removeSpacing = () => {

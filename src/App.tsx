@@ -1,13 +1,16 @@
 import { reaction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect } from 'preact/hooks';
 import React, { FunctionComponent } from 'react';
 import * as ReactDOM from 'react-dom';
 import {
   MemoryRouter as Router,
   Route,
-  useNavigate,
   Routes,
+  Link,
+  LinkProps,
+  useResolvedPath,
+  useMatch,
 } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 
@@ -24,12 +27,21 @@ import Home from './views/Home';
 import Tooltip from './views/Tooltip';
 
 import './ui.css';
+import How from './views/How';
+
+function CustomLink({ children, to, ...props }: LinkProps) {
+  const resolved = useResolvedPath(to);
+  const match = useMatch({ path: resolved.pathname, end: true });
+
+  return (
+    <Link className={match ? 'active' : ''} to={to} {...props}>
+      {children}
+    </Link>
+  );
+}
 
 const App: FunctionComponent = observer(() => {
   const store = useStore();
-
-  const [menu, setMenu] = useState(1);
-  const history = useNavigate();
 
   useEffect(() => {
     // check visibility
@@ -111,28 +123,24 @@ const App: FunctionComponent = observer(() => {
       <GlobalStyle />
 
       <Main>
+        <Navigation>
+          <ul>
+            <li>
+              <CustomLink to="/">Measurement</CustomLink>
+            </li>
+            <li>
+              <CustomLink to="/tooltip">Tooltip</CustomLink>
+            </li>
+            <li>
+              <CustomLink to="/how">How?</CustomLink>
+            </li>
+          </ul>
+        </Navigation>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/tooltip" element={<Tooltip />} />
+          <Route path="/How" element={<How />} />
         </Routes>
-        <ViewSwitch menu={menu}>
-          <div
-            onClick={() => {
-              setMenu(1);
-              history('/');
-            }}
-          >
-            Redlines
-          </div>
-          <div
-            onClick={() => {
-              setMenu(2);
-              history('/tooltip');
-            }}
-          >
-            Tooltip
-          </div>
-        </ViewSwitch>
       </Main>
     </ThemeProvider>
   );
@@ -158,41 +166,36 @@ const Main = styled.div`
   height: 100%;
 `;
 
-const ViewSwitch = styled.div<{ menu: number }>`
-  display: flex;
+const Navigation = styled.nav`
   position: relative;
   overflow: hidden;
   height: 42px;
-  border-width: 1px 0 0;
+  border-width: 0 0 1px;
   border-color: #eee;
   border-style: solid;
-  div {
-    transition: font-weight 0.3s;
-    position: relative;
-    z-index: 2;
-    flex: 1;
-    text-align: center;
-    padding: 12px 0;
-    user-select: none;
-    cursor: pointer;
-    font-weight: normal;
-    &::before {
-      content: '';
-      transition: transform 0.3s;
-      position: absolute;
-      flex: 1;
-      border-radius: 6px 6px 0 0;
-      width: 60%;
-      height: 4px;
-      left: 50%;
-      bottom: 0;
-      background-color: #000;
-      transform: translate(-50%, 5px);
-    }
-    &:nth-child(${(p) => p.menu}) {
-      font-weight: bold;
-      &::before {
-        transform: translate(-50%, 0);
+  width: 100%;
+  padding: 0 12px;
+  font-size: 11px;
+  ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    li {
+      align-self: center;
+      a {
+        color: #b2b2b2;
+        text-decoration: none;
+        &.active {
+          color: #000;
+        }
+      }
+      &:last-child {
+        margin-left: auto;
+      }
+      &:first-child {
+        margin-right: 21px;
       }
     }
   }
