@@ -1,146 +1,104 @@
-import React, { FunctionComponent, useRef } from 'react';
+import { observer } from 'mobx-react';
+import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
-interface Props {
-  onChange: (color: string) => void;
-  color: string;
-  id: string;
-}
-
-const Wrapper = styled.div`
-  position: relative;
-  width: 90px;
-  input[type='color'] {
-    cursor: pointer;
-    position: absolute;
-    top: 0;
-    left: 0;
-    padding: 0;
-    width: 25px;
-    height: 100%;
-    border: 0;
-    opacity: 0;
-  }
-  input[type='text'] {
-    border-radius: 3px;
-    border: 1px solid #e6e6e6;
-    outline: none;
-    padding: 7px 10px 7px 30px;
-    box-sizing: border-box;
-    font-size: 12px;
-    width: 100%;
-    &:focus {
-      border-color: ${(props) => props.theme.color};
-    }
-  }
-  .color {
-    position: absolute;
-    top: 7px;
-    left: 7px;
-    width: 16px;
-    height: 16px;
-    border-radius: 2px;
-    pointer-events: none;
-    cursor: pointer;
-  }
-`;
-
-export const ColorPicker: FunctionComponent<Props> = (props) => {
-  const colorRef = useRef<HTMLInputElement>(null);
-  const colorInputRef = useRef<HTMLInputElement>(null);
-
-  const checkColorAndSetValues = (color) => {
-    props.onChange(color);
-    colorInputRef.current.value = color;
-    colorRef.current.value = color;
-  };
-
-  const onChange = (e) => {
-    const color = e.currentTarget?.value;
-
-    if (color && /^#[0-9A-F]{6}$/i.test(color)) {
-      checkColorAndSetValues(color);
-    }
-  };
-
-  const onBlur = (e) => {
-    const color = e.currentTarget?.value;
-
-    if (!/^#[0-9A-F]{6}$/i.test(color)) {
-      checkColorAndSetValues(props.color);
-    }
-  };
-
-  return (
-    <Wrapper>
-      <div
-        className="color"
-        style={{
-          backgroundColor: props.color,
-        }}
-      ></div>
-      <input
-        id={props.id}
-        type="color"
-        ref={colorRef}
-        onChange={onChange}
-        onBlur={onBlur}
-        defaultValue={props.color}
-      />
-      <input
-        type="text"
-        ref={colorInputRef}
-        onChange={onChange}
-        onBlur={onBlur}
-        defaultValue={props.color}
-      />
-    </Wrapper>
-  );
-};
-
-interface ColorsProps {
-  colors: string[];
-  onChange: (color: string) => void;
-  color: string;
-}
+import { useStore } from '../store';
+import { theme } from '../style';
 
 const ColorItem = styled.div<{ color: string; active: boolean }>`
-  position: relative;
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  z-index: 0;
   width: 22px;
   height: 22px;
-  border-radius: 8px;
+  border-radius: 6px;
   background-color: ${(props) => props.color};
   cursor: pointer;
-  transition: box-shadow 0.3s;
-  box-shadow: 0px 0px 0px 3px inset
-    ${(props) => (props.active ? 'rgba(255, 255, 255, 0.5)' : 'transparent')};
-  &:hover {
-    box-shadow: 0px 0px 0px 3px inset
-      ${(props) => (props.active ? '#fff' : 'rgba(0, 0, 0, 0.2)')};
-  }
+  transition: all 0.3s;
 `;
 
 const ColorsWrapper = styled.div`
+  position: absolute;
   display: flex;
+  left: 12px;
+  bottom: 12px;
+  top: initial;
+  opacity: 1;
+  z-index: 4;
+
+  .active-color {
+    position: relative;
+    z-index: 1;
+    background-color: #fff;
+    border: 1px solid #e8e8e8;
+    padding: 3px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    width: 30px;
+    div {
+      width: 22px;
+      height: 22px;
+      border-radius: 7px;
+      transition: all 0.3s;
+      background-color: ${(p) => p.theme.color};
+      z-index: 1;
+    }
+  }
+
   ${ColorItem} {
+    opacity: 0;
     margin-right: 4px;
     &:last-child {
       margin-right: 0;
     }
   }
+
+  &:hover {
+    width: 170px;
+    .active-color {
+      width: 170px;
+    }
+    ${ColorItem} {
+      opacity: 1;
+      z-index: 2;
+      &:nth-child(2) {
+        transform: translate(35px, 0);
+      }
+      &:nth-child(3) {
+        transform: translate(61px, 0);
+      }
+      &:nth-child(4) {
+        transform: translate(87px, 0);
+      }
+      &:nth-child(5) {
+        transform: translate(113px, 0);
+      }
+      &:nth-child(6) {
+        transform: translate(139px, 0);
+      }
+    }
+  }
 `;
 
-export const Colors: FunctionComponent<ColorsProps> = (props) => {
+export const Colors: FunctionComponent = observer(() => {
+  const store = useStore();
+
   return (
     <ColorsWrapper>
-      {props.colors.map((color) => (
-        <ColorItem
-          key={color}
-          color={color}
-          active={color === props.color}
-          onClick={() => color !== props.color && props.onChange(color)}
-        />
-      ))}
+      <div className="active-color">
+        <div></div>
+      </div>
+      {theme.colors
+        .filter((c) => c !== store.color)
+        .map((color, i) => (
+          <ColorItem
+            key={i}
+            color={color}
+            active={color === store.color}
+            onClick={() => color !== store.color && store.setColor(color)}
+          />
+        ))}
     </ColorsWrapper>
   );
-};
+});

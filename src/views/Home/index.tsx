@@ -15,7 +15,6 @@ import { RefreshIcon } from '../../components/icons/RefreshIcon';
 import { TrashIcon } from '../../components/icons/TrashIcon';
 import EventEmitter from '../../shared/EventEmitter';
 import { useStore } from '../../store';
-import { theme } from '../../style';
 
 import CenterChooser from './components/CenterChooser';
 import LineChooser from './components/LineChooser';
@@ -149,19 +148,7 @@ const Home: FunctionComponent = observer(() => {
           </Tooltip>
         )}
 
-        <Tooltip
-          padding={6}
-          borderRadius={12}
-          handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
-            <ColorControl ref={ref} />
-          ))}
-        >
-          <Colors
-            colors={theme.colors}
-            onChange={(color) => store.setColor(color)}
-            color={store.color}
-          />
-        </Tooltip>
+        <Colors />
 
         <Tooltip
           hover
@@ -306,25 +293,6 @@ const Refresh = styled.div<{ active?: boolean }>`
   }
   &:active {
     border-color: ${(props) => props.theme.color};
-  }
-`;
-
-const ColorControl = styled(Refresh)`
-  position: absolute;
-  left: 12px;
-  bottom: 12px;
-  top: initial;
-  opacity: 1;
-  z-index: 4;
-  &::before {
-    content: '';
-    position: absolute;
-    left: 3px;
-    top: 3px;
-    width: 22px;
-    height: 22px;
-    border-radius: 7px;
-    background-color: ${(p) => p.theme.color};
   }
 `;
 

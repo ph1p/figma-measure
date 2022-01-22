@@ -183,22 +183,26 @@ const CardWrapper = styled.div`
 const Users = styled.div`
   margin-top: 15px;
   display: flex;
-  justify-content: space-between;
   margin-bottom: 7px;
+  a:first-child {
+    margin-right: 11px;
+  }
 `;
 
 const User = styled.a`
   display: flex;
-  flex: 1;
   align-items: center;
   color: #000;
+  background-color: #f1f1f1;
+  border-radius: 51px;
+  padding: 5px 12px 5px 6px;
   img {
     width: 24px;
     height: 24px;
     border-radius: 100%;
   }
   span {
-    margin-left: 5px;
+    margin-left: 8px;
   }
 `;
 

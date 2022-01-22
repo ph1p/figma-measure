@@ -432,14 +432,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/styled-components@npm:^5.1.20":
-  version: 5.1.20
-  resolution: "@types/styled-components@npm:5.1.20"
+"@types/styled-components@npm:^5.1.21":
+  version: 5.1.21
+  resolution: "@types/styled-components@npm:5.1.21"
   dependencies:
     "@types/hoist-non-react-statics": "*"
     "@types/react": "*"
     csstype: ^3.0.2
-  checksum: 42f66905557780558b0bdc88021b3a9cf69c186049cdb7e3ee62103f99b763b780d9ba0269c2f60464393958a95eb0fdb96e42c234383be352eead7e7acd49ae
+  checksum: d53065f65052dd407516f1d37cc9bce33df6f4da31cbc7ef5a6b1e1fed6f14497456a13d809c065c15b963d73dc9b877613e3fb8dfa66074bfac60a94e561b04
   languageName: node
   linkType: hard
 
@@ -2045,7 +2045,7 @@ __metadata:
     "@types/node": ^17.0.10
     "@types/react-dom": ^17.0.11
     "@types/react-router-dom": ^5.3.3
-    "@types/styled-components": ^5.1.20
+    "@types/styled-components": ^5.1.21
     "@typescript-eslint/eslint-plugin": ^5.10.0
     "@typescript-eslint/parser": ^5.10.0
     create-file-webpack: ^1.0.2
@@ -2056,7 +2056,7 @@ __metadata:
     eslint-plugin-import: ^2.25.4
     eslint-plugin-react: ^7.28.0
     html-webpack-plugin: ^5.5.0
-    mobx: ^6.3.12
+    mobx: ^6.3.13
     mobx-react: ^7.2.1
     mobx-sync: ^3.0.0
     preact: ^10.6.4
@@ -2065,9 +2065,9 @@ __metadata:
     style-loader: ^3.3.1
     styled-components: ^5.3.3
     terser-webpack-plugin: ^5.3.0
-    typescript: ^4.5.4
+    typescript: ^4.5.5
     url-loader: ^4.1.1
-    webpack: ^5.66.0
+    webpack: ^5.67.0
     webpack-cli: ^4.9.1
   languageName: unknown
   linkType: soft
@@ -3014,10 +3014,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobx@npm:^6.3.12":
-  version: 6.3.12
-  resolution: "mobx@npm:6.3.12"
-  checksum: 1f1e414ffa1ed1efa92ff91e470d08e2a602d07dcf316ea12dc48d1077adb291643148badee4a052170260e3b0161842ddeae3cf3fdedd13599fee72cdf85c38
+"mobx@npm:^6.3.13":
+  version: 6.3.13
+  resolution: "mobx@npm:6.3.13"
+  checksum: 2ab413a323d127081cfc749771aea5f6f6fc3c0f573dc147144356694c2f804df1a0b19cc0cac0e37d236d47d0c767571fa7a6b448dd1f9cb7e05dcad90506bc
   languageName: node
   linkType: hard
 
@@ -4163,23 +4163,23 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-typescript@^4.5.4:
-  version: 4.5.4
-  resolution: "typescript@npm:4.5.4"
+"typescript@npm:^4.5.5":
+  version: 4.5.5
+  resolution: "typescript@npm:4.5.5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 59f3243f9cd6fe3161e6150ff6bf795fc843b4234a655dbd938a310515e0d61afd1ac942799e7415e4334255e41c2c49b7dd5d9fd38a17acd25a6779ca7e0961
+  checksum: 506f4c919dc8aeaafa92068c997f1d213b9df4d9756d0fae1a1e7ab66b585ab3498050e236113a1c9e57ee08c21ec6814ca7a7f61378c058d79af50a4b1f5a5e
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.5.4#~builtin<compat/typescript>":
-  version: 4.5.4
-  resolution: "typescript@patch:typescript@npm%3A4.5.4#~builtin<compat/typescript>::version=4.5.4&hash=de8f8a"
+"typescript@patch:typescript@^4.5.5#~builtin<compat/typescript>":
+  version: 4.5.5
+  resolution: "typescript@patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=de8f8a"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: eda87927f9cfb94aca9b5e47842daf37347ad3073133e17f556fbb6c18f3493c5b551eedab0f4b26774235ddb7acbe0087250d5285f72ce6819a0891dd5a74ed
+  checksum: 858c61fa63f7274ca4aaaffeced854d550bf416cff6e558c4884041b3311fb662f476f167cf5c9f8680c607239797e26a2ee0bcc6467fbc05bfcb218e1c6c671
   languageName: node
   linkType: hard
 
@@ -4342,16 +4342,16 @@ typescript@^4.5.4:
   languageName: node
   linkType: hard
 
-"webpack-sources@npm:^3.2.2":
-  version: 3.2.2
-  resolution: "webpack-sources@npm:3.2.2"
-  checksum: cc81f1f1bfd1c25c7a565598850294b515bcccf7974d0249b4a0c8c607307866ce3f9e8cdef1c74d5facfb0d993944c499cfd4b7c8f52d01359b6671cc5823d4
+"webpack-sources@npm:^3.2.3":
+  version: 3.2.3
+  resolution: "webpack-sources@npm:3.2.3"
+  checksum: 989e401b9fe3536529e2a99dac8c1bdc50e3a0a2c8669cbafad31271eadd994bc9405f88a3039cd2e29db5e6d9d0926ceb7a1a4e7409ece021fe79c37d9c4607
   languageName: node
   linkType: hard
 
-"webpack@npm:^5.66.0":
-  version: 5.66.0
-  resolution: "webpack@npm:5.66.0"
+"webpack@npm:^5.67.0":
+  version: 5.67.0
+  resolution: "webpack@npm:5.67.0"
   dependencies:
     "@types/eslint-scope": ^3.7.0
     "@types/estree": ^0.0.50
@@ -4376,13 +4376,13 @@ typescript@^4.5.4:
     tapable: ^2.1.1
     terser-webpack-plugin: ^5.1.3
     watchpack: ^2.3.1
-    webpack-sources: ^3.2.2
+    webpack-sources: ^3.2.3
   peerDependenciesMeta:
     webpack-cli:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 5a44664a840fd64c5383aa78847b205ae0b42b607f85ee1d6a568617a210c1b9caab1822bce40a89a3b5eb0f626a83fb5fe2055c638aa230897bf224030d28e8
+  checksum: a7f810a5e1d4d78b533ca0caf42fa889839326073cedd3ac8e59e5c4890ca864ab0265fa5b2608715746ff3e34cbfaf4f15d56a92bc3f717a2f5c13202d58b6c
   languageName: node
   linkType: hard
 
