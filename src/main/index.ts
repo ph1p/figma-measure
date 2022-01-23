@@ -130,7 +130,7 @@ figma.on('selectionchange', () => {
           };
 
           previousSelection = currentSelectionAsJSONString();
-          await setMeasurements({ store, shouldIncludeGroups: true });
+          await setMeasurements({ store });
         }
       }, 1000);
     }
@@ -172,11 +172,9 @@ EventEmitter.on(
 );
 
 const setMeasurements = async ({
-  shouldIncludeGroups = false,
   store,
   nodes,
 }: {
-  shouldIncludeGroups?: boolean;
   store?: ExchangeStoreValues;
   nodes?: readonly SceneNode[];
 }) => {
@@ -189,21 +187,6 @@ const setMeasurements = async ({
   };
 
   for (const node of nodes || figma.currentPage.selection) {
-    if (
-      node.name !== GROUP_NAME_ATTACHED &&
-      node.name !== GROUP_NAME_DETACHED &&
-      (node.type === 'GROUP' || node.type === 'FRAME') &&
-      shouldIncludeGroups
-    ) {
-      if (node.children.length > 0) {
-        setMeasurements({
-          store,
-          nodes: node.children,
-          shouldIncludeGroups,
-        });
-      }
-    }
-
     let surrounding: SurroundingSettings = store.surrounding;
 
     if (!state.detached) {
