@@ -129,7 +129,7 @@ const CornerLine = styled.div.attrs<Props>((props) => ({
   cursor: pointer;
   &:hover::after,
   &:hover div::after {
-    background-color: rgb(232, 236, 253);
+    background-color: ${(props) => props.theme.hoverColor};
   }
   &::after {
     content: '';

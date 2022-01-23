@@ -1,17 +1,15 @@
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useMemo } from 'react';
+import React, { FunctionComponent } from 'react';
 import styled, { css } from 'styled-components';
 
 import EventEmitter from '../../../../../shared/EventEmitter';
 import { useStore } from '../../../../../store';
 
-export const Spacing: FunctionComponent = observer(() => {
+export const Spacing: FunctionComponent<{
+  showSpacing: boolean;
+  hasSpacing: boolean;
+}> = observer((props) => {
   const store = useStore();
-
-  const hasSpacing = useMemo(
-    () => store.selection.some((selection) => selection.hasSpacing),
-    [store.selection]
-  );
 
   const refreshSelection = () =>
     EventEmitter.ask('current selection').then((data: string[]) =>
@@ -32,7 +30,7 @@ export const Spacing: FunctionComponent = observer(() => {
   };
 
   const removeSpacing = () => {
-    if (hasSpacing) {
+    if (props.showSpacing) {
       EventEmitter.emit('remove spacing');
       refreshSelection();
     }
@@ -40,9 +38,9 @@ export const Spacing: FunctionComponent = observer(() => {
 
   return (
     <Wrapper
-      onClick={() => (hasSpacing ? removeSpacing() : addSpacing())}
-      enabled={store.selection.length === 2 || hasSpacing}
-      active={hasSpacing}
+      onClick={() => (props.hasSpacing ? removeSpacing() : addSpacing())}
+      enabled={props.showSpacing}
+      active={props.hasSpacing}
     >
       <div></div>
       <div></div>

@@ -1,9 +1,9 @@
+import { GROUP_NAME_DETACHED } from '../shared';
 import EventEmitter from '../shared/EventEmitter';
 import { findAndReplaceNumberPattern } from '../shared/helpers';
 
-import { appendElementsToDetatchedGroup, getColor } from './helper';
+import { appendElementsToGroup, getColor } from './helper';
 import { createLabel } from './line';
-import { addToGlobalGroup } from './measure-group';
 import { getState } from './store';
 
 export const getSpacing = (node: SceneNode) =>
@@ -364,7 +364,7 @@ export const drawSpacing = async (
     spacingFrame.expanded = false;
     spacingFrame.clipsContent = false;
     spacingGroup.forEach((n) => spacingFrame.appendChild(n));
-    appendElementsToDetatchedGroup(rects[0], [spacingFrame]);
+    appendElementsToGroup(rects[0], [spacingFrame], GROUP_NAME_DETACHED);
   }
 
   if (!state.detached && spacingGroup.length > 0) {
@@ -394,6 +394,6 @@ export const drawSpacing = async (
       })
     );
 
-    addToGlobalGroup(group);
+    appendElementsToGroup(rects[0], [group]);
   }
 };

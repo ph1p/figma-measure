@@ -1,3 +1,4 @@
+import { toFixed } from '../../../../shared/helpers';
 import {
   createTooltipTextNode,
   getFontNameData,
@@ -33,7 +34,10 @@ export default async function fontName(node, parent, showFontSize) {
       let text = `${font.family}\n`;
       text += `${font.style.join(', ')}`;
       if (showFontSize) {
-        text += `\nSizes: ${font.fontSize || font.fontSize.join(', ')}`;
+        text += `\nSizes: ${
+          toFixed(+font.fontSize, 2) ||
+          font.fontSize.map((f) => toFixed(f, 2)).join(', ')
+        }`;
       }
       text += `${i === fontData.length - 1 ? '' : '\n'}`;
 

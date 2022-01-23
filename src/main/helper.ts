@@ -1,13 +1,43 @@
-import { GROUP_NAME_DETACHED } from '../shared/constants';
+import { GROUP_NAME_ATTACHED } from '../shared/constants';
 
-export const appendElementsToDetatchedGroup = (node, nodes: any[]) => {
+export const isPartOfAttachedGroup = (node: SceneNode) => {
+  if (!node) {
+    return false;
+  }
+
+  const parent = node.parent;
+  if (!parent || parent.type === 'PAGE' || parent.type === 'DOCUMENT') {
+    return false;
+  } else if (parent.name === GROUP_NAME_ATTACHED && Boolean(parent.children)) {
+    return true;
+  } else {
+    return isPartOfAttachedGroup(parent as SceneNode);
+  }
+};
+export const getClosestAttachedGroup = (node: SceneNode) => {
+  const parent = getNearestParentNode(node);
+
+  for (const child of parent.children) {
+    if (child.name === GROUP_NAME_ATTACHED && Boolean(parent.children)) {
+      return child;
+    }
+  }
+
+  return null;
+};
+
+export const appendElementsToGroup = (
+  node,
+  nodes: SceneNode[],
+  name = GROUP_NAME_ATTACHED
+) => {
   if (nodes.length > 0) {
     const parent = getNearestParentNode(node);
     let existingGroup = null;
     let children = [];
 
     for (const child of parent.children) {
-      if (child.name === GROUP_NAME_DETACHED && Boolean(parent.children)) {
+      if (child.name === name && Boolean(parent.children)) {
         existingGroup = child;
         children = child.children;
         break;
@@ -15,16 +45,17 @@ export const appendElementsToDetatchedGroup = (node, nodes: any[]) => {
     }
 
     const detachedGroup = figma.group([...nodes, ...children], parent);
-    detachedGroup.name = GROUP_NAME_DETACHED;
+    detachedGroup.name = name;
     detachedGroup.expanded = false;
-    existingGroup.children = [];
+    if (existingGroup) {
+      // existingGroup.children = [];
+    }
   }
 };
 
 export const getNearestParentNode = (node: SceneNode) => {
   const parent = node.parent;
 
-  console.log(parent, parent.type);
   if (
     (parent.type === 'FRAME' ||
       parent.type === 'PAGE' ||
@@ -219,6 +250,7 @@ export const getFontFillsAndStyles = (textNode: TextNode) => {
     }
 
     if (
+      textStyleId &&
       textStyleId !== figma.mixed &&
       !styles.some((s) => s.id === textStyleId)
     ) {

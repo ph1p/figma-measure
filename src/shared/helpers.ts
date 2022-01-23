@@ -5,7 +5,34 @@ export const toFixed = (number: string | number, decimalPlaces: number) => {
     : number.toFixed(decimalPlaces).replace(/\.?0+$/, '');
 };
 
+export const contains = (node1, node2) => {
+  let x1 = node1.x;
+  let y1 = node1.y;
+  let x2 = node1.x;
+  let y2 = node1.y;
+
+  if (node1.absoluteTransform) {
+    x1 = node1.absoluteTransform[0][2];
+    y1 = node1.absoluteTransform[1][2];
+  }
+  if (node2.absoluteTransform) {
+    x2 = node2.absoluteTransform[0][2];
+    y2 = node2.absoluteTransform[1][2];
+  }
+
+  return !(
+    x2 < x1 ||
+    y2 < y1 ||
+    x2 + node2.width > x1 + node1.width ||
+    y2 + node2.height > y1 + node1.height
+  );
+};
+
 export const findAndReplaceNumberPattern = (pattern: string, num: number) => {
+  if (!pattern) {
+    pattern = '($)px';
+  }
+
   let somethingReplaced = false;
   const regexWithoutCalc = /\((\$)(#*)\)/g;
   const regexFull = /\(((\$)(#*)(\/|\*)(\d+\.?\d*))\)/g;

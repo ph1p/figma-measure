@@ -39,7 +39,7 @@ const ColorsWrapper = styled.div`
     div {
       width: 22px;
       height: 22px;
-      border-radius: 7px;
+      border-radius: 6px;
       transition: all 0.3s;
       background-color: ${(p) => p.theme.color};
       z-index: 1;

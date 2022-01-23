@@ -145,7 +145,7 @@ h4 {
 }
 
 ::-webkit-scrollbar {
-  width: 14px;
+  width: 7px;
 }
 
 ::-webkit-scrollbar:horizontal {
@@ -158,8 +158,11 @@ h4 {
 
 ::-webkit-scrollbar-thumb {
   border-radius: 35px;
-  background-color: rgba(0,0,0,0.7);
-  border: 5px solid transparent;
+  background-color: #3D434D;
+  border-width: 2px;
+  border-style: solid;
+  border-color: transparent;
   background-clip: content-box;
+  border-radius:32px;
 }
 `;

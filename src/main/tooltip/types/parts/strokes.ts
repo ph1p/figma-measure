@@ -1,3 +1,4 @@
+import { toFixed } from '../../../../shared/helpers';
 import { createTooltipTextNode, getFillsByFillStyleId } from '../../../helper';
 
 import { createColorNode } from './fills';
@@ -20,7 +21,7 @@ export default function strokes(
     textNode.x += 20;
     textNode.y += 1.5;
 
-    textNode.characters += node.strokeWeight;
+    textNode.characters += toFixed(node.strokeWeight, 2);
 
     textNode.characters += ` · ${node.strokeAlign.toLowerCase()}`;
 

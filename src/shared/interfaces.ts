@@ -117,7 +117,6 @@ export interface Store {
   surrounding: SurroundingSettings;
   tooltipOffset: number;
   tooltip: TooltipSettings;
-  visibility: boolean;
   detached?: boolean;
 }
 
@@ -130,6 +129,6 @@ export interface NodeSelection {
 }
 
 export interface ExchangeStoreValues
-  extends Omit<Store, 'selection' | 'visibility' | 'surrounding'> {
+  extends Omit<Store, 'selection' | 'surrounding'> {
   surrounding?: SurroundingSettings;
 }

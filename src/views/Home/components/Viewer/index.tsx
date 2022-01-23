@@ -3,6 +3,7 @@ import React, { FunctionComponent, useMemo } from 'react';
 import styled from 'styled-components';
 
 import EventEmitter from '../../../../shared/EventEmitter';
+import { contains } from '../../../../shared/helpers';
 import { Alignments, TooltipPositions } from '../../../../shared/interfaces';
 import { useStore } from '../../../../store';
 
@@ -48,6 +49,21 @@ const Viewer: FunctionComponent = observer(() => {
     [store.selection]
   );
 
+  const showSpacing = useMemo(() => {
+    let show = false;
+    if (store.selection.length === 2) {
+      if (!contains(store.selection[0], store.selection[1])) {
+        show = true;
+      }
+    }
+
+    if (!show && hasSpacing) {
+      show = true;
+    }
+
+    return show;
+  }, [store.selection, hasSpacing]);
+
   const addPadding = (direction) => {
     EventEmitter.emit('add padding', {
       direction,
@@ -85,7 +101,7 @@ const Viewer: FunctionComponent = observer(() => {
           active={store.surrounding.tooltip === TooltipPositions.RIGHT}
         />
 
-        <Lines selection={store.selection.length} hasSpacing={hasSpacing}>
+        <Lines showSpacing={showSpacing}>
           <Line.Corner
             labels={store.labels}
             labelsOutside={store.labelsOutside}
@@ -124,7 +140,7 @@ const Viewer: FunctionComponent = observer(() => {
           />
 
           <div>
-            <Spacing />
+            <Spacing showSpacing={showSpacing} hasSpacing={hasSpacing} />
 
             <OverlayAndPadding>
               <Line.Vertical
@@ -425,15 +441,15 @@ const OverlayAndPadding = styled.div`
   }
 `;
 
-const Lines = styled.div<{ selection: number; hasSpacing: boolean }>`
+const Lines = styled.div<{ showSpacing: boolean }>`
   grid-area: center;
   display: grid;
   grid-template-rows: 21px 1fr 21px;
   grid-template-columns: 21px 1fr 21px;
   height: 100%;
   transition: height 0.3s, width 0.3s;
-  width: ${(p) => (p.selection === 2 || p.hasSpacing ? 171 : 145)}px;
-  height: ${(p) => (p.selection === 2 || p.hasSpacing ? 171 : 145)}px;
+  width: ${(p) => (p.showSpacing ? 171 : 145)}px;
+  height: ${(p) => (p.showSpacing ? 171 : 145)}px;
   margin: 0 auto;
   > div {
     position: relative;

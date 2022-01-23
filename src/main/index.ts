@@ -1,7 +1,11 @@
 import './store';
 
 import EventEmitter from '../shared/EventEmitter';
-import { VERSION } from '../shared/constants';
+import {
+  GROUP_NAME_ATTACHED,
+  GROUP_NAME_DETACHED,
+  VERSION,
+} from '../shared/constants';
 import {
   Alignments,
   NodeSelection,
@@ -12,15 +16,8 @@ import {
 } from '../shared/interfaces';
 
 import { createFill } from './fill';
-import isPartOfInstance, { appendElementsToDetatchedGroup } from './helper';
+import { appendElementsToGroup, isPartOfAttachedGroup } from './helper';
 import { createLine } from './line';
-import {
-  addToGlobalGroup,
-  getGlobalGroup,
-  initMeasureGroup,
-  isNodeInsideGlobalGroup,
-  nodeGroup,
-} from './measure-group';
 import { getPadding, createPaddingLine, removePaddingGroup } from './padding';
 import { drawSpacing, getSpacing, setSpacing } from './spacing';
 import { getState } from './store';
@@ -50,24 +47,11 @@ let previousSelection;
 figma.showUI(__html__, {
   width: 285,
   height: 562,
-  visible: figma.command !== 'visibility',
 });
 
 figma.root.setRelaunchData({
   open: '',
-  visibility: '',
 });
-
-initMeasureGroup();
-
-if (figma.command === 'visibility') {
-  const group = getGlobalGroup();
-
-  if (group) {
-    group.visible = !group.visible;
-  }
-  figma.closePlugin();
-}
 
 export function getPluginData(node, name) {
   const data = node.getPluginData(name);
@@ -94,6 +78,10 @@ async function getSelectionArray(): Promise<NodeSelection[]> {
     return {
       id: node.id,
       type: node.type,
+      x: node.x,
+      y: node.y,
+      width: node.width,
+      height: node.height,
       padding: getPadding(node),
       hasSpacing: spacings > 0 && figma.currentPage.selection.length === 1,
       data,
@@ -105,64 +93,6 @@ export const sendSelection = () =>
   getSelectionArray().then((selection) =>
     EventEmitter.emit('selection', selection)
   );
-
-const cleanOrphanNodes = () => {
-  const group = getGlobalGroup();
-
-  if (group) {
-    for (const node of group.children) {
-      try {
-        const foundNode = figma.getNodeById(node.getPluginData('parent'));
-        const foundPaddingNode = figma.getNodeById(
-          JSON.parse(node.getPluginData('padding-parent') || '{}').parentId
-        );
-
-        if (
-          !foundNode &&
-          !node.getPluginData('connected') &&
-          !foundPaddingNode
-        ) {
-          node.remove();
-        }
-      } catch {
-        node.remove();
-      }
-    }
-  }
-};
-
-const removeAllMeasurementConnections = () => {
-  const group = getGlobalGroup();
-
-  if (group) {
-    for (const node of group.children) {
-      const foundNode = figma.getNodeById(node.getPluginData('parent'));
-      const spacingConnectedNodes = JSON.parse(
-        node.getPluginData('connected') || '[]'
-      );
-
-      if (spacingConnectedNodes.length > 0) {
-        for (const spacingConnectedNode of spacingConnectedNodes.map(
-          (id: string) => figma.getNodeById(id)
-        )) {
-          if (spacingConnectedNode) {
-            spacingConnectedNode.setPluginData('spacing', '');
-          }
-        }
-      }
-
-      if (foundNode) {
-        foundNode.setPluginData('data', '');
-      }
-
-      node.remove();
-    }
-  }
-
-  const previousSelection = figma.currentPage.selection;
-  figma.currentPage.selection = [];
-  setTimeout(() => (figma.currentPage.selection = previousSelection), 100);
-};
 
 const currentSelectionAsJSONString = () =>
   JSON.stringify(
@@ -215,25 +145,8 @@ figma.on('selectionchange', () => {
 EventEmitter.on('resize', ({ width, height }) =>
   figma.ui.resize(width, height)
 );
-EventEmitter.answer('get visibility', async () => {
-  const group = getGlobalGroup();
-
-  return group ? group.visible : true;
-});
-
-EventEmitter.on('toggle visibility', () => {
-  const group = getGlobalGroup();
-
-  if (group) {
-    group.visible = !group.visible;
-  }
-});
 
 EventEmitter.answer('current selection', async () => getSelectionArray());
-
-EventEmitter.on('remove all measurements', () =>
-  removeAllMeasurementConnections()
-);
 
 EventEmitter.on(
   'set measurements',
@@ -268,9 +181,6 @@ const setMeasurements = async ({
   nodes?: readonly SceneNode[];
 }) => {
   const state = await getState();
-  if (!state.detached) {
-    cleanOrphanNodes();
-  }
 
   let data: PluginNodeData = null;
 
@@ -279,15 +189,10 @@ const setMeasurements = async ({
   };
 
   for (const node of nodes || figma.currentPage.selection) {
-    if (isNodeInsideGlobalGroup(node)) {
-      continue;
-    }
-
     if (
-      (node.type === 'GROUP' ||
-        node.type === 'FRAME' ||
-        node.type === 'INSTANCE' ||
-        node.type === 'COMPONENT_SET') &&
+      node.name !== GROUP_NAME_ATTACHED &&
+      node.name !== GROUP_NAME_DETACHED &&
+      (node.type === 'GROUP' || node.type === 'FRAME') &&
       shouldIncludeGroups
     ) {
       if (node.children.length > 0) {
@@ -390,6 +295,8 @@ const setMeasurements = async ({
         });
     }
 
+    const connectedNodes = [];
+
     // Padding
     const padding = getPadding(node);
     if (padding && !state.detached) {
@@ -406,122 +313,117 @@ const setMeasurements = async ({
           });
 
           if (paddingLine) {
-            addToGlobalGroup(paddingLine);
+            connectedNodes.push(paddingLine);
           }
         });
     }
 
-    if (!surrounding || Object.keys(surrounding).length === 0) {
-      continue;
-    }
+    if (surrounding && Object.keys(surrounding).length !== 0) {
+      if (surrounding.center) {
+        const fillNode = createFill(node, {
+          fill: store.fill,
+          opacity: store.opacity,
+          color: settings.color,
+        });
 
-    const connectedNodes = [];
+        if (fillNode) {
+          connectedNodes.push(fillNode);
+        }
+      }
 
-    if (surrounding.center) {
-      const fillNode = createFill(node, {
-        fill: store.fill,
-        opacity: store.opacity,
-        color: settings.color,
-      });
+      if (surrounding.tooltip) {
+        const tooltip = await setTooltip(
+          {
+            flags: store.tooltip,
+            offset: store.tooltipOffset,
+            position: surrounding.tooltip || TooltipPositions.NONE,
+            labelPattern: settings.labelPattern,
+          },
+          node
+        );
 
-      if (fillNode) {
-        connectedNodes.push(fillNode);
+        if (tooltip) {
+          connectedNodes.push(tooltip);
+        }
+      }
+
+      if (surrounding.rightBar) {
+        connectedNodes.push(
+          createLine({
+            ...settings,
+            node,
+            direction: 'vertical',
+            name: `vertical line ${Alignments.RIGHT.toLowerCase()}`,
+            lineVerticalAlign: Alignments.RIGHT,
+          })
+        );
+      }
+
+      if (surrounding.leftBar) {
+        connectedNodes.push(
+          createLine({
+            ...settings,
+            node,
+            direction: 'vertical',
+            name: `vertical line ${Alignments.LEFT.toLowerCase()}`,
+            lineVerticalAlign: Alignments.LEFT,
+          })
+        );
+      }
+
+      if (surrounding.topBar) {
+        connectedNodes.push(
+          createLine({
+            ...settings,
+            node,
+            direction: 'horizontal',
+            name: `horizontal line ${Alignments.TOP.toLowerCase()}`,
+            lineHorizontalAlign: Alignments.TOP,
+          })
+        );
+      }
+
+      if (surrounding.bottomBar) {
+        connectedNodes.push(
+          createLine({
+            ...settings,
+            node,
+            direction: 'horizontal',
+            name: `horizontal line ${Alignments.BOTTOM.toLowerCase()}`,
+            lineHorizontalAlign: Alignments.BOTTOM,
+          })
+        );
+      }
+
+      if (surrounding.horizontalBar) {
+        connectedNodes.push(
+          createLine({
+            ...settings,
+            node,
+            direction: 'horizontal',
+            name: 'horizontal line ' + Alignments.CENTER.toLowerCase(),
+            lineHorizontalAlign: Alignments.CENTER,
+          })
+        );
+      }
+
+      if (surrounding.verticalBar) {
+        connectedNodes.push(
+          createLine({
+            ...settings,
+            node,
+            direction: 'vertical',
+            name: 'vertical line ' + Alignments.CENTER.toLowerCase(),
+            lineVerticalAlign: Alignments.CENTER,
+          })
+        );
       }
     }
-
-    if (surrounding.tooltip) {
-      const tooltip = await setTooltip(
-        {
-          flags: store.tooltip,
-          offset: store.tooltipOffset,
-          position: surrounding.tooltip || TooltipPositions.NONE,
-          labelPattern: settings.labelPattern,
-        },
-        node
-      );
-
-      if (tooltip) {
-        connectedNodes.push(tooltip);
-      }
-    }
-
-    if (surrounding.rightBar) {
-      connectedNodes.push(
-        createLine({
-          ...settings,
-          node,
-          direction: 'vertical',
-          name: `vertical line ${Alignments.RIGHT.toLowerCase()}`,
-          lineVerticalAlign: Alignments.RIGHT,
-        })
-      );
-    }
-
-    if (surrounding.leftBar) {
-      connectedNodes.push(
-        createLine({
-          ...settings,
-          node,
-          direction: 'vertical',
-          name: `vertical line ${Alignments.LEFT.toLowerCase()}`,
-          lineVerticalAlign: Alignments.LEFT,
-        })
-      );
-    }
-
-    if (surrounding.topBar) {
-      connectedNodes.push(
-        createLine({
-          ...settings,
-          node,
-          direction: 'horizontal',
-          name: `horizontal line ${Alignments.TOP.toLowerCase()}`,
-          lineHorizontalAlign: Alignments.TOP,
-        })
-      );
-    }
-
-    if (surrounding.bottomBar) {
-      connectedNodes.push(
-        createLine({
-          ...settings,
-          node,
-          direction: 'horizontal',
-          name: `horizontal line ${Alignments.BOTTOM.toLowerCase()}`,
-          lineHorizontalAlign: Alignments.BOTTOM,
-        })
-      );
-    }
-
-    if (surrounding.horizontalBar) {
-      connectedNodes.push(
-        createLine({
-          ...settings,
-          node,
-          direction: 'horizontal',
-          name: 'horizontal line ' + Alignments.CENTER.toLowerCase(),
-          lineHorizontalAlign: Alignments.CENTER,
-        })
-      );
-    }
-
-    if (surrounding.verticalBar) {
-      connectedNodes.push(
-        createLine({
-          ...settings,
-          node,
-          direction: 'vertical',
-          name: 'vertical line ' + Alignments.CENTER.toLowerCase(),
-          lineVerticalAlign: Alignments.CENTER,
-        })
-      );
-    }
-
     // if (data.detached && Object.keys(data).length === 0) {
 
     if (state.detached) {
       if (connectedNodes.length > 0) {
-        appendElementsToDetatchedGroup(node, connectedNodes);
+        appendElementsToGroup(node, connectedNodes, GROUP_NAME_DETACHED);
       }
     } else {
       node.setPluginData(
@@ -535,21 +437,7 @@ const setMeasurements = async ({
       );
 
       if (connectedNodes.length > 0) {
-        const group = nodeGroup(node);
-
-        if (group) {
-          connectedNodes.forEach((n) => {
-            group.appendChild(n);
-          });
-          addToGlobalGroup(group);
-        } else {
-          const measureGroup = figma.group(connectedNodes, figma.currentPage);
-          measureGroup.expanded = false;
-          measureGroup.name = `📏 ${node.name}`;
-
-          measureGroup.setPluginData('parent', node.id);
-          addToGlobalGroup(measureGroup);
-        }
+        appendElementsToGroup(node, connectedNodes);
       }
     }
   }

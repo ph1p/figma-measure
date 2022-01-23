@@ -122,7 +122,7 @@ const Wrapper = styled.div`
 const ToggleInputs = styled.div`
   overflow: auto;
   height: 186px;
-  padding: 12px;
+  padding: 12px 5px 12px 12px;
   > div {
     margin-bottom: 10px;
     &:last-child {

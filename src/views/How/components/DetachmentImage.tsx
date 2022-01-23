@@ -2,21 +2,20 @@ import React from 'react';
 
 export const DetachmentImage = () => (
   <svg
-    width="171"
+    width="161"
     height="105"
-    viewBox="0 0 171 105"
+    viewBox="0 0 161 105"
     fill="none"
-    xmlns="https://www.w3.org/2000/svg"
+    xmlns="http://www.w3.org/2000/svg"
   >
     <path
       fill-rule="evenodd"
       clip-rule="evenodd"
-      d="M4 29.615L4 30.3851L2.38506 30.3851L2.38506 80.615L4 80.615L4 81.3851L-3.55595e-07 81.3851L-3.21932e-07 80.615L1.61494 80.615L1.61494 30.3851L1.87369e-06 30.3851L1.90735e-06 29.615L4 29.615Z"
+      d="M44 29.6149L44 30.385L42.3851 30.385L42.3851 80.6149L44 80.6149L44 81.385L40 81.385L40 80.6149L41.6149 80.6149L41.6149 30.385L40 30.385L40 29.6149L44 29.6149Z"
       fill="#4F3838"
     />
     <rect
       opacity="0.19"
-      x="10"
       y="30"
       width="35"
       height="51"
@@ -24,145 +23,150 @@ export const DetachmentImage = () => (
       fill="url(#paint0_linear_3051_72795)"
     />
     <rect
-      opacity="0.6"
-      x="10.5"
+      opacity="0.19"
+      x="0.5"
       y="30.5"
       width="34"
       height="50"
       rx="2.5"
-      stroke="url(#paint1_radial_3051_72795)"
+      stroke="url(#paint1_linear_3051_72795)"
+    />
+    <rect
+      x="32.5"
+      y="78.5"
+      width="4"
+      height="4"
+      fill="white"
+      stroke="#BA9292"
+    />
+    <rect
+      x="32.5"
+      y="28.5"
+      width="4"
+      height="4"
+      fill="white"
+      stroke="#BA9292"
     />
     <rect
       opacity="0.14"
-      x="171"
+      x="161"
       y="105"
       width="60"
       height="105"
       rx="3"
-      transform="rotate(-180 171 105)"
+      transform="rotate(-180 161 105)"
       fill="url(#paint2_linear_3051_72795)"
-    />
-    <rect
-      opacity="0.4"
-      x="170.5"
-      y="104.5"
-      width="59"
-      height="104"
-      rx="2.5"
-      transform="rotate(-180 170.5 104.5)"
-      stroke="url(#paint3_radial_3051_72795)"
     />
     <path
       opacity="0.5"
       fill-rule="evenodd"
       clip-rule="evenodd"
-      d="M162.543 8.25004L160.146 5.85359L160.854 5.14648L163.25 7.54293L165.646 5.14648L166.354 5.85359L163.957 8.25004L166.354 10.6465L165.646 11.3536L163.25 8.95714L160.854 11.3536L160.146 10.6465L162.543 8.25004Z"
+      d="M152.543 8.24998L150.146 5.85353L150.854 5.14642L153.25 7.54287L155.646 5.14642L156.354 5.85353L153.957 8.24998L156.354 10.6464L155.646 11.3535L153.25 8.95708L150.854 11.3535L150.146 10.6464L152.543 8.24998Z"
       fill="#4F3838"
     />
     <g opacity="0.3">
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"
-        d="M143 35H139C138.448 35 138 35.4477 138 36V40C138 40.5523 138.448 41 139 41H143C143.552 41 144 40.5523 144 40V36C144 35.4477 143.552 35 143 35ZM139 34C137.895 34 137 34.8954 137 36V40C137 41.1046 137.895 42 139 42H143C144.105 42 145 41.1046 145 40V36C145 34.8954 144.105 34 143 34H139Z"
+        d="M133 35H129C128.448 35 128 35.4477 128 36V40C128 40.5523 128.448 41 129 41H133C133.552 41 134 40.5523 134 40V36C134 35.4477 133.552 35 133 35ZM129 34C127.895 34 127 34.8954 127 36V40C127 41.1046 127.895 42 129 42H133C134.105 42 135 41.1046 135 40V36C135 34.8954 134.105 34 133 34H129Z"
+        fill="url(#paint3_linear_3051_72795)"
+      />
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M137 31H125C124.448 31 124 31.4477 124 32V44C124 44.5523 124.448 45 125 45H137C137.552 45 138 44.5523 138 44V32C138 31.4477 137.552 31 137 31ZM125 30C123.895 30 123 30.8954 123 32V44C123 45.1046 123.895 46 125 46H137C138.105 46 139 45.1046 139 44V32C139 30.8954 138.105 30 137 30H125Z"
         fill="url(#paint4_linear_3051_72795)"
       />
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"
-        d="M147 31H135C134.448 31 134 31.4477 134 32V44C134 44.5523 134.448 45 135 45H147C147.552 45 148 44.5523 148 44V32C148 31.4477 147.552 31 147 31ZM135 30C133.895 30 133 30.8954 133 32V44C133 45.1046 133.895 46 135 46H147C148.105 46 149 45.1046 149 44V32C149 30.8954 148.105 30 147 30H135Z"
+        d="M117 37.5H121V38.5H117V37.5Z"
         fill="url(#paint5_linear_3051_72795)"
       />
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"
-        d="M127 37.5H131V38.5H127V37.5Z"
+        d="M141 37.5H145V38.5H141V37.5Z"
         fill="url(#paint6_linear_3051_72795)"
       />
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"
-        d="M151 37.5H155V38.5H151V37.5Z"
+        d="M130.5 28V24H131.5V28H130.5Z"
         fill="url(#paint7_linear_3051_72795)"
       />
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"
-        d="M140.5 28V24H141.5V28H140.5Z"
+        d="M130.5 52V48H131.5V52H130.5Z"
         fill="url(#paint8_linear_3051_72795)"
       />
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"
-        d="M140.5 52V48H141.5V52H140.5Z"
+        d="M119 21H143V22H119V21ZM147 50V26H148V50H147ZM143 54H119V55H143V54ZM114 50V26H115V50H114Z"
         fill="url(#paint9_linear_3051_72795)"
-      />
-      <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
-        d="M129 21H153V22H129V21ZM157 50V26H158V50H157ZM153 54H129V55H153V54ZM124 50V26H125V50H124Z"
-        fill="url(#paint10_linear_3051_72795)"
       />
     </g>
     <path
-      d="M61.5 47H63.5V48H61.5C58.7386 48 56.5 50.2386 56.5 53C56.5 55.7614 58.7386 58 61.5 58H63.5V59H61.5C58.1863 59 55.5 56.3137 55.5 53C55.5 49.6863 58.1863 47 61.5 47Z"
+      d="M57.5 48H59.5V49H57.5C54.7386 49 52.5 51.2386 52.5 54C52.5 56.7614 54.7386 59 57.5 59H59.5V60H57.5C54.1863 60 51.5 57.3137 51.5 54C51.5 50.6863 54.1863 48 57.5 48Z"
       fill="#4F3838"
     />
-    <path d="M55.5 53V53.5H48V52.5H55.5V53Z" fill="#4F3838" />
+    <path d="M51.5 54V54.5H44V53.5H51.5V54Z" fill="#4F3838" />
     <path
-      d="M94 58H92V59H94C97.3137 59 100 56.3137 100 53V53.5H107.5V52.5H100V53C100 49.6863 97.3137 47 94 47H92V48H94C96.7614 48 99 50.2386 99 53C99 55.7614 96.7614 58 94 58Z"
+      d="M84 59H82V60H84C87.3137 60 90 57.3137 90 54V54.5H97.5V53.5H90V54C90 50.6863 87.3137 48 84 48H82V49H84C86.7614 49 89 51.2386 89 54C89 56.7614 86.7614 59 84 59Z"
       fill="#4F3838"
     />
     <defs>
       <linearGradient
         id="paint0_linear_3051_72795"
-        x1="38.7"
+        x1="28.7"
         y1="68.6364"
-        x2="10"
+        x2="9.05645e-07"
         y2="68.6364"
         gradientUnits="userSpaceOnUse"
       >
         <stop stop-color="#4F3838" />
         <stop offset="1" stop-color="#4F3838" stop-opacity="0" />
       </linearGradient>
-      <radialGradient
-        id="paint1_radial_3051_72795"
-        cx="0"
-        cy="0"
-        r="1"
+      <linearGradient
+        id="paint1_linear_3051_72795"
+        x1="39.5"
+        y1="50"
+        x2="6.5"
+        y2="50.5"
         gradientUnits="userSpaceOnUse"
-        gradientTransform="translate(48 56) rotate(180) scale(23.5 16.1275)"
       >
         <stop />
-        <stop offset="1" stop-color="#4F3838" stop-opacity="0" />
-      </radialGradient>
+        <stop offset="1" stop-opacity="0" />
+      </linearGradient>
       <linearGradient
         id="paint2_linear_3051_72795"
-        x1="220.2"
+        x1="210.2"
         y1="184.545"
-        x2="171"
+        x2="161"
         y2="184.545"
         gradientUnits="userSpaceOnUse"
       >
         <stop stop-color="#4F3838" />
         <stop offset="1" stop-color="#4F3838" stop-opacity="0" />
       </linearGradient>
-      <radialGradient
-        id="paint3_radial_3051_72795"
-        cx="0"
-        cy="0"
-        r="1"
+      <linearGradient
+        id="paint3_linear_3051_72795"
+        x1="111"
+        y1="38"
+        x2="148"
+        y2="38"
         gradientUnits="userSpaceOnUse"
-        gradientTransform="translate(231 159.5) rotate(180) scale(56.5 32.2857)"
       >
         <stop stop-color="#4F3838" />
-        <stop offset="1" stop-color="white" stop-opacity="0" />
         <stop offset="1" stop-color="#4F3838" stop-opacity="0" />
-      </radialGradient>
+      </linearGradient>
       <linearGradient
         id="paint4_linear_3051_72795"
-        x1="121"
+        x1="111"
         y1="38"
-        x2="158"
+        x2="148"
         y2="38"
         gradientUnits="userSpaceOnUse"
       >
@@ -171,9 +175,9 @@ export const DetachmentImage = () => (
       </linearGradient>
       <linearGradient
         id="paint5_linear_3051_72795"
-        x1="121"
+        x1="111"
         y1="38"
-        x2="158"
+        x2="148"
         y2="38"
         gradientUnits="userSpaceOnUse"
       >
@@ -182,9 +186,9 @@ export const DetachmentImage = () => (
       </linearGradient>
       <linearGradient
         id="paint6_linear_3051_72795"
-        x1="121"
+        x1="111"
         y1="38"
-        x2="158"
+        x2="148"
         y2="38"
         gradientUnits="userSpaceOnUse"
       >
@@ -193,9 +197,9 @@ export const DetachmentImage = () => (
       </linearGradient>
       <linearGradient
         id="paint7_linear_3051_72795"
-        x1="121"
+        x1="111"
         y1="38"
-        x2="158"
+        x2="148"
         y2="38"
         gradientUnits="userSpaceOnUse"
       >
@@ -204,9 +208,9 @@ export const DetachmentImage = () => (
       </linearGradient>
       <linearGradient
         id="paint8_linear_3051_72795"
-        x1="121"
+        x1="111"
         y1="38"
-        x2="158"
+        x2="148"
         y2="38"
         gradientUnits="userSpaceOnUse"
       >
@@ -215,20 +219,9 @@ export const DetachmentImage = () => (
       </linearGradient>
       <linearGradient
         id="paint9_linear_3051_72795"
-        x1="121"
+        x1="111"
         y1="38"
-        x2="158"
-        y2="38"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop stop-color="#4F3838" />
-        <stop offset="1" stop-color="#4F3838" stop-opacity="0" />
-      </linearGradient>
-      <linearGradient
-        id="paint10_linear_3051_72795"
-        x1="121"
-        y1="38"
-        x2="158"
+        x2="148"
         y2="38"
         gradientUnits="userSpaceOnUse"
       >

@@ -49,11 +49,6 @@
       {
         "command": "open",
         "name": "Open Figma-Measure"
-      },
-      {
-        "command": "visibility",
-        "name": "Show/Hide Measurements",
-        "multipleSelection": true
       }
     ]
   },

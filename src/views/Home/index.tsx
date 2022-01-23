@@ -1,19 +1,19 @@
 import { observer } from 'mobx-react';
-import { useRef, useMemo } from 'preact/hooks';
+import { useMemo } from 'preact/hooks';
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
 import { Colors } from '../../components/ColorPicker';
+import { EmptyScreenImage } from '../../components/EmptyScreenImage';
 import { Input } from '../../components/Input';
 import Tooltip from '../../components/Tooltip';
 import {
   AttachedIcon,
   DetachedIcon,
 } from '../../components/icons/DetachedIcon';
-import { EyeClosedIcon, EyeIcon } from '../../components/icons/EyeIcons';
 import { RefreshIcon } from '../../components/icons/RefreshIcon';
-import { TrashIcon } from '../../components/icons/TrashIcon';
-import EventEmitter from '../../shared/EventEmitter';
+import { SuccessIcon } from '../../components/icons/SuccessIcon';
+import { WarningIcon } from '../../components/icons/WarningIcon';
 import { useStore } from '../../store';
 
 import CenterChooser from './components/CenterChooser';
@@ -22,16 +22,6 @@ import Viewer from './components/Viewer';
 
 const Home: FunctionComponent = observer(() => {
   const store = useStore();
-  const labelControlRef = useRef<React.ElementRef<typeof Tooltip>>(null);
-  const visibilityRef = useRef<React.ElementRef<typeof Tooltip>>(null);
-  const coupleRef = useRef<React.ElementRef<typeof Tooltip>>(null);
-  const trashRef = useRef<React.ElementRef<typeof Tooltip>>(null);
-
-  const removeAllMeasurements = () => {
-    if (confirm('Do you really want to remove all measurements?')) {
-      EventEmitter.emit('remove all measurements');
-    }
-  };
 
   const labelDotIndex = useMemo(() => {
     if (!store.labels) {
@@ -61,118 +51,55 @@ const Home: FunctionComponent = observer(() => {
       <ViewerContainer>
         {store.selection.length === 0 && (
           <ViewerOverlay>
+            <EmptyScreenImage />
             <span>
-              Select a Layer
+              select an element to
               <br />
-              to get started
+              start measuring
             </span>
           </ViewerOverlay>
         )}
+
         <Viewer />
 
         {!store.detached && (
-          <Tooltip
-            hover
-            ref={visibilityRef}
-            handler={observer(
-              React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
-                <Visibility
-                  ref={ref}
-                  onClick={() => {
-                    store.toggleVisibility();
-                    visibilityRef.current.hide();
-                  }}
-                >
-                  {store.visibility ? <EyeIcon /> : <EyeClosedIcon />}
-                </Visibility>
-              ))
-            )}
+          <Refresh
+            title="Reload measurements"
+            active={store.selection.length > 0}
+            onClick={() => store.sendMeasurements(true)}
           >
-            {store.visibility ? 'Hide' : 'Show'}
-          </Tooltip>
+            <RefreshIcon />
+          </Refresh>
         )}
 
-        {!store.detached && (
-          <Tooltip
-            hover
-            handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
-              <Refresh
-                ref={ref}
-                active={store.selection.length > 0}
-                onClick={() => store.sendMeasurements(true)}
-              >
-                <RefreshIcon />
-              </Refresh>
-            ))}
-          >
-            Reload measurements
-          </Tooltip>
-        )}
-
-        <Tooltip
-          hover
-          ref={coupleRef}
-          handler={observer(
-            React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
-              <Detached
-                ref={ref}
-                onClick={() => {
-                  store.setDetached(!store.detached);
-                }}
-              >
-                {store.detached ? <DetachedIcon /> : <AttachedIcon />}
-              </Detached>
-            ))
-          )}
+        <Detached
+          title={`${store.detached ? 'Attach' : 'Detach'} measurements`}
+          onClick={() => {
+            store.setDetached(!store.detached);
+          }}
         >
-          {store.detached ? 'Attach' : 'Detach'} measurements
-        </Tooltip>
-
-        {!store.detached && (
-          <Tooltip
-            hover
-            ref={trashRef}
-            handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
-              <Trash
-                ref={ref}
-                onClick={() => {
-                  removeAllMeasurements();
-                  trashRef.current.hide();
-                }}
-              >
-                <TrashIcon />
-              </Trash>
-            ))}
-          >
-            Remove all measurements
-          </Tooltip>
-        )}
+          {store.detached ? <DetachedIcon /> : <AttachedIcon />}
+          <div className="hint">
+            {store.detached ? <WarningIcon /> : <SuccessIcon />}
+          </div>
+        </Detached>
 
         <Colors />
 
-        <Tooltip
-          hover
-          ref={labelControlRef}
-          handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
-            <LabelControl
-              ref={ref}
-              index={labelDotIndex}
-              onClick={() => {
-                labelControlRef.current.hide();
-                changeLabel();
-              }}
-            >
-              <div className="label"></div>
-              <div className="dots">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
-            </LabelControl>
-          ))}
+        <LabelControl
+          title="Change label alignment"
+          index={labelDotIndex}
+          onClick={() => {
+            changeLabel();
+          }}
         >
-          Change label alignment
-        </Tooltip>
+          <div className="label"></div>
+          <div className="dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </LabelControl>
       </ViewerContainer>
 
       <LineChooser />
@@ -182,6 +109,7 @@ const Home: FunctionComponent = observer(() => {
         <Input
           width={140}
           label="Units"
+          placeholder="($)px, ($##*2.1), cm..."
           value={store.labelPattern}
           onChange={(e) => store.setLabelPattern(e.currentTarget.value)}
         />
@@ -271,6 +199,12 @@ const ViewerOverlay = styled.div`
   text-align: center;
   font-weight: 500;
   z-index: 20;
+  flex-direction: column;
+  span {
+    margin-top: 17px;
+    color: #808080;
+    font-weight: normal;
+  }
 `;
 
 const Refresh = styled.div<{ active?: boolean }>`
@@ -289,7 +223,12 @@ const Refresh = styled.div<{ active?: boolean }>`
   justify-content: center;
 
   &:hover {
-    background-color: ${(props) => props.theme.hoverColor};
+    border-color: ${(props) => props.theme.color};
+    > svg {
+      path {
+        fill: ${(props) => props.theme.color};
+      }
+    }
   }
   &:active {
     border-color: ${(props) => props.theme.color};
@@ -352,30 +291,21 @@ const LabelControl = styled(Refresh)<{ index?: number }>`
   }
 `;
 
-const Trash = styled(Refresh)`
-  top: initial;
-  right: 48px;
-  top: 12px;
-  opacity: 1;
-  z-index: 21;
-`;
-
 const Detached = styled(Refresh)`
   top: initial;
   left: 12px;
   top: 12px;
   opacity: 1;
   z-index: 21;
+  overflow: initial;
   svg {
     margin: 0;
   }
-`;
-
-const Visibility = styled(Refresh)`
-  right: 84px;
-  top: 12px;
-  z-index: 21;
-  opacity: 1;
+  .hint {
+    position: absolute;
+    right: -10px;
+    top: -10px;
+  }
 `;
 
 const ViewerContainer = styled.div`

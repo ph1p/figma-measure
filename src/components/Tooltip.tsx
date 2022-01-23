@@ -147,7 +147,6 @@ const Wrapper = styled.div<{
   position: fixed;
   background-color: #000;
   border-radius: ${(p) => p.borderRadius || (p.hover ? 3 : 4)}px;
-  visibility: ${(p) => (p.isOpen ? 'visible' : 'hidden')};
   pointer-events: ${(p) => (p.isOpen ? 'all' : 'none')};
   z-index: 99;
   color: #fff;

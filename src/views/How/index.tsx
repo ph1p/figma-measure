@@ -37,8 +37,6 @@ const Home: FunctionComponent = observer(() => {
         </Users>
       </Paragraph>
 
-      <Divider />
-
       <GuidesHeadline>
         <h3>Guides</h3>
         <a
@@ -53,35 +51,35 @@ const Home: FunctionComponent = observer(() => {
         <Card
           className="line"
           title="How lines work"
-          link="https://github.com/ph1p/figma-measure/"
+          link="https://github.com/ph1p/figma-measure/blob/master/docs/lines.md"
         >
           <LinesImage />
         </Card>
         <Card
           className="tooltip"
           title="How tooltips work"
-          link="https://github.com/ph1p/figma-measure/"
+          link="https://github.com/ph1p/figma-measure/blob/master/docs/tooltips.md"
         >
           <TooltipsImage />
         </Card>
         <Card
           className="padding"
           title="How padding works"
-          link="https://github.com/ph1p/figma-measure/"
+          link="https://github.com/ph1p/figma-measure/blob/master/docs/padding.md"
         >
           <PaddingImage />
         </Card>
         <Card
           className="spacing"
           title="How spacing works"
-          link="https://github.com/ph1p/figma-measure/"
+          link="https://github.com/ph1p/figma-measure/blob/master/docs/spacing.md"
         >
           <SpacingImage />
         </Card>
         <Card
           className="detach"
           title="How detachment works"
-          link="https://github.com/ph1p/figma-measure/"
+          link="https://github.com/ph1p/figma-measure/blob/master/docs/detachment.md"
         >
           <DetachmentImage />
         </Card>
@@ -108,7 +106,7 @@ const Card = (props) => {
 
 const CardWrapper = styled.div`
   width: 100%;
-  height: 231px;
+  height: 230px;
   border-radius: 8px;
   background-color: #c4c4c4;
   display: grid;
@@ -122,11 +120,14 @@ const CardWrapper = styled.div`
   }
   footer {
     border-top: 1px solid rgb(255 255 255 / 6%);
-    padding: 10px 15px 15px;
+    padding: 10px 15px;
     color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     h5 {
-      margin: 0 0 5px;
-      font-size: 14px;
+      margin: 0 0 3px;
+      font-size: 13px;
       font-weight: normal;
     }
     a {
@@ -223,20 +224,13 @@ const Container = styled.div`
 `;
 
 const GuidesHeadline = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   padding: 16px 15px 9px;
   a {
+    display: block;
+    margin-top: 2px;
     color: #808080;
     font-size: 11px;
   }
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background-color: #e8e8e8;
 `;
 
 const Paragraph = styled.div`

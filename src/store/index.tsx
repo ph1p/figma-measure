@@ -40,9 +40,6 @@ class RootStore {
   color = DEFAULT_COLOR;
 
   @ignore
-  visibility = true;
-
-  @ignore
   selection: NodeSelection[] = [];
 
   fill: FillTypes = 'stroke';
@@ -55,7 +52,7 @@ class RootStore {
 
   detached = false;
 
-  labelPattern = '($)px';
+  labelPattern = '';
 
   @ignore
   surrounding: SurroundingSettings = DEFAULT_SURROUNDING_FLAGS;
@@ -190,15 +187,6 @@ class RootStore {
 
   setSelection(selection = []) {
     this.selection = selection;
-  }
-
-  toggleVisibility() {
-    this.visibility = !this.visibility;
-    EventEmitter.emit('toggle visibility', this.visibility);
-  }
-
-  setVisibility(visibility: boolean) {
-    this.visibility = visibility;
   }
 
   sendMeasurements(reload = false) {
