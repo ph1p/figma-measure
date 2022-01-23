@@ -68,7 +68,7 @@ module.exports = (env, argv) => ({
   },
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, figmaPlugin.name),
+    path: path.resolve(__dirname, figmaPlugin.name.replace(/\s/g, '-')),
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -100,7 +100,7 @@ module.exports = (env, argv) => ({
       },
     }),
     new CreateFileWebpack({
-      path: path.resolve(__dirname, figmaPlugin.name),
+      path: path.resolve(__dirname, figmaPlugin.name.replace(/\s/g, '-')),
       fileName: 'manifest.json',
       content: JSON.stringify(figmaPlugin),
     }),

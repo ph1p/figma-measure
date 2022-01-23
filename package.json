@@ -4,12 +4,12 @@
   "description": "",
   "main": "code.js",
   "scripts": {
-    "build": "webpack --mode=production && zip -r -X  \"Figma Measure.zip\" \"./Figma Measure/\"",
+    "build": "webpack --mode=production && zip -r -X  Figma-Measure.zip ./Figma-Measure/ && rm ./Figma-Measure/ui.js*",
     "dev": "DEBUG=* webpack --watch",
     "version": "conventional-changelog -p karma -i CHANGELOG.md -s -r 0 && git add .",
     "lint": "eslint 'src/*/**/*.{js,ts,tsx}' --fix"
   },
-  "author": "",
+  "author": "Philip Stapelfeldt <me@ph1p.dev>",
   "license": "ISC",
   "devDependencies": {
     "@figma/plugin-typings": "^1.41.1",

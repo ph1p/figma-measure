@@ -1,11 +1,7 @@
 import './store';
 
 import EventEmitter from '../shared/EventEmitter';
-import {
-  GROUP_NAME_ATTACHED,
-  GROUP_NAME_DETACHED,
-  VERSION,
-} from '../shared/constants';
+import { GROUP_NAME_DETACHED, VERSION } from '../shared/constants';
 import {
   Alignments,
   NodeSelection,
@@ -16,7 +12,7 @@ import {
 } from '../shared/interfaces';
 
 import { createFill } from './fill';
-import { appendElementsToGroup, isPartOfAttachedGroup } from './helper';
+import { appendElementsToGroup } from './helper';
 import { createLine } from './line';
 import { getPadding, createPaddingLine, removePaddingGroup } from './padding';
 import { drawSpacing, getSpacing, setSpacing } from './spacing';
