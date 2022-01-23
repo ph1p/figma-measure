@@ -3,7 +3,7 @@ import React, { FunctionComponent, useMemo } from 'react';
 import styled from 'styled-components';
 
 import EventEmitter from '../../../../shared/EventEmitter';
-import { contains } from '../../../../shared/helpers';
+import { overlaps } from '../../../../shared/helpers';
 import { Alignments, TooltipPositions } from '../../../../shared/interfaces';
 import { useStore } from '../../../../store';
 
@@ -52,7 +52,7 @@ const Viewer: FunctionComponent = observer(() => {
   const showSpacing = useMemo(() => {
     let show = false;
     if (store.selection.length === 2) {
-      if (!contains(store.selection[0], store.selection[1])) {
+      if (!overlaps(store.selection[0], store.selection[1])) {
         show = true;
       }
     }

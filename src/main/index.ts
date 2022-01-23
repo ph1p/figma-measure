@@ -22,23 +22,7 @@ import { setTooltip } from './tooltip';
 let changeInterval;
 let previousSelection;
 
-// const NODE_COUPLING_DISABLED = false;
-
-// enum MeasurementTypes {
-//   LINE,
-//   FILL,
-//   SPACING,
-//   PADDING,
-//   TOOLTIP,
-// }
-
-// const measurementNodes = [{
-//   id: '3213:1231',
-//   type: MeasurementTypes.LINE,
-//   settings: {
-
-//   }
-// }]
+figma.skipInvisibleInstanceChildren = true;
 
 figma.showUI(__html__, {
   width: 285,
@@ -76,6 +60,8 @@ async function getSelectionArray(): Promise<NodeSelection[]> {
       type: node.type,
       x: node.x,
       y: node.y,
+      x2: node.x + node.width - node.height,
+      y2: node.x + node.height - node.width,
       width: node.width,
       height: node.height,
       padding: getPadding(node),

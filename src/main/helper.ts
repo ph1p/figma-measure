@@ -8,7 +8,7 @@ export const isPartOfAttachedGroup = (node: SceneNode) => {
   const parent = node.parent;
   if (!parent || parent.type === 'PAGE' || parent.type === 'DOCUMENT') {
     return false;
-  } else if (parent.name === GROUP_NAME_ATTACHED && Boolean(parent.children)) {
+  } else if (parent.name === GROUP_NAME_ATTACHED && parent.type === 'GROUP') {
     return true;
   } else {
     return isPartOfAttachedGroup(parent as SceneNode);
@@ -17,10 +17,12 @@ export const isPartOfAttachedGroup = (node: SceneNode) => {
 export const getClosestAttachedGroup = (node: SceneNode) => {
   const parent = getNearestParentNode(node);
 
-  for (const child of parent.children) {
-    if (child.name === GROUP_NAME_ATTACHED && Boolean(parent.children)) {
-      return child;
-    }
+  const foundGroup = parent.findChild(
+    (n) => n.type === 'GROUP' && n.name === GROUP_NAME_ATTACHED
+  );
+
+  if (foundGroup) {
+    return foundGroup;
   }
 
   return null;
@@ -33,23 +35,19 @@ export const appendElementsToGroup = (
 ) => {
   if (nodes.length > 0) {
     const parent = getNearestParentNode(node);
-    let existingGroup = null;
     let children = [];
 
-    for (const child of parent.children) {
-      if (child.name === name && Boolean(parent.children)) {
-        existingGroup = child;
-        children = child.children;
-        break;
-      }
+    const foundGroup = parent.findChild(
+      (n) => n.type === 'GROUP' && n.name === GROUP_NAME_ATTACHED
+    );
+
+    if (foundGroup) {
+      children = foundGroup.children;
     }
 
     const detachedGroup = figma.group([...nodes, ...children], parent);
     detachedGroup.name = name;
     detachedGroup.expanded = false;
-    if (existingGroup) {
-      // existingGroup.children = [];
-    }
   }
 };
 

@@ -5,11 +5,18 @@ export const toFixed = (number: string | number, decimalPlaces: number) => {
     : number.toFixed(decimalPlaces).replace(/\.?0+$/, '');
 };
 
+export const overlaps = (node1, node2) => {
+	if (node1.x >= node2.x2 || node2.x >= node1.x2) return false;
+	if (node1.y >= node2.y2 || node2.y >= node1.y2) return false;
+
+	return true;
+}
+
 export const contains = (node1, node2) => {
   let x1 = node1.x;
   let y1 = node1.y;
-  let x2 = node1.x;
-  let y2 = node1.y;
+  let x2 = node1.x2;
+  let y2 = node1.y2;
 
   if (node1.absoluteTransform) {
     x1 = node1.absoluteTransform[0][2];
