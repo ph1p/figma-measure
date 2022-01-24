@@ -19,14 +19,17 @@ export const removePaddingGroup = (currentNode, direction) => {
 
   if (group) {
     for (const node of group.children) {
-      if (!node.getPluginData('padding-parent')) {
+      if ((node && !node.getPluginData('padding-parent')) || !node) {
         continue;
       }
 
       try {
-        const paddingGroup = JSON.parse(node.getPluginData('padding-parent'));
+        const paddingGroup = node
+          ? JSON.parse(node.getPluginData('padding-parent'))
+          : null;
 
         if (
+          paddingGroup &&
           paddingGroup.parentId === currentNode.id &&
           paddingGroup.direction === direction
         ) {
@@ -41,7 +44,7 @@ export const removePaddingGroup = (currentNode, direction) => {
 };
 
 export const getPadding = (node: SceneNode) => {
-  return JSON.parse(node.getPluginData('padding') || '{}');
+  return node ? JSON.parse(node.getPluginData('padding') || '{}') : {};
 };
 
 EventEmitter.on('remove padding', async ({ direction }) => {
@@ -85,7 +88,7 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
         direction,
         detached: state.detached,
         strokeCap: state.strokeCap,
-        node: nodeData.node,
+        currentNode: nodeData.node,
         parent: figma.getNodeById(nodeData.parentNode.id),
       });
 
@@ -127,7 +130,7 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
             direction,
             detached: state.detached,
             strokeCap: state.strokeCap,
-            node: nodeData.node,
+            currentNode: nodeData.node,
             parent: figma.getNodeById(parentId),
           });
 
@@ -158,16 +161,18 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
 });
 
 const contains = (node1, node2) => {
-  const x1 = node1.absoluteTransform[0][2];
-  const y1 = node1.absoluteTransform[1][2];
-  const x2 = node2.absoluteTransform[0][2];
-  const y2 = node2.absoluteTransform[1][2];
+  const x1 = node1.absoluteRenderBounds.x;
+  const y1 = node1.absoluteRenderBounds.y;
+  const x2 = node2.absoluteRenderBounds.x;
+  const y2 = node2.absoluteRenderBounds.y;
 
   return !(
     x2 < x1 ||
     y2 < y1 ||
-    x2 + node2.width > x1 + node1.width ||
-    y2 + node2.height > y1 + node1.height
+    x2 + node2.absoluteRenderBounds.width >
+      x1 + node1.absoluteRenderBounds.width ||
+    y2 + node2.absoluteRenderBounds.height >
+      y1 + node1.absoluteRenderBounds.height
   );
 };
 
