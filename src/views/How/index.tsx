@@ -80,7 +80,7 @@ const Home: FunctionComponent = observer(() => {
         <Card
           className="fill"
           title="How fills work"
-          link="https://github.com/ph1p/figma-measure/blob/master/docs/fill.md"
+          link="https://github.com/ph1p/figma-measure/blob/master/docs/fills.md"
         >
           <FillsImage />
         </Card>
