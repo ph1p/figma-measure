@@ -1,5 +1,23 @@
+## <small>3.2.1 (2022-01-24)</small>
+
+* fix(fills): handle different fill types ([ee66363](https://github.com/ph1p/figma-measure/commit/ee66363))
+* fix(group): add correct parameter to condition ([a762141](https://github.com/ph1p/figma-measure/commit/a762141))
+* fix(group/tooltip): filter text nodes with no text and fix bug in grouping ([2c7565a](https://github.com/ph1p/figma-measure/commit/2c7565a))
+* fix(grouping): detect auto layout ([e94bc4a](https://github.com/ph1p/figma-measure/commit/e94bc4a))
+* fix(how): make link clickable again ([e172dea](https://github.com/ph1p/figma-measure/commit/e172dea))
+* fix(padding): correct wrong parameter naming ([711874b](https://github.com/ph1p/figma-measure/commit/711874b))
+* fix(padding): remove iteration over string ([6f6ea67](https://github.com/ph1p/figma-measure/commit/6f6ea67))
+* fix(padding/spacing): now paddings can e removed again ([2f209bb](https://github.com/ph1p/figma-measure/commit/2f209bb))
+* feat(color): add black to the color palette and update docs ([dfca09f](https://github.com/ph1p/figma-measure/commit/dfca09f))
+* feat(rotation): allow rotation of elements when measure spacing and padding ([f0a1bc5](https://github.com/ph1p/figma-measure/commit/f0a1bc5))
+* chore(faq): update faq page ([b38b716](https://github.com/ph1p/figma-measure/commit/b38b716))
+* perf(loops): update document iteration and fix a small bug ([e0844a4](https://github.com/ph1p/figma-measure/commit/e0844a4))
+
+
+
 ## 3.2.0 (2022-01-23)
 
+* 3.2.0 ([bdc3cb2](https://github.com/ph1p/figma-measure/commit/bdc3cb2))
 * refactor: fix lint errors and rename build folder ([86f117b](https://github.com/ph1p/figma-measure/commit/86f117b))
 * refactor: move methods to main helpers ([81851c7](https://github.com/ph1p/figma-measure/commit/81851c7))
 * refactor: remove recursive call and update faq ([9f5bd1d](https://github.com/ph1p/figma-measure/commit/9f5bd1d))
