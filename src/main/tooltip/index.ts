@@ -64,7 +64,10 @@ function getTooltipFrame(node): FrameNode {
   return tooltipFrame;
 }
 
-export async function setTooltip(options: SetTooltipOptions, specificNode = null) {
+export async function setTooltip(
+  options: SetTooltipOptions,
+  specificNode = null
+) {
   const data = {
     vertical: undefined,
     horizontal: undefined,
@@ -89,6 +92,11 @@ export async function setTooltip(options: SetTooltipOptions, specificNode = null
 
   if (figma.currentPage.selection.length === 1 || specificNode) {
     const node: SceneNode = specificNode || figma.currentPage.selection[0];
+
+    if (node.type === 'TEXT' && !node.characters.length) {
+      figma.notify('Could not add tooltip to empty text node');
+      return;
+    }
 
     if (node.type === 'BOOLEAN_OPERATION' || node.type === 'SLICE') {
       figma.notify('This type of element is not supported');

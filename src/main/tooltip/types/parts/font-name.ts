@@ -33,10 +33,13 @@ export default async function fontName(node, parent, showFontSize) {
     fontData.forEach((font, i) => {
       let text = `${font.family}\n`;
       text += `${font.style.join(', ')}`;
-      if (showFontSize) {
+
+
+      if (showFontSize && font.fontSize) {
         text += `\nSizes: ${
-          toFixed(+font.fontSize, 2) ||
-          font.fontSize.map((f) => toFixed(f, 2)).join(', ')
+          !font.fontSize.length
+            ? toFixed(+font.fontSize, 2)
+            : font.fontSize.map((f) => toFixed(+f, 2)).join(', ')
         }`;
       }
       text += `${i === fontData.length - 1 ? '' : '\n'}`;

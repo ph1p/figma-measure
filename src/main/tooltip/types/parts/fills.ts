@@ -112,15 +112,8 @@ export default async function fills(
   } else {
     if (node.fillStyleId) {
       fills = getFillsByFillStyleId(node.fillStyleId);
-    }
-
-    if (!fills && node?.fills !== figma.mixed) {
-      const fillsAvailable =
-        typeof node.fills !== 'undefined'
-          ? node.fills.some((f) => f.type !== 'IMAGE')
-          : false;
-
-      if (fillsAvailable) {
+    } else {
+      if (!fills && node?.fills !== figma.mixed) {
         fills = node.fills;
       }
     }
