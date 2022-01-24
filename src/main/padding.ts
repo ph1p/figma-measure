@@ -76,22 +76,22 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
 
   const nodeData = getNodeAndParentNode(currentNode);
 
+  const paddingLines = [];
+
   if (nodeData && nodeData.node && nodeData.parentNode) {
     if (state.detached) {
-      appendElementsToGroup(
-        currentNode,
-        [
-          createPaddingLine({
-            ...settings,
-            direction,
-            detached: state.detached,
-            strokeCap: state.strokeCap,
-            node: nodeData.node,
-            parent: figma.getNodeById(nodeData.parentNode.id),
-          }),
-        ],
-        GROUP_NAME_DETACHED
-      );
+      const paddingLine = createPaddingLine({
+        ...settings,
+        direction,
+        detached: state.detached,
+        strokeCap: state.strokeCap,
+        node: nodeData.node,
+        parent: figma.getNodeById(nodeData.parentNode.id),
+      });
+
+      if (paddingLine) {
+        paddingLines.push(paddingLine);
+      }
     } else {
       // Padding
       let pluginDataPadding = getPadding(nodeData.node);
@@ -120,24 +120,41 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
         pluginDataPadding = getPadding(nodeData.node);
 
         if (pluginDataPadding[direction]) {
-          for (const parentId of pluginDataPadding[direction]) {
-            appendElementsToGroup(currentNode, [
-              createPaddingLine({
-                ...settings,
-                direction,
-                detached: state.detached,
-                strokeCap: state.strokeCap,
-                node: nodeData.node,
-                parent: figma.getNodeById(parentId),
-              }),
-            ]);
+          const parentId = pluginDataPadding[direction];
+
+          const paddingLine = createPaddingLine({
+            ...settings,
+            direction,
+            detached: state.detached,
+            strokeCap: state.strokeCap,
+            node: nodeData.node,
+            parent: figma.getNodeById(parentId),
+          });
+
+          if (paddingLine) {
+            paddingLines.push(paddingLine);
+          } else {
+            delete pluginDataPadding[direction];
+
+            nodeData.node.setPluginData(
+              'padding',
+              JSON.stringify(pluginDataPadding)
+            );
           }
         }
       }
     }
   }
 
-  sendSelection();
+  if (paddingLines.length > 0) {
+    if (state.detached) {
+      appendElementsToGroup(currentNode, paddingLines, GROUP_NAME_DETACHED);
+    } else {
+      appendElementsToGroup(currentNode, paddingLines);
+    }
+
+    sendSelection();
+  }
 });
 
 const contains = (node1, node2) => {
@@ -292,6 +309,12 @@ export function createPaddingLine({
   }
 
   const widthOrHeight = Math.abs(distance);
+  if (widthOrHeight <= 0.01) {
+    figma.notify('Cannot measure padding, because width or height is zero');
+    group.remove();
+    return null;
+  }
+
   const line = figma.createVector();
   line.name = 'out';
   line.strokes = [].concat(mainColor);

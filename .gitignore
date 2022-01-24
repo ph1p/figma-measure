@@ -1,5 +1,6 @@
 figma-measure/
 Figma Measure/
+Measure/
 node_modules
 *.zip
 .yarn/*

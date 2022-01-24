@@ -4,7 +4,7 @@
   "description": "",
   "main": "code.js",
   "scripts": {
-    "build": "webpack --mode=production && zip -r -X  Figma-Measure.zip ./Figma-Measure/ && rm ./Figma-Measure/ui.js*",
+    "build": "webpack --mode=production && zip -r -X  Measure.zip ./Measure/ && rm ./Measure/ui.js*",
     "dev": "DEBUG=* webpack --watch",
     "version": "conventional-changelog -p karma -i CHANGELOG.md -s -r 0 && git add .",
     "lint": "eslint 'src/*/**/*.{js,ts,tsx}' --fix"
@@ -36,7 +36,7 @@
     "webpack-cli": "^4.9.1"
   },
   "figmaPlugin": {
-    "name": "Figma Measure",
+    "name": "Measure",
     "id": "739918456607459153",
     "api": "1.0.0",
     "main": "code.js",
@@ -48,7 +48,7 @@
     "relaunchButtons": [
       {
         "command": "open",
-        "name": "Open Figma-Measure"
+        "name": "Open Measure"
       }
     ]
   },
