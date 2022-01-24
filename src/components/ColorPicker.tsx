@@ -55,9 +55,9 @@ const ColorsWrapper = styled.div`
   }
 
   &:hover {
-    width: 170px;
+    width: 196px;
     .active-color {
-      width: 170px;
+      width: 196px;
     }
     ${ColorItem} {
       opacity: 1;
@@ -76,6 +76,9 @@ const ColorsWrapper = styled.div`
       }
       &:nth-child(6) {
         transform: translate(139px, 0);
+      }
+      &:nth-child(7) {
+        transform: translate(165px, 0);
       }
     }
   }

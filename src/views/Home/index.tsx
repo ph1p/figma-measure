@@ -51,7 +51,7 @@ const Home: FunctionComponent = observer(() => {
       <ViewerContainer>
         {store.selection.length === 0 && (
           <ViewerOverlay>
-            <EmptyScreenImage />
+            <EmptyScreenImage color={store.color} />
             <span>
               select an element to
               <br />

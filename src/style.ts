@@ -3,6 +3,9 @@ import { createGlobalStyle } from 'styled-components';
 export const TOKENS = {
   colors: {
     solid: {
+      black: {
+        value: '#000000',
+      },
       red: {
         value: '#ef5533',
       },
@@ -23,6 +26,9 @@ export const TOKENS = {
       },
     },
     soft: {
+      black: {
+        value: '#CECECE',
+      },
       cerise: {
         value: '#dac0ce',
       },
@@ -43,6 +49,9 @@ export const TOKENS = {
       },
     },
     hover: {
+      black: {
+        value: '#F8F8F8',
+      },
       sun: {
         value: '#fdf8e8',
       },

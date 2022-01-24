@@ -1,6 +1,8 @@
 import React, { FunctionComponent } from 'react';
 
-export const EmptyScreenImage: FunctionComponent = () => (
+export const EmptyScreenImage: FunctionComponent<{ color: string }> = ({
+  color = '#1745E8',
+}) => (
   <svg
     width="65"
     height="57"
@@ -24,23 +26,16 @@ export const EmptyScreenImage: FunctionComponent = () => (
       width="58"
       height="39"
       transform="rotate(-180 61.5 42.5)"
-      stroke="#1745E8"
+      stroke={color}
     />
-    <rect x="0.5" y="0.5" width="6" height="6" fill="white" stroke="#1745E8" />
-    <rect x="58.5" y="0.5" width="6" height="6" fill="white" stroke="#1745E8" />
-    <rect x="0.5" y="39.5" width="6" height="6" fill="white" stroke="#1745E8" />
-    <rect
-      x="58.5"
-      y="39.5"
-      width="6"
-      height="6"
-      fill="white"
-      stroke="#1745E8"
-    />
+    <rect x="0.5" y="0.5" width="6" height="6" fill="white" stroke={color} />
+    <rect x="58.5" y="0.5" width="6" height="6" fill="white" stroke={color} />
+    <rect x="0.5" y="39.5" width="6" height="6" fill="white" stroke={color} />
+    <rect x="58.5" y="39.5" width="6" height="6" fill="white" stroke={color} />
     <g filter="url(#filter0_d_3079_24876)">
       <path
         d="M28.6462 35.7384C28.5614 35.3335 28.9949 35.0185 29.3539 35.2242L43.658 43.4221C44.022 43.6307 43.9615 44.1731 43.5606 44.2964L36.618 46.432C36.5105 46.4651 36.418 46.5349 36.3568 46.6292L32.8822 51.9817C32.6491 52.3407 32.0983 52.2377 32.0107 51.8188L28.6462 35.7384Z"
-        fill="#1745E8"
+        fill={color}
       />
       <path
         d="M32.4899 51.6677L29.1449 35.6808L43.3684 43.8324L36.471 45.9541C36.2514 46.0217 36.0625 46.1643 35.9374 46.357L32.4899 51.6677Z"
@@ -90,8 +85,8 @@ export const EmptyScreenImage: FunctionComponent = () => (
         y2="63.2424"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="#1745E8" />
-        <stop offset="1" stop-color="#1745E8" stop-opacity="0" />
+        <stop stop-color={color} />
+        <stop offset="1" stop-color={color} stop-opacity="0" />
       </linearGradient>
     </defs>
   </svg>

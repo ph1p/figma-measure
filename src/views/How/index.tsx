@@ -3,6 +3,7 @@ import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
 import { DetachmentImage } from './components/DetachmentImage';
+import { FillsImage } from './components/FillsImage';
 import { LinesImage } from './components/LinesImage';
 import { PaddingImage } from './components/PaddingImage';
 import { SpacingImage } from './components/SpacingImage';
@@ -77,6 +78,13 @@ const Home: FunctionComponent = observer(() => {
           <SpacingImage />
         </Card>
         <Card
+          className="fill"
+          title="How fills work"
+          link="https://github.com/ph1p/figma-measure/blob/master/docs/fill.md"
+        >
+          <FillsImage />
+        </Card>
+        <Card
           className="detach"
           title="How detachment works"
           link="https://github.com/ph1p/figma-measure/blob/master/docs/detachment.md"
@@ -110,7 +118,7 @@ const CardWrapper = styled.div`
   border-radius: 8px;
   background-color: #c4c4c4;
   display: grid;
-  grid-template-rows: 1fr 63px;
+  grid-template-rows: 1fr 55px;
   overflow: hidden;
   cursor: pointer;
 
@@ -170,6 +178,17 @@ const CardWrapper = styled.div`
   }
   &.detach {
     background-color: #ffc9c9;
+    footer {
+      border-top: 1px solid rgb(0 0 0 / 6%);
+      background-color: rgb(0 0 0 / 6%);
+      color: #000;
+      a {
+        color: rgba(0 0 0 / 50%);
+      }
+    }
+  }
+  &.fill {
+    background-color: #D6D6D6;
     footer {
       border-top: 1px solid rgb(0 0 0 / 6%);
       background-color: rgb(0 0 0 / 6%);

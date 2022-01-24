@@ -1,6 +1,6 @@
 # Figma Measure
 
-![](./assets/header.png)
+![header](https://user-images.githubusercontent.com/15351728/150770119-553f95d2-ce23-43ee-9c7c-c2dfb1b0c5ee.png)
 
 A plugin to add measurement lines to figma.
 
@@ -8,8 +8,7 @@ You can find it here: https://www.figma.com/community/plugin/739918456607459153/
 
 ### Preview
 
-![measure-demo](https://user-images.githubusercontent.com/15351728/130680299-b5897b27-2451-41b9-b618-572b1a2887d6.gif)
-
+You can find some videos inside the `./docs` folder.
 ### How to use?
 
 - Open Figma
@@ -49,6 +48,5 @@ npm run dev
 - Open figma
 - Go to **Plugins**
 - Click the "+" next to **Development**
-- Choose the manifest.json inside `figma-measure/Figma Measure`
+- Choose the manifest.json inside `figma-measure/Figma-Measure`
 - Ready to develop
-
