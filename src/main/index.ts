@@ -55,13 +55,16 @@ async function getSelectionArray(): Promise<NodeSelection[]> {
 
     const spacings = state.detached ? 0 : Object.keys(getSpacing(node)).length;
 
+    const x = node.x;
+    const y = node.y;
+
     return {
       id: node.id,
       type: node.type,
-      x: node.x,
-      y: node.y,
-      x2: node.x + node.width - node.height,
-      y2: node.x + node.height - node.width,
+      x: x,
+      y: y,
+      x2: x + node.width,
+      y2: y + node.height,
       width: node.width,
       height: node.height,
       padding: getPadding(node),
@@ -112,7 +115,7 @@ figma.on('selectionchange', () => {
           };
 
           previousSelection = currentSelectionAsJSONString();
-          await setMeasurements({ store });
+          await setMeasurements(store);
         }
       }, 1000);
     }
@@ -130,36 +133,11 @@ EventEmitter.on('resize', ({ width, height }) =>
 
 EventEmitter.answer('current selection', async () => getSelectionArray());
 
-EventEmitter.on(
-  'set measurements',
-  async ({ reload, data }: { reload: boolean; data: ExchangeStoreValues }) => {
-    setMeasurements({
-      store: reload
-        ? {
-            labelsOutside: data.labelsOutside,
-            labels: data.labels,
-            color: data.color,
-            fill: data.fill,
-            opacity: data.opacity,
-            strokeCap: data.strokeCap,
-            strokeOffset: data.strokeOffset,
-            tooltipOffset: data.tooltipOffset,
-            tooltip: data.tooltip,
-            labelPattern: data.labelPattern,
-          }
-        : data,
-      shouldIncludeGroups: reload,
-    });
-  }
+EventEmitter.on('set measurements', async (store: ExchangeStoreValues) =>
+  setMeasurements(store)
 );
 
-const setMeasurements = async ({
-  store,
-  nodes,
-}: {
-  store?: ExchangeStoreValues;
-  nodes?: readonly SceneNode[];
-}) => {
+const setMeasurements = async (store?: ExchangeStoreValues) => {
   const state = await getState();
 
   let data: PluginNodeData = null;
@@ -168,7 +146,7 @@ const setMeasurements = async ({
     ...store,
   };
 
-  for (const node of nodes || figma.currentPage.selection) {
+  for (const node of figma.currentPage.selection) {
     let surrounding: SurroundingSettings = store.surrounding;
 
     if (!state.detached) {

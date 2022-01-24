@@ -52,7 +52,10 @@ const Viewer: FunctionComponent = observer(() => {
   const showSpacing = useMemo(() => {
     let show = false;
     if (store.selection.length === 2) {
-      if (!overlaps(store.selection[0], store.selection[1])) {
+      if (
+        !overlaps(store.selection[0], store.selection[1]) ||
+        !overlaps(store.selection[1], store.selection[0])
+      ) {
         show = true;
       }
     }
@@ -65,16 +68,22 @@ const Viewer: FunctionComponent = observer(() => {
   }, [store.selection, hasSpacing]);
 
   const addPadding = (direction) => {
-    EventEmitter.emit('add padding', {
-      direction,
-      settings: {
-        color: store.color,
-        labels: store.labels,
-        strokeOffset: store.strokeOffset,
-        labelsOutside: store.labelsOutside,
-        labelPattern: store.labelPattern,
-      },
-    });
+    if (store.surrounding[`${direction.toLowerCase()}Padding`]) {
+      EventEmitter.emit('remove padding', {
+        direction,
+      });
+    } else {
+      EventEmitter.emit('add padding', {
+        direction,
+        settings: {
+          color: store.color,
+          labels: store.labels,
+          strokeOffset: store.strokeOffset,
+          labelsOutside: store.labelsOutside,
+          labelPattern: store.labelPattern,
+        },
+      });
+    }
   };
 
   return (

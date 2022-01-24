@@ -1,13 +1,12 @@
 import { GROUP_NAME_DETACHED } from '../shared';
 import EventEmitter from '../shared/EventEmitter';
-import { contains, findAndReplaceNumberPattern } from '../shared/helpers';
+import { findAndReplaceNumberPattern } from '../shared/helpers';
 import { Alignments, ExchangeStoreValues } from '../shared/interfaces';
 
 import {
   appendElementsToGroup,
   getClosestAttachedGroup,
   getColor,
-  getNearestParentNode,
 } from './helper';
 import { createLabel, createStandardCap } from './line';
 import { distanceBetweenTwoPoints } from './spacing';
@@ -44,6 +43,32 @@ export const removePaddingGroup = (currentNode, direction) => {
 export const getPadding = (node: SceneNode) => {
   return JSON.parse(node.getPluginData('padding') || '{}');
 };
+
+EventEmitter.on('remove padding', async ({ direction }) => {
+  if (figma.currentPage.selection.length === 1) {
+    const currentNode = figma.currentPage.selection[0];
+
+    if (currentNode) {
+      const pluginDataPadding = getPadding(currentNode);
+
+      if (pluginDataPadding[direction]) {
+        try {
+          removePaddingGroup(currentNode, direction);
+
+          delete pluginDataPadding[direction];
+
+          currentNode.setPluginData(
+            'padding',
+            JSON.stringify(pluginDataPadding)
+          );
+          // eslint-disable-next-line no-empty
+        } catch {}
+      }
+    }
+  }
+
+  sendSelection();
+});
 
 EventEmitter.on('add padding', async ({ direction, settings }) => {
   const state = await getState();
@@ -115,6 +140,20 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
   sendSelection();
 });
 
+const contains = (node1, node2) => {
+  const x1 = node1.absoluteTransform[0][2];
+  const y1 = node1.absoluteTransform[1][2];
+  const x2 = node2.absoluteTransform[0][2];
+  const y2 = node2.absoluteTransform[1][2];
+
+  return !(
+    x2 < x1 ||
+    y2 < y1 ||
+    x2 + node2.width > x1 + node1.width ||
+    y2 + node2.height > y1 + node1.height
+  );
+};
+
 const getNodeAndParentNode = (
   node?: SceneNode,
   parentNode?: SceneNode
@@ -123,7 +162,7 @@ const getNodeAndParentNode = (
 
   if (figma.currentPage.selection.length === 1 && !parentNode) {
     if (currentNode.parent && currentNode.parent.type !== 'PAGE') {
-      parentNode = getNearestParentNode(currentNode);
+      parentNode = currentNode.parent as SceneNode;
     } else {
       figma.notify('No parent element found');
       return null;
@@ -155,7 +194,7 @@ const getNodeAndParentNode = (
   }
 
   return {
-    node: currentNode,
+    node: currentNode as SceneNode,
     parentNode,
   };
 };

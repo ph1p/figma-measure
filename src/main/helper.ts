@@ -146,7 +146,7 @@ export const createTooltipTextNode = ({ fontColor, fontSize }) => {
 };
 
 // thanks to https://github.com/figma-plugin-helper-functions/figma-plugin-helpers/blob/master/src/helpers/isPartOfInstance.ts
-export default function isPartOfInstance(node: SceneNode): boolean {
+export default function isPartOfInstance(node: SceneNode | BaseNode): boolean {
   const parent = node.parent;
   if (parent.type === 'INSTANCE') {
     return true;

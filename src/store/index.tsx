@@ -189,11 +189,11 @@ class RootStore {
     this.selection = selection;
   }
 
-  sendMeasurements(reload = false) {
+  sendMeasurements() {
     if (this.selection.length > 0) {
-      EventEmitter.emit('set measurements', {
-        reload,
-        data: toJS({
+      EventEmitter.emit(
+        'set measurements',
+        toJS({
           labelsOutside: this.labelsOutside,
           labels: this.labels,
           color: this.color,
@@ -206,8 +206,8 @@ class RootStore {
           tooltip: toJS(this.tooltip),
           labelPattern: this.labelPattern,
           detached: this.detached,
-        }),
-      });
+        })
+      );
     }
 
     if (this.detached) {

@@ -66,7 +66,7 @@ const Home: FunctionComponent = observer(() => {
           <Refresh
             title="Reload measurements"
             active={store.selection.length > 0}
-            onClick={() => store.sendMeasurements(true)}
+            onClick={() => store.sendMeasurements()}
           >
             <RefreshIcon />
           </Refresh>
