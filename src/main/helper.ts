@@ -38,7 +38,7 @@ export const appendElementsToGroup = (
     let children = [];
 
     const foundGroup = parent.findChild(
-      (n) => n.type === 'GROUP' && n.name === GROUP_NAME_ATTACHED
+      (n) => n.type === 'GROUP' && n.name === name
     );
 
     if (foundGroup) {
