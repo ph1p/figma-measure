@@ -58,12 +58,12 @@ export const distanceBetweenTwoPoints = (x1, y1, x2, y2) =>
   Math.floor(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)));
 
 const getShapeValues = (shape: SceneNode) => {
-  const transformPosition = shape.absoluteTransform;
-  const x = transformPosition[0][2];
-  const y = transformPosition[1][2];
+  const absoluteRenderBounds = (shape as any).absoluteRenderBounds;
+  const x = absoluteRenderBounds.x;
+  const y = absoluteRenderBounds.y;
 
-  const w = shape.width;
-  const h = shape.height;
+  const w = absoluteRenderBounds.width;
+  const h = absoluteRenderBounds.height;
 
   const cx = x + w / 2;
   const cy = y + h / 2;
@@ -89,8 +89,11 @@ export const drawSpacing = async (
     return;
   }
 
-  if (rects.some((rect) => Math.abs(Math.round(rect.rotation)) !== 0)) {
-    figma.notify('Rotated elements are currently not supported.');
+  if (
+    !(rects[0] as any).absoluteRenderBounds ||
+    !(rects[1] as any).absoluteRenderBounds
+  ) {
+    figma.notify('Element is no supported');
     return;
   }
 

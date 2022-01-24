@@ -216,6 +216,24 @@ const getNodeAndParentNode = (
   };
 };
 
+export const isValidType = (type) =>
+  [
+    'FRAME',
+    'GROUP',
+    'SLICE',
+    'RECTANGLE',
+    'LINE',
+    'ELLIPSE',
+    'POLYGON',
+    'STAR',
+    'VECTOR',
+    'TEXT',
+    'COMPONENT_SET',
+    'COMPONENT',
+    'INSTANCE',
+    'BOOLEAN_OPERATION',
+  ].includes(type);
+
 export function createPaddingLine({
   direction,
   labelPattern,
@@ -254,10 +272,10 @@ export function createPaddingLine({
   const { node, parentNode } = nodeData;
 
   if (
-    Math.round(node.rotation) !== 0 ||
-    Math.round(parentNode.rotation) !== 0
+    !(node as any).absoluteRenderBounds ||
+    !(parentNode as any).absoluteRenderBounds
   ) {
-    figma.notify('Rotated elements are currently not supported');
+    figma.notify('Element is no supported');
     return;
   }
 
@@ -270,11 +288,17 @@ export function createPaddingLine({
 
   let distance = 0;
 
-  group.x = node.absoluteTransform[0][2];
-  group.y = node.absoluteTransform[1][2];
+  group.x = (node as any).absoluteRenderBounds.x;
+  group.y = (node as any).absoluteRenderBounds.y;
 
-  const parentNodeX = parentNode.absoluteTransform[0][2];
-  const parentNodeY = parentNode.absoluteTransform[1][2];
+  const nodeWidth = (node as any).absoluteRenderBounds.width;
+  const nodeHeight = (node as any).absoluteRenderBounds.height;
+
+  const parentNodeX = (parentNode as any).absoluteRenderBounds.x;
+  const parentNodeY = (parentNode as any).absoluteRenderBounds.y;
+
+  const parentNodeWidth = (parentNode as any).absoluteRenderBounds.width;
+  const parentNodeHeight = (parentNode as any).absoluteRenderBounds.height;
 
   switch (direction) {
     case Alignments.LEFT:
@@ -282,12 +306,12 @@ export function createPaddingLine({
         distanceBetweenTwoPoints(group.x, group.y, parentNodeX, group.y) * -1;
       break;
     case Alignments.RIGHT:
-      group.x += node.width;
+      group.x += nodeWidth;
 
       distance = distanceBetweenTwoPoints(
         group.x,
         group.y,
-        parentNodeX + parentNode.width,
+        parentNodeX + parentNodeWidth,
         group.y
       );
       break;
@@ -297,13 +321,13 @@ export function createPaddingLine({
 
       break;
     case Alignments.BOTTOM:
-      group.y += node.height;
+      group.y += nodeHeight;
 
       distance = distanceBetweenTwoPoints(
         group.x,
         group.y,
         group.x,
-        parentNodeY + parentNode.height
+        parentNodeY + parentNodeHeight
       );
       break;
   }
@@ -375,7 +399,7 @@ export function createPaddingLine({
   }
 
   if (IS_HORIZONTAL) {
-    group.y += node.height / 2;
+    group.y += nodeHeight / 2;
     if (direction === 'LEFT') {
       group.x += distance;
     }
@@ -391,7 +415,7 @@ export function createPaddingLine({
       labelFrame.y += group.height / 2;
     }
   } else {
-    group.x += node.width / 2;
+    group.x += nodeWidth / 2;
     if (direction === 'TOP') {
       group.y += distance;
     }
