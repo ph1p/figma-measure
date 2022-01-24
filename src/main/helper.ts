@@ -55,10 +55,10 @@ export const getNearestParentNode = (node: SceneNode) => {
   const parent = node.parent;
 
   if (
-    (parent.type === 'FRAME' ||
+    ((parent.type === 'FRAME' && parent.layoutMode === 'NONE') ||
       parent.type === 'PAGE' ||
-      (parent.type !== 'INSTANCE' && Boolean(parent.children))) &&
-    !isPartOfInstance(node)
+      parent.type === 'GROUP') &&
+    !isPartOfInstance(parent)
   ) {
     return parent;
   } else {
