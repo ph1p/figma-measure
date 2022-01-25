@@ -2,7 +2,11 @@ import { GROUP_NAME_DETACHED } from '../shared';
 import EventEmitter from '../shared/EventEmitter';
 import { findAndReplaceNumberPattern } from '../shared/helpers';
 
-import { appendElementsToGroup, getColor } from './helper';
+import {
+  appendElementsToGroup,
+  getColor,
+  getRenderBoundsOfRectangle,
+} from './helper';
 import { createLabel } from './line';
 import { getState } from './store';
 
@@ -58,7 +62,11 @@ export const distanceBetweenTwoPoints = (x1, y1, x2, y2) =>
   Math.floor(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)));
 
 const getShapeValues = (shape: SceneNode) => {
-  const absoluteRenderBounds = (shape as any).absoluteRenderBounds;
+  let absoluteRenderBounds = (shape as any).absoluteRenderBounds;
+  if (shape.type === 'TEXT' || shape.type === 'SHAPE_WITH_TEXT') {
+    absoluteRenderBounds = getRenderBoundsOfRectangle(shape);
+  }
+
   const x = absoluteRenderBounds.x;
   const y = absoluteRenderBounds.y;
 

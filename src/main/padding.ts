@@ -7,6 +7,7 @@ import {
   appendElementsToGroup,
   getClosestAttachedGroup,
   getColor,
+  getRenderBoundsOfRectangle,
 } from './helper';
 import { createLabel, createStandardCap } from './line';
 import { distanceBetweenTwoPoints } from './spacing';
@@ -161,18 +162,26 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
 });
 
 const contains = (node1, node2) => {
-  const x1 = node1.absoluteRenderBounds.x;
-  const y1 = node1.absoluteRenderBounds.y;
-  const x2 = node2.absoluteRenderBounds.x;
-  const y2 = node2.absoluteRenderBounds.y;
+  let node1Bounds = node1.absoluteRenderBounds;
+  let node2Bounds = node2.absoluteRenderBounds;
+
+  if (node1.type === 'TEXT' || node1.type === 'SHAPE_WITH_TEXT') {
+    node1Bounds = getRenderBoundsOfRectangle(node1);
+  }
+  if (node2.type === 'TEXT' || node2.type === 'SHAPE_WITH_TEXT') {
+    node2Bounds = getRenderBoundsOfRectangle(node2);
+  }
+
+  const x1 = node1Bounds.x;
+  const y1 = node1Bounds.y;
+  const x2 = node2Bounds.x;
+  const y2 = node2Bounds.y;
 
   return !(
     x2 < x1 ||
     y2 < y1 ||
-    x2 + node2.absoluteRenderBounds.width >
-      x1 + node1.absoluteRenderBounds.width ||
-    y2 + node2.absoluteRenderBounds.height >
-      y1 + node1.absoluteRenderBounds.height
+    x2 + node2Bounds.width > x1 + node1Bounds.width ||
+    y2 + node2Bounds.height > y1 + node1Bounds.height
   );
 };
 
@@ -293,17 +302,30 @@ export function createPaddingLine({
 
   let distance = 0;
 
-  group.x = (node as any).absoluteRenderBounds.x;
-  group.y = (node as any).absoluteRenderBounds.y;
+  let nodeBounds = (node as any).absoluteRenderBounds;
+  let parentNodeBounds = (parentNode as any).absoluteRenderBounds;
 
-  const nodeWidth = (node as any).absoluteRenderBounds.width;
-  const nodeHeight = (node as any).absoluteRenderBounds.height;
+  if (node.type === 'TEXT' || node.type === 'SHAPE_WITH_TEXT') {
+    nodeBounds = getRenderBoundsOfRectangle(node);
+  }
+  if (parentNode.type === 'TEXT' || parentNode.type === 'SHAPE_WITH_TEXT') {
+    parentNodeBounds = getRenderBoundsOfRectangle(parentNode);
+  }
 
-  const parentNodeX = (parentNode as any).absoluteRenderBounds.x;
-  const parentNodeY = (parentNode as any).absoluteRenderBounds.y;
+  const nodeX = nodeBounds.x;
+  const nodeY = nodeBounds.y;
 
-  const parentNodeWidth = (parentNode as any).absoluteRenderBounds.width;
-  const parentNodeHeight = (parentNode as any).absoluteRenderBounds.height;
+  const nodeWidth = nodeBounds.width;
+  const nodeHeight = nodeBounds.height;
+
+  const parentNodeX = parentNodeBounds.x;
+  const parentNodeY = parentNodeBounds.y;
+
+  const parentNodeWidth = parentNodeBounds.width;
+  const parentNodeHeight = parentNodeBounds.height;
+
+  group.x = nodeX;
+  group.y = nodeY;
 
   switch (direction) {
     case Alignments.LEFT:

@@ -51,6 +51,18 @@ export const appendElementsToGroup = (
   }
 };
 
+export const getRenderBoundsOfRectangle = (node) => {
+  let nodeBounds = null;
+
+  const dummyRect = figma.createRectangle();
+  dummyRect.relativeTransform = node.absoluteTransform;
+  dummyRect.resize(node.width, node.height);
+  nodeBounds = dummyRect.absoluteRenderBounds;
+  dummyRect.remove();
+
+  return nodeBounds;
+};
+
 export const getNearestParentNode = (node: SceneNode) => {
   const parent = node.parent;
 
