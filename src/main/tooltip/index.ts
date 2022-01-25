@@ -154,35 +154,40 @@ export async function setTooltip(
     }
 
     tooltipFrame.resize(contentFrame.width, contentFrame.height);
-
     // ----
-    let y = node.height / 2 - contentFrame.height / 2;
+    const nodeBounds = (node as any).absoluteRenderBounds;
+    tooltipFrame.x = nodeBounds.x;
+    tooltipFrame.y = nodeBounds.y;
 
-    switch (data.vertical) {
-      case TooltipPositions.TOP:
-        y = (contentFrame.height + data.offset) * -1;
-        break;
-      case TooltipPositions.BOTTOM:
-        y = node.height + data.offset;
-        break;
-    }
+    if (data.vertical) {
+      tooltipFrame.x -= contentFrame.width / 2 - nodeBounds.width / 2;
 
-    let x = node.width / 2 - contentFrame.width / 2;
+      switch (data.vertical) {
+        case TooltipPositions.TOP:
+          tooltipFrame.y += (contentFrame.height + data.offset) * -1;
+          break;
+        case TooltipPositions.BOTTOM:
+          tooltipFrame.y += nodeBounds.height + data.offset;
+          break;
+      }
+    } else {
+      tooltipFrame.y += nodeBounds.height / 2 - contentFrame.height / 2;
 
-    switch (data.horizontal) {
-      case TooltipPositions.LEFT:
-        x = (contentFrame.width + data.offset) * -1;
-        break;
-      case TooltipPositions.RIGHT:
-        x = node.width + data.offset;
-        break;
+      switch (data.horizontal) {
+        case TooltipPositions.LEFT:
+          tooltipFrame.x -= tooltipFrame.width + data.offset;
+          break;
+        case TooltipPositions.RIGHT:
+          tooltipFrame.x += nodeBounds.width + data.offset;
+          break;
+      }
     }
 
     // shadow
     tooltipFrame.effects = [].concat({
       offset: {
-        x: tooltipFrame.x,
-        y: tooltipFrame.y + 2,
+        x: 0,
+        y: 2,
       },
       visible: true,
       blendMode: 'NORMAL',
@@ -195,19 +200,6 @@ export async function setTooltip(
       },
       radius: 4,
     });
-
-    const transformPosition = node.absoluteTransform;
-
-    const xCos = transformPosition[0][0];
-    const xSin = transformPosition[0][1];
-
-    const yCos = transformPosition[1][0];
-    const ySin = transformPosition[1][1];
-
-    tooltipFrame.relativeTransform = [
-      [xCos, xSin, xCos * x + xSin * y + transformPosition[0][2]],
-      [yCos, ySin, yCos * x + ySin * y + transformPosition[1][2]],
-    ];
 
     return tooltipFrame;
   } else {
