@@ -15,7 +15,8 @@ export function createFill(
     node.type !== 'STICKY' &&
     node.type !== 'CONNECTOR' &&
     node.type !== 'STAMP' &&
-    node.type !== 'SHAPE_WITH_TEXT'
+    node.type !== 'SHAPE_WITH_TEXT' &&
+    node.type !== 'MEDIA'
   ) {
     let cloneNode: SceneNode;
 
@@ -40,6 +41,7 @@ export function createFill(
     cloneNode.strokes = [];
     cloneNode.opacity = 1;
     cloneNode.locked = false;
+    cloneNode.isMask = false;
 
     cloneNode.setPluginData('data', '');
     cloneNode.setPluginData('spacing', '');

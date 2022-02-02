@@ -1,7 +1,11 @@
 import './store';
 
 import EventEmitter from '../shared/EventEmitter';
-import { GROUP_NAME_DETACHED, VERSION } from '../shared/constants';
+import {
+  GROUP_NAME_ATTACHED,
+  GROUP_NAME_DETACHED,
+  VERSION,
+} from '../shared/constants';
 import {
   Alignments,
   NodeSelection,
@@ -41,6 +45,88 @@ export function getPluginData(node, name) {
 
   return JSON.parse(data);
 }
+
+const getAllMeasurementNodes = (node, pageId = '', measureData = []) => {
+  if (node.type === 'PAGE') {
+    pageId = node.id;
+  }
+
+  let type = null;
+  let data = {};
+
+  if (node.name === GROUP_NAME_DETACHED) {
+    type = 'GROUP_DETACHED';
+  }
+  if (node.name === GROUP_NAME_ATTACHED) {
+    type = 'GROUP_ATTACHED';
+  }
+  if (node.getPluginData('padding')) {
+    data = node.getPluginData('padding');
+    type = 'PADDING';
+  }
+  if (node.getPluginData('spacing')) {
+    data = node.getPluginData('spacing');
+    type = 'SPACING';
+  }
+  if (node.getPluginData('data')) {
+    data = node.getPluginData('data');
+    type = 'DATA';
+  }
+
+  if (type) {
+    measureData.push({
+      pageId,
+      data,
+      type,
+      id: node.id,
+      name: node.name,
+    });
+  }
+
+  if ('children' in node) {
+    for (const child of node.children) {
+      getAllMeasurementNodes(child, pageId, measureData);
+    }
+  }
+  return measureData;
+};
+
+EventEmitter.answer('file measurements', async () => {
+  return getAllMeasurementNodes(figma.root);
+});
+
+EventEmitter.answer('remove all measurements', async () => {
+  const measurements = getAllMeasurementNodes(figma.root);
+
+  for (const measurement of measurements) {
+    const node = figma.getNodeById(measurement.id);
+    if (!node) {
+      continue;
+    }
+    if (measurement.type.includes('GROUP_')) {
+      node.remove();
+    } else {
+      node.setPluginData('padding', '');
+      node.setPluginData('spacing', '');
+      node.setPluginData('data', '');
+    }
+  }
+
+  return true;
+});
+
+const goToPage = (id) => {
+  if (figma.getNodeById(id)) {
+    figma.currentPage = figma.getNodeById(id) as PageNode;
+  }
+};
+EventEmitter.on('focus node', (payload) => {
+  goToPage(payload.pageId);
+  const nodes = figma.currentPage.findOne((node) => node.id === payload.id);
+
+  figma.currentPage.selection = [nodes];
+  figma.viewport.scrollAndZoomIntoView([nodes]);
+});
 
 async function getSelectionArray(): Promise<NodeSelection[]> {
   const state = await getState();
@@ -366,7 +452,12 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
 
     if (state.detached) {
       if (connectedNodes.length > 0) {
-        appendElementsToGroup(node, connectedNodes, GROUP_NAME_DETACHED);
+        appendElementsToGroup({
+          node,
+          nodes: connectedNodes,
+          name: GROUP_NAME_DETACHED,
+          locked: state.lockDetachedGroup,
+        });
       }
     } else {
       node.setPluginData(
@@ -380,7 +471,11 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
       );
 
       if (connectedNodes.length > 0) {
-        appendElementsToGroup(node, connectedNodes);
+        appendElementsToGroup({
+          node,
+          nodes: connectedNodes,
+          locked: state.lockAttachedGroup,
+        });
       }
     }
   }

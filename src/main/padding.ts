@@ -152,9 +152,18 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
 
   if (paddingLines.length > 0) {
     if (state.detached) {
-      appendElementsToGroup(currentNode, paddingLines, GROUP_NAME_DETACHED);
+      appendElementsToGroup({
+        node: currentNode,
+        nodes: paddingLines,
+        name: GROUP_NAME_DETACHED,
+        locked: state.lockDetachedGroup,
+      });
     } else {
-      appendElementsToGroup(currentNode, paddingLines);
+      appendElementsToGroup({
+        node: currentNode,
+        nodes: paddingLines,
+        locked: state.lockAttachedGroup,
+      });
     }
 
     sendSelection();

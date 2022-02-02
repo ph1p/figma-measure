@@ -28,11 +28,17 @@ export const getClosestAttachedGroup = (node: SceneNode) => {
   return null;
 };
 
-export const appendElementsToGroup = (
-  node,
-  nodes: SceneNode[],
-  name = GROUP_NAME_ATTACHED
-) => {
+export const appendElementsToGroup = ({
+  node = null,
+  nodes = null,
+  name = GROUP_NAME_ATTACHED,
+  locked = true,
+}: {
+  node: SceneNode;
+  nodes: SceneNode[];
+  name?: string;
+  locked?: boolean;
+}) => {
   if (nodes.length > 0) {
     const parent = getNearestParentNode(node);
     let children = [];
@@ -45,9 +51,10 @@ export const appendElementsToGroup = (
       children = foundGroup.children;
     }
 
-    const detachedGroup = figma.group([...nodes, ...children], parent);
-    detachedGroup.name = name;
-    detachedGroup.expanded = false;
+    const group = figma.group([...nodes, ...children], parent);
+    group.name = name;
+    group.expanded = false;
+    group.locked = locked;
   }
 };
 

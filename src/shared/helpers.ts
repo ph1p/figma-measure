@@ -6,33 +6,10 @@ export const toFixed = (number: string | number, decimalPlaces: number) => {
 };
 
 export const overlaps = (node1, node2) => {
-	if (node1.x >= node2.x2 || node2.x >= node1.x2) return false;
-	if (node1.y >= node2.y2 || node2.y >= node1.y2) return false;
+  if (node1.x >= node2.x2 || node2.x >= node1.x2) return false;
+  if (node1.y >= node2.y2 || node2.y >= node1.y2) return false;
 
-	return true;
-}
-
-export const contains = (node1, node2) => {
-  let x1 = node1.x;
-  let y1 = node1.y;
-  let x2 = node1.x2;
-  let y2 = node1.y2;
-
-  if (node1.absoluteTransform) {
-    x1 = node1.absoluteTransform[0][2];
-    y1 = node1.absoluteTransform[1][2];
-  }
-  if (node2.absoluteTransform) {
-    x2 = node2.absoluteTransform[0][2];
-    y2 = node2.absoluteTransform[1][2];
-  }
-
-  return !(
-    x2 < x1 ||
-    y2 < y1 ||
-    x2 + node2.width > x1 + node1.width ||
-    y2 + node2.height > y1 + node1.height
-  );
+  return true;
 };
 
 export const findAndReplaceNumberPattern = (pattern: string, num: number) => {

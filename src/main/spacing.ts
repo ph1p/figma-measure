@@ -375,7 +375,12 @@ export const drawSpacing = async (
     spacingFrame.expanded = false;
     spacingFrame.clipsContent = false;
     spacingGroup.forEach((n) => spacingFrame.appendChild(n));
-    appendElementsToGroup(rects[0], [spacingFrame], GROUP_NAME_DETACHED);
+    appendElementsToGroup({
+      node: rects[0],
+      nodes: [spacingFrame],
+      name: GROUP_NAME_DETACHED,
+      locked: state.lockDetachedGroup,
+    });
   }
 
   if (!state.detached && spacingGroup.length > 0) {
@@ -405,6 +410,10 @@ export const drawSpacing = async (
       })
     );
 
-    appendElementsToGroup(rects[0], [group]);
+    appendElementsToGroup({
+      node: rects[0],
+      nodes: [group],
+      locked: state.lockAttachedGroup,
+    });
   }
 };

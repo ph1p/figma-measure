@@ -25,7 +25,7 @@ import {
 } from './style';
 import Home from './views/Home';
 import How from './views/How';
-import Tooltip from './views/Tooltip';
+import Settings from './views/Settings';
 
 import './ui.css';
 
@@ -122,7 +122,7 @@ const App: FunctionComponent = observer(() => {
               <CustomLink to="/">Measurement</CustomLink>
             </li>
             <li>
-              <CustomLink to="/tooltip">Tooltip</CustomLink>
+              <CustomLink to="/settings">Settings</CustomLink>
             </li>
             <li>
               <CustomLink to="/how">How?</CustomLink>
@@ -131,7 +131,7 @@ const App: FunctionComponent = observer(() => {
         </Navigation>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/tooltip" element={<Tooltip />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/How" element={<How />} />
         </Routes>
       </Main>
@@ -156,19 +156,21 @@ const Main = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
 `;
 
 const Navigation = styled.nav`
-  position: relative;
+  position: sticky;
+  top: 0px;
+  z-index: 30;
   overflow: hidden;
   height: 42px;
-  border-width: 0 0 1px;
-  border-color: #eee;
+  border-width: 0px 0px 1px;
+  border-color: rgb(238, 238, 238);
   border-style: solid;
   width: 100%;
-  padding: 0 12px;
+  padding: 0px 12px;
   font-size: 11px;
+  background: #fff;
   ul {
     display: flex;
     list-style: none;
