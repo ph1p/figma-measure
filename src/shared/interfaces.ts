@@ -65,6 +65,7 @@ export interface PluginNodeData {
   labelPattern: string;
   tooltip: TooltipSettings;
   detached?: boolean;
+  labelFontSize?: number;
 }
 
 export interface SurroundingSettings {

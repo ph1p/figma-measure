@@ -85,6 +85,10 @@ const App: FunctionComponent = observer(() => {
                   }
                 }
 
+                if (data?.labelFontSize) {
+                  store.setLabelFontSize(data?.labelFontSize, true);
+                }
+
                 if (Object.keys(data?.surrounding).length > 0) {
                   store.setSurrounding(data.surrounding, true);
                 } else {

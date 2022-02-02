@@ -70,8 +70,11 @@ class RootStore {
     name: true,
   };
 
-  setLabelFontSize(fontSize: number | string) {
+  setLabelFontSize(fontSize: number | string, disableSync = false) {
     this.labelFontSize = +fontSize;
+    if (+fontSize > 0 && !disableSync) {
+      this.sendMeasurements();
+    }
   }
 
   toggleLockDetachedGroup() {
