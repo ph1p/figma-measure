@@ -1,4 +1,7 @@
 export const toFixed = (number: string | number, decimalPlaces: number) => {
+  if (!number) {
+    return '0';
+  }
   number = parseFloat(number.toString());
   return !decimalPlaces
     ? number.toFixed(decimalPlaces)

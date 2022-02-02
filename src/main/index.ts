@@ -52,7 +52,8 @@ const getAllMeasurementNodes = (node, pageId = '', measureData = []) => {
   }
 
   let type = null;
-  let data = {};
+
+  const storedData = node.getPluginDataKeys();
 
   if (node.name === GROUP_NAME_DETACHED) {
     type = 'GROUP_DETACHED';
@@ -60,23 +61,23 @@ const getAllMeasurementNodes = (node, pageId = '', measureData = []) => {
   if (node.name === GROUP_NAME_ATTACHED) {
     type = 'GROUP_ATTACHED';
   }
-  if (node.getPluginData('padding')) {
-    data = node.getPluginData('padding');
+  if (storedData.includes('padding')) {
     type = 'PADDING';
   }
-  if (node.getPluginData('spacing')) {
-    data = node.getPluginData('spacing');
+  if (storedData.includes('spacing')) {
     type = 'SPACING';
   }
-  if (node.getPluginData('data')) {
-    data = node.getPluginData('data');
-    type = 'DATA';
+  if (storedData.includes('data')) {
+    const data = node.getPluginData('data');
+
+    if (data && data !== '{}') {
+      type = 'DATA';
+    }
   }
 
   if (type) {
     measureData.push({
       pageId,
-      data,
       type,
       id: node.id,
       name: node.name,
@@ -88,11 +89,14 @@ const getAllMeasurementNodes = (node, pageId = '', measureData = []) => {
       getAllMeasurementNodes(child, pageId, measureData);
     }
   }
+
   return measureData;
 };
 
 EventEmitter.answer('file measurements', async () => {
-  return getAllMeasurementNodes(figma.root);
+  const nodes = getAllMeasurementNodes(figma.root);
+  console.log(nodes);
+  return nodes;
 });
 
 EventEmitter.answer('remove all measurements', async () => {
@@ -103,12 +107,14 @@ EventEmitter.answer('remove all measurements', async () => {
     if (!node) {
       continue;
     }
+
     if (measurement.type.includes('GROUP_')) {
       node.remove();
     } else {
       node.setPluginData('padding', '');
       node.setPluginData('spacing', '');
-      node.setPluginData('data', '');
+      node.setPluginData('data', '{}');
+      node.setPluginData('parent', '');
     }
   }
 
@@ -120,12 +126,27 @@ const goToPage = (id) => {
     figma.currentPage = figma.getNodeById(id) as PageNode;
   }
 };
+
 EventEmitter.on('focus node', (payload) => {
   goToPage(payload.pageId);
-  const nodes = figma.currentPage.findOne((node) => node.id === payload.id);
+  const node = figma.currentPage.findOne((node) => node.id === payload.id);
 
-  figma.currentPage.selection = [nodes];
-  figma.viewport.scrollAndZoomIntoView([nodes]);
+  const padding = node.getPluginData('padding');
+  const spacing = node.getPluginData('spacing');
+  const toolData = node.getPluginData('data');
+
+  console.log(
+    node,
+    {
+      padding,
+      spacing,
+      toolData,
+    },
+    node.getPluginDataKeys()
+  );
+
+  figma.currentPage.selection = [node];
+  figma.viewport.scrollAndZoomIntoView([node]);
 });
 
 async function getSelectionArray(): Promise<NodeSelection[]> {
@@ -198,6 +219,7 @@ figma.on('selectionchange', () => {
             tooltipOffset: state.tooltipOffset,
             tooltip: state.tooltip,
             labelPattern: state.labelPattern,
+            labelFontSize: state.labelFontSize,
           };
 
           previousSelection = currentSelectionAsJSONString();

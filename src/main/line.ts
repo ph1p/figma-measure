@@ -8,11 +8,13 @@ export function createLabel({
   text,
   color,
   isVertical,
+  labelFontSize = 10,
 }: {
   baseNode?: SceneNode;
   text: string;
   color: unknown;
   isVertical?: boolean;
+  labelFontSize?: number;
 }) {
   const labelFrame = figma.createFrame();
   const label = figma.createText();
@@ -22,7 +24,7 @@ export function createLabel({
     family: 'Inter',
     style: 'Bold',
   };
-  label.fontSize = 10;
+  label.fontSize = labelFontSize;
   label.fills = [].concat(solidColor(255, 255, 255));
 
   labelFrame.appendChild(label);
@@ -148,6 +150,7 @@ export function createLine(options) {
     labels = true,
     labelsOutside = false,
     labelPattern = '',
+    labelFontSize = 10,
   }: LineParameterTypes = options;
 
   const LINE_OFFSET = strokeOffset * -1;
@@ -174,6 +177,7 @@ export function createLine(options) {
 
     if (labels) {
       labelFrame = createLabel({
+        labelFontSize,
         text: findAndReplaceNumberPattern(labelPattern, heightOrWidth),
         color: mainColor,
       });

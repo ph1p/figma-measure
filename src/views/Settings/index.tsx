@@ -284,8 +284,8 @@ const Settings: FunctionComponent = observer(() => {
         <Headline>Dangerzone</Headline>
         <DangerZone>
           <p>
-            This section lets you remove and find all measured nodes. This could
-            take a while in large files.
+            This section lets you remove or display all measured nodes. This
+            could take a while in large files.
           </p>
           <RemoveButton onClick={removeAllMeasurements}>
             Remove all measurements

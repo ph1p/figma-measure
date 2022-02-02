@@ -217,6 +217,7 @@ class RootStore {
           tooltip: toJS(this.tooltip),
           labelPattern: this.labelPattern,
           detached: this.detached,
+          labelFontSize: this.labelFontSize,
         })
       );
     }
