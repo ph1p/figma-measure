@@ -82,56 +82,54 @@ export const createStandardCap = ({
   width,
   mainColor,
 }) => {
-  const strokeCapWidth = 6 + line.strokeWeight;
-  if (strokeCapWidth >= 0.01) {
-    const firstMeasureLine = figma.createLine();
-    const secondMeasureLine = figma.createLine();
+  const firstMeasureLine = figma.createLine();
+  const secondMeasureLine = figma.createLine();
+  firstMeasureLine.strokeWeight = line.strokeWeight;
+  secondMeasureLine.strokeWeight = line.strokeWeight;
 
-    group.appendChild(firstMeasureLine);
-    group.appendChild(secondMeasureLine);
+  group.appendChild(firstMeasureLine);
+  group.appendChild(secondMeasureLine);
+  const strokeCapWidth = line.strokeWeight + 6;
 
-    firstMeasureLine.strokes = [].concat(mainColor);
-    secondMeasureLine.strokes = [].concat(mainColor);
-    firstMeasureLine.resize(strokeCapWidth, 0);
-    secondMeasureLine.resize(strokeCapWidth, 0);
+  firstMeasureLine.strokes = [].concat(mainColor);
+  secondMeasureLine.strokes = [].concat(mainColor);
+  firstMeasureLine.resize(strokeCapWidth, 0);
+  secondMeasureLine.resize(strokeCapWidth, 0);
 
-    if (!isHorizontal) {
-      firstMeasureLine.x =
-        group.width / 2 - strokeCapWidth / 2 - line.strokeWeight / 2;
-      firstMeasureLine.y += 1;
+  if (!isHorizontal) {
+    firstMeasureLine.x = line.x - strokeCapWidth / 2;
+    firstMeasureLine.y += firstMeasureLine.strokeWeight;
 
-      secondMeasureLine.x =
-        group.width / 2 - strokeCapWidth / 2 - line.strokeWeight / 2;
-      secondMeasureLine.y += height;
-    } else {
-      firstMeasureLine.rotation = 90;
-      firstMeasureLine.x += 1;
-      firstMeasureLine.y = line.y + strokeCapWidth / 2;
+    secondMeasureLine.x = line.x - strokeCapWidth / 2;
+    secondMeasureLine.y += height;
+  } else {
+    firstMeasureLine.rotation = 90;
+    firstMeasureLine.x += firstMeasureLine.strokeWeight;
+    firstMeasureLine.y = line.y + strokeCapWidth / 2;
 
-      secondMeasureLine.rotation = 90;
-      secondMeasureLine.x += width;
-      secondMeasureLine.y = line.y + strokeCapWidth / 2;
-    }
+    secondMeasureLine.rotation = 90;
+    secondMeasureLine.x += width;
+    secondMeasureLine.y = line.y + strokeCapWidth / 2;
+  }
 
-    if (isHorizontal) {
-      firstMeasureLine.constraints = {
-        vertical: 'CENTER',
-        horizontal: 'MIN',
-      };
-      secondMeasureLine.constraints = {
-        vertical: 'CENTER',
-        horizontal: 'MAX',
-      };
-    } else {
-      firstMeasureLine.constraints = {
-        vertical: 'MIN',
-        horizontal: 'CENTER',
-      };
-      secondMeasureLine.constraints = {
-        vertical: 'MAX',
-        horizontal: 'CENTER',
-      };
-    }
+  if (isHorizontal) {
+    firstMeasureLine.constraints = {
+      vertical: 'CENTER',
+      horizontal: 'MIN',
+    };
+    secondMeasureLine.constraints = {
+      vertical: 'CENTER',
+      horizontal: 'MAX',
+    };
+  } else {
+    firstMeasureLine.constraints = {
+      vertical: 'MIN',
+      horizontal: 'CENTER',
+    };
+    secondMeasureLine.constraints = {
+      vertical: 'MAX',
+      horizontal: 'CENTER',
+    };
   }
 };
 
@@ -215,6 +213,7 @@ export function createLine(options) {
     }
 
     // LINE
+    line.strokeWeight = labelFontSize / 10;
     line.x = isHorizontal ? 0 : group.width / 2 - line.strokeWeight / 2;
     line.y = isHorizontal ? group.height / 2 + line.strokeWeight / 2 : 0;
 
@@ -229,7 +228,7 @@ export function createLine(options) {
     ];
 
     line.strokes = [].concat(mainColor);
-    line.resize(isHorizontal ? node.width : 1, isHorizontal ? 1 : node.height);
+    line.resize(isHorizontal ? node.width : line.strokeWeight , isHorizontal ? line.strokeWeight  : node.height);
 
     // STROKE CAP
     if (strokeCap === 'STANDARD') {
