@@ -1,5 +1,6 @@
 import { SetTooltipOptions, TooltipSettings } from '../../../shared/interfaces';
 
+import componentName from './parts/component-name';
 import cornerRadius from './parts/cornerRadius';
 import fills from './parts/fills';
 import fontName from './parts/font-name';
@@ -19,6 +20,9 @@ export default async function addNode(
   // Add content to parent
   if (flags.name) {
     name(node, parent, settings);
+  }
+  if (flags.name) {
+    componentName(node, parent, settings);
   }
   if (flags.width) {
     width(node, parent, settings);
