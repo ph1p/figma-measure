@@ -47,6 +47,7 @@ export interface TooltipSettings {
   cornerRadius: boolean;
   points: boolean;
   name: boolean;
+  variants: boolean;
 }
 
 export interface PluginNodeData {

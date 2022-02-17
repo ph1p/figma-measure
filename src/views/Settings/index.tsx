@@ -234,6 +234,11 @@ const Settings: FunctionComponent = observer(() => {
             onChange={() => store.toggleTooltipSetting('name')}
           />
           <Toggle
+            checked={store.tooltip.variants}
+            label="Variants"
+            onChange={() => store.toggleTooltipSetting('variants')}
+          />
+          <Toggle
             checked={store.tooltip.fontName}
             label="Font"
             onChange={() => store.toggleTooltipSetting('fontName')}

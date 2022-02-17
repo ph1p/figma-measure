@@ -1,6 +1,5 @@
 import { SetTooltipOptions, TooltipSettings } from '../../../shared/interfaces';
 
-import componentName from './parts/component-name';
 import cornerRadius from './parts/cornerRadius';
 import fills from './parts/fills';
 import fontName from './parts/font-name';
@@ -9,6 +8,7 @@ import name from './parts/name';
 import opacity from './parts/opacity';
 import pointCount from './parts/point-count';
 import strokes from './parts/strokes';
+import variantProperties from './parts/variant-properties';
 import width from './parts/width';
 
 export default async function addNode(
@@ -21,8 +21,8 @@ export default async function addNode(
   if (flags.name) {
     name(node, parent, settings);
   }
-  if (flags.name) {
-    componentName(node, parent, settings);
+  if (flags.variants) {
+    variantProperties(node, parent, settings);
   }
   if (flags.width) {
     width(node, parent, settings);

@@ -68,6 +68,7 @@ class RootStore {
     opacity: true,
     stroke: true,
     name: true,
+    variants: true,
   };
 
   setLabelFontSize(fontSize: number | string, disableSync = false) {
