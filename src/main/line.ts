@@ -152,7 +152,7 @@ export const createLine = (options) => {
   }: LineParameterTypes = options;
 
   const LINE_OFFSET = strokeOffset * -1;
-  const LABEL_OUTSIDE_MARGIN = 4;
+  const LABEL_OUTSIDE_MARGIN = 4 * (labelFontSize / 10);
 
   const mainColor = getColor(color);
 

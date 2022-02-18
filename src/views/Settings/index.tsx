@@ -13,13 +13,6 @@ const DebugModal: FunctionComponent<{ close: () => void }> = observer(
     const [activeNodeId, setActiveNodeId] = useState('');
     const [measurements, setMeasurements] = useState([]);
 
-    useEffect(() => {
-      EventEmitter.ask('file measurements').then((data: any[]) => {
-        setMeasurements(data);
-        setLoading(false);
-      });
-    }, []);
-
     const groupedByPage = useMemo(() => {
       const pages = {};
 
@@ -35,6 +28,13 @@ const DebugModal: FunctionComponent<{ close: () => void }> = observer(
 
       return pages;
     }, [measurements]);
+
+    useEffect(() => {
+      EventEmitter.ask('file measurements').then((data: any[]) => {
+        setMeasurements(data);
+        setLoading(false);
+      });
+    }, []);
 
     return (
       <>

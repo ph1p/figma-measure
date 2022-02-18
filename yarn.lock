@@ -432,14 +432,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/styled-components@npm:^5.1.22":
-  version: 5.1.22
-  resolution: "@types/styled-components@npm:5.1.22"
+"@types/styled-components@npm:^5.1.23":
+  version: 5.1.23
+  resolution: "@types/styled-components@npm:5.1.23"
   dependencies:
     "@types/hoist-non-react-statics": "*"
     "@types/react": "*"
     csstype: ^3.0.2
-  checksum: f25850590772ffc3da672a89f89847b92994d78c28f7d37a31a792fee868ae4b2ae040e7be1b9959631dcfbf82296b3ed1f19f4cf28bd0c82e15727c1022f01c
+  checksum: 78bc52c70df3964cb3826bdc7f2aa298b610971b63f1e015184f425236219b97d8efaf665603960388763686335e2d8b981e4ee3d87f0e3e3781bad35b0a646a
   languageName: node
   linkType: hard
 
@@ -1406,7 +1406,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enhanced-resolve@npm:^5.9.0":
+"enhanced-resolve@npm:^5.8.3":
   version: 5.9.0
   resolution: "enhanced-resolve@npm:5.9.0"
   dependencies:
@@ -2045,7 +2045,7 @@ __metadata:
     "@types/node": ^17.0.18
     "@types/react-dom": ^17.0.11
     "@types/react-router-dom": ^5.3.3
-    "@types/styled-components": ^5.1.22
+    "@types/styled-components": ^5.1.23
     "@typescript-eslint/eslint-plugin": ^5.12.0
     "@typescript-eslint/parser": ^5.12.0
     create-file-webpack: ^1.0.2
@@ -2056,8 +2056,8 @@ __metadata:
     eslint-plugin-import: ^2.25.4
     eslint-plugin-react: ^7.28.0
     html-webpack-plugin: ^5.5.0
-    mobx: ^6.3.13
-    mobx-react: ^7.2.1
+    mobx: ^6.4.0
+    mobx-react: ^7.3.0
     mobx-sync: ^3.0.0
     preact: ^10.6.6
     react-popper: ^2.2.5
@@ -2067,7 +2067,7 @@ __metadata:
     terser-webpack-plugin: ^5.3.1
     typescript: ^4.5.5
     url-loader: ^4.1.1
-    webpack: ^5.69.0
+    webpack: ^5.69.1
     webpack-cli: ^4.9.2
   languageName: unknown
   linkType: soft
@@ -2971,9 +2971,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobx-react-lite@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "mobx-react-lite@npm:3.2.0"
+"mobx-react-lite@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "mobx-react-lite@npm:3.3.0"
   peerDependencies:
     mobx: ^6.1.0
     react: ^16.8.0 || ^17
@@ -2982,15 +2982,15 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 595b5fcb9e9999d9b1d68200f27b0da073eddf1965df75a9cdd447e5c710b9486f684110c1b5f75830c485879203375d5fc4c1194cf219d8cdbfd0fa1d3694e0
+  checksum: 0f55bd2009a9cedc6b81d70b88b57dc4161362a16ba6ae0af341e673ca1c627bc3c4088c0cb13133e57e6fa6748b09b4c26aff7fab26c60ed95d27e939846fa3
   languageName: node
   linkType: hard
 
-"mobx-react@npm:^7.2.1":
-  version: 7.2.1
-  resolution: "mobx-react@npm:7.2.1"
+"mobx-react@npm:^7.3.0":
+  version: 7.3.0
+  resolution: "mobx-react@npm:7.3.0"
   dependencies:
-    mobx-react-lite: ^3.2.0
+    mobx-react-lite: ^3.3.0
   peerDependencies:
     mobx: ^6.1.0
     react: ^16.8.0 || ^17
@@ -2999,7 +2999,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: ddcdab16ce0977dd8e0b9d324f43c0ef5d9de491b4ad881eaf18f127a967e88d916fd580597decc2eac6617f30f444bdf620be540e487194e3391738b2c3b7b2
+  checksum: 4a53fd45994bfc6d6bcf24072a651f09c15b7afa0f1d0040b92058e6aa55ef0c3a5176986e616a7e791ea0c24561f8c75a964cb08cfe3a1025c550b8a890799a
   languageName: node
   linkType: hard
 
@@ -3014,10 +3014,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobx@npm:^6.3.13":
-  version: 6.3.13
-  resolution: "mobx@npm:6.3.13"
-  checksum: 2ab413a323d127081cfc749771aea5f6f6fc3c0f573dc147144356694c2f804df1a0b19cc0cac0e37d236d47d0c767571fa7a6b448dd1f9cb7e05dcad90506bc
+"mobx@npm:^6.4.0":
+  version: 6.4.0
+  resolution: "mobx@npm:6.4.0"
+  checksum: 68341864590237dd77cfbf771ed346c49e2ac58fdddfbdf0febb2ed0ee1287d4b11f84b0382cb845af29f71f72859cae1972b35cfc157d1e7552485caa2b8b4e
   languageName: node
   linkType: hard
 
@@ -4363,9 +4363,9 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5.69.0":
-  version: 5.69.0
-  resolution: "webpack@npm:5.69.0"
+"webpack@npm:^5.69.1":
+  version: 5.69.1
+  resolution: "webpack@npm:5.69.1"
   dependencies:
     "@types/eslint-scope": ^3.7.3
     "@types/estree": ^0.0.51
@@ -4376,7 +4376,7 @@ resolve@^2.0.0-next.3:
     acorn-import-assertions: ^1.7.6
     browserslist: ^4.14.5
     chrome-trace-event: ^1.0.2
-    enhanced-resolve: ^5.9.0
+    enhanced-resolve: ^5.8.3
     es-module-lexer: ^0.9.0
     eslint-scope: 5.1.1
     events: ^3.2.0
@@ -4396,7 +4396,7 @@ resolve@^2.0.0-next.3:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 0b0fc2ffcb926fc7506ec56901ae9a69f1ae969a6afc63395a3ed56f938d385c1d16d1dea39fd56dbb9362189c05da49174219904e5a337040aed5a46080e926
+  checksum: 490a6e9e4cd9d0ed3b6c7ca08015da2628919fda8fcf9c36f0f6c0e3ad71eaaaf4b0d12753109f22a4faf79fe9a9063552d9708e0ee2352cf8568433b8e296a7
   languageName: node
   linkType: hard
 

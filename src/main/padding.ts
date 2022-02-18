@@ -275,6 +275,7 @@ export const createPaddingLine = ({
   const mainColor = getColor(color);
 
   const IS_HORIZONTAL = direction === 'LEFT' || direction === 'RIGHT';
+  const LABEL_OUTSIDE_MARGIN = 4 * (labelFontSize / 10);
 
   if (!nodeData || !nodeData.node || !nodeData.parentNode) {
     try {
@@ -407,7 +408,7 @@ export const createPaddingLine = ({
       labelFrame.x += widthOrHeight / 2 - labelFrame.width / 2;
 
       if (labelsOutside) {
-        labelFrame.y += labelFrame.height / 2 + 4;
+        labelFrame.y += labelFrame.height / 2 + LABEL_OUTSIDE_MARGIN;
       }
 
       group.y -= labelFrame.height / 2;
@@ -417,7 +418,7 @@ export const createPaddingLine = ({
       labelFrame.x -= labelFrame.width / 2;
 
       if (labelsOutside) {
-        labelFrame.x += labelFrame.width / 2 + 4;
+        labelFrame.x += labelFrame.width / 2 + LABEL_OUTSIDE_MARGIN;
       }
 
       group.x -= labelFrame.width / 2;

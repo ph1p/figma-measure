@@ -91,7 +91,7 @@ export const drawSpacing = async (
   { color = '', labels = true, labelPattern = '', labelsOutside = false }
 ) => {
   const state = await getState();
-  const LABEL_OUTSIDE_MARGIN = 4;
+  const LABEL_OUTSIDE_MARGIN = 4 * (state.labelFontSize / 10);
   const STROKE_WIDTH = state.labelFontSize / 10;
 
   if (rects.length !== 2) {
