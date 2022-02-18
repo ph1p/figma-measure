@@ -353,7 +353,7 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
     if (padding && !state.detached) {
       Object.keys(Alignments)
         .filter((k) => k !== Alignments.CENTER && padding[k])
-        .forEach((direction: Alignments) => {
+        .forEach( (direction: Alignments) => {
           removePaddingGroup(node, direction);
 
           const paddingLine = createPaddingLine({
@@ -361,6 +361,7 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
             direction,
             currentNode: node,
             parent: figma.getNodeById(padding[direction]) as SceneNode,
+            labelFontSize: state.labelFontSize
           });
 
           if (paddingLine) {

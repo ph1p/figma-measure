@@ -11,7 +11,6 @@ import {
 } from './helper';
 import { createLabel, createStandardCap } from './line';
 import { distanceBetweenTwoPoints } from './spacing';
-import { getState } from './store';
 
 import { sendSelection } from '.';
 
@@ -74,21 +73,20 @@ EventEmitter.on('remove padding', async ({ direction }) => {
   sendSelection();
 });
 
-EventEmitter.on('add padding', async ({ direction, settings }) => {
-  const state = await getState();
+EventEmitter.on('add padding', ({ direction, settings }) => {
   const currentNode = figma.currentPage.selection[0];
+
+  const { lockDetachedGroup, lockAttachedGroup, ...nodeSettings } = settings;
 
   const nodeData = getNodeAndParentNode(currentNode);
 
   const paddingLines = [];
 
   if (nodeData && nodeData.node && nodeData.parentNode) {
-    if (state.detached) {
+    if (settings.detached) {
       const paddingLine = createPaddingLine({
-        ...settings,
+        ...nodeSettings,
         direction,
-        detached: state.detached,
-        strokeCap: state.strokeCap,
         currentNode: nodeData.node,
         parent: figma.getNodeById(nodeData.parentNode.id),
       });
@@ -127,10 +125,8 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
           const parentId = pluginDataPadding[direction];
 
           const paddingLine = createPaddingLine({
-            ...settings,
+            ...nodeSettings,
             direction,
-            detached: state.detached,
-            strokeCap: state.strokeCap,
             currentNode: nodeData.node,
             parent: figma.getNodeById(parentId),
           });
@@ -151,18 +147,18 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
   }
 
   if (paddingLines.length > 0) {
-    if (state.detached) {
+    if (settings.detached) {
       appendElementsToGroup({
         node: currentNode,
         nodes: paddingLines,
         name: GROUP_NAME_DETACHED,
-        locked: state.lockDetachedGroup,
+        locked: lockDetachedGroup,
       });
     } else {
       appendElementsToGroup({
         node: currentNode,
         nodes: paddingLines,
-        locked: state.lockAttachedGroup,
+        locked: lockAttachedGroup,
       });
     }
 
@@ -267,11 +263,14 @@ export function createPaddingLine({
   parent = null,
   detached = false,
   strokeCap = 'NONE',
+  labelFontSize = 10,
 }: {
   direction: Alignments;
   parent?: SceneNode;
   currentNode?: SceneNode;
 } & ExchangeStoreValues) {
+  const STROKE_WIDTH = labelFontSize / 10;
+
   const nodeData = getNodeAndParentNode(currentNode, parent);
   const mainColor = getColor(color);
 
@@ -379,6 +378,8 @@ export function createPaddingLine({
   line.name = 'out';
   line.strokes = [].concat(mainColor);
 
+  line.strokeWeight = STROKE_WIDTH;
+
   line.vectorPaths = [
     {
       windingRule: 'NONE',
@@ -394,6 +395,7 @@ export function createPaddingLine({
   let labelFrame = null;
   if (labels) {
     labelFrame = createLabel({
+      labelFontSize,
       text: findAndReplaceNumberPattern(labelPattern, widthOrHeight),
       color: mainColor,
     });

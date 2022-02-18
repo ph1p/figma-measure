@@ -34,10 +34,10 @@ export function createLabel({
   labelFrame.cornerRadius = 3;
 
   labelFrame.layoutMode = 'HORIZONTAL';
-  labelFrame.paddingLeft = 6;
-  labelFrame.paddingRight = 6;
-  labelFrame.paddingTop = 3;
-  labelFrame.paddingBottom = 3;
+  labelFrame.paddingLeft = 6 * labelFontSize/10;
+  labelFrame.paddingRight = 6 * labelFontSize/10;
+  labelFrame.paddingTop = 3 * labelFontSize/10;
+  labelFrame.paddingBottom = 3 * labelFontSize/10;
   labelFrame.counterAxisSizingMode = 'AUTO';
 
   if (baseNode) {
