@@ -46,9 +46,10 @@ export const getPluginData = (node, name) => {
   return JSON.parse(data);
 };
 
-const getAllMeasurementNodes = (node, pageId = '', measureData = []) => {
+const getAllMeasurementNodes = (node, pageId = '', pageName = '', measureData = []) => {
   if (node.type === 'PAGE') {
     pageId = node.id;
+    pageName = node.name;
   }
 
   let type = null;
@@ -78,6 +79,7 @@ const getAllMeasurementNodes = (node, pageId = '', measureData = []) => {
   if (type) {
     measureData.push({
       pageId,
+      pageName,
       type,
       id: node.id,
       name: node.name,
@@ -86,18 +88,16 @@ const getAllMeasurementNodes = (node, pageId = '', measureData = []) => {
 
   if ('children' in node) {
     for (const child of node.children) {
-      getAllMeasurementNodes(child, pageId, measureData);
+      getAllMeasurementNodes(child, pageId, pageName, measureData);
     }
   }
 
   return measureData;
 };
 
-EventEmitter.answer('file measurements', async () => {
-  const nodes = getAllMeasurementNodes(figma.root);
-  console.log(nodes);
-  return nodes;
-});
+EventEmitter.answer('file measurements', async () =>
+  getAllMeasurementNodes(figma.root)
+);
 
 EventEmitter.answer('remove all measurements', async () => {
   const measurements = getAllMeasurementNodes(figma.root);

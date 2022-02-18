@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useMemo, useState } from 'preact/hooks';
 import React, { FunctionComponent } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import { Toggle } from '../../components/Toggle';
 import EventEmitter from '../../shared/EventEmitter';
@@ -19,6 +19,22 @@ const DebugModal: FunctionComponent<{ close: () => void }> = observer(
         setLoading(false);
       });
     }, []);
+
+    const groupedByPage = useMemo(() => {
+      const pages = {};
+
+      for (const measurement of measurements) {
+        if (!pages[measurement.pageId]) {
+          pages[measurement.pageId] = {
+            name: measurement.pageName,
+            measurements: [],
+          };
+        }
+        pages[measurement.pageId].measurements.push(measurement);
+      }
+
+      return pages;
+    }, [measurements]);
 
     return (
       <>
@@ -52,17 +68,22 @@ const DebugModal: FunctionComponent<{ close: () => void }> = observer(
             )}
             {measurements.length > 0 && (
               <ul>
-                {measurements.map((element) => (
-                  <li
-                    onClick={() => {
-                      setActiveNodeId(
-                        element.id === activeNodeId ? '' : element.id
-                      );
-                      EventEmitter.emit('focus node', element);
-                    }}
-                  >
-                    {element.name}
-                  </li>
+                {Object.keys(groupedByPage).map((pageId) => (
+                  <div className="page">
+                    <h4>{groupedByPage[pageId].name}</h4>
+                    {groupedByPage[pageId].measurements.map((element) => (
+                      <li
+                        onClick={() => {
+                          setActiveNodeId(
+                            element.id === activeNodeId ? '' : element.id
+                          );
+                          EventEmitter.emit('focus node', element);
+                        }}
+                      >
+                        {element.name}
+                      </li>
+                    ))}
+                  </div>
                 ))}
               </ul>
             )}
@@ -80,7 +101,7 @@ const DebugClose = styled.div`
   cursor: pointer;
 `;
 
-const DebugOverlay = styled.div`
+const OverlayStyle = css`
   position: fixed;
   top: 0;
   left: 0;
@@ -90,11 +111,21 @@ const DebugOverlay = styled.div`
   width: 100%;
 `;
 
+const DebugOverlay = styled.div`
+  ${OverlayStyle}
+`;
+
 const DebugList = styled.div`
   padding: 14px;
   .loading,
   .empty {
     text-align: center;
+  }
+  .page {
+    margin-bottom: 14px;
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
   ul {
     list-style: none;
@@ -127,19 +158,37 @@ const DebugWrapper = styled.div`
   overflow: auto;
 `;
 
+const Loading = styled(DebugWrapper)`
+  padding: 20px;
+  & + div::after {
+    content: '';
+    ${OverlayStyle}
+  }
+`;
+
 const Settings: FunctionComponent = observer(() => {
   const store = useStore();
   const [showDebug, setShowDebug] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const removeAllMeasurements = async () => {
     if (confirm('Would your really remove all measurements?')) {
+      setLoading(true);
       await EventEmitter.ask('remove all measurements');
+      setLoading(false);
       alert('All measurements removed');
     }
   };
 
   return (
     <>
+      {loading && (
+        <Loading>
+          Removing measurements...
+          <br />
+          <br /> This could take a while in large files. Just wait :)
+        </Loading>
+      )}
       {showDebug && <DebugModal close={() => setShowDebug(false)} />}
       <Wrapper>
         <Headline>Labels</Headline>
