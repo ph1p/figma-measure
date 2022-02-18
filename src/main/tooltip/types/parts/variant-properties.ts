@@ -1,10 +1,10 @@
 import { createTooltipTextNode, solidColor } from '../../../helper';
 
-export default function variantProperties(
+export const variantProperties = (
   node,
   parent,
   { fontColor = '', fontSize = 0 }
-) {
+) => {
   if (node?.variantProperties && Object.keys(node.variantProperties.length)) {
     const iconNode = figma.createNodeFromSvg(
       `<svg width="16" height="16" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -34,4 +34,4 @@ export default function variantProperties(
     const g = figma.group([iconNode, textNode], parent);
     g.expanded = false;
   }
-}
+};

@@ -29,7 +29,7 @@ import Settings from './views/Settings';
 
 import './ui.css';
 
-function CustomLink({ children, to, ...props }: LinkProps) {
+const CustomLink = ({ children, to, ...props }: LinkProps) => {
   const resolved = useResolvedPath(to);
   const match = useMatch({ path: resolved.pathname, end: true });
 
@@ -38,7 +38,7 @@ function CustomLink({ children, to, ...props }: LinkProps) {
       {children}
     </Link>
   );
-}
+};
 
 const App: FunctionComponent = observer(() => {
   const store = useStore();

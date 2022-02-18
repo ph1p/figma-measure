@@ -105,7 +105,7 @@ export const hexToRgb = (hex: string) => {
     : null;
 };
 
-export function rgbaToHex(data) {
+export const rgbaToHex = (data) => {
   const rgba = data.replace(/rgba?\(|\s+|\)/g, '').split(',');
   return `#${(
     (1 << 24) +
@@ -115,16 +115,16 @@ export function rgbaToHex(data) {
   )
     .toString(16)
     .slice(1)}`;
-}
+};
 
-export function getColor(color: string) {
+export const getColor = (color: string) => {
   if (color) {
     const { r, g, b } = hexToRgb(color);
     return solidColor(r, g, b);
   } else {
     return solidColor();
   }
-}
+};
 
 export const setTitleBold = (content) => {
   let chars = 0;
@@ -165,7 +165,7 @@ export const createTooltipTextNode = ({ fontColor, fontSize }) => {
 };
 
 // thanks to https://github.com/figma-plugin-helper-functions/figma-plugin-helpers/blob/master/src/helpers/isPartOfInstance.ts
-export default function isPartOfInstance(node: SceneNode | BaseNode): boolean {
+export const isPartOfInstance = (node: SceneNode | BaseNode): boolean => {
   const parent = node.parent;
   if (parent.type === 'INSTANCE') {
     return true;
@@ -174,7 +174,7 @@ export default function isPartOfInstance(node: SceneNode | BaseNode): boolean {
   } else {
     return isPartOfInstance(parent as SceneNode);
   }
-}
+};
 
 export const getFontNameData = async (
   textNode: TextNode

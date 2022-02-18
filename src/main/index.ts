@@ -37,14 +37,14 @@ figma.root.setRelaunchData({
   open: '',
 });
 
-export function getPluginData(node, name) {
+export const getPluginData = (node, name) => {
   const data = node.getPluginData(name);
   if (!data) {
     return null;
   }
 
   return JSON.parse(data);
-}
+};
 
 const getAllMeasurementNodes = (node, pageId = '', measureData = []) => {
   if (node.type === 'PAGE') {
@@ -149,7 +149,7 @@ EventEmitter.on('focus node', (payload) => {
   figma.viewport.scrollAndZoomIntoView([node]);
 });
 
-async function getSelectionArray(): Promise<NodeSelection[]> {
+const getSelectionArray = async (): Promise<NodeSelection[]> => {
   const state = await getState();
   return figma.currentPage.selection.map((node) => {
     let data = {};
@@ -179,7 +179,7 @@ async function getSelectionArray(): Promise<NodeSelection[]> {
       data,
     };
   });
-}
+};
 
 export const sendSelection = () =>
   getSelectionArray().then((selection) =>
@@ -353,7 +353,7 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
     if (padding && !state.detached) {
       Object.keys(Alignments)
         .filter((k) => k !== Alignments.CENTER && padding[k])
-        .forEach( (direction: Alignments) => {
+        .forEach((direction: Alignments) => {
           removePaddingGroup(node, direction);
 
           const paddingLine = createPaddingLine({
@@ -361,7 +361,7 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
             direction,
             currentNode: node,
             parent: figma.getNodeById(padding[direction]) as SceneNode,
-            labelFontSize: state.labelFontSize
+            labelFontSize: state.labelFontSize,
           });
 
           if (paddingLine) {

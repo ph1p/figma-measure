@@ -54,11 +54,11 @@ export const findAndReplaceNumberPattern = (pattern: string, num: number) => {
   return somethingReplaced ? pattern : transformPixelToUnit(num, pattern);
 };
 
-export function transformPixelToUnit(
+export const transformPixelToUnit = (
   pixel: number,
   unit: string,
   precision?: number
-): string {
+) => {
   if (typeof precision === 'undefined') {
     precision = 2;
   }
@@ -110,4 +110,4 @@ export function transformPixelToUnit(
   }
 
   return result + unit;
-}
+};

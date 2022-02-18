@@ -253,7 +253,7 @@ export const isValidType = (type) =>
     'BOOLEAN_OPERATION',
   ].includes(type);
 
-export function createPaddingLine({
+export const createPaddingLine = ({
   direction,
   labelPattern,
   labelsOutside = false,
@@ -268,7 +268,7 @@ export function createPaddingLine({
   direction: Alignments;
   parent?: SceneNode;
   currentNode?: SceneNode;
-} & ExchangeStoreValues) {
+} & ExchangeStoreValues) => {
   const STROKE_WIDTH = labelFontSize / 10;
 
   const nodeData = getNodeAndParentNode(currentNode, parent);
@@ -500,4 +500,4 @@ export function createPaddingLine({
   }
 
   return group;
-}
+};

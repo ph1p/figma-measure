@@ -3,7 +3,7 @@ import { Alignments, LineParameterTypes } from '../shared/interfaces';
 
 import { getColor, solidColor } from './helper';
 
-export function createLabel({
+export const createLabel = ({
   baseNode,
   text,
   color,
@@ -15,7 +15,7 @@ export function createLabel({
   color: unknown;
   isVertical?: boolean;
   labelFontSize?: number;
-}) {
+}) => {
   const labelFrame = figma.createFrame();
   const label = figma.createText();
 
@@ -34,10 +34,10 @@ export function createLabel({
   labelFrame.cornerRadius = 3;
 
   labelFrame.layoutMode = 'HORIZONTAL';
-  labelFrame.paddingLeft = 6 * labelFontSize/10;
-  labelFrame.paddingRight = 6 * labelFontSize/10;
-  labelFrame.paddingTop = 3 * labelFontSize/10;
-  labelFrame.paddingBottom = 3 * labelFontSize/10;
+  labelFrame.paddingLeft = (6 * labelFontSize) / 10;
+  labelFrame.paddingRight = (6 * labelFontSize) / 10;
+  labelFrame.paddingTop = (3 * labelFontSize) / 10;
+  labelFrame.paddingBottom = (3 * labelFontSize) / 10;
   labelFrame.counterAxisSizingMode = 'AUTO';
 
   if (baseNode) {
@@ -55,9 +55,9 @@ export function createLabel({
   labelFrame.fills = [].concat(color);
 
   return labelFrame;
-}
+};
 
-export function getLineFrame(node, data) {
+export const getLineFrame = (node, data) => {
   const name = 'line';
   const lineFrame = figma.createFrame();
 
@@ -72,7 +72,7 @@ export function getLineFrame(node, data) {
   lineFrame.expanded = false;
 
   return lineFrame;
-}
+};
 
 export const createStandardCap = ({
   group,
@@ -133,7 +133,7 @@ export const createStandardCap = ({
   }
 };
 
-export function createLine(options) {
+export const createLine = (options) => {
   const {
     node,
     direction = 'horizontal',
@@ -228,7 +228,10 @@ export function createLine(options) {
     ];
 
     line.strokes = [].concat(mainColor);
-    line.resize(isHorizontal ? node.width : line.strokeWeight , isHorizontal ? line.strokeWeight  : node.height);
+    line.resize(
+      isHorizontal ? node.width : line.strokeWeight,
+      isHorizontal ? line.strokeWeight : node.height
+    );
 
     // STROKE CAP
     if (strokeCap === 'STANDARD') {
@@ -412,4 +415,4 @@ export function createLine(options) {
     return group;
   }
   return null;
-}
+};

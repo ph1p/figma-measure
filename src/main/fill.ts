@@ -2,10 +2,10 @@ import { FillTypes } from '../shared/interfaces';
 
 import { hexToRgb, solidColor } from './helper';
 
-export function createFill(
+export const createFill = (
   node: SceneNode,
   { fill, opacity, color }: { fill: FillTypes; opacity: number; color: string }
-) {
+) => {
   if (
     node.type !== 'WIDGET' &&
     node.type !== 'CODE_BLOCK' &&
@@ -81,4 +81,4 @@ export function createFill(
   } else {
     figma.notify('Slices are currently not supported.');
   }
-}
+};

@@ -1,21 +1,21 @@
 import { SetTooltipOptions, TooltipSettings } from '../../../shared/interfaces';
 
-import cornerRadius from './parts/cornerRadius';
-import fills from './parts/fills';
-import fontName from './parts/font-name';
-import height from './parts/height';
-import name from './parts/name';
-import opacity from './parts/opacity';
-import pointCount from './parts/point-count';
-import strokes from './parts/strokes';
-import variantProperties from './parts/variant-properties';
-import width from './parts/width';
+import { cornerRadius } from './parts/cornerRadius';
+import { fills } from './parts/fills';
+import { fontName } from './parts/font-name';
+import { height } from './parts/height';
+import { name } from './parts/name';
+import { opacity } from './parts/opacity';
+import { pointCount } from './parts/point-count';
+import { strokes } from './parts/strokes';
+import { variantProperties } from './parts/variant-properties';
+import { width } from './parts/width';
 
-export default async function addNode(
+export const addNode = async (
   parent: SceneNode,
   node: SceneNode,
   settings: SetTooltipOptions
-) {
+) => {
   const flags: TooltipSettings = settings.flags;
   // Add content to parent
   if (flags.name) {
@@ -48,4 +48,4 @@ export default async function addNode(
   if (flags.points) {
     pointCount(node, parent, settings);
   }
-}
+};

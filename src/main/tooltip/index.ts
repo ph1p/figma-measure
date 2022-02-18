@@ -1,9 +1,9 @@
 import { SetTooltipOptions, TooltipPositions } from '../../shared/interfaces';
 import { solidColor, hexToRgb } from '../helper';
 
-import addNode from './types';
+import { addNode } from './types';
 
-function createArrow(tooltipFrame, settings, { horizontal, vertical }) {
+const createArrow = (tooltipFrame, settings, { horizontal, vertical }) => {
   const arrowFrame = figma.createFrame();
   const arrow = figma.createRectangle();
 
@@ -48,9 +48,9 @@ function createArrow(tooltipFrame, settings, { horizontal, vertical }) {
   arrowFrame.appendChild(arrow);
 
   return arrowFrame;
-}
+};
 
-function getTooltipFrame(node): FrameNode {
+const getTooltipFrame = (node): FrameNode => {
   let tooltipFrame;
 
   if (!tooltipFrame) {
@@ -62,12 +62,12 @@ function getTooltipFrame(node): FrameNode {
   tooltipFrame.fills = [];
 
   return tooltipFrame;
-}
+};
 
-export async function setTooltip(
+export const setTooltip = async (
   options: SetTooltipOptions,
   specificNode = null
-) {
+) => {
   const data = {
     vertical: undefined,
     horizontal: undefined,
@@ -205,4 +205,4 @@ export async function setTooltip(
   } else {
     figma.notify('Please select only one element');
   }
-}
+};
