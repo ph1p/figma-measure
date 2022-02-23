@@ -10,8 +10,13 @@ import {
 import { createLabel } from './line';
 import { getState } from './store';
 
-export const getSpacing = (node: SceneNode) =>
-  JSON.parse(node.getPluginData('spacing') || '{}');
+export const getSpacing = (node: SceneNode) => {
+  try {
+    return JSON.parse(node.getPluginData('spacing') || '{}');
+  } catch {
+    return {};
+  }
+};
 
 export const setSpacing = (node: SceneNode, data: unknown) =>
   node.setPluginData('spacing', JSON.stringify(data));

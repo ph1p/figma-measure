@@ -42,7 +42,7 @@ export const addNode = async (
   if (flags.opacity) {
     opacity(node, parent, settings);
   }
-  if (flags.fontName) {
+  if (flags.fontName && node.type === 'TEXT') {
     await fontName(node, parent, flags.fontSize);
   }
   if (flags.points) {

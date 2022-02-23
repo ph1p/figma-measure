@@ -14,6 +14,7 @@ export const isPartOfAttachedGroup = (node: SceneNode) => {
     return isPartOfAttachedGroup(parent as SceneNode);
   }
 };
+
 export const getClosestAttachedGroup = (node: SceneNode) => {
   const parent = getNearestParentNode(node);
 
@@ -74,10 +75,11 @@ export const getNearestParentNode = (node: SceneNode) => {
   const parent = node.parent;
 
   if (
-    ((parent.type === 'FRAME' && parent.layoutMode === 'NONE') ||
+    (parent.type === 'FRAME' ||
       parent.type === 'PAGE' ||
       parent.type === 'GROUP') &&
-    !isPartOfInstance(node)
+    !isPartOfInstance(node) &&
+    !isPartOfAutoLayout(node)
   ) {
     return parent;
   } else {
@@ -173,6 +175,17 @@ export const isPartOfInstance = (node: SceneNode | BaseNode): boolean => {
     return false;
   } else {
     return isPartOfInstance(parent as SceneNode);
+  }
+};
+
+export const isPartOfAutoLayout = (node: SceneNode | BaseNode): boolean => {
+  const parent = node.parent;
+  if (parent.type === 'FRAME' && parent.layoutMode !== 'NONE') {
+    return true;
+  } else if (parent.type === 'PAGE') {
+    return false;
+  } else {
+    return isPartOfAutoLayout(parent as SceneNode);
   }
 };
 
