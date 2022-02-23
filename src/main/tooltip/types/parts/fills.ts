@@ -99,11 +99,7 @@ export const createColorNode = (fill, { fontColor = '', fontSize = 0 }) => {
   return elements;
 };
 
-export default async function fills(
-  node,
-  parent,
-  { fontColor = '', fontSize = 0 }
-) {
+export const fills = async (node, parent, { fontColor = '', fontSize = 0 }) => {
   let fills = null;
   if (node.type === 'TEXT') {
     const fontData = getFontFillsAndStyles(node);
@@ -130,4 +126,4 @@ export default async function fills(
       g.expanded = false;
     });
   }
-}
+};

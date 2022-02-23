@@ -1,6 +1,8 @@
 import React, { FunctionComponent } from 'react';
 
-export const SpacingIcon: FunctionComponent<{ remove?: boolean }> = (props: { remove?: boolean }) => (
+export const SpacingIcon: FunctionComponent<{ remove?: boolean }> = (props: {
+  remove?: boolean;
+}) => (
   <svg
     width="30"
     height="29"

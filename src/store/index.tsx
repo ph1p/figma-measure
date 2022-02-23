@@ -43,16 +43,15 @@ class RootStore {
   selection: NodeSelection[] = [];
 
   fill: FillTypes = 'stroke';
-
   opacity = 50;
-
   strokeCap: StrokeCap | 'STANDARD' = 'STANDARD';
-
   strokeOffset = 10;
-
   detached = false;
-
   labelPattern = '';
+
+  lockDetachedGroup = true;
+  lockAttachedGroup = true;
+  labelFontSize = 10;
 
   @ignore
   surrounding: SurroundingSettings = DEFAULT_SURROUNDING_FLAGS;
@@ -69,7 +68,23 @@ class RootStore {
     opacity: true,
     stroke: true,
     name: true,
+    variants: true,
   };
+
+  setLabelFontSize(fontSize: number | string, disableSync = false) {
+    this.labelFontSize = +fontSize;
+    if (+fontSize > 0 && !disableSync) {
+      this.sendMeasurements();
+    }
+  }
+
+  toggleLockDetachedGroup() {
+    this.lockDetachedGroup = !this.lockDetachedGroup;
+  }
+
+  toggleLockAttachedGroup() {
+    this.lockAttachedGroup = !this.lockAttachedGroup;
+  }
 
   setAllNodeMeasurementData(data: Partial<PluginNodeData>) {
     this.strokeCap = data.strokeCap ?? this.strokeCap;
@@ -206,6 +221,7 @@ class RootStore {
           tooltip: toJS(this.tooltip),
           labelPattern: this.labelPattern,
           detached: this.detached,
+          labelFontSize: this.labelFontSize,
         })
       );
     }

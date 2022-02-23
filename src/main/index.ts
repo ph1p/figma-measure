@@ -1,7 +1,11 @@
 import './store';
 
 import EventEmitter from '../shared/EventEmitter';
-import { GROUP_NAME_DETACHED, VERSION } from '../shared/constants';
+import {
+  GROUP_NAME_ATTACHED,
+  GROUP_NAME_DETACHED,
+  VERSION,
+} from '../shared/constants';
 import {
   Alignments,
   NodeSelection,
@@ -33,16 +37,158 @@ figma.root.setRelaunchData({
   open: '',
 });
 
-export function getPluginData(node, name) {
+export const getPluginData = (node, name) => {
   const data = node.getPluginData(name);
   if (!data) {
     return null;
   }
 
   return JSON.parse(data);
-}
+};
 
-async function getSelectionArray(): Promise<NodeSelection[]> {
+const getAllMeasurementNodes = (
+  node,
+  pageId = '',
+  pageName = '',
+  measureData = []
+) => {
+  if (node.type === 'PAGE') {
+    pageId = node.id;
+    pageName = node.name;
+  }
+
+  let type = null;
+  let componentId = null;
+
+  const storedData = node.getPluginDataKeys();
+
+  if (node.type === 'INSTANCE') {
+    componentId = node.mainComponent.id;
+  }
+
+  if (node.name === GROUP_NAME_DETACHED) {
+    type = 'GROUP_DETACHED';
+  }
+  if (node.name === GROUP_NAME_ATTACHED) {
+    type = 'GROUP_ATTACHED';
+  }
+  if (storedData.includes('padding')) {
+    type = 'PADDING';
+  }
+  if (storedData.includes('spacing')) {
+    type = 'SPACING';
+  }
+  if (storedData.includes('data')) {
+    const data = node.getPluginData('data');
+
+    if (data && data !== '{}') {
+      type = 'DATA';
+    }
+  }
+
+  if (type) {
+    measureData.push({
+      pageId,
+      pageName,
+      type,
+      componentId,
+      id: node.id,
+      name: node.name,
+    });
+  }
+
+  if ('children' in node) {
+    for (const child of node.children) {
+      getAllMeasurementNodes(child, pageId, pageName, measureData);
+    }
+  }
+
+  return measureData;
+};
+
+EventEmitter.answer('file measurements', async () =>
+  getAllMeasurementNodes(figma.root)
+);
+
+EventEmitter.answer('remove all measurements', async () => {
+  const measurements = getAllMeasurementNodes(figma.root);
+
+  for (const measurement of measurements) {
+    const node = figma.getNodeById(measurement.id);
+    if (!node) {
+      continue;
+    }
+
+    if (measurement.type.includes('GROUP_')) {
+      node.remove();
+    } else {
+      removeDataFromNode(node);
+    }
+  }
+
+  return true;
+});
+
+const goToPage = (id) => {
+  if (figma.getNodeById(id)) {
+    figma.currentPage = figma.getNodeById(id) as PageNode;
+  }
+};
+
+const removeDataFromNode = (node) => {
+  if (Array.isArray(node)) {
+    for (const id of node) {
+      removeDataFromNode(id);
+    }
+  } else {
+    if (typeof node === 'string') {
+      node = figma.getNodeById(node);
+    }
+
+    try {
+      const data = JSON.parse(node.getPluginData('data'));
+
+      for (const id of data.connectedNodes) {
+        figma.getNodeById(id).remove();
+      }
+    } catch {
+      console.log('failed to remove connected node');
+    }
+
+    node.setPluginData('padding', '');
+    node.setPluginData('spacing', '');
+    node.setPluginData('data', '{}');
+    node.setPluginData('parent', '');
+  }
+};
+
+EventEmitter.on('remove node measurement', (nodeId) =>
+  removeDataFromNode(nodeId)
+);
+
+EventEmitter.on('focus node', (payload) => {
+  goToPage(payload.pageId);
+  const node = figma.currentPage.findOne((n) => n.id === payload.id);
+
+  const padding = node.getPluginData('padding');
+  const spacing = node.getPluginData('spacing');
+  const toolData = node.getPluginData('data');
+
+  console.log(
+    node,
+    {
+      padding,
+      spacing,
+      toolData,
+    },
+    node.getPluginDataKeys()
+  );
+
+  figma.currentPage.selection = [node];
+  figma.viewport.scrollAndZoomIntoView([node]);
+});
+
+const getSelectionArray = async (): Promise<NodeSelection[]> => {
   const state = await getState();
   return figma.currentPage.selection.map((node) => {
     let data = {};
@@ -72,7 +218,7 @@ async function getSelectionArray(): Promise<NodeSelection[]> {
       data,
     };
   });
-}
+};
 
 export const sendSelection = () =>
   getSelectionArray().then((selection) =>
@@ -112,6 +258,7 @@ figma.on('selectionchange', () => {
             tooltipOffset: state.tooltipOffset,
             tooltip: state.tooltip,
             labelPattern: state.labelPattern,
+            labelFontSize: state.labelFontSize,
           };
 
           previousSelection = currentSelectionAsJSONString();
@@ -253,6 +400,7 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
             direction,
             currentNode: node,
             parent: figma.getNodeById(padding[direction]) as SceneNode,
+            labelFontSize: state.labelFontSize,
           });
 
           if (paddingLine) {
@@ -366,7 +514,12 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
 
     if (state.detached) {
       if (connectedNodes.length > 0) {
-        appendElementsToGroup(node, connectedNodes, GROUP_NAME_DETACHED);
+        appendElementsToGroup({
+          node,
+          nodes: connectedNodes,
+          name: GROUP_NAME_DETACHED,
+          locked: state.lockDetachedGroup,
+        });
       }
     } else {
       node.setPluginData(
@@ -380,7 +533,11 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
       );
 
       if (connectedNodes.length > 0) {
-        appendElementsToGroup(node, connectedNodes);
+        appendElementsToGroup({
+          node,
+          nodes: connectedNodes,
+          locked: state.lockAttachedGroup,
+        });
       }
     }
   }

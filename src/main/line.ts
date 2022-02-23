@@ -3,17 +3,19 @@ import { Alignments, LineParameterTypes } from '../shared/interfaces';
 
 import { getColor, solidColor } from './helper';
 
-export function createLabel({
+export const createLabel = ({
   baseNode,
   text,
   color,
   isVertical,
+  labelFontSize = 10,
 }: {
   baseNode?: SceneNode;
   text: string;
   color: unknown;
   isVertical?: boolean;
-}) {
+  labelFontSize?: number;
+}) => {
   const labelFrame = figma.createFrame();
   const label = figma.createText();
 
@@ -22,7 +24,7 @@ export function createLabel({
     family: 'Inter',
     style: 'Bold',
   };
-  label.fontSize = 10;
+  label.fontSize = labelFontSize;
   label.fills = [].concat(solidColor(255, 255, 255));
 
   labelFrame.appendChild(label);
@@ -32,10 +34,10 @@ export function createLabel({
   labelFrame.cornerRadius = 3;
 
   labelFrame.layoutMode = 'HORIZONTAL';
-  labelFrame.paddingLeft = 6;
-  labelFrame.paddingRight = 6;
-  labelFrame.paddingTop = 3;
-  labelFrame.paddingBottom = 3;
+  labelFrame.paddingLeft = (6 * labelFontSize) / 10;
+  labelFrame.paddingRight = (6 * labelFontSize) / 10;
+  labelFrame.paddingTop = (3 * labelFontSize) / 10;
+  labelFrame.paddingBottom = (3 * labelFontSize) / 10;
   labelFrame.counterAxisSizingMode = 'AUTO';
 
   if (baseNode) {
@@ -53,9 +55,9 @@ export function createLabel({
   labelFrame.fills = [].concat(color);
 
   return labelFrame;
-}
+};
 
-export function getLineFrame(node, data) {
+export const getLineFrame = (node, data) => {
   const name = 'line';
   const lineFrame = figma.createFrame();
 
@@ -70,7 +72,7 @@ export function getLineFrame(node, data) {
   lineFrame.expanded = false;
 
   return lineFrame;
-}
+};
 
 export const createStandardCap = ({
   group,
@@ -80,60 +82,58 @@ export const createStandardCap = ({
   width,
   mainColor,
 }) => {
-  const strokeCapWidth = 6 + line.strokeWeight;
-  if (strokeCapWidth >= 0.01) {
-    const firstMeasureLine = figma.createLine();
-    const secondMeasureLine = figma.createLine();
+  const firstMeasureLine = figma.createLine();
+  const secondMeasureLine = figma.createLine();
+  firstMeasureLine.strokeWeight = line.strokeWeight;
+  secondMeasureLine.strokeWeight = line.strokeWeight;
 
-    group.appendChild(firstMeasureLine);
-    group.appendChild(secondMeasureLine);
+  group.appendChild(firstMeasureLine);
+  group.appendChild(secondMeasureLine);
+  const strokeCapWidth = line.strokeWeight + 6;
 
-    firstMeasureLine.strokes = [].concat(mainColor);
-    secondMeasureLine.strokes = [].concat(mainColor);
-    firstMeasureLine.resize(strokeCapWidth, 0);
-    secondMeasureLine.resize(strokeCapWidth, 0);
+  firstMeasureLine.strokes = [].concat(mainColor);
+  secondMeasureLine.strokes = [].concat(mainColor);
+  firstMeasureLine.resize(strokeCapWidth, 0);
+  secondMeasureLine.resize(strokeCapWidth, 0);
 
-    if (!isHorizontal) {
-      firstMeasureLine.x =
-        group.width / 2 - strokeCapWidth / 2 - line.strokeWeight / 2;
-      firstMeasureLine.y += 1;
+  if (!isHorizontal) {
+    firstMeasureLine.x = line.x - strokeCapWidth / 2;
+    firstMeasureLine.y += firstMeasureLine.strokeWeight;
 
-      secondMeasureLine.x =
-        group.width / 2 - strokeCapWidth / 2 - line.strokeWeight / 2;
-      secondMeasureLine.y += height;
-    } else {
-      firstMeasureLine.rotation = 90;
-      firstMeasureLine.x += 1;
-      firstMeasureLine.y = line.y + strokeCapWidth / 2;
+    secondMeasureLine.x = line.x - strokeCapWidth / 2;
+    secondMeasureLine.y += height;
+  } else {
+    firstMeasureLine.rotation = 90;
+    firstMeasureLine.x += firstMeasureLine.strokeWeight;
+    firstMeasureLine.y = line.y + strokeCapWidth / 2;
 
-      secondMeasureLine.rotation = 90;
-      secondMeasureLine.x += width;
-      secondMeasureLine.y = line.y + strokeCapWidth / 2;
-    }
+    secondMeasureLine.rotation = 90;
+    secondMeasureLine.x += width;
+    secondMeasureLine.y = line.y + strokeCapWidth / 2;
+  }
 
-    if (isHorizontal) {
-      firstMeasureLine.constraints = {
-        vertical: 'CENTER',
-        horizontal: 'MIN',
-      };
-      secondMeasureLine.constraints = {
-        vertical: 'CENTER',
-        horizontal: 'MAX',
-      };
-    } else {
-      firstMeasureLine.constraints = {
-        vertical: 'MIN',
-        horizontal: 'CENTER',
-      };
-      secondMeasureLine.constraints = {
-        vertical: 'MAX',
-        horizontal: 'CENTER',
-      };
-    }
+  if (isHorizontal) {
+    firstMeasureLine.constraints = {
+      vertical: 'CENTER',
+      horizontal: 'MIN',
+    };
+    secondMeasureLine.constraints = {
+      vertical: 'CENTER',
+      horizontal: 'MAX',
+    };
+  } else {
+    firstMeasureLine.constraints = {
+      vertical: 'MIN',
+      horizontal: 'CENTER',
+    };
+    secondMeasureLine.constraints = {
+      vertical: 'MAX',
+      horizontal: 'CENTER',
+    };
   }
 };
 
-export function createLine(options) {
+export const createLine = (options) => {
   const {
     node,
     direction = 'horizontal',
@@ -148,10 +148,11 @@ export function createLine(options) {
     labels = true,
     labelsOutside = false,
     labelPattern = '',
+    labelFontSize = 10,
   }: LineParameterTypes = options;
 
   const LINE_OFFSET = strokeOffset * -1;
-  const LABEL_OUTSIDE_MARGIN = 4;
+  const LABEL_OUTSIDE_MARGIN = 4 * (labelFontSize / 10);
 
   const mainColor = getColor(color);
 
@@ -174,6 +175,7 @@ export function createLine(options) {
 
     if (labels) {
       labelFrame = createLabel({
+        labelFontSize,
         text: findAndReplaceNumberPattern(labelPattern, heightOrWidth),
         color: mainColor,
       });
@@ -211,6 +213,7 @@ export function createLine(options) {
     }
 
     // LINE
+    line.strokeWeight = labelFontSize / 10;
     line.x = isHorizontal ? 0 : group.width / 2 - line.strokeWeight / 2;
     line.y = isHorizontal ? group.height / 2 + line.strokeWeight / 2 : 0;
 
@@ -225,7 +228,10 @@ export function createLine(options) {
     ];
 
     line.strokes = [].concat(mainColor);
-    line.resize(isHorizontal ? node.width : 1, isHorizontal ? 1 : node.height);
+    line.resize(
+      isHorizontal ? node.width : line.strokeWeight,
+      isHorizontal ? line.strokeWeight : node.height
+    );
 
     // STROKE CAP
     if (strokeCap === 'STANDARD') {
@@ -409,4 +415,4 @@ export function createLine(options) {
     return group;
   }
   return null;
-}
+};

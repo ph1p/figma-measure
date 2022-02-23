@@ -7,11 +7,7 @@ const ICON = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns=
 <path d="M11.5 9H3.5V7H11.5V9Z" fill="#8C8C8C"/>
 </svg>`;
 
-export default function strokes(
-  node,
-  parent,
-  { fontColor = '', fontSize = 0 }
-) {
+export const strokes = (node, parent, { fontColor = '', fontSize = 0 }) => {
   // Stroke
   if (node?.strokes?.length && node.strokeWeight) {
     const textNode = createTooltipTextNode({
@@ -49,4 +45,4 @@ export default function strokes(
       g.expanded = false;
     }
   }
-}
+};

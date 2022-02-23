@@ -1,6 +1,6 @@
 import { createTooltipTextNode } from '../../../helper';
 
-export default function name(node, parent, { fontColor = '', fontSize = 0 }) {
+export const name = (node, parent, { fontColor = '', fontSize = 0 }) => {
   if (!node.name) return;
 
   const iconNode = figma.createNodeFromSvg(
@@ -16,4 +16,4 @@ export default function name(node, parent, { fontColor = '', fontSize = 0 }) {
 
   const g = figma.group([iconNode, textNode], parent);
   g.expanded = false;
-}
+};

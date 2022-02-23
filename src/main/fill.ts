@@ -2,10 +2,10 @@ import { FillTypes } from '../shared/interfaces';
 
 import { hexToRgb, solidColor } from './helper';
 
-export function createFill(
+export const createFill = (
   node: SceneNode,
   { fill, opacity, color }: { fill: FillTypes; opacity: number; color: string }
-) {
+) => {
   if (
     node.type !== 'WIDGET' &&
     node.type !== 'CODE_BLOCK' &&
@@ -15,7 +15,8 @@ export function createFill(
     node.type !== 'STICKY' &&
     node.type !== 'CONNECTOR' &&
     node.type !== 'STAMP' &&
-    node.type !== 'SHAPE_WITH_TEXT'
+    node.type !== 'SHAPE_WITH_TEXT' &&
+    node.type !== 'MEDIA'
   ) {
     let cloneNode: SceneNode;
 
@@ -40,6 +41,7 @@ export function createFill(
     cloneNode.strokes = [];
     cloneNode.opacity = 1;
     cloneNode.locked = false;
+    cloneNode.isMask = false;
 
     cloneNode.setPluginData('data', '');
     cloneNode.setPluginData('spacing', '');
@@ -79,4 +81,4 @@ export function createFill(
   } else {
     figma.notify('Slices are currently not supported.');
   }
-}
+};

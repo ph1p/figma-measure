@@ -5,7 +5,7 @@ import {
   solidColor,
 } from '../../../helper';
 
-export default async function fontName(node, parent, showFontSize) {
+export const fontName = async (node, parent, showFontSize) => {
   const fontFamilyName = node?.fontName;
 
   if (fontFamilyName) {
@@ -34,7 +34,6 @@ export default async function fontName(node, parent, showFontSize) {
       let text = `${font.family}\n`;
       text += `${font.style.join(', ')}`;
 
-
       if (showFontSize && font.fontSize) {
         text += `\nSizes: ${
           !font.fontSize.length
@@ -62,4 +61,4 @@ export default async function fontName(node, parent, showFontSize) {
     const g = figma.group([iconFrame, textNode], parent);
     g.expanded = false;
   }
-}
+};

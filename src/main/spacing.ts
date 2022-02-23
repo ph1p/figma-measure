@@ -91,7 +91,8 @@ export const drawSpacing = async (
   { color = '', labels = true, labelPattern = '', labelsOutside = false }
 ) => {
   const state = await getState();
-  const LABEL_OUTSIDE_MARGIN = 4;
+  const LABEL_OUTSIDE_MARGIN = 4 * (state.labelFontSize / 10);
+  const STROKE_WIDTH = state.labelFontSize / 10;
 
   if (rects.length !== 2) {
     return;
@@ -228,6 +229,7 @@ export const drawSpacing = async (
       },
     ];
     line1.strokes = [].concat(mainColor);
+    line1.strokeWeight = STROKE_WIDTH;
     spacingGroup.push(line1);
 
     if (labels) {
@@ -239,6 +241,7 @@ export const drawSpacing = async (
         ),
         color: mainColor,
         isVertical: true,
+        labelFontSize: state.labelFontSize,
       });
 
       if (labelsOutside) {
@@ -268,6 +271,7 @@ export const drawSpacing = async (
       },
     ];
     line2.strokes = [].concat(mainColor);
+    line2.strokeWeight = STROKE_WIDTH;
     line2.dashPattern = [4];
     spacingGroup.push(line2);
 
@@ -286,6 +290,7 @@ export const drawSpacing = async (
       },
     ];
     line3.strokes = [].concat(mainColor);
+    line3.strokeWeight = STROKE_WIDTH;
     line3.dashPattern = [4];
     spacingGroup.push(line3);
   }
@@ -347,6 +352,7 @@ export const drawSpacing = async (
       },
     ];
     line4.strokes = [].concat(mainColor);
+    line4.strokeWeight = STROKE_WIDTH;
     spacingGroup.push(line4);
 
     if (labels) {
@@ -358,6 +364,7 @@ export const drawSpacing = async (
         ),
         color: mainColor,
         isVertical: false,
+        labelFontSize: state.labelFontSize,
       });
 
       if (labelsOutside) {
@@ -375,7 +382,12 @@ export const drawSpacing = async (
     spacingFrame.expanded = false;
     spacingFrame.clipsContent = false;
     spacingGroup.forEach((n) => spacingFrame.appendChild(n));
-    appendElementsToGroup(rects[0], [spacingFrame], GROUP_NAME_DETACHED);
+    appendElementsToGroup({
+      node: rects[0],
+      nodes: [spacingFrame],
+      name: GROUP_NAME_DETACHED,
+      locked: state.lockDetachedGroup,
+    });
   }
 
   if (!state.detached && spacingGroup.length > 0) {
@@ -405,6 +417,10 @@ export const drawSpacing = async (
       })
     );
 
-    appendElementsToGroup(rects[0], [group]);
+    appendElementsToGroup({
+      node: rects[0],
+      nodes: [group],
+      locked: state.lockAttachedGroup,
+    });
   }
 };

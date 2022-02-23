@@ -1,11 +1,7 @@
 import { toFixed } from '../../../../shared/helpers';
 import { createTooltipTextNode } from '../../../helper';
 
-export default function opacity(
-  node,
-  parent,
-  { fontColor = '', fontSize = 0 }
-) {
+export const opacity = (node, parent, { fontColor = '', fontSize = 0 }) => {
   if (node?.opacity !== 0) {
     const iconFrame = figma.createNodeFromSvg(
       `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="https://www.w3.org/2000/svg">
@@ -23,4 +19,4 @@ export default function opacity(
     const g = figma.group([iconFrame, textNode], parent);
     g.expanded = false;
   }
-}
+};

@@ -81,6 +81,11 @@ const Viewer: FunctionComponent = observer(() => {
           strokeOffset: store.strokeOffset,
           labelsOutside: store.labelsOutside,
           labelPattern: store.labelPattern,
+          labelFontSize: store.labelFontSize,
+          detached: store.detached,
+          strokeCap: store.strokeCap,
+          lockDetachedGroup: store.lockDetachedGroup,
+          lockAttachedGroup: store.lockAttachedGroup,
         },
       });
     }

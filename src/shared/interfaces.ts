@@ -15,7 +15,7 @@ export interface SetTooltipOptions {
   horizontal?: TooltipPositions;
   backgroundColor?: string;
   fontColor?: string;
-  fontSize?: number;
+  labelFontSize?: number;
   name?: string;
 }
 export interface LineParameterTypes {
@@ -34,6 +34,7 @@ export interface LineParameterTypes {
   labels: boolean;
   labelsOutside: boolean;
   labelPattern: string;
+  labelFontSize: number;
 }
 export interface TooltipSettings {
   width: boolean;
@@ -46,6 +47,7 @@ export interface TooltipSettings {
   cornerRadius: boolean;
   points: boolean;
   name: boolean;
+  variants: boolean;
 }
 
 export interface PluginNodeData {
@@ -64,6 +66,7 @@ export interface PluginNodeData {
   labelPattern: string;
   tooltip: TooltipSettings;
   detached?: boolean;
+  labelFontSize?: number;
 }
 
 export interface SurroundingSettings {
@@ -118,6 +121,7 @@ export interface Store {
   tooltipOffset: number;
   tooltip: TooltipSettings;
   detached?: boolean;
+  labelFontSize: number;
 }
 
 export interface NodeSelection {

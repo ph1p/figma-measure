@@ -1,10 +1,10 @@
 # Figma Measure
 
-![header](https://user-images.githubusercontent.com/15351728/150770119-553f95d2-ce23-43ee-9c7c-c2dfb1b0c5ee.png)
+![header](https://user-images.githubusercontent.com/15351728/155365584-0a625c6a-4715-41a1-bd81-a88747e027cd.png)
 
 A plugin to add measurement lines to figma.
 
-You can find it here: https://www.figma.com/community/plugin/739918456607459153/Figma-Measure
+You can find it here: https://www.figma.com/community/plugin/739918456607459153/Measure
 
 ### Preview
 
@@ -14,16 +14,12 @@ You can find some videos inside the `./docs` folder.
 - Open Figma
 - Go to **Plugins**
 - Click on **Browse all plugins**.
-- Search for **Figma Measure** and click install
+- Search for **Measure** and click install
 - Ready!
 
 You can now find this plugin in the **Plugins** section by right-clicking on your project.
-
-![](./assets/context-menu.png)
-
-Clicking **Figma Measure** opens a window.
-Now you can select one or more elements and click on the different alignments to add red lines.
-At the bottom you can set the arrow style.
+Clicking **Measure** opens a window.
+Now you can select one or more elements and click on the different alignments to add lines, tooltips, fills etc.
 
 Feel free to open a feature request: https://github.com/ph1p/figma-measure/issues
 
