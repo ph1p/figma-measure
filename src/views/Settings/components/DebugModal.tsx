@@ -15,13 +15,15 @@ export const DebugModal: FunctionComponent<{ close: () => void }> = observer(
       const pages = {};
 
       for (const measurement of measurements) {
-        if (!pages[measurement.pageId]) {
-          pages[measurement.pageId] = {
-            name: measurement.pageName,
-            measurements: [],
-          };
+        if (!measurement.type.startsWith('GROUP_')) {
+          if (!pages[measurement.pageId]) {
+            pages[measurement.pageId] = {
+              name: measurement.pageName,
+              measurements: [],
+            };
+          }
+          pages[measurement.pageId].measurements.push(measurement);
         }
-        pages[measurement.pageId].measurements.push(measurement);
       }
 
       return pages;
@@ -65,7 +67,7 @@ export const DebugModal: FunctionComponent<{ close: () => void }> = observer(
                 (this could take a while)
               </div>
             )}
-            {!isLoading && measurements.length === 0 && (
+            {!isLoading && Object.keys(groupedByPage).length === 0 && (
               <div className="empty">No elements found</div>
             )}
             {measurements.length > 0 && (
@@ -73,43 +75,41 @@ export const DebugModal: FunctionComponent<{ close: () => void }> = observer(
                 {Object.keys(groupedByPage).map((pageId) => (
                   <div className="page">
                     <h4>{groupedByPage[pageId].name}</h4>
-                    {groupedByPage[pageId].measurements
-                      .filter((element) => !element.type.startsWith('GROUP_'))
-                      .map((element) => (
-                        <li>
-                          <span>{element.name}</span>
-                          <div>
-                            <FocusButton
-                              onClick={() => {
-                                setActiveNodeId(
-                                  element.id === activeNodeId ? '' : element.id
-                                );
-                                EventEmitter.emit('focus node', element);
-                              }}
-                            >
-                              focus
-                            </FocusButton>
+                    {groupedByPage[pageId].measurements.map((element) => (
+                      <li>
+                        <span>{element.name}</span>
+                        <div>
+                          <FocusButton
+                            onClick={() => {
+                              setActiveNodeId(
+                                element.id === activeNodeId ? '' : element.id
+                              );
+                              EventEmitter.emit('focus node', element);
+                            }}
+                          >
+                            focus
+                          </FocusButton>
 
-                            <RemoveButton
-                              onClick={() => {
-                                const tempMeasurements = measurements.filter(
-                                  (m) =>
-                                    m.pageId === pageId && m.id !== element.id
-                                );
+                          <RemoveButton
+                            onClick={() => {
+                              const tempMeasurements = measurements.filter(
+                                (m) =>
+                                  m.pageId === pageId && m.id !== element.id
+                              );
 
-                                setMeasurements(tempMeasurements);
+                              setMeasurements(tempMeasurements);
 
-                                EventEmitter.emit(
-                                  'remove node measurement',
-                                  element.id
-                                );
-                              }}
-                            >
-                              remove
-                            </RemoveButton>
-                          </div>
-                        </li>
-                      ))}
+                              EventEmitter.emit(
+                                'remove node measurement',
+                                element.id
+                              );
+                            }}
+                          >
+                            remove
+                          </RemoveButton>
+                        </div>
+                      </li>
+                    ))}
                   </div>
                 ))}
               </ul>
@@ -140,8 +140,9 @@ const FocusButton = styled(Button)`
   background-color: #c85555;
 `;
 
-const Headline = styled.h2`
-  font-size: 15px;
+const Headline = styled.h3`
+  font-size: 13px;
+  font-weight: 500;
   margin: 14px 14px 0;
 `;
 
@@ -214,6 +215,7 @@ const DebugWrapper = styled.div`
   right: 14px;
   max-height: 60%;
   z-index: 32;
+  font-size: 11px;
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
   border-radius: 6px;
   overflow: auto;

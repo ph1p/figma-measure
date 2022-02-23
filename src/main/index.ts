@@ -168,7 +168,7 @@ EventEmitter.on('remove node measurement', (nodeId) =>
 
 EventEmitter.on('focus node', (payload) => {
   goToPage(payload.pageId);
-  const node = figma.currentPage.findOne((node) => node.id === payload.id);
+  const node = figma.currentPage.findOne((n) => n.id === payload.id);
 
   const padding = node.getPluginData('padding');
   const spacing = node.getPluginData('spacing');
