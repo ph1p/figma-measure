@@ -188,7 +188,7 @@ const CardWrapper = styled.div`
     }
   }
   &.fill {
-    background-color: #D6D6D6;
+    background-color: #d6d6d6;
     footer {
       border-top: 1px solid rgb(0 0 0 / 6%);
       background-color: rgb(0 0 0 / 6%);

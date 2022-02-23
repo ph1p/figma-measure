@@ -46,15 +46,25 @@ export const getPluginData = (node, name) => {
   return JSON.parse(data);
 };
 
-const getAllMeasurementNodes = (node, pageId = '', pageName = '', measureData = []) => {
+const getAllMeasurementNodes = (
+  node,
+  pageId = '',
+  pageName = '',
+  measureData = []
+) => {
   if (node.type === 'PAGE') {
     pageId = node.id;
     pageName = node.name;
   }
 
   let type = null;
+  let componentId = null;
 
   const storedData = node.getPluginDataKeys();
+
+  if (node.type === 'INSTANCE') {
+    componentId = node.mainComponent.id;
+  }
 
   if (node.name === GROUP_NAME_DETACHED) {
     type = 'GROUP_DETACHED';
@@ -81,6 +91,7 @@ const getAllMeasurementNodes = (node, pageId = '', pageName = '', measureData = 
       pageId,
       pageName,
       type,
+      componentId,
       id: node.id,
       name: node.name,
     });
@@ -111,10 +122,7 @@ EventEmitter.answer('remove all measurements', async () => {
     if (measurement.type.includes('GROUP_')) {
       node.remove();
     } else {
-      node.setPluginData('padding', '');
-      node.setPluginData('spacing', '');
-      node.setPluginData('data', '{}');
-      node.setPluginData('parent', '');
+      removeDataFromNode(node);
     }
   }
 
@@ -126,6 +134,37 @@ const goToPage = (id) => {
     figma.currentPage = figma.getNodeById(id) as PageNode;
   }
 };
+
+const removeDataFromNode = (node) => {
+  if (Array.isArray(node)) {
+    for (const id of node) {
+      removeDataFromNode(id);
+    }
+  } else {
+    if (typeof node === 'string') {
+      node = figma.getNodeById(node);
+    }
+
+    try {
+      const data = JSON.parse(node.getPluginData('data'));
+
+      for (const id of data.connectedNodes) {
+        figma.getNodeById(id).remove();
+      }
+    } catch {
+      console.log('failed to remove connected node');
+    }
+
+    node.setPluginData('padding', '');
+    node.setPluginData('spacing', '');
+    node.setPluginData('data', '{}');
+    node.setPluginData('parent', '');
+  }
+};
+
+EventEmitter.on('remove node measurement', (nodeId) =>
+  removeDataFromNode(nodeId)
+);
 
 EventEmitter.on('focus node', (payload) => {
   goToPage(payload.pageId);

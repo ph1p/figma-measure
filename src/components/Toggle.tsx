@@ -1,11 +1,20 @@
 import React, { FunctionComponent, useMemo } from 'react';
 import styled from 'styled-components';
 
-const Wrapper = styled.div<{ inline?: boolean }>`
+const Wrapper = styled.div`
+  p {
+    font-size: 10px;
+    color: #999;
+    margin: 0;
+  }
+`;
+
+const Flex = styled.div<{ inline?: boolean }>`
   display: flex;
   justify-content: ${(props) => (props.inline ? 'initial' : 'space-between')};
   align-items: center;
   width: ${(props) => (props.inline ? 'auto' : '100%')};
+
   label {
     font-weight: normal;
     user-select: none;
@@ -63,6 +72,7 @@ const InputWrapper = styled.div`
 
 export const Toggle: FunctionComponent<
   React.InputHTMLAttributes<HTMLInputElement> & {
+    description?: string;
     label?: string;
     inline?: boolean;
   }
@@ -80,12 +90,15 @@ export const Toggle: FunctionComponent<
   );
 
   return (
-    <Wrapper inline={props.inline}>
-      {props.label && <label htmlFor={id}>{props.label}</label>}
-      <InputWrapper>
-        <input id={id} {...inputProps} type="checkbox" />
-        <span></span>
-      </InputWrapper>
+    <Wrapper>
+      <Flex inline={props.inline}>
+        {props.label && <label htmlFor={id}>{props.label}</label>}
+        <InputWrapper>
+          <input id={id} {...inputProps} type="checkbox" />
+          <span></span>
+        </InputWrapper>
+      </Flex>
+      {props.description && <p>{props.description}</p>}
     </Wrapper>
   );
 };
