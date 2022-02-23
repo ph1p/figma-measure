@@ -240,6 +240,8 @@ const DangerZone = styled.div`
 const GroupSeperator = styled.div`
   height: 1px;
   width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px !important;
   background-color: #eee;
 `;
 
@@ -254,15 +256,16 @@ const Button = styled.button`
 `;
 
 const RemoveButton = styled(Button)`
-  margin-bottom: 14px;
+  margin-bottom: 7px;
   color: #fff;
   background-color: #c85555;
 `;
 
 const DebugButton = styled(Button)``;
 
-const Headline = styled.h2`
-  font-size: 15px;
+const Headline = styled.h3`
+  font-size: 13px;
+  font-weight: 500;
   margin: 14px 14px 0;
 `;
 
@@ -273,14 +276,14 @@ const Seperator = styled.div`
 `;
 
 const LockSettings = styled.div`
-  padding: 14px 5px 14px 14px;
+  padding: 10px 5px 5px 14px;
   div:first-child {
-    margin-bottom: 10px;
+    margin-bottom: 7px;
   }
 `;
 
 const DistanceSetting = styled.div`
-  padding: 14px 5px 14px 14px;
+  padding: 10px 5px 14px 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -291,12 +294,13 @@ const Wrapper = styled.div`
   overflow: auto;
   top: 0;
   height: 520px;
+  font-size: 11px;
 `;
 
 const ToggleInputs = styled.div`
   padding: 12px 5px 12px 14px;
   > div {
-    margin-bottom: 10px;
+    margin-bottom: 7px;
     &:last-child {
       margin-bottom: 0;
     }
