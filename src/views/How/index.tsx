@@ -32,7 +32,7 @@ const Home: FunctionComponent = observer(() => {
             <span>@phlp_</span>
           </User>
           <User href="https://twitter.com/crlhsr" target="_blank">
-            <img src="https://pbs.twimg.com/profile_images/1472570965880377345/bH7sWPxq_400x400.jpg" />
+            <img src="https://pbs.twimg.com/profile_images/1512656045566750720/Vce5Q59l_400x400.jpg" />
             <span>@crlhsr</span>
           </User>
         </Users>
