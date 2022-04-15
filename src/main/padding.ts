@@ -235,7 +235,7 @@ const getNodeAndParentNode = (
   };
 };
 
-export const isValidType = (type) =>
+export const isValidType = (type: NodeType) =>
   [
     'FRAME',
     'GROUP',
@@ -252,6 +252,8 @@ export const isValidType = (type) =>
     'INSTANCE',
     'BOOLEAN_OPERATION',
   ].includes(type);
+
+export const isEffectsType = (type: NodeType) => ['RECTANGLE'].includes(type);
 
 export const createPaddingLine = ({
   direction,
@@ -321,6 +323,43 @@ export const createPaddingLine = ({
     parentNodeBounds = getRenderBoundsOfRectangle(parentNode);
   }
 
+  let shadowCoords = {
+    xMax: 0,
+    yMax: 0,
+    xMin: 0,
+    yMin: 0,
+  };
+
+  if (
+    (parentNode.type === 'FRAME' ||
+      parentNode.type === 'RECTANGLE' ||
+      parentNode.type === 'COMPONENT' ||
+      parentNode.type === 'STAR' ||
+      parentNode.type === 'VECTOR' ||
+      parentNode.type === 'ELLIPSE' ||
+      parentNode.type === 'POLYGON' ||
+      parentNode.type === 'TEXT' ||
+      parentNode.type === 'INSTANCE' ||
+      parentNode.type === 'COMPONENT_SET') &&
+    parentNode.effects.length
+  ) {
+    shadowCoords = parentNode.effects.reduce(
+      (prev, curr: any) => {
+        if (curr.type === 'DROP_SHADOW') {
+          return {
+            xMax: Math.max(prev.xMax, curr.offset.x + curr.spread),
+            yMax: Math.max(prev.yMax, curr.offset.y + curr.spread),
+            xMin: Math.min(prev.xMin, curr.offset.x - curr.spread),
+            yMin: Math.min(prev.yMin, curr.offset.y - curr.spread),
+          };
+        }
+
+        return curr;
+      },
+      { xMin: 0, yMin: 0, xMax: 0, yMax: 0 }
+    );
+  }
+
   const nodeX = nodeBounds.x;
   const nodeY = nodeBounds.y;
 
@@ -339,7 +378,12 @@ export const createPaddingLine = ({
   switch (direction) {
     case Alignments.LEFT:
       distance =
-        distanceBetweenTwoPoints(group.x, group.y, parentNodeX, group.y) * -1;
+        distanceBetweenTwoPoints(
+          group.x,
+          group.y,
+          Math.round(parentNodeX + shadowCoords.xMin * -1),
+          group.y
+        ) * -1;
       break;
     case Alignments.RIGHT:
       group.x += nodeWidth;
@@ -347,13 +391,18 @@ export const createPaddingLine = ({
       distance = distanceBetweenTwoPoints(
         group.x,
         group.y,
-        parentNodeX + parentNodeWidth,
+        Math.round(parentNodeX + parentNodeWidth - shadowCoords.xMax),
         group.y
       );
       break;
     case Alignments.TOP:
       distance =
-        distanceBetweenTwoPoints(group.x, group.y, group.x, parentNodeY) * -1;
+        distanceBetweenTwoPoints(
+          group.x,
+          group.y,
+          group.x,
+          Math.round(parentNodeY + shadowCoords.yMin * -1)
+        ) * -1;
 
       break;
     case Alignments.BOTTOM:
@@ -363,7 +412,7 @@ export const createPaddingLine = ({
         group.x,
         group.y,
         group.x,
-        parentNodeY + parentNodeHeight
+        Math.round(parentNodeY + parentNodeHeight - shadowCoords.yMax)
       );
       break;
   }
