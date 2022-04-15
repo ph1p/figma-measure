@@ -1,20 +1,23 @@
-## 3.3.0 (2022-02-23)
+## <small>3.3.1 (2022-04-15)</small>
 
-* chore: update readme ([a99a309](https://github.com/ph1p/figma-measure/commit/a99a309))
-* style(settings): update font sizes ([d445cb5](https://github.com/ph1p/figma-measure/commit/d445cb5))
 * feat(font-size): add calculated margin to labels ([4a5b350](https://github.com/ph1p/figma-measure/commit/4a5b350))
 * feat(font-size): add variable font-size to paddings and calculate better padding in labels ([bee56f8](https://github.com/ph1p/figma-measure/commit/bee56f8))
 * feat(font-size): update font size in lines and spacing ([1de3ea3](https://github.com/ph1p/figma-measure/commit/1de3ea3))
+* feat(padding): handle shadows in padding calculation ([7310634](https://github.com/ph1p/figma-measure/commit/7310634))
 * feat(settings): create a settings screen ([bb86eeb](https://github.com/ph1p/figma-measure/commit/bb86eeb))
 * feat(settings): fix some bugs and add font-size to line label ([bc8800a](https://github.com/ph1p/figma-measure/commit/bc8800a))
 * feat(settings): update screen and fix some bugs ([8dfb16b](https://github.com/ph1p/figma-measure/commit/8dfb16b))
 * feat(tooltip): add variants to settings and tooltip ([c31857f](https://github.com/ph1p/figma-measure/commit/c31857f))
 * feat(tooltip): do not rotate tooltips ([7cc89a9](https://github.com/ph1p/figma-measure/commit/7cc89a9))
 * feat(tooltip): start to add component data ([ddd7202](https://github.com/ph1p/figma-measure/commit/ddd7202))
+* fix(font-size): fix some small bugs ([cb325a5](https://github.com/ph1p/figma-measure/commit/cb325a5))
+* fix(grouping): add condition to check if is auto layout parent ([8cc4949](https://github.com/ph1p/figma-measure/commit/8cc4949))
+* fix(padding/spacing): get real bounds of text shapes ([309537e](https://github.com/ph1p/figma-measure/commit/309537e))
+* 3.3.0 ([677416d](https://github.com/ph1p/figma-measure/commit/677416d))
+* chore: update readme ([a99a309](https://github.com/ph1p/figma-measure/commit/a99a309))
+* style(settings): update font sizes ([d445cb5](https://github.com/ph1p/figma-measure/commit/d445cb5))
 * refactor(debug): add page grouping to "debug" modal ([a173164](https://github.com/ph1p/figma-measure/commit/a173164))
 * refactor(functions): replace all functions with arrow functions ([f653465](https://github.com/ph1p/figma-measure/commit/f653465))
-* fix(font-size): fix some small bugs ([cb325a5](https://github.com/ph1p/figma-measure/commit/cb325a5))
-* fix(padding/spacing): get real bounds of text shapes ([309537e](https://github.com/ph1p/figma-measure/commit/309537e))
 
 
 
