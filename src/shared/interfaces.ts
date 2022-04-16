@@ -17,6 +17,8 @@ export interface SetTooltipOptions {
   fontColor?: string;
   labelFontSize?: number;
   name?: string;
+  effects: boolean;
+  onlyEffectStyle: boolean;
 }
 export interface LineParameterTypes {
   left: number;
@@ -48,6 +50,8 @@ export interface TooltipSettings {
   points: boolean;
   name: boolean;
   variants: boolean;
+  effects: boolean;
+  onlyEffectStyle: boolean;
 }
 
 export interface PluginNodeData {

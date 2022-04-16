@@ -1,6 +1,7 @@
 import { SetTooltipOptions, TooltipSettings } from '../../../shared/interfaces';
 
 import { cornerRadius } from './parts/cornerRadius';
+import { effects } from './parts/effects';
 import { fills } from './parts/fills';
 import { fontName } from './parts/font-name';
 import { height } from './parts/height';
@@ -47,5 +48,8 @@ export const addNode = async (
   }
   if (flags.points) {
     pointCount(node, parent, settings);
+  }
+  if (flags.effects) {
+    effects(node, parent, settings);
   }
 };

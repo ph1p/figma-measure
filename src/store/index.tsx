@@ -69,6 +69,8 @@ class RootStore {
     stroke: true,
     name: true,
     variants: true,
+    effects: true,
+    onlyEffectStyle: false,
   };
 
   setLabelFontSize(fontSize: number | string, disableSync = false) {

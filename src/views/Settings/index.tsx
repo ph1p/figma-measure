@@ -208,6 +208,20 @@ const Settings: FunctionComponent = observer(() => {
             description="Shows points of your element, e.g. from a star"
             onChange={() => store.toggleTooltipSetting('points')}
           />
+
+          <GroupSeperator />
+
+          <Toggle
+            checked={store.tooltip.effects}
+            label="Effects"
+            onChange={() => store.toggleTooltipSetting('effects')}
+          />
+
+          <Toggle
+            checked={store.tooltip.onlyEffectStyle}
+            label="Show effect name only"
+            onChange={() => store.toggleTooltipSetting('onlyEffectStyle')}
+          />
         </ToggleInputs>
 
         <Seperator />
