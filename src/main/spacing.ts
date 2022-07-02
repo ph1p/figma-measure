@@ -64,10 +64,18 @@ EventEmitter.on('draw spacing', (settings) => {
 });
 
 export const distanceBetweenTwoPoints = (x1, y1, x2, y2) =>
-  Math.floor(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)));
+  Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 
-const getShapeValues = (shape: SceneNode) => {
-  let absoluteRenderBounds = (shape as any).absoluteRenderBounds;
+const getShapeValues = (shape) => {
+  let absoluteRenderBounds =
+    shape?.rotation === 0
+      ? {
+          x: shape.absoluteTransform[0][2],
+          y: shape.absoluteTransform[1][2],
+          height: shape.height,
+          width: shape.width,
+        }
+      : shape.absoluteRenderBounds;
   if (shape.type === 'TEXT' || shape.type === 'SHAPE_WITH_TEXT') {
     absoluteRenderBounds = getRenderBoundsOfRectangle(shape);
   }

@@ -17,8 +17,6 @@ export interface SetTooltipOptions {
   fontColor?: string;
   labelFontSize?: number;
   name?: string;
-  effects: boolean;
-  onlyEffectStyle: boolean;
 }
 export interface LineParameterTypes {
   left: number;
@@ -128,12 +126,18 @@ export interface Store {
   labelFontSize: number;
 }
 
-export interface NodeSelection {
+export interface SelectionNode {
   id: string;
   type: NodeType;
   hasSpacing: boolean;
   data: Partial<PluginNodeData>;
   padding: Record<Alignments, string>;
+  spacing?: unknown;
+}
+export interface NodeSelection {
+  nodes: SelectionNode[];
+  padding: Partial<SelectionNode>[];
+  spacing: Partial<SelectionNode>[];
 }
 
 export interface ExchangeStoreValues

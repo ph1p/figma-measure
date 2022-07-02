@@ -30,9 +30,8 @@ const ColorsWrapper = styled.div`
   .active-color {
     position: relative;
     z-index: 1;
-    border: 1px solid var(--figma-color-bg-disabled);
-
-    background-color: var(--figma-color-bg-hover);
+    border: 1px solid var(--figma-color-bg-tertiary);
+    background-color: transparent;
     /* background-color: #fff;
     border: 1px solid #e8e8e8; */
     padding: 3px;

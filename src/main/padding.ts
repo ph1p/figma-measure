@@ -80,6 +80,18 @@ EventEmitter.on('add padding', ({ direction, settings }) => {
 
   const nodeData = getNodeAndParentNode(currentNode);
 
+  switch (nodeData.error) {
+    case ParentNodeErrors.PARENT_NOT_FOUND:
+      figma.notify('No parent element found');
+      break;
+    case ParentNodeErrors.NOT_CONTAIN:
+      figma.notify('The element does not contain the other one');
+      break;
+    case ParentNodeErrors.NOT_TWO_ELEMENTS:
+      figma.notify('Please select only two elements');
+      break;
+  }
+
   const paddingLines = [];
 
   if (nodeData && nodeData.node && nodeData.parentNode) {
@@ -190,18 +202,24 @@ const contains = (node1, node2) => {
   );
 };
 
-const getNodeAndParentNode = (
+export enum ParentNodeErrors {
+  NOT_CONTAIN,
+  NOT_TWO_ELEMENTS,
+  PARENT_NOT_FOUND,
+  NONE,
+}
+
+export const getNodeAndParentNode = (
   node?: SceneNode,
   parentNode?: SceneNode
-): { node?: SceneNode; parentNode?: SceneNode } => {
+): { node?: SceneNode; parentNode?: SceneNode; error: ParentNodeErrors } => {
   let currentNode = node ?? (figma.currentPage.selection[0] as SceneNode);
 
   if (figma.currentPage.selection.length === 1 && !parentNode) {
     if (currentNode.parent && currentNode.parent.type !== 'PAGE') {
       parentNode = currentNode.parent as SceneNode;
     } else {
-      figma.notify('No parent element found');
-      return null;
+      return { error: ParentNodeErrors.PARENT_NOT_FOUND };
     }
   } else if (
     figma.currentPage.selection.length === 2 ||
@@ -215,8 +233,7 @@ const getNodeAndParentNode = (
       !contains(currentNode, parentNode) &&
       !contains(parentNode, currentNode)
     ) {
-      figma.notify('The element does not contain the other one');
-      return null;
+      return { error: ParentNodeErrors.NOT_CONTAIN };
     }
 
     if (contains(currentNode, parentNode)) {
@@ -225,13 +242,13 @@ const getNodeAndParentNode = (
       currentNode = dummyParentNode;
     }
   } else {
-    figma.notify('Please select only two elements');
-    return null;
+    return { error: ParentNodeErrors.NOT_TWO_ELEMENTS };
   }
 
   return {
     node: currentNode as SceneNode,
     parentNode,
+    error: ParentNodeErrors.NONE,
   };
 };
 
@@ -381,7 +398,7 @@ export const createPaddingLine = ({
         distanceBetweenTwoPoints(
           group.x,
           group.y,
-          Math.round(parentNodeX + shadowCoords.xMin * -1),
+          parentNodeX + shadowCoords.xMin * -1,
           group.y
         ) * -1;
       break;
@@ -391,7 +408,7 @@ export const createPaddingLine = ({
       distance = distanceBetweenTwoPoints(
         group.x,
         group.y,
-        Math.round(parentNodeX + parentNodeWidth - shadowCoords.xMax),
+        parentNodeX + parentNodeWidth - shadowCoords.xMax,
         group.y
       );
       break;
@@ -401,7 +418,7 @@ export const createPaddingLine = ({
           group.x,
           group.y,
           group.x,
-          Math.round(parentNodeY + shadowCoords.yMin * -1)
+          parentNodeY + shadowCoords.yMin * -1
         ) * -1;
 
       break;
@@ -412,7 +429,7 @@ export const createPaddingLine = ({
         group.x,
         group.y,
         group.x,
-        Math.round(parentNodeY + parentNodeHeight - shadowCoords.yMax)
+        parentNodeY + parentNodeHeight - shadowCoords.yMax
       );
       break;
   }

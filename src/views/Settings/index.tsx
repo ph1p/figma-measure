@@ -263,7 +263,7 @@ const Button = styled.button`
   display: block;
   border: 0;
   padding: 10px 12px;
-  font-size: 11px;
+  font-size: 12px;
   border-radius: 4px;
   width: 100%;
   text-align: center;
@@ -272,10 +272,13 @@ const Button = styled.button`
 const RemoveButton = styled(Button)`
   margin-bottom: 7px;
   color: #fff;
-  background-color: #c85555;
+  background-color: #e03e1a;
 `;
 
-const DebugButton = styled(Button)``;
+const DebugButton = styled(Button)`
+  background-color: var(--figma-color-bg-hover);
+  color: var(--figma-color-bg-inverse);
+`;
 
 const Headline = styled.h3`
   font-size: 13px;

@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { Colors } from '../../components/ColorPicker';
 import { EmptyScreenImage } from '../../components/EmptyScreenImage';
 import { Input } from '../../components/Input';
-import Tooltip from '../../components/Tooltip';
+import { QuestionMark } from '../../components/QuestionMark';
 import {
   AttachedIcon,
   DetachedIcon,
@@ -110,55 +110,34 @@ const Home: FunctionComponent = observer(() => {
           width={140}
           label="Units"
           placeholder="($)px, ($##*2.1), cm..."
+          description={
+            <>
+              You can write a "complex" pattern like this{' '}
+              <strong>($###*2.5)</strong> or a simple one <strong>($)</strong>
+              <p>
+                <strong>$</strong> represents the value, after that you can add
+                a multiplier or divider (<strong>*</strong> or{' '}
+                <strong>/</strong>) the repetition of the <strong>#</strong>{' '}
+                symbol indicates the number of digits after the decimal point.
+                <br /> You can also fill the field with only one unit of
+                measurement and everything will be automatically calculated
+                based on 72dpi. (cm,mm,px,pt,dp,",in)
+              </p>
+              <h3>Example</h3>
+              <p>
+                Imagine your base unit is 8px=1x. So when a square is 64px the
+                measurement will be 8x as the result.
+              </p>
+              <strong>($###/8)x</strong>
+            </>
+          }
           value={store.labelPattern}
           onChange={(e) => store.setLabelPattern(e.currentTarget.value)}
         />
-
-        <Tooltip
-          handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
-            <div ref={ref} className="question">
-              ?
-            </div>
-          ))}
-        >
-          <UnitDescription>
-            You can write a "complex" pattern like this{' '}
-            <strong>($###*2.5)</strong> or a simple one <strong>($)</strong>
-            <p>
-              <strong>$</strong> represents the value, after that you can add a
-              multiplier or divider (<strong>*</strong> or <strong>/</strong>)
-              the repetition of the <strong>#</strong> symbol indicates the
-              number of digits after the decimal point.
-              <br /> You can also fill the field with only one unit of
-              measurement and everything will be automatically calculated based
-              on 72dpi. (cm,mm,px,pt,dp,",in)
-            </p>
-            <h3>Example</h3>
-            <p>
-              Imagine your base unit is 8px=1x. So when a square is 64px the
-              measurement will be 8x as the result.
-            </p>
-            <strong>($###/8)x</strong>
-          </UnitDescription>
-        </Tooltip>
       </InputContainer>
     </>
   );
 });
-
-const UnitDescription = styled.div`
-  width: 200px;
-  strong {
-    background-color: #fff;
-    border-radius: 3px;
-    padding: 1px 3px;
-    color: #000;
-    display: inline-block;
-  }
-  h3 {
-    margin: 5px 0 8px;
-  }
-`;
 
 const InputContainer = styled.div`
   display: flex;
@@ -167,23 +146,6 @@ const InputContainer = styled.div`
   width: 100%;
   padding: 12px 14px;
   position: relative;
-  .question {
-    background-color: var(--figma-color-bg-hover);
-    position: absolute;
-    left: 50px;
-    top: 19px;
-    width: 16px;
-    height: 16px;
-    line-height: 16px;
-    border-radius: 4px;
-    color: var(--figma-color-bg-inverse);
-    text-align: center;
-    cursor: pointer;
-    &:hover {
-      background-color: ${(props) => props.theme.color};
-      color: ${(props) => props.theme.hoverColor};
-    }
-  }
 `;
 
 const ViewerOverlay = styled.div`
@@ -215,13 +177,13 @@ const Refresh = styled.div<{ active?: boolean }>`
   border-radius: 11px;
   width: 30px;
   height: 30px;
-  border: 1px solid var(--figma-color-bg-disabled);
+  border: 1px solid var(--figma-color-bg-tertiary);
   overflow: hidden;
   opacity: ${(props) => (props.active ? 1 : 0.5)};
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--figma-color-bg-hover);
+  background-color: transparent;
 
   > svg path {
     fill: var(--figma-color-text);
@@ -264,7 +226,7 @@ const LabelControl = styled(Refresh)<{ index?: number }>`
       display: inline-block;
 
       &:nth-child(${(p) => p.index}) {
-        background-color:  ${(p) => p.theme.color};
+        background-color: ${(p) => p.theme.color};
       }
     }
   }

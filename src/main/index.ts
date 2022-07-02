@@ -18,7 +18,13 @@ import {
 import { createFill } from './fill';
 import { appendElementsToGroup } from './helper';
 import { createLine } from './line';
-import { getPadding, createPaddingLine, removePaddingGroup } from './padding';
+import {
+  getPadding,
+  createPaddingLine,
+  removePaddingGroup,
+  getNodeAndParentNode,
+  ParentNodeErrors,
+} from './padding';
 import { drawSpacing, getSpacing, setSpacing } from './spacing';
 import { getState } from './store';
 import { setTooltip } from './tooltip';
@@ -31,6 +37,7 @@ figma.skipInvisibleInstanceChildren = true;
 figma.showUI(__html__, {
   width: 285,
   height: 562,
+  themeColors: true,
 });
 
 figma.root.setRelaunchData({
@@ -188,41 +195,90 @@ EventEmitter.on('focus node', (payload) => {
   figma.viewport.scrollAndZoomIntoView([node]);
 });
 
-const getSelectionArray = async (): Promise<NodeSelection[]> => {
+const getSelectionArray = async (): Promise<NodeSelection> => {
   const state = await getState();
-  return figma.currentPage.selection.map((node) => {
-    let data = {};
 
-    try {
-      data = JSON.parse(node.getPluginData('data'));
-    } catch {
-      data = {};
+  const nodes = [];
+  const paddingNodes = [];
+  const spacingNodes = [];
+
+  for (const node of figma.currentPage.selection) {
+    if (node) {
+      let data = {};
+
+      try {
+        data = JSON.parse(node.getPluginData('data'));
+      } catch {
+        data = {};
+      }
+
+      const spacing = getSpacing(node);
+      const spacings = state.detached ? 0 : Object.keys(spacing).length;
+      const padding = getPadding(node);
+
+      const x = node.x;
+      const y = node.y;
+
+      const nodeData = {
+        id: node.id,
+        type: node.type,
+        x: x,
+        y: y,
+        x2: x + node.width,
+        y2: y + node.height,
+        width: node.width,
+        height: node.height,
+      };
+
+      nodes.push({
+        ...nodeData,
+        padding,
+        hasSpacing: spacings > 0 && figma.currentPage.selection.length === 1,
+        data,
+      });
+
+      if (figma.currentPage.selection.length === 2) {
+        paddingNodes.push({
+          ...nodeData,
+          padding,
+          data,
+        });
+
+        spacingNodes.push({
+          ...nodeData,
+          spacing,
+          data,
+        });
+      }
     }
+  }
 
-    const spacings = state.detached ? 0 : Object.keys(getSpacing(node)).length;
+  // if (paddingNodes.length) {
+  //   const nodeData = getNodeAndParentNode(
+  //     figma.currentPage.selection[0],
+  //     figma.currentPage.selection[1]
+  //   );
 
-    const x = node.x;
-    const y = node.y;
+  //   if (nodeData.error === ParentNodeErrors.NONE) {
+  //     console.log(
+  //       nodeData && paddingNodes.find((n) => n.id === nodeData.node.id),
+  //       {
+  //         nodeData,
+  //       }
+  //     );
+  //   }
+  // }
 
-    return {
-      id: node.id,
-      type: node.type,
-      x: x,
-      y: y,
-      x2: x + node.width,
-      y2: y + node.height,
-      width: node.width,
-      height: node.height,
-      padding: getPadding(node),
-      hasSpacing: spacings > 0 && figma.currentPage.selection.length === 1,
-      data,
-    };
-  });
+  return {
+    nodes,
+    padding: paddingNodes,
+    spacing: spacingNodes,
+  };
 };
 
 export const sendSelection = () =>
   getSelectionArray().then((selection) =>
-    EventEmitter.emit('selection', selection)
+    EventEmitter.emit<NodeSelection>('selection', selection)
   );
 
 const currentSelectionAsJSONString = () =>
@@ -262,7 +318,7 @@ figma.on('selectionchange', () => {
           };
 
           previousSelection = currentSelectionAsJSONString();
-          await setMeasurements(store);
+          await setMeasurements(store, true);
         }
       }, 1000);
     }
@@ -284,7 +340,11 @@ EventEmitter.on('set measurements', async (store: ExchangeStoreValues) =>
   setMeasurements(store)
 );
 
-const setMeasurements = async (store?: ExchangeStoreValues) => {
+const setMeasurements = async (
+  store?: ExchangeStoreValues,
+  shouldIncludeGroups = false,
+  nodes = figma.currentPage.selection
+) => {
   const state = await getState();
 
   let data: PluginNodeData = null;
@@ -293,10 +353,21 @@ const setMeasurements = async (store?: ExchangeStoreValues) => {
     ...store,
   };
 
-  for (const node of figma.currentPage.selection) {
+  for (const node of nodes) {
     let surrounding: SurroundingSettings = store.surrounding;
 
     if (!state.detached) {
+      if (
+        node.name !== GROUP_NAME_ATTACHED &&
+        node.name !== GROUP_NAME_DETACHED &&
+        (node.type === 'GROUP' || node.type === 'FRAME') &&
+        shouldIncludeGroups
+      ) {
+        if (node.children.length > 0) {
+          setMeasurements(store, shouldIncludeGroups, node.children);
+        }
+      }
+
       try {
         data = JSON.parse(node.getPluginData('data') || '{}');
 

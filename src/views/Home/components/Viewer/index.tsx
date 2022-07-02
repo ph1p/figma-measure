@@ -156,6 +156,8 @@ const Viewer: FunctionComponent = observer(() => {
           <div>
             <Spacing showSpacing={showSpacing} hasSpacing={hasSpacing} />
 
+            {/* TODO: with two selected nodes, send the nodes along and make parent + child recognizable and select depending on that */}
+
             <OverlayAndPadding>
               <Line.Vertical
                 labels={store.labels}

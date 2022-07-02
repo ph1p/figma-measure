@@ -1,10 +1,12 @@
 import React, { FunctionComponent, useMemo } from 'react';
 import styled from 'styled-components';
 
+import { QuestionMark } from './QuestionMark';
+
 export const Input: FunctionComponent<
   React.InputHTMLAttributes<HTMLInputElement> & {
     label?: string;
-    description?: string;
+    description?: string | JSX.Element;
     width?: number;
   }
 > = (props) => {
@@ -15,12 +17,8 @@ export const Input: FunctionComponent<
 
   return (
     <InputWrapper>
-      {props.label && (
-        <label htmlFor={id}>
-          {props.label}
-          {props.description && <p>{props.description}</p>}
-        </label>
-      )}
+      {props.label && <label htmlFor={id}>{props.label}</label>}
+      {props.description && <QuestionMark>{props.description}</QuestionMark>}
 
       <input
         id={id}
@@ -39,10 +37,10 @@ const InputWrapper = styled.div.attrs(() => ({
   className: 'input',
 }))`
   display: flex;
-  justify-content: space-between;
   width: 100%;
   align-items: center;
   label {
+    margin-right: 10px;
     font-weight: 500;
     color: var(--figma-color-text);
     p {
@@ -53,9 +51,10 @@ const InputWrapper = styled.div.attrs(() => ({
     }
   }
   input {
+    margin-left: auto;
     width: 60px;
-    background-color: var(--figma-color-bg-hover);
-    border-color: var(--figma-color-bg-disabled);
+    background-color: transparent;
+    border-color: var(--figma-color-bg-tertiary);
     color: var(--figma-color-text);
   }
 `;

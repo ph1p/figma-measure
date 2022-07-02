@@ -16,7 +16,7 @@ const CenterChooser: FunctionComponent = observer(() => {
           viewBox="0 0 30 30"
           fill="none"
           xmlns="https://www.w3.org/2000/svg"
-          className={store.fill === 'stroke' ? 'active' : ''}
+          className={`${store.fill === 'stroke' ? 'active' : ''} stroke`}
           onClick={() => store.setFill('stroke')}
         >
           <rect
@@ -43,7 +43,7 @@ const CenterChooser: FunctionComponent = observer(() => {
           viewBox="0 0 30 30"
           fill="none"
           xmlns="https://www.w3.org/2000/svg"
-          className={store.fill === 'dashed' ? 'active' : ''}
+          className={`${store.fill === 'dashed' ? 'active' : ''} dashed`}
           onClick={() => store.setFill('dashed')}
         >
           <svg
@@ -79,7 +79,9 @@ const CenterChooser: FunctionComponent = observer(() => {
           viewBox="0 0 30 30"
           fill="none"
           xmlns="https://www.w3.org/2000/svg"
-          className={store.fill === 'fill-stroke' ? 'active' : ''}
+          className={`${
+            store.fill === 'fill-stroke' ? 'active' : ''
+          } fill-stroke`}
           onClick={() => store.setFill('fill-stroke')}
         >
           <rect
@@ -108,7 +110,7 @@ const CenterChooser: FunctionComponent = observer(() => {
           viewBox="0 0 30 30"
           fill="none"
           xmlns="https://www.w3.org/2000/svg"
-          className={store.fill === 'fill' ? 'active' : ''}
+          className={`${store.fill === 'fill' ? 'active' : ''} fill`}
           onClick={() => store.setFill('fill')}
         >
           <rect
@@ -205,12 +207,31 @@ const Container = styled.div`
       fill: var(--figma-color-bg-disabled);
     }
 
+    &.fill {
+      .background {
+        stroke: var(--figma-color-bg-hover);
+        fill: var(--figma-color-bg-hover);
+      }
+    }
+
     &:not(.active):hover {
       rect {
         stroke: ${(props) => props.theme.softColor};
       }
       path {
         fill: ${(props) => props.theme.softColor};
+      }
+      &.fill {
+        .background {
+          stroke: ${(props) => props.theme.softColor};
+          fill: ${(props) => props.theme.softColor};
+        }
+      }
+      &.fill-stroke {
+        .background {
+          stroke: ${(props) => props.theme.softColor};
+          fill: ${(props) => props.theme.hoverColor};
+        }
       }
     }
 
@@ -219,12 +240,21 @@ const Container = styled.div`
         stroke: ${(props) => props.theme.color};
       }
 
-      .background {
-        fill: ${(props) => props.theme.softColor};
-      }
-
       path {
         fill: ${(props) => props.theme.color};
+      }
+
+      &.fill {
+        .background {
+          stroke: ${(props) => props.theme.color};
+          fill: ${(props) => props.theme.color};
+        }
+      }
+      &.fill-stroke {
+        .background {
+          stroke: ${(props) => props.theme.softColor};
+          fill: ${(props) => props.theme.color};
+        }
       }
     }
   }

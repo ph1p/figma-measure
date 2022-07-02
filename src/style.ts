@@ -74,7 +74,7 @@ export const TOKENS = {
   },
 };
 
-export const DEFAULT_COLOR = TOKENS.colors.solid.persian.value;
+export const DEFAULT_COLOR = TOKENS.colors.solid.red.value;
 
 export const getColorByTypeAndSolidColor = (
   color: string,
@@ -126,13 +126,13 @@ h4 {
   position: relative;
   input {
     border-radius: 6px;
-    border: 1px solid var(--figma-color-bg-disabled);
+    border: 1px solid var(--figma-color-bg-tertiary);
     outline: none;
     padding: 7px 10px;
     box-sizing: border-box;
     font-size: 12px;
     width: 100%;
-    background-color: var(--figma-color-bg-hover);
+    background-color: transparent;
     color: var(--figma-color-text);
     &:focus {
       border-color: ${(props) => props.theme.color};

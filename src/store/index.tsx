@@ -9,6 +9,7 @@ import {
   FillTypes,
   NodeSelection,
   PluginNodeData,
+  SelectionNode,
   SurroundingSettings,
   TooltipPositions,
   TooltipSettings,
@@ -40,7 +41,7 @@ class RootStore {
   color = DEFAULT_COLOR;
 
   @ignore
-  selection: NodeSelection[] = [];
+  selection: SelectionNode[] = [];
 
   fill: FillTypes = 'stroke';
   opacity = 50;
@@ -113,8 +114,8 @@ class RootStore {
       this.resetSurrounding();
     }
 
-    EventEmitter.ask('current selection').then((data: string[]) => {
-      this.setSelection(data);
+    EventEmitter.ask('current selection').then((data: NodeSelection) => {
+      this.setSelection(data.nodes);
       this.sendMeasurements();
     });
   }
@@ -200,6 +201,18 @@ class RootStore {
 
   resetSurrounding() {
     this.surrounding = DEFAULT_SURROUNDING_FLAGS;
+  }
+
+  @ignore
+  selectionSpacing = [];
+  setSelectionSpacing(selection = []) {
+    this.selectionSpacing = selection;
+  }
+
+  @ignore
+  selectionPaddings = [];
+  setSelectionPaddings(selection = []) {
+    this.selectionPaddings = selection;
   }
 
   setSelection(selection = []) {

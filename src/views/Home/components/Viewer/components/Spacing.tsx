@@ -3,6 +3,7 @@ import React, { FunctionComponent } from 'react';
 import styled, { css } from 'styled-components';
 
 import EventEmitter from '../../../../../shared/EventEmitter';
+import { NodeSelection } from '../../../../../shared/interfaces';
 import { useStore } from '../../../../../store';
 
 export const Spacing: FunctionComponent<{
@@ -12,8 +13,8 @@ export const Spacing: FunctionComponent<{
   const store = useStore();
 
   const refreshSelection = () =>
-    EventEmitter.ask('current selection').then((data: string[]) =>
-      store.setSelection(data)
+    EventEmitter.ask('current selection').then((data: NodeSelection) =>
+      store.setSelection(data.nodes)
     );
 
   const addSpacing = () => {

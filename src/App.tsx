@@ -15,7 +15,7 @@ import {
 import styled, { ThemeProvider } from 'styled-components';
 
 import EventEmitter from './shared/EventEmitter';
-import { Alignments, PluginNodeData } from './shared/interfaces';
+import { Alignments, NodeSelection, PluginNodeData } from './shared/interfaces';
 import { getStoreFromMain, StoreProvider, trunk, useStore } from './store';
 import {
   DEFAULT_COLOR,
@@ -45,11 +45,13 @@ const App: FunctionComponent = observer(() => {
 
   useEffect(() => {
     // check selection
-    EventEmitter.ask('current selection').then((data: string[]) =>
-      store.setSelection(data)
+    EventEmitter.ask('current selection').then((data: NodeSelection) =>
+      store.setSelection(data.nodes)
     );
 
-    EventEmitter.on('selection', (data) => store.setSelection(data));
+    EventEmitter.on('selection', (data: NodeSelection) => {
+      store.setSelection(data.nodes);
+    });
 
     return () => EventEmitter.remove('selection');
   }, []);
@@ -186,6 +188,9 @@ const Navigation = styled.nav`
       a {
         color: var(--figma-color-text-tertiary);
         text-decoration: none;
+        &:hover {
+          color: var(--figma-color-text-secondary);
+        }
         &.active {
           color: var(--figma-color-text);
         }

@@ -3,9 +3,10 @@
  */
 class EventEmitter {
   messageEvent = new Map();
-  emit: (
+  emit: <T>(
     name: string,
     data?:
+      | T
       | Record<string, unknown>
       | number
       | string
