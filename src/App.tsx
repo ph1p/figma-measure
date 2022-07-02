@@ -23,8 +23,8 @@ import {
   GlobalStyle,
   theme,
 } from './style';
+import About from './views/About';
 import Home from './views/Home';
-import How from './views/How';
 import Settings from './views/Settings';
 
 import './ui.css';
@@ -129,14 +129,14 @@ const App: FunctionComponent = observer(() => {
               <CustomLink to="/settings">Settings</CustomLink>
             </li>
             <li>
-              <CustomLink to="/how">How?</CustomLink>
+              <CustomLink to="/about">About</CustomLink>
             </li>
           </ul>
         </Navigation>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/How" element={<How />} />
+          <Route path="/about" element={<About />} />
         </Routes>
       </Main>
     </ThemeProvider>
@@ -169,12 +169,12 @@ const Navigation = styled.nav`
   overflow: hidden;
   height: 42px;
   border-width: 0px 0px 1px;
-  border-color: rgb(238, 238, 238);
+  border-color: var(--figma-color-bg-secondary);
   border-style: solid;
   width: 100%;
   padding: 0px 12px;
   font-size: 11px;
-  background: #fff;
+  background: var(--figma-color-bg);
   ul {
     display: flex;
     list-style: none;
@@ -184,10 +184,10 @@ const Navigation = styled.nav`
     li {
       align-self: center;
       a {
-        color: #b2b2b2;
+        color: var(--figma-color-text-tertiary);
         text-decoration: none;
         &.active {
-          color: #000;
+          color: var(--figma-color-text);
         }
       }
       &:last-child {

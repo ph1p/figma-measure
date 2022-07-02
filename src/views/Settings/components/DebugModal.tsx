@@ -157,7 +157,7 @@ export const OverlayStyle = css`
   position: fixed;
   top: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(var(--figma-color-bg), 0.3);
   z-index: 31;
   height: 100%;
   width: 100%;

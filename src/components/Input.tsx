@@ -44,8 +44,9 @@ const InputWrapper = styled.div.attrs(() => ({
   align-items: center;
   label {
     font-weight: 500;
+    color: var(--figma-color-text);
     p {
-      color: #999;
+      color: var(--figma-color-text-onbrand-secondary);
       font-size: 11px;
       font-weight: normal;
       margin: 0;
@@ -53,5 +54,8 @@ const InputWrapper = styled.div.attrs(() => ({
   }
   input {
     width: 60px;
+    background-color: var(--figma-color-bg-hover);
+    border-color: var(--figma-color-bg-disabled);
+    color: var(--figma-color-text);
   }
 `;

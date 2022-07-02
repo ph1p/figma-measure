@@ -52,7 +52,7 @@ const InputWrapper = styled.div`
       height: 100%;
       width: 100%;
       content: '';
-      background-color: #c0c6d9;
+      background-color: var(--figma-color-bg-hover);
       border-radius: 14px;
       &:before {
         content: '';

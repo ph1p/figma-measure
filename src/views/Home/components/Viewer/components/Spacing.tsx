@@ -56,12 +56,12 @@ const ArrowTopBottom = css`
   &::after {
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
-    border-bottom: 3px solid ${(props) => props.theme.softColor};
+    border-bottom: 3px solid var(--figma-color-bg-disabled);
   }
   &::before {
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
-    border-top: 3px solid ${(props) => props.theme.softColor};
+    border-top: 3px solid var(--figma-color-bg-disabled);
     bottom: -9px;
   }
 `;
@@ -72,12 +72,12 @@ const ArrowLeftRight = css`
   &::after {
     border-top: 5px solid transparent;
     border-bottom: 5px solid transparent;
-    border-right: 3px solid ${(props) => props.theme.softColor};
+    border-right: 3px solid var(--figma-color-bg-disabled);
   }
   &::before {
     border-top: 5px solid transparent;
     border-bottom: 5px solid transparent;
-    border-left: 3px solid ${(props) => props.theme.softColor};
+    border-left: 3px solid var(--figma-color-bg-disabled);
     right: -9px;
   }
 `;
@@ -100,7 +100,7 @@ const Wrapper = styled.div.attrs<{ enabled?: boolean; active?: boolean }>(
     opacity: 1;
     cursor: pointer;
     &:hover {
-      border-color: ${(props) => props.theme.hoverColor};
+      border-color: var(--figma-color-bg-hover);
     }
   }
   &::after {
@@ -108,7 +108,7 @@ const Wrapper = styled.div.attrs<{ enabled?: boolean; active?: boolean }>(
     position: absolute;
     left: -5px;
     top: -5px;
-    border: 1px dashed ${(props) => props.theme.softColor};
+    border: 1px dashed var(--figma-color-bg-disabled);
     width: calc(100% + 8px);
     height: calc(100% + 8px);
     border-radius: 17px;

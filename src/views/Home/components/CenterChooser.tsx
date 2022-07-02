@@ -181,13 +181,29 @@ const Container = styled.div`
   align-items: center;
   justify-content: space-between;
   border-width: 1px 0 1px;
-  border-color: #eee;
+  border-color: var(--figma-color-bg-secondary);
   border-style: solid;
   input {
     width: 75px;
   }
+
+  /* border: 1px solid var(--figma-color-bg-disabled);
+  background-color: var(--figma-color-bg-hover);
+  fill: var(--figma-color-text); */
+
+  .background {
+    fill: var(--figma-color-bg-hover);
+  }
+
   svg {
     cursor: pointer;
+
+    rect {
+      stroke: var(--figma-color-bg-disabled);
+    }
+    path {
+      fill: var(--figma-color-bg-disabled);
+    }
 
     &:not(.active):hover {
       rect {

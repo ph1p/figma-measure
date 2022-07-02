@@ -247,7 +247,7 @@ const DangerZone = styled.div`
   padding: 14px;
   p {
     margin-top: 0;
-    color: #999;
+    color: var(--figma-color-text-tertiary);
   }
 `;
 
@@ -256,7 +256,7 @@ const GroupSeperator = styled.div`
   width: 100%;
   margin-top: 10px;
   margin-bottom: 10px !important;
-  background-color: #eee;
+  background-color: var(--figma-color-bg-secondary);
 `;
 
 const Button = styled.button`
@@ -281,12 +281,13 @@ const Headline = styled.h3`
   font-size: 13px;
   font-weight: 500;
   margin: 14px 14px 0;
+  color: var(--figma-color-text);
 `;
 
 const Seperator = styled.div`
   width: 100%;
   height: 1px;
-  background-color: rgb(238, 238, 238);
+  background-color: var(--figma-color-bg-secondary);
 `;
 
 const LockSettings = styled.div`
@@ -309,6 +310,7 @@ const Wrapper = styled.div`
   top: 0;
   height: 520px;
   font-size: 11px;
+  color: var(--figma-color-text);
 `;
 
 const ToggleInputs = styled.div`

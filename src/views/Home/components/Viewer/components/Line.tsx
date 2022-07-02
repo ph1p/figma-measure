@@ -38,7 +38,7 @@ const VerticalLine = styled.div.attrs<Props>((props) => ({
   z-index: 10;
   &:hover {
     z-index: 4;
-    background-color: ${(props) => props.theme.hoverColor};
+    background-color: var(--figma-color-bg-hover);
   }
   div {
     position: absolute;
@@ -46,12 +46,12 @@ const VerticalLine = styled.div.attrs<Props>((props) => ({
     left: 5px;
     height: calc(100% - 10px);
     width: 1px;
-    background-color: ${(props) => props.theme.softColor};
+    background-color: var(--figma-color-bg-disabled);
     &::after {
       content: '';
       display: ${(props) => (props.labels ? 'block' : 'none')};
       position: absolute;
-      background-color: ${(props) => props.theme.softColor};
+      background-color: var(--figma-color-bg-disabled);
       width: 3px;
       left: ${(props) => (props.labelsOutside ? 3 : -1)};
       height: 29%;
@@ -66,7 +66,7 @@ const VerticalLine = styled.div.attrs<Props>((props) => ({
     width: 5px;
     height: 1px;
     left: 3px;
-    background-color: ${(props) => props.theme.softColor};
+    background-color: var(--figma-color-bg-disabled);
   }
   &::after {
     top: 5px;
@@ -129,7 +129,7 @@ const CornerLine = styled.div.attrs<Props>((props) => ({
   cursor: pointer;
   &:hover::after,
   &:hover div::after {
-    background-color: ${(props) => props.theme.hoverColor};
+    background-color: var(--figma-color-bg-hover);
   }
   &::after {
     content: '';
@@ -148,7 +148,7 @@ const CornerLine = styled.div.attrs<Props>((props) => ({
     border-top-left-radius: 5px;
     border-width: 1px 0 0 1px;
     border-style: solid;
-    border-color: ${(props) => props.theme.softColor};
+    border-color: var(--figma-color-bg-disabled);
     &::after {
       content: '';
       display: 'block';

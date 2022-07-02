@@ -168,7 +168,7 @@ const InputContainer = styled.div`
   padding: 12px 14px;
   position: relative;
   .question {
-    background-color: ${(props) => props.theme.hoverColor};
+    background-color: var(--figma-color-bg-hover);
     position: absolute;
     left: 50px;
     top: 19px;
@@ -176,7 +176,7 @@ const InputContainer = styled.div`
     height: 16px;
     line-height: 16px;
     border-radius: 4px;
-    color: ${(props) => props.theme.color};
+    color: var(--figma-color-bg-inverse);
     text-align: center;
     cursor: pointer;
     &:hover {
@@ -192,7 +192,7 @@ const ViewerOverlay = styled.div`
   left: 0;
   height: 100%;
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: var(--figma-color-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -215,12 +215,17 @@ const Refresh = styled.div<{ active?: boolean }>`
   border-radius: 11px;
   width: 30px;
   height: 30px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid var(--figma-color-bg-disabled);
   overflow: hidden;
   opacity: ${(props) => (props.active ? 1 : 0.5)};
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: var(--figma-color-bg-hover);
+
+  > svg path {
+    fill: var(--figma-color-text);
+  }
 
   &:hover {
     border-color: ${(props) => props.theme.color};
@@ -255,11 +260,11 @@ const LabelControl = styled(Refresh)<{ index?: number }>`
       border-radius: 100%;
       width: 3px;
       height: 3px;
-      background-color: #e3e3e3;
+      background-color: var(--figma-color-bg-disabled);
       display: inline-block;
 
       &:nth-child(${(p) => p.index}) {
-        background-color: #000;
+        background-color:  ${(p) => p.theme.color};
       }
     }
   }

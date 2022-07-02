@@ -9,18 +9,18 @@ import { PaddingImage } from './components/PaddingImage';
 import { SpacingImage } from './components/SpacingImage';
 import { TooltipsImage } from './components/TooltipsImage';
 
-const Home: FunctionComponent = observer(() => {
+const About: FunctionComponent = observer(() => {
   return (
     <Container>
       <Paragraph>
         <h3>Hello there!</h3>
         <p>
-          Thank you for using Figma Measure! Feel always free to let us know
-          about bugs, ideas or what we should consider to change to improve the
+          Thank you for using Measure! Feel always free to let us know about
+          bugs, ideas or what we should consider to change to improve the
           workflow, any feedback is welcome.
           <br />
           <br />
-          And if we didn't mention it yet, Figma Measure will be{' '}
+          And if we didn't mention it yet, Measure will be{' '}
           <strong>free and open-source forever</strong>.
           <br />
           <br />
@@ -32,7 +32,7 @@ const Home: FunctionComponent = observer(() => {
             <span>@phlp_</span>
           </User>
           <User href="https://twitter.com/crlhsr" target="_blank">
-            <img src="https://pbs.twimg.com/profile_images/1512656045566750720/Vce5Q59l_400x400.jpg" />
+            <img src="https://pbs.twimg.com/profile_images/1529110146903080961/Nejj7JY3_400x400.jpg" />
             <span>@crlhsr</span>
           </User>
         </Users>
@@ -230,6 +230,7 @@ const Container = styled.div`
   overflow: auto;
   height: 520px;
   h3 {
+    color: var(--figma-color-text);
     font-size: 13px;
     font-weight: 500;
     margin: 0;
@@ -247,16 +248,17 @@ const GuidesHeadline = styled.div`
   a {
     display: block;
     margin-top: 2px;
-    color: #808080;
+    color: var(--figma-color-text-tertiary);
     font-size: 11px;
   }
 `;
 
 const Paragraph = styled.div`
   padding: 15px;
+  color: var(--figma-color-text);
   p {
     margin: 10px 0 0;
-    color: #a0a0a0;
+    color: var(--figma-color-text-tertiary);
     font-size: 11px;
     line-height: 16px;
   }
@@ -268,4 +270,4 @@ const Cards = styled.div`
   grid-gap: 7px;
 `;
 
-export default Home;
+export default About;

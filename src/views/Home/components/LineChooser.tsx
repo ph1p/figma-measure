@@ -25,7 +25,7 @@ const LineChooser: FunctionComponent = observer(() => {
             width="29"
             height="29"
             rx="9.5"
-            stroke="#E8E8E8"
+            // stroke="#E8E8E8"
           />
           <path
             fillRule="evenodd"
@@ -56,7 +56,7 @@ const LineChooser: FunctionComponent = observer(() => {
             width="29"
             height="29"
             rx="9.5"
-            stroke="#E8E8E8"
+            // stroke="#E8E8E8"
           />
         </svg>
 
@@ -75,7 +75,7 @@ const LineChooser: FunctionComponent = observer(() => {
             width="29"
             height="29"
             rx="9.5"
-            stroke="#E8E8E8"
+            // stroke="#E8E8E8"
           />
           <path
             fillRule="evenodd"
@@ -100,7 +100,7 @@ const LineChooser: FunctionComponent = observer(() => {
             width="29"
             height="29"
             rx="9.5"
-            stroke="#E8E8E8"
+            // stroke="#E8E8E8"
           />
           <path
             d="M9 18V13H10L10 15H20V13H21V18H20V16H10L10 18H9Z"
@@ -157,14 +157,22 @@ const Container = styled.div`
   align-items: center;
   justify-content: space-between;
   border-width: 1px 0 0;
-  border-color: #eee;
+  border-color: var(--figma-color-bg-secondary);
   border-style: solid;
   input {
     width: 75px;
     box-sizing: border-box;
   }
+
   svg {
     cursor: pointer;
+
+    rect {
+      stroke: var(--figma-color-bg-disabled);
+    }
+    path {
+      fill: var(--figma-color-bg-disabled);
+    }
 
     &:not(.active):hover {
       rect {

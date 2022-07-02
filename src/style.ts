@@ -113,7 +113,7 @@ body {
 
 hr {
   border-width: 1px 0 0 0;
-  border-color: #e5e5e5;
+  border-color: var(--figma-color-bg-secondary);
   border-style: solid;
   margin: 11px 0 0;
 }
@@ -126,12 +126,14 @@ h4 {
   position: relative;
   input {
     border-radius: 6px;
-    border: 1px solid #E6E6E6;
+    border: 1px solid var(--figma-color-bg-disabled);
     outline: none;
     padding: 7px 10px;
     box-sizing: border-box;
     font-size: 12px;
     width: 100%;
+    background-color: var(--figma-color-bg-hover);
+    color: var(--figma-color-text);
     &:focus {
       border-color: ${(props) => props.theme.color};
     }

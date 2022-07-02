@@ -290,7 +290,7 @@ const OverlayRect = styled.div.attrs<{ active?: boolean }>((props) => ({
     position: absolute;
     left: -4px;
     top: -4px;
-    border: 1px solid ${(props) => props.theme.softColor};
+    border: 1px solid var(--figma-color-bg-disabled);
     width: calc(100% + 6px);
     height: calc(100% + 6px);
     border-radius: 7px;
@@ -306,7 +306,7 @@ const OverlayRect = styled.div.attrs<{ active?: boolean }>((props) => ({
     }
   }
   &.fill {
-    background-color: ${(props) => props.theme.hoverColor};
+    background-color: var(--figma-color-bg-secondary);
     &::before {
       border-color: transparent;
     }
@@ -316,18 +316,18 @@ const OverlayRect = styled.div.attrs<{ active?: boolean }>((props) => ({
     }
   }
   &.fill-stroke {
-    background-color: ${(props) => props.theme.hoverColor};
+    background-color: var(--figma-color-bg-secondary);
   }
   &.fill-stroke,
   &.fill {
     &:hover {
-      box-shadow: 0 0 0 3px ${(props) => props.theme.softColor};
+      box-shadow: 0 0 0 3px var(--figma-color-bg-disabled);
     }
   }
   &.dashed,
   &.stroke {
     &:hover {
-      border-color: ${(props) => props.theme.hoverColor};
+      border-color: var(--figma-color-bg-hover);
     }
   }
 `;
@@ -337,8 +337,8 @@ const Tooltip = styled.div.attrs<{ active?: boolean }>((props) => ({
 }))<{ active?: boolean }>`
   height: 20px;
   width: 20px;
-  border: 1px solid ${(props) => props.theme.softColor};
-  background-color: #fff;
+  border: 1px solid var(--figma-color-bg-disabled);
+  background-color: var(--figma-color-bg);
   align-self: center;
   justify-self: center;
   margin: 4px;
@@ -348,7 +348,8 @@ const Tooltip = styled.div.attrs<{ active?: boolean }>((props) => ({
   &:hover,
   &:hover::before,
   &:hover::after {
-    background-color: ${(props) => props.theme.softColor};
+    background-color: var(--figma-color-bg-disabled);
+    border-color: var(--figma-color-bg-disabled);
   }
   &::after,
   &::before {
@@ -358,7 +359,7 @@ const Tooltip = styled.div.attrs<{ active?: boolean }>((props) => ({
   &::before {
     width: 6px;
     height: 6px;
-    border: 1px solid ${(props) => props.theme.softColor};
+    border: 1px solid var(--figma-color-bg-disabled);
     border-radius: 1px;
     transform: rotate(45deg);
     z-index: -1;
@@ -366,7 +367,7 @@ const Tooltip = styled.div.attrs<{ active?: boolean }>((props) => ({
   &::after {
     width: 6px;
     height: 6px;
-    background-color: #fff;
+    background-color: var(--figma-color-bg);
     z-index: 1;
     transform: rotate(45deg);
   }
