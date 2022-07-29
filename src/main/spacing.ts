@@ -7,7 +7,7 @@ import {
   getColor,
   getRenderBoundsOfRectangle,
 } from './helper';
-import { createLabel } from './line';
+import { createLabel, createStandardCapForSpacing } from './line';
 import { getState } from './store';
 
 export const getSpacing = (node: SceneNode) => {
@@ -33,7 +33,7 @@ EventEmitter.on('remove spacing', () => {
       setSpacing(node, spacing);
       try {
         group.remove();
-      } catch {
+      } catch (e) {
         console.log('could not remove group');
       }
 
@@ -101,7 +101,13 @@ const getShapeValues = (shape) => {
 
 export const drawSpacing = async (
   rects: SceneNode[],
-  { color = '', labels = true, labelPattern = '', labelsOutside = false }
+  {
+    color = '',
+    labels = true,
+    labelPattern = '',
+    labelsOutside = false,
+    strokeCap = 'NONE',
+  }
 ) => {
   const state = await getState();
   const LABEL_OUTSIDE_MARGIN = 4 * (state.labelFontSize / 10);
@@ -243,6 +249,49 @@ export const drawSpacing = async (
     ];
     line1.strokes = [].concat(mainColor);
     line1.strokeWeight = STROKE_WIDTH;
+
+    if (cutsVerticalRectPoints) {
+      if (strokeCap === 'STANDARD') {
+        spacingGroup.push(
+          [true, false].map((isFirst) =>
+            createStandardCapForSpacing({
+              line: line1,
+              isFirst,
+              mainColor,
+              width: line1.width,
+              height: line1.height,
+            })
+          )
+        );
+      } else {
+        line1.strokeCap = strokeCap as StrokeCap;
+      }
+    } else {
+      if (strokeCap === 'STANDARD') {
+        spacingGroup.push(
+          createStandardCapForSpacing({
+            line: line1,
+            isFirst: horizontalDirection === 'top',
+            mainColor,
+            width: line1.width,
+            height: line1.height,
+          })
+        );
+      } else {
+        line1.vectorNetwork = {
+          ...line1.vectorNetwork,
+          vertices: line1.vectorNetwork.vertices.map((vector) => ({
+            ...vector,
+            strokeCap:
+              (horizontalDirection === 'bottom' && vector.y !== 0) ||
+              (horizontalDirection === 'top' && vector.y === 0)
+                ? (strokeCap as StrokeCap)
+                : 'NONE',
+          })),
+        };
+      }
+    }
+
     spacingGroup.push(line1);
 
     if (labels) {
@@ -366,6 +415,51 @@ export const drawSpacing = async (
     ];
     line4.strokes = [].concat(mainColor);
     line4.strokeWeight = STROKE_WIDTH;
+
+    if (cutsHorizontalRectPoints) {
+      if (strokeCap === 'STANDARD') {
+        spacingGroup.push(
+          [true, false].map((isFirst) =>
+            createStandardCapForSpacing({
+              line: line4,
+              isHorizontal: true,
+              isFirst,
+              mainColor,
+              width: line4.width,
+              height: line4.height,
+            })
+          )
+        );
+      } else {
+        line4.strokeCap = strokeCap as StrokeCap;
+      }
+    } else {
+      if (strokeCap === 'STANDARD') {
+        spacingGroup.push(
+          createStandardCapForSpacing({
+            line: line4,
+            isHorizontal: true,
+            isFirst: verticalDirection === 'left',
+            mainColor,
+            width: line4.width,
+            height: line4.height,
+          })
+        );
+      } else {
+        line4.vectorNetwork = {
+          ...line4.vectorNetwork,
+          vertices: line4.vectorNetwork.vertices.map((vector) => ({
+            ...vector,
+            strokeCap:
+              (verticalDirection === 'right' && vector.x !== 0) ||
+              (verticalDirection === 'left' && vector.x === 0)
+                ? (strokeCap as StrokeCap)
+                : 'NONE',
+          })),
+        };
+      }
+    }
+
     spacingGroup.push(line4);
 
     if (labels) {

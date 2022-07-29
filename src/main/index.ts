@@ -450,6 +450,7 @@ const setMeasurements = async (
               labels: settings.labels,
               labelsOutside: settings.labelsOutside,
               labelPattern: settings.labelPattern,
+              strokeCap: settings.strokeCap,
               // strokeOffset: settings.strokeOffset,
             }
           );

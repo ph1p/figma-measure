@@ -1,5 +1,6 @@
 import { findAndReplaceNumberPattern } from '../shared/helpers';
 import { Alignments, LineParameterTypes } from '../shared/interfaces';
+import Line from '../views/Home/components/Viewer/components/Line';
 
 import { getColor, solidColor } from './helper';
 
@@ -74,6 +75,49 @@ export const getLineFrame = (node, data) => {
   return lineFrame;
 };
 
+export const createStandardCapForSpacing = ({
+  line,
+  height,
+  width,
+  mainColor,
+  isHorizontal = false,
+  isFirst = false,
+}) => {
+  const transformPosition = line.absoluteTransform;
+  const lineX = transformPosition[0][2];
+  const lineY = transformPosition[1][2];
+
+  const strokeCapWidth = line.strokeWeight + 6;
+
+  const strokeCapLine = figma.createLine();
+  strokeCapLine.relativeTransform = transformPosition;
+  strokeCapLine.strokeWeight = line.strokeWeight;
+  strokeCapLine.strokes = [].concat(mainColor);
+  strokeCapLine.resize(strokeCapWidth, 0);
+
+  if (!isHorizontal) {
+    if (isFirst) {
+      strokeCapLine.x = lineX - strokeCapWidth / 2;
+      strokeCapLine.y += strokeCapLine.strokeWeight;
+    } else {
+      strokeCapLine.x = lineX - strokeCapWidth / 2;
+      strokeCapLine.y += height;
+    }
+  } else {
+    if (isFirst) {
+      strokeCapLine.rotation = 90;
+      strokeCapLine.x += strokeCapLine.strokeWeight;
+      strokeCapLine.y = lineY + strokeCapWidth / 2;
+    } else {
+      strokeCapLine.rotation = 90;
+      strokeCapLine.x += width;
+      strokeCapLine.y = lineY + strokeCapWidth / 2;
+    }
+  }
+
+  return strokeCapLine;
+};
+
 export const createStandardCap = ({
   group,
   line,
@@ -89,6 +133,7 @@ export const createStandardCap = ({
 
   group.appendChild(firstMeasureLine);
   group.appendChild(secondMeasureLine);
+
   const strokeCapWidth = line.strokeWeight + 6;
 
   firstMeasureLine.strokes = [].concat(mainColor);

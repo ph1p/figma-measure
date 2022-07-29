@@ -25,6 +25,7 @@ export const Spacing: FunctionComponent<{
         strokeOffset: store.strokeOffset,
         labelsOutside: store.labelsOutside,
         labelPattern: store.labelPattern,
+        strokeCap: store.strokeCap,
       });
       refreshSelection();
     }
