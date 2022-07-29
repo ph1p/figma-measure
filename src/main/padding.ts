@@ -51,6 +51,7 @@ export const getPadding = (node: SceneNode) => {
 
 EventEmitter.on('remove padding', async ({ direction }) => {
   const state = await getState();
+
   if (figma.currentPage.selection.length === 1) {
     const currentNode = figma.currentPage.selection[0];
 
@@ -82,7 +83,7 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
 
   const { lockDetachedGroup, lockAttachedGroup, ...nodeSettings } = settings;
 
-  const nodeData = getNodeAndParentNode(currentNode, state.isGlobalGroup);
+  const nodeData = getNodeAndParentNode(currentNode, undefined);
 
   switch (nodeData.error) {
     case ParentNodeErrors.PARENT_NOT_FOUND:
@@ -171,12 +172,14 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
         nodes: paddingLines,
         name: GROUP_NAME_DETACHED,
         locked: lockDetachedGroup,
+        isGlobalGroup: state.isGlobalGroup,
       });
     } else {
       appendElementsToGroup({
         node: currentNode,
         nodes: paddingLines,
         locked: lockAttachedGroup,
+        isGlobalGroup: state.isGlobalGroup,
       });
     }
 
@@ -217,15 +220,17 @@ export enum ParentNodeErrors {
 
 export const getNodeAndParentNode = (
   node?: SceneNode,
-  parentNode?: SceneNode,
-  isGlobalGroup?: boolean
+  parentNode?: SceneNode
 ): { node?: SceneNode; parentNode?: SceneNode; error: ParentNodeErrors } => {
   let currentNode = node ?? (figma.currentPage.selection[0] as SceneNode);
 
+  if (parentNode && (parentNode as any).type === 'PAGE') {
+    return { error: ParentNodeErrors.PARENT_NOT_FOUND };
+  }
+
   if (figma.currentPage.selection.length === 1 && !parentNode) {
     if (currentNode.parent && currentNode.parent.type !== 'PAGE') {
-      parentNode = getNearestParentNode(currentNode, isGlobalGroup);
-      console.log(parentNode);
+      parentNode = getNearestParentNode(currentNode);
     } else {
       return { error: ParentNodeErrors.PARENT_NOT_FOUND };
     }

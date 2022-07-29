@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, PropsWithChildren } from 'react';
 import styled from 'styled-components';
 
 import Tooltip from './Tooltip';
@@ -7,7 +7,9 @@ interface Props {
   hover?: boolean;
 }
 
-export const QuestionMark: FunctionComponent<Props> = (props) => (
+export const QuestionMark: FunctionComponent<PropsWithChildren<Props>> = (
+  props
+) => (
   <Tooltip
     hover={props.hover}
     handler={React.forwardRef<HTMLDivElement, unknown>((_, ref) => (
