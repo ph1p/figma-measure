@@ -67,7 +67,7 @@ export const distanceBetweenTwoPoints = (x1, y1, x2, y2) =>
   Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 
 const getShapeValues = (shape) => {
-  let absoluteRenderBounds =
+  let absoluteBoundingBox =
     shape?.rotation === 0
       ? {
           x: shape.absoluteTransform[0][2],
@@ -75,16 +75,16 @@ const getShapeValues = (shape) => {
           height: shape.height,
           width: shape.width,
         }
-      : shape.absoluteRenderBounds;
+      : shape.absoluteBoundingBox;
   if (shape.type === 'TEXT' || shape.type === 'SHAPE_WITH_TEXT') {
-    absoluteRenderBounds = getRenderBoundsOfRectangle(shape);
+    absoluteBoundingBox = getRenderBoundsOfRectangle(shape);
   }
 
-  const x = absoluteRenderBounds.x;
-  const y = absoluteRenderBounds.y;
+  const x = absoluteBoundingBox.x;
+  const y = absoluteBoundingBox.y;
 
-  const w = absoluteRenderBounds.width;
-  const h = absoluteRenderBounds.height;
+  const w = absoluteBoundingBox.width;
+  const h = absoluteBoundingBox.height;
 
   const cx = x + w / 2;
   const cy = y + h / 2;
@@ -112,8 +112,8 @@ export const drawSpacing = async (
   }
 
   if (
-    !(rects[0] as any).absoluteRenderBounds ||
-    !(rects[1] as any).absoluteRenderBounds
+    !(rects[0] as any).absoluteBoundingBox ||
+    !(rects[1] as any).absoluteBoundingBox
   ) {
     figma.notify('Element is no supported');
     return;

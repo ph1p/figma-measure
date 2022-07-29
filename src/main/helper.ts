@@ -65,7 +65,7 @@ export const getRenderBoundsOfRectangle = (node) => {
   const dummyRect = figma.createRectangle();
   dummyRect.relativeTransform = node.absoluteTransform;
   dummyRect.resize(node.width, node.height);
-  nodeBounds = dummyRect.absoluteRenderBounds;
+  nodeBounds = dummyRect.absoluteBoundingBox;
   dummyRect.remove();
 
   return nodeBounds;

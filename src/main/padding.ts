@@ -7,6 +7,7 @@ import {
   appendElementsToGroup,
   getClosestAttachedGroup,
   getColor,
+  getNearestParentNode,
   getRenderBoundsOfRectangle,
 } from './helper';
 import { createLabel, createStandardCap } from './line';
@@ -179,8 +180,8 @@ EventEmitter.on('add padding', ({ direction, settings }) => {
 });
 
 const contains = (node1, node2) => {
-  let node1Bounds = node1.absoluteRenderBounds;
-  let node2Bounds = node2.absoluteRenderBounds;
+  let node1Bounds = node1.absoluteBoundingBox;
+  let node2Bounds = node2.absoluteBoundingBox;
 
   if (node1.type === 'TEXT' || node1.type === 'SHAPE_WITH_TEXT') {
     node1Bounds = getRenderBoundsOfRectangle(node1);
@@ -217,7 +218,8 @@ export const getNodeAndParentNode = (
 
   if (figma.currentPage.selection.length === 1 && !parentNode) {
     if (currentNode.parent && currentNode.parent.type !== 'PAGE') {
-      parentNode = currentNode.parent as SceneNode;
+      parentNode = getNearestParentNode(currentNode);
+      console.log(parentNode);
     } else {
       return { error: ParentNodeErrors.PARENT_NOT_FOUND };
     }
@@ -314,8 +316,8 @@ export const createPaddingLine = ({
   const { node, parentNode } = nodeData;
 
   if (
-    !(node as any).absoluteRenderBounds ||
-    !(parentNode as any).absoluteRenderBounds
+    !(node as any).absoluteBoundingBox ||
+    !(parentNode as any).absoluteBoundingBox
   ) {
     figma.notify('Element is no supported');
     return;
@@ -330,8 +332,8 @@ export const createPaddingLine = ({
 
   let distance = 0;
 
-  let nodeBounds = (node as any).absoluteRenderBounds;
-  let parentNodeBounds = (parentNode as any).absoluteRenderBounds;
+  let nodeBounds = (node as any).absoluteBoundingBox;
+  let parentNodeBounds = (parentNode as any).absoluteBoundingBox;
 
   if (node.type === 'TEXT' || node.type === 'SHAPE_WITH_TEXT') {
     nodeBounds = getRenderBoundsOfRectangle(node);

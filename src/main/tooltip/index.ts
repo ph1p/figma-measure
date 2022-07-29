@@ -155,7 +155,7 @@ export const setTooltip = async (
 
     tooltipFrame.resize(contentFrame.width, contentFrame.height);
     // ----
-    const nodeBounds = (node as any).absoluteRenderBounds;
+    const nodeBounds = (node as any).absoluteBoundingBox;
     tooltipFrame.x = nodeBounds.x;
     tooltipFrame.y = nodeBounds.y;
 
