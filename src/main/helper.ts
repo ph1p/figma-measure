@@ -15,8 +15,8 @@ export const isPartOfAttachedGroup = (node: SceneNode) => {
   }
 };
 
-export const getClosestAttachedGroup = (node: SceneNode) => {
-  const parent = getNearestParentNode(node);
+export const getClosestAttachedGroup = (node: SceneNode, isGlobalGroup) => {
+  const parent = getNearestParentNode(node, isGlobalGroup);
 
   const foundGroup = parent.findChild(
     (n) => n.type === 'GROUP' && n.name === GROUP_NAME_ATTACHED
@@ -34,14 +34,16 @@ export const appendElementsToGroup = ({
   nodes = null,
   name = GROUP_NAME_ATTACHED,
   locked = true,
+  isGlobalGroup
 }: {
   node: SceneNode;
   nodes: SceneNode[];
   name?: string;
   locked?: boolean;
+  isGlobalGroup?: boolean;
 }) => {
   if (nodes.length > 0) {
-    const parent = getNearestParentNode(node);
+    const parent = getNearestParentNode(node, isGlobalGroup);
     let children = [];
 
     const foundGroup = parent.findChild(
@@ -71,7 +73,14 @@ export const getRenderBoundsOfRectangle = (node) => {
   return nodeBounds;
 };
 
-export const getNearestParentNode = (node: SceneNode) => {
+export const getNearestParentNode = (
+  node: SceneNode,
+  isGlobalGroup = false
+) => {
+  if (isGlobalGroup) {
+    return figma.currentPage;
+  }
+
   const parent = node.parent;
 
   if (

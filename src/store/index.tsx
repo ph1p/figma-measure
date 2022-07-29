@@ -50,6 +50,7 @@ class RootStore {
   detached = false;
   labelPattern = '';
 
+  isGlobalGroup = false;
   lockDetachedGroup = true;
   lockAttachedGroup = true;
   labelFontSize = 10;
@@ -79,6 +80,10 @@ class RootStore {
     if (+fontSize > 0 && !disableSync) {
       this.sendMeasurements();
     }
+  }
+
+  toggleIsGlobalGroup() {
+    this.isGlobalGroup = !this.isGlobalGroup;
   }
 
   toggleLockDetachedGroup() {

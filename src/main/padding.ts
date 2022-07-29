@@ -12,11 +12,12 @@ import {
 } from './helper';
 import { createLabel, createStandardCap } from './line';
 import { distanceBetweenTwoPoints } from './spacing';
+import { getState } from './store';
 
 import { sendSelection } from '.';
 
-export const removePaddingGroup = (currentNode, direction) => {
-  const group = getClosestAttachedGroup(currentNode);
+export const removePaddingGroup = (currentNode, direction, isGlobalGroup) => {
+  const group = getClosestAttachedGroup(currentNode, isGlobalGroup);
 
   if (group) {
     for (const node of group.children) {
@@ -49,6 +50,7 @@ export const getPadding = (node: SceneNode) => {
 };
 
 EventEmitter.on('remove padding', async ({ direction }) => {
+  const state = await getState();
   if (figma.currentPage.selection.length === 1) {
     const currentNode = figma.currentPage.selection[0];
 
@@ -57,7 +59,7 @@ EventEmitter.on('remove padding', async ({ direction }) => {
 
       if (pluginDataPadding[direction]) {
         try {
-          removePaddingGroup(currentNode, direction);
+          removePaddingGroup(currentNode, direction, state.isGlobalGroup);
 
           delete pluginDataPadding[direction];
 
@@ -74,12 +76,13 @@ EventEmitter.on('remove padding', async ({ direction }) => {
   sendSelection();
 });
 
-EventEmitter.on('add padding', ({ direction, settings }) => {
+EventEmitter.on('add padding', async ({ direction, settings }) => {
+  const state = await getState();
   const currentNode = figma.currentPage.selection[0];
 
   const { lockDetachedGroup, lockAttachedGroup, ...nodeSettings } = settings;
 
-  const nodeData = getNodeAndParentNode(currentNode);
+  const nodeData = getNodeAndParentNode(currentNode, state.isGlobalGroup);
 
   switch (nodeData.error) {
     case ParentNodeErrors.PARENT_NOT_FOUND:
@@ -102,6 +105,7 @@ EventEmitter.on('add padding', ({ direction, settings }) => {
         direction,
         currentNode: nodeData.node,
         parent: figma.getNodeById(nodeData.parentNode.id),
+        isGlobalGroup: state.isGlobalGroup,
       });
 
       if (paddingLine) {
@@ -113,7 +117,7 @@ EventEmitter.on('add padding', ({ direction, settings }) => {
 
       if (pluginDataPadding[direction]) {
         try {
-          removePaddingGroup(nodeData.node, direction);
+          removePaddingGroup(nodeData.node, direction, state.isGlobalGroup);
 
           delete pluginDataPadding[direction];
 
@@ -139,6 +143,7 @@ EventEmitter.on('add padding', ({ direction, settings }) => {
 
           const paddingLine = createPaddingLine({
             ...nodeSettings,
+            isGlobalGroup: state.isGlobalGroup,
             direction,
             currentNode: nodeData.node,
             parent: figma.getNodeById(parentId),
@@ -212,13 +217,14 @@ export enum ParentNodeErrors {
 
 export const getNodeAndParentNode = (
   node?: SceneNode,
-  parentNode?: SceneNode
+  parentNode?: SceneNode,
+  isGlobalGroup?: boolean
 ): { node?: SceneNode; parentNode?: SceneNode; error: ParentNodeErrors } => {
   let currentNode = node ?? (figma.currentPage.selection[0] as SceneNode);
 
   if (figma.currentPage.selection.length === 1 && !parentNode) {
     if (currentNode.parent && currentNode.parent.type !== 'PAGE') {
-      parentNode = getNearestParentNode(currentNode);
+      parentNode = getNearestParentNode(currentNode, isGlobalGroup);
       console.log(parentNode);
     } else {
       return { error: ParentNodeErrors.PARENT_NOT_FOUND };
@@ -285,14 +291,16 @@ export const createPaddingLine = ({
   detached = false,
   strokeCap = 'NONE',
   labelFontSize = 10,
+  isGlobalGroup,
 }: {
   direction: Alignments;
   parent?: SceneNode;
   currentNode?: SceneNode;
+  isGlobalGroup?: boolean;
 } & ExchangeStoreValues) => {
   const STROKE_WIDTH = labelFontSize / 10;
 
-  const nodeData = getNodeAndParentNode(currentNode, parent);
+  const nodeData = getNodeAndParentNode(currentNode, parent, isGlobalGroup);
   const mainColor = getColor(color);
 
   const IS_HORIZONTAL = direction === 'LEFT' || direction === 'RIGHT';

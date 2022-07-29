@@ -22,8 +22,6 @@ import {
   getPadding,
   createPaddingLine,
   removePaddingGroup,
-  getNodeAndParentNode,
-  ParentNodeErrors,
 } from './padding';
 import { drawSpacing, getSpacing, setSpacing } from './spacing';
 import { getState } from './store';
@@ -465,7 +463,7 @@ const setMeasurements = async (
       Object.keys(Alignments)
         .filter((k) => k !== Alignments.CENTER && padding[k])
         .forEach((direction: Alignments) => {
-          removePaddingGroup(node, direction);
+          removePaddingGroup(node, direction, store.isGlobalGroup);
 
           const paddingLine = createPaddingLine({
             ...settings,
@@ -588,6 +586,7 @@ const setMeasurements = async (
       if (connectedNodes.length > 0) {
         appendElementsToGroup({
           node,
+          isGlobalGroup: state.isGlobalGroup,
           nodes: connectedNodes,
           name: GROUP_NAME_DETACHED,
           locked: state.lockDetachedGroup,
@@ -607,6 +606,7 @@ const setMeasurements = async (
       if (connectedNodes.length > 0) {
         appendElementsToGroup({
           node,
+          isGlobalGroup: state.isGlobalGroup,
           nodes: connectedNodes,
           locked: state.lockAttachedGroup,
         });

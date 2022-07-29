@@ -124,6 +124,7 @@ export interface Store {
   tooltip: TooltipSettings;
   detached?: boolean;
   labelFontSize: number;
+  isGlobalGroup?: boolean;
 }
 
 export interface SelectionNode {

@@ -107,7 +107,7 @@ export const drawSpacing = async (
     labelPattern = '',
     labelsOutside = false,
     strokeCap = 'NONE',
-  }
+  },
 ) => {
   const state = await getState();
   const LABEL_OUTSIDE_MARGIN = 4 * (state.labelFontSize / 10);
@@ -494,6 +494,7 @@ export const drawSpacing = async (
       nodes: [spacingFrame],
       name: GROUP_NAME_DETACHED,
       locked: state.lockDetachedGroup,
+      isGlobalGroup: state.isGlobalGroup,
     });
   }
 
@@ -528,6 +529,7 @@ export const drawSpacing = async (
       node: rects[0],
       nodes: [group],
       locked: state.lockAttachedGroup,
+      isGlobalGroup: state.isGlobalGroup,
     });
   }
 };

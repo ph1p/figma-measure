@@ -97,6 +97,12 @@ const Settings: FunctionComponent = observer(() => {
         <Headline>Groups</Headline>
         <LockSettings>
           <Toggle
+            checked={store.isGlobalGroup}
+            label="Use a global group"
+            description="Groups all measurements in one global group"
+            onChange={() => store.toggleIsGlobalGroup()}
+          />
+          <Toggle
             checked={store.lockAttachedGroup}
             label="Lock attached groups"
             onChange={() => store.toggleLockAttachedGroup()}
