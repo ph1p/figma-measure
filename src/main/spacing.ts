@@ -107,7 +107,7 @@ export const drawSpacing = async (
     labelPattern = '',
     labelsOutside = false,
     strokeCap = 'NONE',
-  },
+  }
 ) => {
   const state = await getState();
   const LABEL_OUTSIDE_MARGIN = 4 * (state.labelFontSize / 10);
@@ -253,7 +253,7 @@ export const drawSpacing = async (
     if (cutsVerticalRectPoints) {
       if (strokeCap === 'STANDARD') {
         spacingGroup.push(
-          [true, false].map((isFirst) =>
+          ...[true, false].map((isFirst) =>
             createStandardCapForSpacing({
               line: line1,
               isFirst,
@@ -419,7 +419,7 @@ export const drawSpacing = async (
     if (cutsHorizontalRectPoints) {
       if (strokeCap === 'STANDARD') {
         spacingGroup.push(
-          [true, false].map((isFirst) =>
+          ...[true, false].map((isFirst) =>
             createStandardCapForSpacing({
               line: line4,
               isHorizontal: true,

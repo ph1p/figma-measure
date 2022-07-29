@@ -352,6 +352,7 @@ const setMeasurements = async (
   };
 
   for (const node of nodes) {
+    if(!node) continue;
     let surrounding: SurroundingSettings = store.surrounding;
 
     if (!state.detached) {
@@ -463,7 +464,7 @@ const setMeasurements = async (
       Object.keys(Alignments)
         .filter((k) => k !== Alignments.CENTER && padding[k])
         .forEach((direction: Alignments) => {
-          removePaddingGroup(node, direction, store.isGlobalGroup);
+          removePaddingGroup(node, direction, state.isGlobalGroup);
 
           const paddingLine = createPaddingLine({
             ...settings,
