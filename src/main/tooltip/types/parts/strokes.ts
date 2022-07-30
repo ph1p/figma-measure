@@ -1,5 +1,9 @@
 import { toFixed } from '../../../../shared/helpers';
-import { createTooltipTextNode, getFillsByFillStyleId } from '../../../helper';
+import {
+  createTooltipTextNode,
+  getFillsByFillStyleId,
+  solidColor,
+} from '../../../helper';
 
 import { createColorNode } from './fills';
 
@@ -8,8 +12,14 @@ const ICON = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns=
 </svg>`;
 
 export const strokes = (node, parent, { fontColor = '', fontSize = 0 }) => {
+  const strokes = [
+    node.strokeTopWeight,
+    node.strokeBottomWeight,
+    node.strokeLeftWeight,
+    node.strokeRightWeight,
+  ];
   // Stroke
-  if (node?.strokes?.length && node.strokeWeight) {
+  if (node?.strokes?.length && strokes.some(Boolean)) {
     const textNode = createTooltipTextNode({
       fontColor,
       fontSize,
@@ -17,9 +27,49 @@ export const strokes = (node, parent, { fontColor = '', fontSize = 0 }) => {
     textNode.x += 20;
     textNode.y += 1.5;
 
-    textNode.characters += toFixed(node.strokeWeight, 2);
+    if (strokes.every((s) => s === node.strokeWeight)) {
+      textNode.characters += `all: ${toFixed(node.strokeWeight, 2)} · `;
+    } else {
+      if (node.strokeTopWeight) {
+        textNode.characters += `top: ${toFixed(node.strokeTopWeight, 2)} · `;
+      }
+      if (node.strokeBottomWeight) {
+        textNode.characters += `bottom: ${toFixed(
+          node.strokeBottomWeight,
+          2
+        )} · `;
+      }
+      if (node.strokeLeftWeight) {
+        textNode.characters += `left: ${toFixed(node.strokeLeftWeight, 2)} · `;
+      }
+      if (node.strokeRightWeight) {
+        textNode.characters += `right: ${toFixed(
+          node.strokeRightWeight,
+          2
+        )} · `;
+      }
+    }
 
-    textNode.characters += ` · ${node.strokeAlign.toLowerCase()}`;
+    textNode.characters += `align: ${node.strokeAlign.toLowerCase()}`;
+
+    let textPosition = 0;
+    for (const characters of textNode.characters.split(' · ')) {
+      const [label, size] = characters.split(': ');
+      textNode.setRangeFontSize(
+        textPosition,
+        textPosition + label.length + 2,
+        9
+      );
+      textNode.setRangeFills(textPosition, textPosition + label.length + 2, [
+        solidColor(153, 153, 153),
+      ]);
+      textNode.setRangeFontSize(
+        textPosition + characters.length - size.length,
+        textPosition + characters.length,
+        10
+      );
+      textPosition += characters.length + 3;
+    }
 
     const gr = figma.group([figma.createNodeFromSvg(ICON), textNode], parent);
     gr.expanded = false;

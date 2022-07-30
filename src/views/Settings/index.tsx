@@ -98,8 +98,8 @@ const Settings: FunctionComponent = observer(() => {
         <LockSettings>
           <Toggle
             checked={store.isGlobalGroup}
-            label="Use a global group"
-            description="All measurements in one group per page"
+            label="Use one global group"
+            description="All measurements in a global group. Is added at the top hierarchy level per page."
             onChange={() => store.toggleIsGlobalGroup()}
           />
           <Toggle
