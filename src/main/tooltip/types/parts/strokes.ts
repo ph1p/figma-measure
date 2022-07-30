@@ -58,7 +58,7 @@ export const strokes = (node, parent, { fontColor = '', fontSize = 0 }) => {
       textNode.setRangeFontSize(
         textPosition,
         textPosition + label.length + 2,
-        9
+        fontSize - 1
       );
       textNode.setRangeFills(textPosition, textPosition + label.length + 2, [
         solidColor(153, 153, 153),
@@ -66,7 +66,7 @@ export const strokes = (node, parent, { fontColor = '', fontSize = 0 }) => {
       textNode.setRangeFontSize(
         textPosition + characters.length - size.length,
         textPosition + characters.length,
-        10
+        fontSize
       );
       textPosition += characters.length + 3;
     }
