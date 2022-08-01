@@ -212,8 +212,6 @@ export const createLine = (options) => {
     // needed elements
     const line = figma.createVector();
 
-    const paddingTopBottom = 3;
-
     // LABEL
     let labelFrame;
     const alignment = isHorizontal ? lineHorizontalAlign : lineVerticalAlign;
@@ -294,14 +292,11 @@ export const createLine = (options) => {
 
     line.handleMirroring = 'ANGLE_AND_LENGTH';
 
-    // x, y for text box
-    const boxTop = paddingTopBottom / 2;
-
     // place text group
     if (labels) {
       if (isHorizontal) {
         labelFrame.x = 0;
-        labelFrame.y += boxTop + nodeHeight - LINE_OFFSET - line.strokeWeight;
+        labelFrame.y += nodeHeight - LINE_OFFSET - line.strokeWeight;
 
         // vertical text align
         if (txtVerticalAlign === Alignments.CENTER) {
@@ -328,7 +323,6 @@ export const createLine = (options) => {
         }
       } else {
         labelFrame.x = 0;
-        labelFrame.y += boxTop;
 
         // vertical text align
         if (txtVerticalAlign === Alignments.CENTER) {
