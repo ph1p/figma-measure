@@ -1,5 +1,27 @@
+## 3.4.0 (2022-08-01)
+
+* chore: update dependencies ([d7f9e59](https://github.com/ph1p/figma-measure/commit/d7f9e59))
+* chore: update image ([d1ec411](https://github.com/ph1p/figma-measure/commit/d1ec411))
+* chore: update yarn version ([1852fa1](https://github.com/ph1p/figma-measure/commit/1852fa1))
+* fix(label): remove padding variable ([46d9ff1](https://github.com/ph1p/figma-measure/commit/46d9ff1))
+* fix(padding): remove global group parameters ([563421c](https://github.com/ph1p/figma-measure/commit/563421c))
+* fix(padding/spacing): fix some bugs where duplicates are created ([2e29709](https://github.com/ph1p/figma-measure/commit/2e29709))
+* refactor(strokes): update font sizes ([b571d18](https://github.com/ph1p/figma-measure/commit/b571d18))
+* feat(effects): add effect information to tooltip ([26c792a](https://github.com/ph1p/figma-measure/commit/26c792a))
+* feat(groups): add the ability to put all measurements in one global group ([91e3365](https://github.com/ph1p/figma-measure/commit/91e3365))
+* feat(padding): fix bug with auto layout parents and replace render bounding with bounding box ([aa609b1](https://github.com/ph1p/figma-measure/commit/aa609b1))
+* feat(spacing): add strokeCaps to spacings ([274266a](https://github.com/ph1p/figma-measure/commit/274266a))
+* feat(strokes): add different stroke directions ([391cc40](https://github.com/ph1p/figma-measure/commit/391cc40))
+* feat(theme): integrate dark mode ([df24935](https://github.com/ph1p/figma-measure/commit/df24935))
+* feat(theme): update some components and start refactoring ([11ccb43](https://github.com/ph1p/figma-measure/commit/11ccb43))
+* build(deps): update dependencies ([ea3d114](https://github.com/ph1p/figma-measure/commit/ea3d114))
+
+
+
 ## <small>3.3.1 (2022-04-15)</small>
 
+* 3.3.0 ([677416d](https://github.com/ph1p/figma-measure/commit/677416d))
+* 3.3.1 ([0221282](https://github.com/ph1p/figma-measure/commit/0221282))
 * feat(font-size): add calculated margin to labels ([4a5b350](https://github.com/ph1p/figma-measure/commit/4a5b350))
 * feat(font-size): add variable font-size to paddings and calculate better padding in labels ([bee56f8](https://github.com/ph1p/figma-measure/commit/bee56f8))
 * feat(font-size): update font size in lines and spacing ([1de3ea3](https://github.com/ph1p/figma-measure/commit/1de3ea3))
@@ -13,7 +35,6 @@
 * fix(font-size): fix some small bugs ([cb325a5](https://github.com/ph1p/figma-measure/commit/cb325a5))
 * fix(grouping): add condition to check if is auto layout parent ([8cc4949](https://github.com/ph1p/figma-measure/commit/8cc4949))
 * fix(padding/spacing): get real bounds of text shapes ([309537e](https://github.com/ph1p/figma-measure/commit/309537e))
-* 3.3.0 ([677416d](https://github.com/ph1p/figma-measure/commit/677416d))
 * chore: update readme ([a99a309](https://github.com/ph1p/figma-measure/commit/a99a309))
 * style(settings): update font sizes ([d445cb5](https://github.com/ph1p/figma-measure/commit/d445cb5))
 * refactor(debug): add page grouping to "debug" modal ([a173164](https://github.com/ph1p/figma-measure/commit/a173164))
