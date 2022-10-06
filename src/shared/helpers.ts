@@ -87,7 +87,7 @@ export const transformPixelToUnit = (
 
   // mm
   if (unitWithoutSpaces === 'mm') {
-    result = toFixed((pixel / DPI_TO_PIXEL[72]) * 100, precision);
+    result = toFixed((pixel / DPI_TO_PIXEL[72]) * 10, precision);
   }
 
   // dp
