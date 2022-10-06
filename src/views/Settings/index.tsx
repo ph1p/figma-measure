@@ -99,7 +99,7 @@ const Settings: FunctionComponent = observer(() => {
           <Toggle
             checked={store.isGlobalGroup}
             label="Use one global group"
-            description="All measurements in a global group. Is added at the top hierarchy level per page."
+            description="All measurements are moved to a global group. Added at the top hierarchy level per page. Could be slow and is not ideal if you want to export individual measurements."
             onChange={() => store.toggleIsGlobalGroup()}
           />
           <Toggle
