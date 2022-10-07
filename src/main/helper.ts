@@ -16,7 +16,10 @@ export const isPartOfAttachedGroup = (node: SceneNode) => {
 };
 
 export const getClosestAttachedGroup = (node: SceneNode, isGlobalGroup) => {
-  const parent = getNearestParentNode(node, isGlobalGroup);
+  const parent = getNearestParentNode({
+    node,
+    isGlobalGroup,
+  });
 
   const foundGroup = parent.findChild(
     (n) => n.type === 'GROUP' && n.name === GROUP_NAME_ATTACHED
@@ -34,7 +37,7 @@ export const appendElementsToGroup = ({
   nodes = null,
   name = GROUP_NAME_ATTACHED,
   locked = true,
-  isGlobalGroup
+  isGlobalGroup,
 }: {
   node: SceneNode;
   nodes: SceneNode[];
@@ -43,7 +46,7 @@ export const appendElementsToGroup = ({
   isGlobalGroup?: boolean;
 }) => {
   if (nodes.length > 0) {
-    const parent = getNearestParentNode(node, isGlobalGroup);
+    const parent = getNearestParentNode({ node, isGlobalGroup });
     let children = [];
 
     const foundGroup = parent.findChild(
@@ -73,10 +76,15 @@ export const getRenderBoundsOfRectangle = (node) => {
   return nodeBounds;
 };
 
-export const getNearestParentNode = (
-  node: SceneNode,
-  isGlobalGroup = false
-) => {
+export const getNearestParentNode = ({
+  node,
+  isGlobalGroup = false,
+  includingAutoLayout = false,
+}: {
+  node: SceneNode;
+  isGlobalGroup?: boolean;
+  includingAutoLayout?: boolean;
+}) => {
   if (isGlobalGroup) {
     return figma.currentPage;
   }
@@ -88,11 +96,11 @@ export const getNearestParentNode = (
       parent.type === 'PAGE' ||
       parent.type === 'GROUP') &&
     !isPartOfInstance(node) &&
-    !isPartOfAutoLayout(node)
+    (!isPartOfAutoLayout(node) || includingAutoLayout)
   ) {
     return parent;
   } else {
-    return getNearestParentNode(parent as SceneNode);
+    return getNearestParentNode({ node: parent as SceneNode });
   }
 };
 

@@ -230,7 +230,10 @@ export const getNodeAndParentNode = (
 
   if (figma.currentPage.selection.length === 1 && !parentNode) {
     if (currentNode.parent && currentNode.parent.type !== 'PAGE') {
-      parentNode = getNearestParentNode(currentNode);
+      parentNode = getNearestParentNode({
+        node: currentNode,
+        includingAutoLayout: true,
+      });
     } else {
       return { error: ParentNodeErrors.PARENT_NOT_FOUND };
     }
