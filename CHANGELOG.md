@@ -1,12 +1,5 @@
-## 3.4.0 (2022-08-01)
+## <small>3.4.1 (2022-10-07)</small>
 
-* chore: update dependencies ([d7f9e59](https://github.com/ph1p/figma-measure/commit/d7f9e59))
-* chore: update image ([d1ec411](https://github.com/ph1p/figma-measure/commit/d1ec411))
-* chore: update yarn version ([1852fa1](https://github.com/ph1p/figma-measure/commit/1852fa1))
-* fix(label): remove padding variable ([46d9ff1](https://github.com/ph1p/figma-measure/commit/46d9ff1))
-* fix(padding): remove global group parameters ([563421c](https://github.com/ph1p/figma-measure/commit/563421c))
-* fix(padding/spacing): fix some bugs where duplicates are created ([2e29709](https://github.com/ph1p/figma-measure/commit/2e29709))
-* refactor(strokes): update font sizes ([b571d18](https://github.com/ph1p/figma-measure/commit/b571d18))
 * feat(effects): add effect information to tooltip ([26c792a](https://github.com/ph1p/figma-measure/commit/26c792a))
 * feat(groups): add the ability to put all measurements in one global group ([91e3365](https://github.com/ph1p/figma-measure/commit/91e3365))
 * feat(padding): fix bug with auto layout parents and replace render bounding with bounding box ([aa609b1](https://github.com/ph1p/figma-measure/commit/aa609b1))
@@ -14,7 +7,22 @@
 * feat(strokes): add different stroke directions ([391cc40](https://github.com/ph1p/figma-measure/commit/391cc40))
 * feat(theme): integrate dark mode ([df24935](https://github.com/ph1p/figma-measure/commit/df24935))
 * feat(theme): update some components and start refactoring ([11ccb43](https://github.com/ph1p/figma-measure/commit/11ccb43))
+* feat(units): add units for font sizes ([6400c3d](https://github.com/ph1p/figma-measure/commit/6400c3d))
+* fix(label): remove padding variable ([46d9ff1](https://github.com/ph1p/figma-measure/commit/46d9ff1))
+* fix(mm): multiply by 10 not by 100 ([a1f2fd7](https://github.com/ph1p/figma-measure/commit/a1f2fd7))
+* fix(padding): add ability to add padding in auto layout ([98b7788](https://github.com/ph1p/figma-measure/commit/98b7788))
+* fix(padding): remove global group parameters ([563421c](https://github.com/ph1p/figma-measure/commit/563421c))
+* fix(padding/spacing): fix some bugs where duplicates are created ([2e29709](https://github.com/ph1p/figma-measure/commit/2e29709))
+* chore: update dependencies ([d7f9e59](https://github.com/ph1p/figma-measure/commit/d7f9e59))
+* chore: update image ([d1ec411](https://github.com/ph1p/figma-measure/commit/d1ec411))
+* chore: update text ([32819e0](https://github.com/ph1p/figma-measure/commit/32819e0))
+* chore: update yarn version ([1852fa1](https://github.com/ph1p/figma-measure/commit/1852fa1))
+* chore(avatar): update url ([71b9435](https://github.com/ph1p/figma-measure/commit/71b9435))
+* chore(readme): update header image ([48cfc5b](https://github.com/ph1p/figma-measure/commit/48cfc5b))
+* build(deps): update dependencies ([ca6d52e](https://github.com/ph1p/figma-measure/commit/ca6d52e))
 * build(deps): update dependencies ([ea3d114](https://github.com/ph1p/figma-measure/commit/ea3d114))
+* 3.4.0 ([a71f7dc](https://github.com/ph1p/figma-measure/commit/a71f7dc)), closes [#42](https://github.com/ph1p/figma-measure/issues/42) [#43](https://github.com/ph1p/figma-measure/issues/43) [#34](https://github.com/ph1p/figma-measure/issues/34)
+* refactor(strokes): update font sizes ([b571d18](https://github.com/ph1p/figma-measure/commit/b571d18))
 
 
 
