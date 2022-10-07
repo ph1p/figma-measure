@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { Colors } from '../../components/ColorPicker';
 import { EmptyScreenImage } from '../../components/EmptyScreenImage';
 import { Input } from '../../components/Input';
-import { QuestionMark } from '../../components/QuestionMark';
 import {
   AttachedIcon,
   DetachedIcon,

@@ -312,6 +312,7 @@ figma.on('selectionchange', () => {
             tooltipOffset: state.tooltipOffset,
             tooltip: state.tooltip,
             labelPattern: state.labelPattern,
+            fontPattern: state.fontPattern,
             labelFontSize: state.labelFontSize,
           };
 
@@ -500,6 +501,7 @@ const setMeasurements = async (
             offset: store.tooltipOffset,
             position: surrounding.tooltip || TooltipPositions.NONE,
             labelPattern: settings.labelPattern,
+            fontPattern: settings.fontPattern,
           },
           node
         );

@@ -44,7 +44,7 @@ export const addNode = async (
     opacity(node, parent, settings);
   }
   if (flags.fontName && node.type === 'TEXT') {
-    await fontName(node, parent, flags.fontSize);
+    await fontName(node, parent, flags.fontSize, settings.fontPattern);
   }
   if (flags.points) {
     pointCount(node, parent, settings);

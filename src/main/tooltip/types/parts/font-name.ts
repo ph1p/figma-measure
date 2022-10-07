@@ -1,11 +1,14 @@
-import { toFixed } from '../../../../shared/helpers';
+import {
+  findAndReplaceNumberPattern,
+  toFixed,
+} from '../../../../shared/helpers';
 import {
   createTooltipTextNode,
   getFontNameData,
   solidColor,
 } from '../../../helper';
 
-export const fontName = async (node, parent, showFontSize) => {
+export const fontName = async (node, parent, showFontSize, fontPattern) => {
   const fontFamilyName = node?.fontName;
 
   if (fontFamilyName) {
@@ -37,8 +40,12 @@ export const fontName = async (node, parent, showFontSize) => {
       if (showFontSize && font.fontSize) {
         text += `\nSizes: ${
           !font.fontSize.length
-            ? toFixed(+font.fontSize, 2)
-            : font.fontSize.map((f) => toFixed(+f, 2)).join(', ')
+            ? findAndReplaceNumberPattern(fontPattern, +font.fontSize)
+            : font.fontSize
+                .map((fontSize) =>
+                  findAndReplaceNumberPattern(fontPattern, +fontSize)
+                )
+                .join(', ')
         }`;
       }
       text += `${i === fontData.length - 1 ? '' : '\n'}`;

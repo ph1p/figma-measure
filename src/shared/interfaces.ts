@@ -10,6 +10,7 @@ export interface SetTooltipOptions {
   flags: TooltipSettings;
   offset: number;
   labelPattern: string;
+  fontPattern: string;
   position: TooltipPositions;
   vertical?: TooltipPositions;
   horizontal?: TooltipPositions;
@@ -66,6 +67,7 @@ export interface PluginNodeData {
   fill?: FillTypes;
   opacity?: number;
   labelPattern: string;
+  fontPattern: string;
   tooltip: TooltipSettings;
   detached?: boolean;
   labelFontSize?: number;
@@ -117,6 +119,7 @@ export interface Store {
   fill: FillTypes;
   opacity: number;
   labelPattern: string;
+  fontPattern: string;
   strokeCap: StrokeCap | 'STANDARD';
   strokeOffset: number;
   surrounding: SurroundingSettings;

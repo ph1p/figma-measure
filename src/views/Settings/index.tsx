@@ -3,6 +3,7 @@ import { useState } from 'preact/hooks';
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
+import { Input } from '../../components/Input';
 import { Toggle } from '../../components/Toggle';
 import EventEmitter from '../../shared/EventEmitter';
 import { useStore } from '../../store';
@@ -170,6 +171,35 @@ const Settings: FunctionComponent = observer(() => {
             label="Font size"
             description={'Works only if "Font" is active'}
             onChange={() => store.toggleTooltipSetting('fontSize')}
+          />
+
+          <Input
+            width={140}
+            label="Units"
+            placeholder="($)px, ($##*2.1), cm..."
+            description={
+              <>
+                You can write a "complex" pattern like this{' '}
+                <strong>($###*2.5)</strong> or a simple one <strong>($)</strong>
+                <p>
+                  <strong>$</strong> represents the value, after that you can
+                  add a multiplier or divider (<strong>*</strong> or{' '}
+                  <strong>/</strong>) the repetition of the <strong>#</strong>{' '}
+                  symbol indicates the number of digits after the decimal point.
+                  <br /> You can also fill the field with only one unit of
+                  measurement and everything will be automatically calculated
+                  based on 72dpi. (cm,mm,px,pt,dp,",in)
+                </p>
+                <h3>Example</h3>
+                <p>
+                  Imagine your base unit is 8px=1x. So when a square is 64px the
+                  measurement will be 8x as the result.
+                </p>
+                <strong>($###/8)x</strong>
+              </>
+            }
+            value={store.fontPattern}
+            onChange={(e) => store.setFontPattern(e.currentTarget.value)}
           />
 
           <GroupSeperator />

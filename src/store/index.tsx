@@ -49,6 +49,7 @@ class RootStore {
   strokeOffset = 10;
   detached = false;
   labelPattern = '';
+  fontPattern = '';
 
   isGlobalGroup = false;
   lockDetachedGroup = true;
@@ -103,6 +104,7 @@ class RootStore {
     this.tooltip = data.tooltip ?? this.tooltip;
     this.tooltipOffset = data.tooltipOffset ?? this.tooltipOffset;
     this.labelPattern = data.labelPattern ?? this.labelPattern;
+    this.fontPattern = data.fontPattern ?? this.fontPattern;
     this.labelsOutside = data.labelsOutside ?? this.labelsOutside;
     this.labels = data.labels ?? this.labels;
   }
@@ -175,6 +177,11 @@ class RootStore {
     this.sendMeasurements();
   }
 
+  setFontPattern(fontPattern: string) {
+    this.fontPattern = fontPattern;
+    this.sendMeasurements();
+  }
+
   setFill(fill) {
     this.fill = fill;
     this.sendMeasurements();
@@ -240,6 +247,7 @@ class RootStore {
           tooltipOffset: this.tooltipOffset,
           tooltip: toJS(this.tooltip),
           labelPattern: this.labelPattern,
+          fontPattern: this.fontPattern,
           detached: this.detached,
           labelFontSize: this.labelFontSize,
         })
