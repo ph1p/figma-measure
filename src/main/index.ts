@@ -18,11 +18,7 @@ import {
 import { createFill } from './fill';
 import { appendElementsToGroup } from './helper';
 import { createLine } from './line';
-import {
-  getPadding,
-  createPaddingLine,
-  removePaddingGroup,
-} from './padding';
+import { getPadding, createPaddingLine, removePaddingGroup } from './padding';
 import { drawSpacing, getSpacing, setSpacing } from './spacing';
 import { getState } from './store';
 import { setTooltip } from './tooltip';
@@ -169,6 +165,10 @@ const removeDataFromNode = (node) => {
 
 EventEmitter.on('remove node measurement', (nodeId) =>
   removeDataFromNode(nodeId)
+);
+
+EventEmitter.on('notify', ({ message, options }) =>
+  figma.notify(message, options)
 );
 
 EventEmitter.on('focus node', (payload) => {
@@ -353,7 +353,7 @@ const setMeasurements = async (
   };
 
   for (const node of nodes) {
-    if(!node) continue;
+    if (!node) continue;
     let surrounding: SurroundingSettings = store.surrounding;
 
     if (!state.detached) {

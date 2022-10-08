@@ -52,12 +52,7 @@ const Viewer: FunctionComponent = observer(() => {
   const showSpacing = useMemo(() => {
     let show = false;
     if (store.selection.length === 2) {
-      if (
-        !overlaps(store.selection[0], store.selection[1]) ||
-        !overlaps(store.selection[1], store.selection[0])
-      ) {
-        show = true;
-      }
+      show = true;
     }
 
     if (!show && hasSpacing) {

@@ -79,6 +79,8 @@ export const createFill = (
 
     return cloneNode;
   } else {
-    figma.notify('Slices are currently not supported.');
+    figma.notify('Slices are currently not supported.', {
+      error: true,
+    });
   }
 };

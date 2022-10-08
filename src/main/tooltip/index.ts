@@ -94,12 +94,16 @@ export const setTooltip = async (
     const node: SceneNode = specificNode || figma.currentPage.selection[0];
 
     if (node.type === 'TEXT' && !node.characters.length) {
-      figma.notify('Could not add tooltip to empty text node');
+      figma.notify('Could not add tooltip to empty text node', {
+        error: true,
+      });
       return;
     }
 
     if (node.type === 'BOOLEAN_OPERATION' || node.type === 'SLICE') {
-      figma.notify('This type of element is not supported');
+      figma.notify('This type of element is not supported', {
+        error: true,
+      });
       return;
     }
 
@@ -203,6 +207,8 @@ export const setTooltip = async (
 
     return tooltipFrame;
   } else {
-    figma.notify('Please select only one element');
+    figma.notify('Please select only one element', {
+      error: true,
+    });
   }
 };

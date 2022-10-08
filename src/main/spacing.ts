@@ -59,7 +59,9 @@ EventEmitter.on('draw spacing', (settings) => {
   if (rects.length === 2) {
     drawSpacing(rects, settings);
   } else {
-    figma.notify('Please select exactly two elements.');
+    figma.notify('Please select exactly two elements.', {
+      error: true,
+    });
   }
 });
 
@@ -121,7 +123,9 @@ export const drawSpacing = async (
     !(rects[0] as any).absoluteBoundingBox ||
     !(rects[1] as any).absoluteBoundingBox
   ) {
-    figma.notify('Element is no supported');
+    figma.notify('Element is no supported', {
+      error: true,
+    });
     return;
   }
 

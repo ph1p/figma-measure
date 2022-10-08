@@ -18,6 +18,7 @@ export const isPartOfAttachedGroup = (node: SceneNode) => {
 export const getClosestAttachedGroup = (node: SceneNode, isGlobalGroup) => {
   const parent = getNearestParentNode({
     node,
+    isGroupSearch: true,
     isGlobalGroup,
   });
 
@@ -46,7 +47,11 @@ export const appendElementsToGroup = ({
   isGlobalGroup?: boolean;
 }) => {
   if (nodes.length > 0) {
-    const parent = getNearestParentNode({ node, isGlobalGroup });
+    const parent = getNearestParentNode({
+      node,
+      isGlobalGroup,
+      isGroupSearch: true,
+    });
     let children = [];
 
     const foundGroup = parent.findChild(
@@ -80,10 +85,12 @@ export const getNearestParentNode = ({
   node,
   isGlobalGroup = false,
   includingAutoLayout = false,
+  isGroupSearch = false,
 }: {
   node: SceneNode;
   isGlobalGroup?: boolean;
   includingAutoLayout?: boolean;
+  isGroupSearch?: boolean;
 }) => {
   if (isGlobalGroup) {
     return figma.currentPage;
@@ -91,16 +98,20 @@ export const getNearestParentNode = ({
 
   const parent = node.parent;
 
-  if (
-    (parent.type === 'FRAME' ||
-      parent.type === 'PAGE' ||
-      parent.type === 'GROUP') &&
-    !isPartOfInstance(node) &&
+  if (isGroupSearch && !isPartOfInstance(node) && !isPartOfAutoLayout(node)) {
+    return parent;
+  } else if (
+    !isGroupSearch &&
     (!isPartOfAutoLayout(node) || includingAutoLayout)
   ) {
     return parent;
   } else {
-    return getNearestParentNode({ node: parent as SceneNode });
+    return getNearestParentNode({
+      node: parent as SceneNode,
+      isGlobalGroup,
+      isGroupSearch,
+      includingAutoLayout,
+    });
   }
 };
 
@@ -197,7 +208,10 @@ export const isPartOfInstance = (node: SceneNode | BaseNode): boolean => {
 
 export const isPartOfAutoLayout = (node: SceneNode | BaseNode): boolean => {
   const parent = node.parent;
-  if (parent.type === 'FRAME' && parent.layoutMode !== 'NONE') {
+  if (
+    (parent.type === 'FRAME' || parent.type === 'COMPONENT') &&
+    parent.layoutMode !== 'NONE'
+  ) {
     return true;
   } else if (parent.type === 'PAGE') {
     return false;

@@ -83,17 +83,27 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
 
   const { lockDetachedGroup, lockAttachedGroup, ...nodeSettings } = settings;
 
-  const nodeData = getNodeAndParentNode(currentNode, undefined);
+  const nodeData = getNodeAndParentNode(
+    currentNode,
+    undefined,
+    state.isGlobalGroup
+  );
 
   switch (nodeData.error) {
     case ParentNodeErrors.PARENT_NOT_FOUND:
-      figma.notify('No parent element found');
+      figma.notify('No parent element found', {
+        error: true,
+      });
       break;
     case ParentNodeErrors.NOT_CONTAIN:
-      figma.notify('The element does not contain the other one');
+      figma.notify('The element does not contain the other one', {
+        error: true,
+      });
       break;
     case ParentNodeErrors.NOT_TWO_ELEMENTS:
-      figma.notify('Please select only two elements');
+      figma.notify('Please select only two elements', {
+        error: true,
+      });
       break;
   }
 
@@ -220,7 +230,8 @@ export enum ParentNodeErrors {
 
 export const getNodeAndParentNode = (
   node?: SceneNode,
-  parentNode?: SceneNode
+  parentNode?: SceneNode,
+  isGlobalGroup?: boolean
 ): { node?: SceneNode; parentNode?: SceneNode; error: ParentNodeErrors } => {
   let currentNode = node ?? (figma.currentPage.selection[0] as SceneNode);
 
@@ -231,6 +242,7 @@ export const getNodeAndParentNode = (
   if (figma.currentPage.selection.length === 1 && !parentNode) {
     if (currentNode.parent && currentNode.parent.type !== 'PAGE') {
       parentNode = getNearestParentNode({
+        isGlobalGroup,
         node: currentNode,
         includingAutoLayout: true,
       });
@@ -335,7 +347,9 @@ export const createPaddingLine = ({
     !(node as any).absoluteBoundingBox ||
     !(parentNode as any).absoluteBoundingBox
   ) {
-    figma.notify('Element is no supported');
+    figma.notify('Element is no supported', {
+      error: true,
+    });
     return;
   }
 
@@ -454,7 +468,9 @@ export const createPaddingLine = ({
 
   const widthOrHeight = Math.abs(distance);
   if (widthOrHeight <= 0.01) {
-    figma.notify('Cannot measure padding, because width or height is zero');
+    figma.notify('Cannot measure padding, because width or height is zero', {
+      error: true,
+    });
     group.remove();
     return null;
   }
@@ -569,7 +585,9 @@ export const createPaddingLine = ({
   }
 
   if (widthOrHeight === 0) {
-    figma.notify('The distance is zero');
+    figma.notify('The distance is zero', {
+      error: true,
+    });
     group.remove();
     return;
   }
