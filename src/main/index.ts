@@ -23,9 +23,6 @@ import { drawSpacing, getSpacing, setSpacing } from './spacing';
 import { getState } from './store';
 import { setTooltip } from './tooltip';
 
-let changeInterval;
-let previousSelection;
-
 figma.skipInvisibleInstanceChildren = true;
 
 figma.showUI(__html__, {
@@ -279,53 +276,29 @@ export const sendSelection = () =>
     EventEmitter.emit<NodeSelection>('selection', selection)
   );
 
-const currentSelectionAsJSONString = () =>
-  JSON.stringify(
-    figma.currentPage.selection.reduce(
-      (prev, curr) => ({
-        ...prev,
-        [curr.id]: `${curr.x}-${curr.y}-${curr.width}-${curr.height}`,
-      }),
-      {}
-    )
-  );
+figma.on('documentchange', async (e) => {
+  console.log(e);
+  const state = await getState();
+  const store: ExchangeStoreValues = {
+    labelsOutside: state.labelsOutside,
+    labels: state.labels,
+    color: state.color,
+    fill: state.fill,
+    opacity: state.opacity,
+    strokeCap: state.strokeCap,
+    strokeOffset: state.strokeOffset,
+    tooltipOffset: state.tooltipOffset,
+    tooltip: state.tooltip,
+    labelPattern: state.labelPattern,
+    fontPattern: state.fontPattern,
+    labelFontSize: state.labelFontSize,
+  };
+
+  await setMeasurements(store, true);
+});
 
 // events
 figma.on('selectionchange', () => {
-  if (figma.currentPage.selection.length > 0) {
-    previousSelection = currentSelectionAsJSONString();
-
-    if (!changeInterval) {
-      changeInterval = setInterval(async () => {
-        const currentSelection = currentSelectionAsJSONString();
-
-        if (currentSelection !== previousSelection) {
-          const state = await getState();
-          const store: ExchangeStoreValues = {
-            labelsOutside: state.labelsOutside,
-            labels: state.labels,
-            color: state.color,
-            fill: state.fill,
-            opacity: state.opacity,
-            strokeCap: state.strokeCap,
-            strokeOffset: state.strokeOffset,
-            tooltipOffset: state.tooltipOffset,
-            tooltip: state.tooltip,
-            labelPattern: state.labelPattern,
-            fontPattern: state.fontPattern,
-            labelFontSize: state.labelFontSize,
-          };
-
-          previousSelection = currentSelectionAsJSONString();
-          await setMeasurements(store, true);
-        }
-      }, 1000);
-    }
-  } else {
-    clearInterval(changeInterval);
-    changeInterval = undefined;
-    previousSelection = undefined;
-  }
   sendSelection();
 });
 

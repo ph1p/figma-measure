@@ -28,7 +28,7 @@ const About: FunctionComponent = observer(() => {
         </p>
         <Users>
           <User href="https://twitter.com/phlp_" target="_blank">
-            <img src="https://pbs.twimg.com/profile_images/1166697449089576962/RuaH73w-_400x400.jpg" />
+            <img src="https://pbs.twimg.com/profile_images/1578475335745785877/C_HujS0n_400x400.jpg" />
             <span>@phlp_</span>
           </User>
           <User href="https://twitter.com/crlhsr" target="_blank">
