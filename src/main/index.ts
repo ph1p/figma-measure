@@ -16,7 +16,11 @@ import {
 } from '../shared/interfaces';
 
 import { createFill } from './fill';
-import { appendElementsToGroup } from './helper';
+import {
+  appendElementsToGroup,
+  getNearestParentNode,
+  isPartOfAttachedGroup,
+} from './helper';
 import { createLine } from './line';
 import { getPadding, createPaddingLine, removePaddingGroup } from './padding';
 import { drawSpacing, getSpacing, setSpacing } from './spacing';
@@ -276,8 +280,21 @@ export const sendSelection = () =>
     EventEmitter.emit<NodeSelection>('selection', selection)
   );
 
-figma.on('documentchange', async (e) => {
-  console.log(e);
+figma.on('documentchange', async ({ documentChanges }) => {
+  if (
+    documentChanges.filter(
+      (change) =>
+        change.type === 'PROPERTY_CHANGE' &&
+        (change.node.removed ||
+          isPartOfAttachedGroup(change.node as SceneNode) ||
+          [GROUP_NAME_ATTACHED, GROUP_NAME_DETACHED].includes(
+            (change.node as SceneNode).name
+          ))
+    ).length > 0
+  ) {
+    return;
+  }
+
   const state = await getState();
   const store: ExchangeStoreValues = {
     labelsOutside: state.labelsOutside,
