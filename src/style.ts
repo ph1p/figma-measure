@@ -78,10 +78,10 @@ export const DEFAULT_COLOR = TOKENS.colors.solid.red.value;
 
 export const getColorByTypeAndSolidColor = (
   color: string,
-  type: keyof typeof TOKENS.colors = 'solid'
+  type: keyof typeof TOKENS.colors = 'solid',
 ) => {
   const foundColor = Object.entries(TOKENS.colors.solid).find(
-    ([_, data]) => data.value.toLowerCase() === color.toLowerCase()
+    ([_, data]) => data.value.toLowerCase() === color.toLowerCase(),
   );
 
   if (foundColor) {
@@ -94,13 +94,13 @@ export const getColorByTypeAndSolidColor = (
 export const theme = {
   tokens: TOKENS,
   colors: Object.keys(TOKENS.colors.solid).map(
-    (color) => TOKENS.colors.solid[color].value
+    (color) => TOKENS.colors.solid[color].value,
   ),
   softColors: Object.keys(TOKENS.colors.soft).map(
-    (color) => TOKENS.colors.soft[color].value
+    (color) => TOKENS.colors.soft[color].value,
   ),
   hoverColors: Object.keys(TOKENS.colors.hover).map(
-    (color) => TOKENS.colors.hover[color].value
+    (color) => TOKENS.colors.hover[color].value,
   ),
 };
 

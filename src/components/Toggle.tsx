@@ -19,14 +19,16 @@ export const Toggle: FunctionComponent<
 
   const id = useMemo<string>(
     () => props.label.toLowerCase().replace(/\s/g, '-'),
-    [props.label]
+    [props.label],
   );
 
   return (
     <Wrapper>
       <Flex inline={props.inline}>
         {props.label && <label htmlFor={id}>{props.label}</label>}
-        {props.description && <QuestionMark hover>{props.description}</QuestionMark>}
+        {props.description && (
+          <QuestionMark hover>{props.description}</QuestionMark>
+        )}
         <InputWrapper>
           <input id={id} {...inputProps} type="checkbox" />
           <span></span>
@@ -35,7 +37,6 @@ export const Toggle: FunctionComponent<
     </Wrapper>
   );
 };
-
 
 const Wrapper = styled.div`
   p {
@@ -63,7 +64,7 @@ const InputWrapper = styled.div`
   height: 21px;
   box-sizing: border-box;
   position: relative;
-    margin-left: auto;
+  margin-left: auto;
   input {
     position: absolute;
     width: 100%;

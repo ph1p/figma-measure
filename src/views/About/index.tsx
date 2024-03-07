@@ -28,11 +28,11 @@ const About: FunctionComponent = observer(() => {
         </p>
         <Users>
           <User href="https://twitter.com/phlp_" target="_blank">
-            <img src="https://pbs.twimg.com/profile_images/1578475335745785877/C_HujS0n_400x400.jpg" />
+            <img src="https://unavatar.io/twitter/phlp_" />
             <span>@phlp_</span>
           </User>
           <User href="https://twitter.com/crlhsr" target="_blank">
-            <img src="https://pbs.twimg.com/profile_images/1558470267415908352/7YqNCCfq_400x400.jpg" />
+            <img src="https://unavatar.io/twitter/crlhsr" />
             <span>@crlhsr</span>
           </User>
         </Users>

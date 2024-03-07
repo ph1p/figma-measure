@@ -8,7 +8,7 @@ interface Props {
 }
 
 export const QuestionMark: FunctionComponent<PropsWithChildren<Props>> = (
-  props
+  props,
 ) => (
   <Tooltip
     hover={props.hover}

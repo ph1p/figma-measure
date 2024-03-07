@@ -25,12 +25,12 @@ export const findAndReplaceNumberPattern = (pattern: string, num: number) => {
   const regexFull = /\(((\$)(#*)(\/|\*)(\d+\.?\d*))\)/g;
 
   for (const [match, , decimalPlace] of Array.from(
-    pattern.matchAll(regexWithoutCalc)
+    pattern.matchAll(regexWithoutCalc),
   )) {
     somethingReplaced = true;
     pattern = pattern.replace(
       match,
-      toFixed(num, decimalPlace ? decimalPlace.length : 0)
+      toFixed(num, decimalPlace ? decimalPlace.length : 0),
     );
   }
 
@@ -57,7 +57,7 @@ export const findAndReplaceNumberPattern = (pattern: string, num: number) => {
 export const transformPixelToUnit = (
   pixel: number,
   unit: string,
-  precision?: number
+  precision?: number,
 ) => {
   if (typeof precision === 'undefined') {
     precision = 2;

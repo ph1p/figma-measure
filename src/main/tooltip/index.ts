@@ -66,7 +66,7 @@ const getTooltipFrame = (node): FrameNode => {
 
 export const setTooltip = async (
   options: SetTooltipOptions,
-  specificNode = null
+  specificNode = null,
 ) => {
   const data = {
     vertical: undefined,

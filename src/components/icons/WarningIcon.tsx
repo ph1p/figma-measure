@@ -20,7 +20,7 @@ export const WarningIcon: FunctionComponent = () => (
       height="18"
       rx="9"
       stroke="white"
-      stroke-width="2"
+      strokeWidth="2"
     />
   </svg>
 );

@@ -15,7 +15,7 @@ import { width } from './parts/width';
 export const addNode = async (
   parent: SceneNode,
   node: SceneNode,
-  settings: SetTooltipOptions
+  settings: SetTooltipOptions,
 ) => {
   const flags: TooltipSettings = settings.flags;
   // Add content to parent
@@ -38,7 +38,7 @@ export const addNode = async (
     cornerRadius(node, parent, settings);
   }
   if (flags.stroke) {
-    strokes(node, parent, settings);
+    await strokes(node, parent, settings);
   }
   if (flags.opacity) {
     opacity(node, parent, settings);
@@ -50,6 +50,6 @@ export const addNode = async (
     pointCount(node, parent, settings);
   }
   if (flags.effects) {
-    effects(node, parent, settings);
+    await effects(node, parent, settings);
   }
 };

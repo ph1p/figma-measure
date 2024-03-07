@@ -1,7 +1,6 @@
 import { makeAutoObservable, toJS } from 'mobx';
 import { AsyncTrunk, ignore } from 'mobx-sync';
-import { useContext } from 'preact/hooks';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useContext } from 'react';
 
 import EventEmitter from '../shared/EventEmitter';
 import { STORAGE_KEY } from '../shared/constants';
@@ -250,7 +249,7 @@ class RootStore {
           fontPattern: this.fontPattern,
           detached: this.detached,
           labelFontSize: this.labelFontSize,
-        })
+        }),
       );
     }
 
@@ -284,7 +283,7 @@ export const trunk = new AsyncTrunk(rootStore, {
     getItem(key: string) {
       EventEmitter.emit('storage get item', key);
       return new Promise((resolve) =>
-        EventEmitter.once('storage get item', resolve)
+        EventEmitter.once('storage get item', resolve),
       );
     },
     setItem(key: string, value: string) {
@@ -293,13 +292,13 @@ export const trunk = new AsyncTrunk(rootStore, {
         value,
       });
       return new Promise((resolve) =>
-        EventEmitter.once('storage set item', resolve)
+        EventEmitter.once('storage set item', resolve),
       );
     },
     removeItem(key: string) {
       EventEmitter.emit('storage remove item', key);
       return new Promise((resolve) =>
-        EventEmitter.once('storage remove item', resolve)
+        EventEmitter.once('storage remove item', resolve),
       );
     },
   },

@@ -1,26 +1,25 @@
 import { reaction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
-import { useEffect } from 'preact/hooks';
-import React, { FunctionComponent } from 'react';
-import * as ReactDOM from 'react-dom';
+import React, { FunctionComponent, useEffect } from 'react';
+import { createRoot } from 'react-dom/client';
 import {
-  MemoryRouter as Router,
-  Route,
-  Routes,
   Link,
   LinkProps,
-  useResolvedPath,
+  Route,
+  MemoryRouter as Router,
+  Routes,
   useMatch,
+  useResolvedPath,
 } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 
 import EventEmitter from './shared/EventEmitter';
 import { Alignments, NodeSelection, PluginNodeData } from './shared/interfaces';
-import { getStoreFromMain, StoreProvider, trunk, useStore } from './store';
+import { StoreProvider, getStoreFromMain, trunk, useStore } from './store';
 import {
   DEFAULT_COLOR,
-  getColorByTypeAndSolidColor,
   GlobalStyle,
+  getColorByTypeAndSolidColor,
   theme,
 } from './style';
 import About from './views/About';
@@ -46,7 +45,7 @@ const App: FunctionComponent = observer(() => {
   useEffect(() => {
     // check selection
     EventEmitter.ask('current selection').then((data: NodeSelection) =>
-      store.setSelection(data.nodes)
+      store.setSelection(data.nodes),
     );
 
     EventEmitter.on('selection', (data: NodeSelection) => {
@@ -105,9 +104,9 @@ const App: FunctionComponent = observer(() => {
           } else {
             store.resetSurrounding();
           }
-        }
+        },
       ),
-    []
+    [],
   );
 
   return (
@@ -145,17 +144,18 @@ const App: FunctionComponent = observer(() => {
   );
 });
 
+const elementRoot = createRoot(document.getElementById('app'));
+
 getStoreFromMain().then((store) =>
   trunk.init(store).then(() =>
-    ReactDOM.render(
+    elementRoot.render(
       <StoreProvider>
         <Router>
           <App />
         </Router>
       </StoreProvider>,
-      document.getElementById('app')
-    )
-  )
+    ),
+  ),
 );
 
 const Main = styled.div`

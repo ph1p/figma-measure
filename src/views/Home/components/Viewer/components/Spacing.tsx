@@ -14,7 +14,7 @@ export const Spacing: FunctionComponent<{
 
   const refreshSelection = () =>
     EventEmitter.ask('current selection').then((data: NodeSelection) =>
-      store.setSelection(data.nodes)
+      store.setSelection(data.nodes),
     );
 
   const addSpacing = () => {
@@ -41,8 +41,8 @@ export const Spacing: FunctionComponent<{
   return (
     <Wrapper
       onClick={() => (props.hasSpacing ? removeSpacing() : addSpacing())}
-      enabled={props.showSpacing}
-      active={props.hasSpacing}
+      enabled={props.showSpacing ? props.showSpacing : undefined}
+      active={props.hasSpacing ? props.hasSpacing : undefined}
     >
       <div></div>
       <div></div>
@@ -87,8 +87,8 @@ const ArrowLeftRight = css`
 const Wrapper = styled.div.attrs<{ enabled?: boolean; active?: boolean }>(
   (p) => ({
     className: `${p.enabled && 'enabled'} ${p.active && 'active'}`,
-  })
-)<{ enabled?: boolean; active?: boolean }>`
+  }),
+)<{ enabled?: boolean | string; active?: boolean | string }>`
   position: absolute;
   left: -15px;
   top: -15px;

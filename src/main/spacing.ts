@@ -21,13 +21,13 @@ export const getSpacing = (node: SceneNode) => {
 export const setSpacing = (node: SceneNode, data: unknown) =>
   node.setPluginData('spacing', JSON.stringify(data));
 
-EventEmitter.on('remove spacing', () => {
+EventEmitter.on('remove spacing', async () => {
   for (const node of figma.currentPage.selection) {
     const spacing = getSpacing(node);
 
     for (const connectedNodeId of Object.keys(spacing)) {
       // check if group exists
-      const group = figma.getNodeById(spacing[connectedNodeId]);
+      const group = await figma.getNodeByIdAsync(spacing[connectedNodeId]);
 
       delete spacing[connectedNodeId];
       setSpacing(node, spacing);
@@ -38,9 +38,9 @@ EventEmitter.on('remove spacing', () => {
       }
 
       // get connected node
-      const foundConnectedNode = figma.getNodeById(
-        connectedNodeId
-      ) as unknown as SceneNode;
+      const foundConnectedNode = (await figma.getNodeByIdAsync(
+        connectedNodeId,
+      )) as unknown as SceneNode;
 
       // node removed
       if (foundConnectedNode) {
@@ -109,7 +109,7 @@ export const drawSpacing = async (
     labelPattern = '',
     labelsOutside = false,
     strokeCap = 'NONE',
-  }
+  },
 ) => {
   const state = await getState();
   const LABEL_OUTSIDE_MARGIN = 4 * (state.labelFontSize / 10);
@@ -134,7 +134,7 @@ export const drawSpacing = async (
 
   if (spacingData1[rects[1].id]) {
     try {
-      figma.getNodeById(spacingData1[rects[1].id]).remove();
+      (await figma.getNodeByIdAsync(spacingData1[rects[1].id]))?.remove();
     } catch {
       console.log('Could not remove spacing node');
     }
@@ -264,8 +264,8 @@ export const drawSpacing = async (
               mainColor,
               width: line1.width,
               height: line1.height,
-            })
-          )
+            }),
+          ),
         );
       } else {
         line1.strokeCap = strokeCap as StrokeCap;
@@ -279,7 +279,7 @@ export const drawSpacing = async (
             mainColor,
             width: line1.width,
             height: line1.height,
-          })
+          }),
         );
       } else {
         line1.vectorNetwork = {
@@ -303,7 +303,7 @@ export const drawSpacing = async (
         baseNode: line1,
         text: findAndReplaceNumberPattern(
           labelPattern,
-          distanceBetweenTwoPoints(yellowX1, yellowY1, yellowX2, yellowY2)
+          distanceBetweenTwoPoints(yellowX1, yellowY1, yellowX2, yellowY2),
         ),
         color: mainColor,
         isVertical: true,
@@ -431,8 +431,8 @@ export const drawSpacing = async (
               mainColor,
               width: line4.width,
               height: line4.height,
-            })
-          )
+            }),
+          ),
         );
       } else {
         line4.strokeCap = strokeCap as StrokeCap;
@@ -447,7 +447,7 @@ export const drawSpacing = async (
             mainColor,
             width: line4.width,
             height: line4.height,
-          })
+          }),
         );
       } else {
         line4.vectorNetwork = {
@@ -471,7 +471,7 @@ export const drawSpacing = async (
         baseNode: line4,
         text: findAndReplaceNumberPattern(
           labelPattern,
-          distanceBetweenTwoPoints(blueX1, blueY1, blueX2, blueY2)
+          distanceBetweenTwoPoints(blueX1, blueY1, blueX2, blueY2),
         ),
         color: mainColor,
         isVertical: false,
@@ -510,7 +510,7 @@ export const drawSpacing = async (
 
     group.setPluginData(
       'connected',
-      JSON.stringify(rects.map((rect) => rect.id))
+      JSON.stringify(rects.map((rect) => rect.id)),
     );
 
     rects[0].setPluginData(
@@ -518,7 +518,7 @@ export const drawSpacing = async (
       JSON.stringify({
         ...spacingData1,
         [rects[1].id]: group.id,
-      })
+      }),
     );
 
     rects[1].setPluginData(
@@ -526,7 +526,7 @@ export const drawSpacing = async (
       JSON.stringify({
         ...spacingData2,
         [rects[0].id]: group.id,
-      })
+      }),
     );
 
     appendElementsToGroup({

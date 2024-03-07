@@ -9,8 +9,8 @@ export const SpacingImage = () => (
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      fill-rule="evenodd"
-      clip-rule="evenodd"
+      fillRule="evenodd"
+      clipRule="evenodd"
       d="M50.5 23H51.5V27H137.5V23H138.5V32H137.5V28H51.5V32H50.5V23Z"
       fill="white"
     />
@@ -86,8 +86,8 @@ export const SpacingImage = () => (
         y2="40.6364"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="white" />
-        <stop offset="1" stop-color="white" stop-opacity="0" />
+        <stop stopColor="white" />
+        <stop offset="1" stopColor="white" stopOpacity="0" />
       </linearGradient>
       <linearGradient
         id="paint1_linear_3051_72821"
@@ -97,8 +97,8 @@ export const SpacingImage = () => (
         y2="91.6364"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="white" />
-        <stop offset="1" stop-color="white" stop-opacity="0" />
+        <stop stopColor="white" />
+        <stop offset="1" stopColor="white" stopOpacity="0" />
       </linearGradient>
       <linearGradient
         id="paint2_linear_3051_72821"
@@ -108,8 +108,8 @@ export const SpacingImage = () => (
         y2="34.5"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="white" />
-        <stop offset="1" stop-color="white" stop-opacity="0" />
+        <stop stopColor="white" />
+        <stop offset="1" stopColor="white" stopOpacity="0" />
       </linearGradient>
       <linearGradient
         id="paint3_linear_3051_72821"
@@ -119,8 +119,8 @@ export const SpacingImage = () => (
         y2="75.5"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="white" />
-        <stop offset="1" stop-color="white" stop-opacity="0" />
+        <stop stopColor="white" />
+        <stop offset="1" stopColor="white" stopOpacity="0" />
       </linearGradient>
     </defs>
   </svg>

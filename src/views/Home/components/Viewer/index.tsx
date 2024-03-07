@@ -46,7 +46,7 @@ const Viewer: FunctionComponent = observer(() => {
 
   const hasSpacing = useMemo(
     () => store.selection.some((selection) => selection.hasSpacing),
-    [store.selection]
+    [store.selection],
   );
 
   const showSpacing = useMemo(() => {
@@ -92,36 +92,36 @@ const Viewer: FunctionComponent = observer(() => {
         <Tooltip
           data-direction="TOP"
           onClick={clickTooltip}
-          active={store.surrounding.tooltip === TooltipPositions.TOP}
+          $active={store.surrounding.tooltip === TooltipPositions.TOP}
         />
         <Tooltip
           data-direction="BOTTOM"
           onClick={clickTooltip}
-          active={store.surrounding.tooltip === TooltipPositions.BOTTOM}
+          $active={store.surrounding.tooltip === TooltipPositions.BOTTOM}
         />
         <Tooltip
           data-direction="LEFT"
           onClick={clickTooltip}
-          active={store.surrounding.tooltip === TooltipPositions.LEFT}
+          $active={store.surrounding.tooltip === TooltipPositions.LEFT}
         />
         <Tooltip
           data-direction="RIGHT"
           onClick={clickTooltip}
-          active={store.surrounding.tooltip === TooltipPositions.RIGHT}
+          $active={store.surrounding.tooltip === TooltipPositions.RIGHT}
         />
 
-        <Lines showSpacing={showSpacing}>
+        <Lines $showSpacing={showSpacing}>
           <Line.Corner
-            labels={store.labels}
-            labelsOutside={store.labelsOutside}
+            $labels={store.labels}
+            $labelsOutside={store.labelsOutside}
             onClick={clickCorner}
-            active={store.surrounding.leftBar && store.surrounding.topBar}
+            $active={store.surrounding.leftBar && store.surrounding.topBar}
             data-direction="top-left"
           />
           <Line.Horizontal
-            labels={store.labels}
-            labelsOutside={store.labelsOutside}
-            active={store.surrounding.topBar}
+            $labels={store.labels}
+            $labelsOutside={store.labelsOutside}
+            $active={store.surrounding.topBar}
             onClick={() =>
               store.setSurrounding({
                 ...store.surrounding,
@@ -130,16 +130,16 @@ const Viewer: FunctionComponent = observer(() => {
             }
           />
           <Line.Corner
-            labels={store.labels}
-            labelsOutside={store.labelsOutside}
+            $labels={store.labels}
+            $labelsOutside={store.labelsOutside}
             onClick={clickCorner}
-            active={store.surrounding.rightBar && store.surrounding.topBar}
+            $active={store.surrounding.rightBar && store.surrounding.topBar}
             data-direction="top-right"
           />
           <Line.Vertical
-            labels={store.labels}
-            labelsOutside={store.labelsOutside}
-            active={store.surrounding.leftBar}
+            $labels={store.labels}
+            $labelsOutside={store.labelsOutside}
+            $active={store.surrounding.leftBar}
             onClick={() =>
               store.setSurrounding({
                 ...store.surrounding,
@@ -155,25 +155,25 @@ const Viewer: FunctionComponent = observer(() => {
 
             <OverlayAndPadding>
               <Line.Vertical
-                labels={store.labels}
-                labelsOutside={store.labelsOutside}
+                $labels={store.labels}
+                $labelsOutside={store.labelsOutside}
                 className="top"
                 style={{ height: 26 }}
-                active={store.surrounding.topPadding}
+                $active={store.surrounding.topPadding}
                 onClick={() => addPadding(Alignments.TOP)}
               />
               <Line.Vertical
-                labels={store.labels}
-                labelsOutside={store.labelsOutside}
+                $labels={store.labels}
+                $labelsOutside={store.labelsOutside}
                 className="bottom"
                 style={{ height: 26 }}
-                active={store.surrounding.bottomPadding}
+                $active={store.surrounding.bottomPadding}
                 onClick={() => addPadding(Alignments.BOTTOM)}
               />
 
               <OverlayRect
                 className={`center ${store.fill}`}
-                active={store.surrounding.center}
+                $active={store.surrounding.center}
                 onClick={() =>
                   store.setSurrounding({
                     ...store.surrounding,
@@ -182,10 +182,10 @@ const Viewer: FunctionComponent = observer(() => {
                 }
               >
                 <Line.Vertical
-                  labels={store.labels}
-                  labelsOutside={store.labelsOutside}
+                  $labels={store.labels}
+                  $labelsOutside={store.labelsOutside}
                   style={{ height: 29, left: 10, top: 1, zIndex: 15 }}
-                  active={store.surrounding.verticalBar}
+                  $active={store.surrounding.verticalBar}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -196,10 +196,10 @@ const Viewer: FunctionComponent = observer(() => {
                   }}
                 />
                 <Line.Horizontal
-                  labels={store.labels}
-                  labelsOutside={store.labelsOutside}
+                  $labels={store.labels}
+                  $labelsOutside={store.labelsOutside}
                   style={{ width: 29, right: 0, top: -19, zIndex: 15 }}
-                  active={store.surrounding.horizontalBar}
+                  $active={store.surrounding.horizontalBar}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -212,28 +212,28 @@ const Viewer: FunctionComponent = observer(() => {
               </OverlayRect>
 
               <Line.Horizontal
-                labels={store.labels}
-                labelsOutside={store.labelsOutside}
+                $labels={store.labels}
+                $labelsOutside={store.labelsOutside}
                 className="left"
                 style={{ width: 26 }}
-                active={store.surrounding.leftPadding}
+                $active={store.surrounding.leftPadding}
                 onClick={() => addPadding(Alignments.LEFT)}
               />
               <Line.Horizontal
-                labels={store.labels}
-                labelsOutside={store.labelsOutside}
+                $labels={store.labels}
+                $labelsOutside={store.labelsOutside}
                 className="right"
                 style={{ width: 26 }}
-                active={store.surrounding.rightPadding}
+                $active={store.surrounding.rightPadding}
                 onClick={() => addPadding(Alignments.RIGHT)}
               />
             </OverlayAndPadding>
           </div>
 
           <Line.Vertical
-            labels={store.labels}
-            labelsOutside={store.labelsOutside}
-            active={store.surrounding.rightBar}
+            $labels={store.labels}
+            $labelsOutside={store.labelsOutside}
+            $active={store.surrounding.rightBar}
             onClick={() =>
               store.setSurrounding({
                 ...store.surrounding,
@@ -242,16 +242,16 @@ const Viewer: FunctionComponent = observer(() => {
             }
           />
           <Line.Corner
-            labels={store.labels}
-            labelsOutside={store.labelsOutside}
+            $labels={store.labels}
+            $labelsOutside={store.labelsOutside}
             onClick={clickCorner}
-            active={store.surrounding.leftBar && store.surrounding.bottomBar}
+            $active={store.surrounding.leftBar && store.surrounding.bottomBar}
             data-direction="left-bottom"
           />
           <Line.Horizontal
-            labels={store.labels}
-            labelsOutside={store.labelsOutside}
-            active={store.surrounding.bottomBar}
+            $labels={store.labels}
+            $labelsOutside={store.labelsOutside}
+            $active={store.surrounding.bottomBar}
             onClick={() =>
               store.setSurrounding({
                 ...store.surrounding,
@@ -260,10 +260,10 @@ const Viewer: FunctionComponent = observer(() => {
             }
           />
           <Line.Corner
-            labels={store.labels}
-            labelsOutside={store.labelsOutside}
+            $labels={store.labels}
+            $labelsOutside={store.labelsOutside}
             onClick={clickCorner}
-            active={store.surrounding.rightBar && store.surrounding.bottomBar}
+            $active={store.surrounding.rightBar && store.surrounding.bottomBar}
             data-direction="right-bottom"
           />
         </Lines>
@@ -329,8 +329,8 @@ const OverlayRect = styled.div.attrs<{ active?: boolean }>((props) => ({
   }
 `;
 
-const Tooltip = styled.div.attrs<{ active?: boolean }>((props) => ({
-  className: props.active ? 'active' : '',
+const Tooltip = styled.div.attrs<{ $active?: boolean }>((props) => ({
+  className: props.$active ? 'active' : '',
 }))<{ active?: boolean }>`
   height: 20px;
   width: 20px;
@@ -453,15 +453,17 @@ const OverlayAndPadding = styled.div`
   }
 `;
 
-const Lines = styled.div<{ showSpacing: boolean }>`
+const Lines = styled.div<{ $showSpacing: boolean }>`
   grid-area: center;
   display: grid;
   grid-template-rows: 21px 1fr 21px;
   grid-template-columns: 21px 1fr 21px;
   height: 100%;
-  transition: height 0.3s, width 0.3s;
-  width: ${(p) => (p.showSpacing ? 171 : 145)}px;
-  height: ${(p) => (p.showSpacing ? 171 : 145)}px;
+  transition:
+    height 0.3s,
+    width 0.3s;
+  width: ${(p) => (p.$showSpacing ? 171 : 145)}px;
+  height: ${(p) => (p.$showSpacing ? 171 : 145)}px;
   margin: 0 auto;
   > div {
     position: relative;

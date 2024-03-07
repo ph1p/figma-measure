@@ -62,14 +62,14 @@ export const PaddingImage = () => (
       stroke="#A7A9A3"
     />
     <path
-      fill-rule="evenodd"
-      clip-rule="evenodd"
+      fillRule="evenodd"
+      clipRule="evenodd"
       d="M113.5 38H114.5V40H133.5V38H134.5V43H133.5V41H114.5V43H113.5V38Z"
       fill="black"
     />
     <path
-      fill-rule="evenodd"
-      clip-rule="evenodd"
+      fillRule="evenodd"
+      clipRule="evenodd"
       d="M69 58.5L69 59.5L67 59.5L67 82.5L69 82.5L69 83.5L64 83.5L64 82.5L66 82.5L66 59.5L64 59.5L64 58.5L69 58.5Z"
       fill="black"
     />
@@ -101,7 +101,7 @@ export const PaddingImage = () => (
         gradientUnits="userSpaceOnUse"
       >
         <stop />
-        <stop offset="1" stop-opacity="0" />
+        <stop offset="1" stopOpacity="0" />
       </linearGradient>
       <linearGradient
         id="paint1_linear_3051_72718"
@@ -112,7 +112,7 @@ export const PaddingImage = () => (
         gradientUnits="userSpaceOnUse"
       >
         <stop />
-        <stop offset="1" stop-color="white" stop-opacity="0" />
+        <stop offset="1" stopColor="white" stopOpacity="0" />
       </linearGradient>
       <linearGradient
         id="paint2_linear_3051_72718"
@@ -123,7 +123,7 @@ export const PaddingImage = () => (
         gradientUnits="userSpaceOnUse"
       >
         <stop />
-        <stop offset="1" stop-opacity="0" />
+        <stop offset="1" stopOpacity="0" />
       </linearGradient>
       <linearGradient
         id="paint3_linear_3051_72718"
@@ -134,7 +134,7 @@ export const PaddingImage = () => (
         gradientUnits="userSpaceOnUse"
       >
         <stop />
-        <stop offset="1" stop-opacity="0" />
+        <stop offset="1" stopOpacity="0" />
       </linearGradient>
     </defs>
   </svg>

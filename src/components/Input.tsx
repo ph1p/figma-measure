@@ -12,7 +12,7 @@ export const Input: FunctionComponent<
 > = (props) => {
   const id = useMemo<string>(
     () => props.label.toLowerCase().replace(/\s/g, '-'),
-    [props.label]
+    [props.label],
   );
 
   return (

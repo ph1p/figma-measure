@@ -2,9 +2,9 @@ import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
-  active?: boolean;
-  labels?: boolean;
-  labelsOutside?: boolean;
+  $active?: boolean;
+  $labels?: boolean | string;
+  $labelsOutside?: boolean;
 }
 
 const Horizontal: FunctionComponent<Props> = (props) => (
@@ -26,7 +26,7 @@ const Corner: FunctionComponent<Props> = (props) => (
 );
 
 const VerticalLine = styled.div.attrs<Props>((props) => ({
-  className: props.active ? 'active' : '',
+  className: props.$active ? 'active' : '',
 }))<Props>`
   background-color: transparent;
   border-radius: 5px;
@@ -49,11 +49,11 @@ const VerticalLine = styled.div.attrs<Props>((props) => ({
     background-color: var(--figma-color-bg-disabled);
     &::after {
       content: '';
-      display: ${(props) => (props.labels ? 'block' : 'none')};
+      display: ${(props) => (props.$labels ? 'block' : 'none')};
       position: absolute;
       background-color: var(--figma-color-bg-disabled);
       width: 3px;
-      left: ${(props) => (props.labelsOutside ? 3 : -1)};
+      left: ${(props) => (props.$labelsOutside ? 3 : -1)};
       height: 29%;
       top: 50%;
       transform: translateY(-50%);
@@ -86,7 +86,7 @@ const VerticalLine = styled.div.attrs<Props>((props) => ({
 `;
 
 const HorizontalLine = styled(VerticalLine).attrs<Props>((props) => ({
-  className: props.active ? 'active' : '',
+  className: props.$active ? 'active' : '',
 }))<Props>`
   border-radius: 5px;
   height: 11px;
@@ -97,7 +97,7 @@ const HorizontalLine = styled(VerticalLine).attrs<Props>((props) => ({
     width: calc(100% - 10px);
     &::after {
       height: 3px;
-      top: ${(props) => (props.labelsOutside ? 3 : -1)};
+      top: ${(props) => (props.$labelsOutside ? 3 : -1)};
       width: 29%;
       left: 50%;
       transform: translateX(-50%);
@@ -120,7 +120,7 @@ const HorizontalLine = styled(VerticalLine).attrs<Props>((props) => ({
 `;
 
 const CornerLine = styled.div.attrs<Props>((props) => ({
-  className: props.active ? 'active' : '',
+  className: props.$active ? 'active' : '',
 }))<Props>`
   width: 17px;
   height: 17px;

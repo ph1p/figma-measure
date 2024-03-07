@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { useStore } from '../store';
 import { theme } from '../style';
 
-const ColorItem = styled.div<{ color: string; active: boolean }>`
+const ColorItem = styled.div<{ $color: string; $active: boolean }>`
   position: absolute;
   left: 4px;
   top: 4px;
@@ -13,7 +13,7 @@ const ColorItem = styled.div<{ color: string; active: boolean }>`
   width: 22px;
   height: 22px;
   border-radius: 6px;
-  background-color: ${(props) => props.color};
+  background-color: ${(props) => props.$color};
   cursor: pointer;
   transition: all 0.3s;
 `;
@@ -99,8 +99,8 @@ export const Colors: FunctionComponent = observer(() => {
         .map((color, i) => (
           <ColorItem
             key={i}
-            color={color}
-            active={color === store.color}
+            $color={color}
+            $active={color === store.color}
             onClick={() => color !== store.color && store.setColor(color)}
           />
         ))}

@@ -50,9 +50,9 @@ export const EmptyScreenImage: FunctionComponent<{ color: string }> = ({
         width="19.2637"
         height="21.0409"
         filterUnits="userSpaceOnUse"
-        color-interpolation-filters="sRGB"
+        colorInterpolationFilters="sRGB"
       >
-        <feFlood flood-opacity="0" result="BackgroundImageFix" />
+        <feFlood floodOpacity="0" result="BackgroundImageFix" />
         <feColorMatrix
           in="SourceAlpha"
           type="matrix"
@@ -85,8 +85,8 @@ export const EmptyScreenImage: FunctionComponent<{ color: string }> = ({
         y2="63.2424"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color={color} />
-        <stop offset="1" stop-color={color} stop-opacity="0" />
+        <stop stopColor={color} />
+        <stop offset="1" stopColor={color} stopOpacity="0" />
       </linearGradient>
     </defs>
   </svg>

@@ -11,7 +11,11 @@ const ICON = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns=
 <path d="M11.5 9H3.5V7H11.5V9Z" fill="#8C8C8C"/>
 </svg>`;
 
-export const strokes = (node, parent, { fontColor = '', fontSize = 0 }) => {
+export const strokes = async (
+  node,
+  parent,
+  { fontColor = '', fontSize = 0 },
+) => {
   const strokes = [
     node.strokeTopWeight,
     node.strokeBottomWeight,
@@ -36,7 +40,7 @@ export const strokes = (node, parent, { fontColor = '', fontSize = 0 }) => {
       if (node.strokeBottomWeight) {
         textNode.characters += `bottom: ${toFixed(
           node.strokeBottomWeight,
-          2
+          2,
         )} · `;
       }
       if (node.strokeLeftWeight) {
@@ -45,7 +49,7 @@ export const strokes = (node, parent, { fontColor = '', fontSize = 0 }) => {
       if (node.strokeRightWeight) {
         textNode.characters += `right: ${toFixed(
           node.strokeRightWeight,
-          2
+          2,
         )} · `;
       }
     }
@@ -58,7 +62,7 @@ export const strokes = (node, parent, { fontColor = '', fontSize = 0 }) => {
       textNode.setRangeFontSize(
         textPosition,
         textPosition + label.length + 2,
-        fontSize - 1
+        fontSize - 1,
       );
       textNode.setRangeFills(textPosition, textPosition + label.length + 2, [
         solidColor(153, 153, 153),
@@ -66,7 +70,7 @@ export const strokes = (node, parent, { fontColor = '', fontSize = 0 }) => {
       textNode.setRangeFontSize(
         textPosition + characters.length - size.length,
         textPosition + characters.length,
-        fontSize
+        fontSize,
       );
       textPosition += characters.length + 3;
     }
@@ -77,7 +81,7 @@ export const strokes = (node, parent, { fontColor = '', fontSize = 0 }) => {
     let fills = null;
 
     if (node.strokeStyleId) {
-      fills = getFillsByFillStyleId(node.strokeStyleId);
+      fills = await getFillsByFillStyleId(node.strokeStyleId);
     }
 
     if (!fills) {
@@ -90,7 +94,7 @@ export const strokes = (node, parent, { fontColor = '', fontSize = 0 }) => {
           figma.createNodeFromSvg(ICON),
           ...createColorNode(fill, { fontColor, fontSize }),
         ],
-        parent
+        parent,
       );
       g.expanded = false;
     }

@@ -60,10 +60,6 @@ module.exports = (env, argv) => ({
     ],
   },
   resolve: {
-    alias: {
-      react: 'preact/compat',
-      'react-dom': 'preact/compat',
-    },
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
   },
   output: {
@@ -84,7 +80,7 @@ module.exports = (env, argv) => ({
             (jsFile) =>
               `<script>${compilation.assets[
                 jsFile.substr(htmlWebpackPlugin.files.publicPath.length)
-              ].source()}</script>`
+              ].source()}</script>`,
           )}
           </body>
         </html>

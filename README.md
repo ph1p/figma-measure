@@ -1,6 +1,6 @@
 # Figma Measure
 
-![header](https://user-images.githubusercontent.com/15351728/182243653-6be94071-28d5-4709-863d-afb30b2bfe74.png)
+![header](https://github.com/ph1p/figma-measure/assets/15351728/d5f7c98c-d198-491d-b7be-4fc24f9d1222)
 
 A plugin to add measurement lines to figma.
 

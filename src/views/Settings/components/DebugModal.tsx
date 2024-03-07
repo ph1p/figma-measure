@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react';
-import { useEffect, useMemo, useState } from 'preact/hooks';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 import EventEmitter from '../../../shared/EventEmitter';
@@ -73,16 +72,16 @@ export const DebugModal: FunctionComponent<{ close: () => void }> = observer(
             {measurements.length > 0 && (
               <ul>
                 {Object.keys(groupedByPage).map((pageId) => (
-                  <div className="page">
+                  <div className="page" key={pageId}>
                     <h4>{groupedByPage[pageId].name}</h4>
                     {groupedByPage[pageId].measurements.map((element) => (
-                      <li>
+                      <li key={element.id}>
                         <span>{element.name}</span>
                         <div>
                           <FocusButton
                             onClick={() => {
                               setActiveNodeId(
-                                element.id === activeNodeId ? '' : element.id
+                                element.id === activeNodeId ? '' : element.id,
                               );
                               EventEmitter.emit('focus node', element);
                             }}
@@ -94,14 +93,14 @@ export const DebugModal: FunctionComponent<{ close: () => void }> = observer(
                             onClick={() => {
                               const tempMeasurements = measurements.filter(
                                 (m) =>
-                                  m.pageId === pageId && m.id !== element.id
+                                  m.pageId === pageId && m.id !== element.id,
                               );
 
                               setMeasurements(tempMeasurements);
 
                               EventEmitter.emit(
                                 'remove node measurement',
-                                element.id
+                                element.id,
                               );
                             }}
                           >
@@ -118,7 +117,7 @@ export const DebugModal: FunctionComponent<{ close: () => void }> = observer(
         </DebugWrapper>
       </>
     );
-  }
+  },
 );
 
 const Button = styled.button`

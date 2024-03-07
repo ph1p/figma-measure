@@ -23,7 +23,7 @@ export const getClosestAttachedGroup = (node: SceneNode, isGlobalGroup) => {
   });
 
   const foundGroup = parent.findChild(
-    (n) => n.type === 'GROUP' && n.name === GROUP_NAME_ATTACHED
+    (n) => n.type === 'GROUP' && n.name === GROUP_NAME_ATTACHED,
   );
 
   if (foundGroup) {
@@ -55,7 +55,7 @@ export const appendElementsToGroup = ({
     let children = [];
 
     const foundGroup = parent.findChild(
-      (n) => n.type === 'GROUP' && n.name === name
+      (n) => n.type === 'GROUP' && n.name === name,
     );
 
     if (foundGroup) {
@@ -92,10 +92,6 @@ export const getNearestParentNode = ({
   includingAutoLayout?: boolean;
   isGroupSearch?: boolean;
 }) => {
-  if (isGlobalGroup) {
-    return figma.currentPage;
-  }
-
   const parent = node.parent;
 
   if (isGroupSearch && !isPartOfInstance(node) && !isPartOfAutoLayout(node)) {
@@ -173,7 +169,7 @@ export const setTitleBold = (content) => {
 
 export const colorString = (color, opacity) => {
   return `rgba(${Math.round(color.r * 255)}, ${Math.round(
-    color.g * 255
+    color.g * 255,
   )}, ${Math.round(color.b * 255)}, ${opacity})`;
 };
 
@@ -221,14 +217,14 @@ export const isPartOfAutoLayout = (node: SceneNode | BaseNode): boolean => {
 };
 
 export const getFontNameData = async (
-  textNode: TextNode
+  textNode: TextNode,
 ): Promise<(FontName & { style: []; fontSize: number[] })[]> => {
   const fontNameData = [];
 
   const loadFontAndPush = async (font: FontName) => {
     if (
       fontNameData.some(
-        (f) => f.family === font.family && !f.style.includes(font.style)
+        (f) => f.family === font.family && !f.style.includes(font.style),
       )
     ) {
       fontNameData.find((f) => f.family === font.family).style.push(font.style);
@@ -262,13 +258,13 @@ type FontFill = Paint & {
   name?: string | null;
 };
 
-export const getFillsByFillStyleId = (
-  fillStyleId: string | typeof figma.mixed
+export const getFillsByFillStyleId = async (
+  fillStyleId: string | typeof figma.mixed,
 ) => {
   const fills: FontFill[] = [];
 
   if (fillStyleId && fillStyleId !== figma.mixed) {
-    const style = figma.getStyleById(fillStyleId) as PaintStyle;
+    const style = (await figma.getStyleByIdAsync(fillStyleId)) as PaintStyle;
 
     if (style && style.type === 'PAINT') {
       for (const paint of style.paints as FontFill[]) {
@@ -286,7 +282,7 @@ export const getFillsByFillStyleId = (
   return fills;
 };
 
-export const getFontFillsAndStyles = (textNode: TextNode) => {
+export const getFontFillsAndStyles = async (textNode: TextNode) => {
   const fills: FontFill[] = [];
   const styles = [];
 
@@ -296,7 +292,7 @@ export const getFontFillsAndStyles = (textNode: TextNode) => {
     const fillStyleId = textNode.getRangeFillStyleId(i, i + 1);
     const fill = textNode.getRangeFills(i, i + 1);
 
-    const fillStyles = getFillsByFillStyleId(fillStyleId);
+    const fillStyles = await getFillsByFillStyleId(fillStyleId);
 
     for (const fillStyle of fillStyles) {
       if (!fills.find((f) => f.styleId === fillStyle.styleId)) {
@@ -315,7 +311,9 @@ export const getFontFillsAndStyles = (textNode: TextNode) => {
       textStyleId !== figma.mixed &&
       !styles.some((s) => s.id === textStyleId)
     ) {
-      const textStyle = figma.getStyleById(textStyleId) as TextStyle;
+      const textStyle = (await figma.getStyleByIdAsync(
+        textStyleId,
+      )) as TextStyle;
 
       if (textStyle.type === 'TEXT') {
         const { id, name, fontName, fontSize, lineHeight, letterSpacing } =

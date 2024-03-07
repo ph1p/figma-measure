@@ -24,7 +24,7 @@ export const FillsImage = () => (
       height="32"
       rx="2.5"
       stroke="url(#paint1_linear_3092_24276)"
-      stroke-dasharray="2 2"
+      strokeDasharray="2 2"
     />
     <rect x="0.5" y="0.5" width="4" height="4" fill="#D6D6D6" stroke="black" />
     <rect
@@ -71,7 +71,7 @@ export const FillsImage = () => (
         gradientUnits="userSpaceOnUse"
       >
         <stop />
-        <stop offset="1" stop-opacity="0" />
+        <stop offset="1" stopOpacity="0" />
       </linearGradient>
       <linearGradient
         id="paint1_linear_3092_24276"
@@ -82,7 +82,7 @@ export const FillsImage = () => (
         gradientUnits="userSpaceOnUse"
       >
         <stop />
-        <stop offset="1" stop-opacity="0" />
+        <stop offset="1" stopOpacity="0" />
       </linearGradient>
       <linearGradient
         id="paint2_linear_3092_24276"
@@ -93,7 +93,7 @@ export const FillsImage = () => (
         gradientUnits="userSpaceOnUse"
       >
         <stop />
-        <stop offset="1" stop-opacity="0" />
+        <stop offset="1" stopOpacity="0" />
       </linearGradient>
       <linearGradient
         id="paint3_linear_3092_24276"
@@ -104,7 +104,7 @@ export const FillsImage = () => (
         gradientUnits="userSpaceOnUse"
       >
         <stop />
-        <stop offset="1" stop-opacity="0" />
+        <stop offset="1" stopOpacity="0" />
       </linearGradient>
     </defs>
   </svg>

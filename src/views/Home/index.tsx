@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react';
-import { useMemo } from 'preact/hooks';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 import styled from 'styled-components';
 
 import { Colors } from '../../components/ColorPicker';
@@ -64,7 +63,7 @@ const Home: FunctionComponent = observer(() => {
         {!store.detached && (
           <Refresh
             title="Reload measurements"
-            active={store.selection.length > 0}
+            $active={store.selection.length > 0}
             onClick={() => store.sendMeasurements()}
           >
             <RefreshIcon />
@@ -87,7 +86,7 @@ const Home: FunctionComponent = observer(() => {
 
         <LabelControl
           title="Change label alignment"
-          index={labelDotIndex}
+          $index={labelDotIndex}
           onClick={() => {
             changeLabel();
           }}
@@ -168,7 +167,7 @@ const ViewerOverlay = styled.div`
   }
 `;
 
-const Refresh = styled.div<{ active?: boolean }>`
+const Refresh = styled.div<{ $active?: boolean }>`
   position: absolute;
   right: 12px;
   top: 12px;
@@ -178,7 +177,7 @@ const Refresh = styled.div<{ active?: boolean }>`
   height: 30px;
   border: 1px solid var(--figma-color-bg-tertiary);
   overflow: hidden;
-  opacity: ${(props) => (props.active ? 1 : 0.5)};
+  opacity: ${(props) => (props.$active ? 1 : 0.5)};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -201,7 +200,7 @@ const Refresh = styled.div<{ active?: boolean }>`
   }
 `;
 
-const LabelControl = styled(Refresh)<{ index?: number }>`
+const LabelControl = styled(Refresh)<{ $index?: number }>`
   display: block;
   position: absolute;
   right: 12px;
@@ -224,7 +223,7 @@ const LabelControl = styled(Refresh)<{ index?: number }>`
       background-color: var(--figma-color-bg-disabled);
       display: inline-block;
 
-      &:nth-child(${(p) => p.index}) {
+      &:nth-child(${(p) => p.$index}) {
         background-color: ${(p) => p.theme.color};
       }
     }
@@ -247,12 +246,12 @@ const LabelControl = styled(Refresh)<{ index?: number }>`
     }
     &::after {
       content: '';
-      display: ${(p) => (p.index === 1 ? 'none' : 'block')};
+      display: ${(p) => (p.$index === 1 ? 'none' : 'block')};
       position: absolute;
       left: 10px;
       width: 8px;
       height: 3px;
-      top: ${(p) => (p.index === 3 ? 5 : 9)}px;
+      top: ${(p) => (p.$index === 3 ? 5 : 9)}px;
     }
   }
 `;

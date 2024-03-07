@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react';
-import { useState } from 'preact/hooks';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import styled from 'styled-components';
 
 import { Input } from '../../components/Input';
@@ -83,8 +82,8 @@ const Settings: FunctionComponent = observer(() => {
                   fill="#8C8C8C"
                 />
                 <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
                   d="M2 12L5.11111 4H6.19622L9.30733 12H8.23438L7.4566 10L3.85073 10L3.07296 12H2ZM5.65367 5.36389L7.06771 9L4.23962 9L5.65367 5.36389Z"
                   fill="#8C8C8C"
                 />

@@ -12,38 +12,48 @@
   "author": "Philip Stapelfeldt <me@ph1p.dev>",
   "license": "ISC",
   "devDependencies": {
-    "@figma/plugin-typings": "^1.58.0",
-    "@types/node": "^18.13.0",
-    "@types/react-dom": "^18.0.11",
+    "@figma/plugin-typings": "^1.88.0",
+    "@types/node": "^20.11.25",
+    "@types/react-dom": "^18.2.21",
     "@types/react-router-dom": "^5.3.3",
-    "@types/styled-components": "^5.1.26",
-    "@typescript-eslint/eslint-plugin": "^5.52.0",
-    "@typescript-eslint/parser": "^5.52.0",
+    "@typescript-eslint/eslint-plugin": "^7.1.1",
+    "@typescript-eslint/parser": "^7.1.1",
     "create-file-webpack": "^1.0.2",
-    "css-loader": "^6.7.3",
-    "esbuild-loader": "^3.0.1",
-    "eslint": "^8.34.0",
-    "eslint-config-prettier": "^8.6.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-react": "^7.32.2",
-    "html-webpack-plugin": "^5.5.0",
-    "style-loader": "^3.3.1",
-    "styled-components": "^5.3.6",
-    "terser-webpack-plugin": "^5.3.6",
-    "typescript": "^4.9.5",
+    "css-loader": "^6.10.0",
+    "esbuild-loader": "^4.0.3",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-react": "^7.34.0",
+    "html-webpack-plugin": "^5.6.0",
+    "style-loader": "^3.3.4",
+    "styled-components": "^6.1.8",
+    "terser-webpack-plugin": "^5.3.10",
+    "typescript": "^5.4.2",
     "url-loader": "^4.1.1",
-    "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.1"
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4"
   },
   "figmaPlugin": {
+    "documentAccess": "dynamic-page",
     "name": "Measure",
     "id": "739918456607459153",
     "api": "1.0.0",
     "main": "code.js",
     "ui": "ui.html",
-    "enableProposedApi": false,
+    "enablePrivatePluginApi": true,
     "editorType": [
-      "figma"
+      "figma",
+      "dev"
+    ],
+    "networkAccess": {
+      "allowedDomains": [
+        "https://rsms.me",
+        "https://unavatar.io"
+      ]
+    },
+    "capabilities": [
+      "inspect"
     ],
     "relaunchButtons": [
       {
@@ -53,16 +63,16 @@
     ]
   },
   "dependencies": {
-    "@popperjs/core": "^2.11.6",
-    "mobx": "^6.8.0",
-    "mobx-react": "^7.6.0",
+    "@popperjs/core": "^2.11.8",
+    "mobx": "^6.12.0",
+    "mobx-react": "^9.1.0",
     "mobx-sync": "^3.0.0",
-    "preact": "^10.12.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-popper": "^2.3.0",
-    "react-router-dom": "^6.8.1"
+    "react-router-dom": "^6.22.3"
   },
   "prettier": {
     "singleQuote": true
-  },
-  "packageManager": "yarn@3.2.0"
+  }
 }

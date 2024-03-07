@@ -12,7 +12,7 @@ class EventEmitter {
       | string
       | Uint8Array
       | boolean
-      | unknown[]
+      | unknown[],
   ) => void;
 
   constructor() {
@@ -37,7 +37,7 @@ class EventEmitter {
         if (this.messageEvent.has(event.data.pluginMessage.name)) {
           this.messageEvent.get(event.data.pluginMessage.name)(
             event.data.pluginMessage.data,
-            this.emit
+            this.emit,
           );
         }
       };
@@ -50,7 +50,7 @@ class EventEmitter {
               data: data || null,
             },
           },
-          '*'
+          '*',
         );
       };
     }

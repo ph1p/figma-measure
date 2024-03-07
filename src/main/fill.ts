@@ -4,7 +4,7 @@ import { hexToRgb, solidColor } from './helper';
 
 export const createFill = (
   node: SceneNode,
-  { fill, opacity, color }: { fill: FillTypes; opacity: number; color: string }
+  { fill, opacity, color }: { fill: FillTypes; opacity: number; color: string },
 ) => {
   if (
     node.type !== 'WIDGET' &&

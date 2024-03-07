@@ -8,21 +8,23 @@ import {
 } from '../shared/constants';
 import {
   Alignments,
+  ExchangeStoreValues,
   NodeSelection,
+  PluginNodeData,
   SurroundingSettings,
   TooltipPositions,
-  ExchangeStoreValues,
-  PluginNodeData,
 } from '../shared/interfaces';
 
 import { createFill } from './fill';
-import {
-  appendElementsToGroup,
-  getNearestParentNode,
-  isPartOfAttachedGroup,
-} from './helper';
+import { appendElementsToGroup, isPartOfAttachedGroup } from './helper';
 import { createLine } from './line';
-import { getPadding, createPaddingLine, removePaddingGroup } from './padding';
+import {
+  ParentNodeErrors,
+  createPaddingLine,
+  getNodeAndParentNode,
+  getPadding,
+  removePaddingGroup,
+} from './padding';
 import { drawSpacing, getSpacing, setSpacing } from './spacing';
 import { getState } from './store';
 import { setTooltip } from './tooltip';
@@ -48,11 +50,11 @@ export const getPluginData = (node, name) => {
   return JSON.parse(data);
 };
 
-const getAllMeasurementNodes = (
+const getAllMeasurementNodes = async (
   node,
   pageId = '',
   pageName = '',
-  measureData = []
+  measureData = [],
 ) => {
   if (node.type === 'PAGE') {
     pageId = node.id;
@@ -65,7 +67,7 @@ const getAllMeasurementNodes = (
   const storedData = node.getPluginDataKeys();
 
   if (node.type === 'INSTANCE') {
-    componentId = node.mainComponent.id;
+    componentId = (await node.getMainComponentAsync())?.id;
   }
 
   if (node.name === GROUP_NAME_DETACHED) {
@@ -101,22 +103,23 @@ const getAllMeasurementNodes = (
 
   if ('children' in node) {
     for (const child of node.children) {
-      getAllMeasurementNodes(child, pageId, pageName, measureData);
+      await getAllMeasurementNodes(child, pageId, pageName, measureData);
     }
   }
 
   return measureData;
 };
 
-EventEmitter.answer('file measurements', async () =>
-  getAllMeasurementNodes(figma.root)
+EventEmitter.answer(
+  'file measurements',
+  async () => await getAllMeasurementNodes(figma.root),
 );
 
 EventEmitter.answer('remove all measurements', async () => {
-  const measurements = getAllMeasurementNodes(figma.root);
+  const measurements = await getAllMeasurementNodes(figma.root);
 
   for (const measurement of measurements) {
-    const node = figma.getNodeById(measurement.id);
+    const node = await figma.getNodeByIdAsync(measurement.id);
     if (!node) {
       continue;
     }
@@ -124,34 +127,28 @@ EventEmitter.answer('remove all measurements', async () => {
     if (measurement.type.includes('GROUP_')) {
       node.remove();
     } else {
-      removeDataFromNode(node);
+      await removeDataFromNode(node);
     }
   }
 
   return true;
 });
 
-const goToPage = (id) => {
-  if (figma.getNodeById(id)) {
-    figma.currentPage = figma.getNodeById(id) as PageNode;
-  }
-};
-
-const removeDataFromNode = (node) => {
+const removeDataFromNode = async (node) => {
   if (Array.isArray(node)) {
     for (const id of node) {
-      removeDataFromNode(id);
+      await removeDataFromNode(id);
     }
   } else {
     if (typeof node === 'string') {
-      node = figma.getNodeById(node);
+      node = await figma.getNodeByIdAsync(node);
     }
 
     try {
       const data = JSON.parse(node.getPluginData('data'));
 
       for (const id of data.connectedNodes) {
-        figma.getNodeById(id).remove();
+        (await figma.getNodeByIdAsync(id))?.remove();
       }
     } catch {
       console.log('failed to remove connected node');
@@ -165,15 +162,21 @@ const removeDataFromNode = (node) => {
 };
 
 EventEmitter.on('remove node measurement', (nodeId) =>
-  removeDataFromNode(nodeId)
+  removeDataFromNode(nodeId),
 );
 
 EventEmitter.on('notify', ({ message, options }) =>
-  figma.notify(message, options)
+  figma.notify(message, options),
 );
 
-EventEmitter.on('focus node', (payload) => {
-  goToPage(payload.pageId);
+EventEmitter.on('focus node', async (payload) => {
+  console.log(payload);
+  try {
+    const page = (await figma.getNodeByIdAsync(payload.pageId)) as PageNode;
+    await figma.setCurrentPageAsync(page);
+  } catch {
+    console.log('Page not found');
+  }
   const node = figma.currentPage.findOne((n) => n.id === payload.id);
 
   const padding = node.getPluginData('padding');
@@ -187,7 +190,7 @@ EventEmitter.on('focus node', (payload) => {
       spacing,
       toolData,
     },
-    node.getPluginDataKeys()
+    node.getPluginDataKeys(),
   );
 
   figma.currentPage.selection = [node];
@@ -252,22 +255,6 @@ const getSelectionArray = async (): Promise<NodeSelection> => {
     }
   }
 
-  // if (paddingNodes.length) {
-  //   const nodeData = getNodeAndParentNode(
-  //     figma.currentPage.selection[0],
-  //     figma.currentPage.selection[1]
-  //   );
-
-  //   if (nodeData.error === ParentNodeErrors.NONE) {
-  //     console.log(
-  //       nodeData && paddingNodes.find((n) => n.id === nodeData.node.id),
-  //       {
-  //         nodeData,
-  //       }
-  //     );
-  //   }
-  // }
-
   return {
     nodes,
     padding: paddingNodes,
@@ -277,62 +264,23 @@ const getSelectionArray = async (): Promise<NodeSelection> => {
 
 export const sendSelection = () =>
   getSelectionArray().then((selection) =>
-    EventEmitter.emit<NodeSelection>('selection', selection)
+    EventEmitter.emit<NodeSelection>('selection', selection),
   );
 
-figma.on('documentchange', async ({ documentChanges }) => {
-  if (
-    documentChanges.filter(
-      (change) =>
-        change.type === 'PROPERTY_CHANGE' &&
-        (change.node.removed ||
-          isPartOfAttachedGroup(change.node as SceneNode) ||
-          [GROUP_NAME_ATTACHED, GROUP_NAME_DETACHED].includes(
-            (change.node as SceneNode).name
-          ))
-    ).length > 0
-  ) {
-    return;
-  }
-
-  const state = await getState();
-  const store: ExchangeStoreValues = {
-    labelsOutside: state.labelsOutside,
-    labels: state.labels,
-    color: state.color,
-    fill: state.fill,
-    opacity: state.opacity,
-    strokeCap: state.strokeCap,
-    strokeOffset: state.strokeOffset,
-    tooltipOffset: state.tooltipOffset,
-    tooltip: state.tooltip,
-    labelPattern: state.labelPattern,
-    fontPattern: state.fontPattern,
-    labelFontSize: state.labelFontSize,
-  };
-
-  await setMeasurements(store, true);
-});
-
-// events
-figma.on('selectionchange', () => {
-  sendSelection();
-});
-
 EventEmitter.on('resize', ({ width, height }) =>
-  figma.ui.resize(width, height)
+  figma.ui.resize(width, height),
 );
 
 EventEmitter.answer('current selection', async () => getSelectionArray());
 
 EventEmitter.on('set measurements', async (store: ExchangeStoreValues) =>
-  setMeasurements(store)
+  setMeasurements(store),
 );
 
 const setMeasurements = async (
   store?: ExchangeStoreValues,
   shouldIncludeGroups = false,
-  nodes = figma.currentPage.selection
+  nodes = figma.currentPage.selection,
 ) => {
   const state = await getState();
 
@@ -384,7 +332,7 @@ const setMeasurements = async (
       // remove all connected nodes
       if (data?.connectedNodes?.length > 0) {
         for (const id of data.connectedNodes) {
-          const foundNode = figma.getNodeById(id);
+          const foundNode = await figma.getNodeByIdAsync(id);
           if (foundNode) {
             foundNode.remove();
           }
@@ -395,56 +343,68 @@ const setMeasurements = async (
     // spacing
     const spacing = getSpacing(node);
     if (Object.keys(spacing).length > 0 && !state.detached) {
-      Object.keys(spacing)
-        .filter((connectedNodeId) => {
-          // check if group exists
-          const foundGroup = figma.getNodeById(spacing[connectedNodeId]);
-          if (!foundGroup) {
-            delete spacing[connectedNodeId];
-            setSpacing(node, spacing);
-          }
-
-          // get connected node
-          const foundConnectedNode = figma.getNodeById(
-            connectedNodeId
-          ) as unknown as SceneNode;
-
-          // node removed
-          if (!foundConnectedNode) {
-            try {
-              figma.getNodeById(spacing[connectedNodeId]).remove();
+      // biome-ignore lint/complexity/noForEach: <explanation>
+      (
+        await Promise.all(
+          Object.keys(spacing).filter(async (connectedNodeId) => {
+            // check if group exists
+            const foundGroup = await figma.getNodeByIdAsync(
+              spacing[connectedNodeId],
+            );
+            if (!foundGroup) {
               delete spacing[connectedNodeId];
               setSpacing(node, spacing);
-            } catch {
-              console.log('Could not remove connected node');
-            }
-          } else {
-            // check connected node group
-            const connectedNodeSpacing = getSpacing(foundConnectedNode);
-            const foundConnectedGroup = figma.getNodeById(
-              connectedNodeSpacing[node.id]
-            );
-            if (!foundConnectedGroup) {
-              delete connectedNodeSpacing[node.id];
-              setSpacing(foundConnectedNode, connectedNodeSpacing);
             }
 
-            return connectedNodeId;
-          }
-        })
-        .forEach((connectedNodeId) => {
-          drawSpacing(
-            [node, figma.getNodeById(connectedNodeId) as unknown as SceneNode],
-            {
-              color: settings.color,
-              labels: settings.labels,
-              labelsOutside: settings.labelsOutside,
-              labelPattern: settings.labelPattern,
-              strokeCap: settings.strokeCap,
-              // strokeOffset: settings.strokeOffset,
+            // get connected node
+            const foundConnectedNode = (await figma.getNodeByIdAsync(
+              connectedNodeId,
+            )) as unknown as SceneNode;
+
+            // node removed
+            if (!foundConnectedNode) {
+              try {
+                (
+                  await figma.getNodeByIdAsync(spacing[connectedNodeId])
+                )?.remove();
+                delete spacing[connectedNodeId];
+                setSpacing(node, spacing);
+              } catch {
+                console.log('Could not remove connected node');
+              }
+            } else {
+              // check connected node group
+              const connectedNodeSpacing = getSpacing(foundConnectedNode);
+              const foundConnectedGroup = await figma.getNodeByIdAsync(
+                connectedNodeSpacing[node.id],
+              );
+              if (!foundConnectedGroup) {
+                delete connectedNodeSpacing[node.id];
+                setSpacing(foundConnectedNode, connectedNodeSpacing);
+              }
+
+              return connectedNodeId;
             }
-          );
-        });
+          }),
+        )
+      ).forEach(async (connectedNodeId) => {
+        drawSpacing(
+          [
+            node,
+            (await figma.getNodeByIdAsync(
+              connectedNodeId,
+            )) as unknown as SceneNode,
+          ],
+          {
+            color: settings.color,
+            labels: settings.labels,
+            labelsOutside: settings.labelsOutside,
+            labelPattern: settings.labelPattern,
+            strokeCap: settings.strokeCap,
+            // strokeOffset: settings.strokeOffset,
+          },
+        );
+      });
     }
 
     const connectedNodes = [];
@@ -452,23 +412,26 @@ const setMeasurements = async (
     // Padding
     const padding = getPadding(node);
     if (padding && !state.detached) {
-      Object.keys(Alignments)
-        .filter((k) => k !== Alignments.CENTER && padding[k])
-        .forEach((direction: Alignments) => {
-          removePaddingGroup(node, direction, state.isGlobalGroup);
+      const elements = Object.keys(Alignments).filter(
+        (k) => k !== Alignments.CENTER && padding[k],
+      ) as Alignments[];
+      for (const direction of elements) {
+        removePaddingGroup(node, direction, state.isGlobalGroup);
 
-          const paddingLine = createPaddingLine({
-            ...settings,
-            direction,
-            currentNode: node,
-            parent: figma.getNodeById(padding[direction]) as SceneNode,
-            labelFontSize: state.labelFontSize,
-          });
-
-          if (paddingLine) {
-            connectedNodes.push(paddingLine);
-          }
+        const paddingLine = createPaddingLine({
+          ...settings,
+          direction,
+          currentNode: node,
+          parent: (await figma.getNodeByIdAsync(
+            padding[direction],
+          )) as SceneNode,
+          labelFontSize: state.labelFontSize,
         });
+
+        if (paddingLine) {
+          connectedNodes.push(paddingLine);
+        }
+      }
     }
 
     if (surrounding && Object.keys(surrounding).length !== 0) {
@@ -493,7 +456,7 @@ const setMeasurements = async (
             labelPattern: settings.labelPattern,
             fontPattern: settings.fontPattern,
           },
-          node
+          node,
         );
 
         if (tooltip) {
@@ -509,7 +472,7 @@ const setMeasurements = async (
             direction: 'vertical',
             name: `vertical line ${Alignments.RIGHT.toLowerCase()}`,
             lineVerticalAlign: Alignments.RIGHT,
-          })
+          }),
         );
       }
 
@@ -521,7 +484,7 @@ const setMeasurements = async (
             direction: 'vertical',
             name: `vertical line ${Alignments.LEFT.toLowerCase()}`,
             lineVerticalAlign: Alignments.LEFT,
-          })
+          }),
         );
       }
 
@@ -533,7 +496,7 @@ const setMeasurements = async (
             direction: 'horizontal',
             name: `horizontal line ${Alignments.TOP.toLowerCase()}`,
             lineHorizontalAlign: Alignments.TOP,
-          })
+          }),
         );
       }
 
@@ -545,7 +508,7 @@ const setMeasurements = async (
             direction: 'horizontal',
             name: `horizontal line ${Alignments.BOTTOM.toLowerCase()}`,
             lineHorizontalAlign: Alignments.BOTTOM,
-          })
+          }),
         );
       }
 
@@ -557,7 +520,7 @@ const setMeasurements = async (
             direction: 'horizontal',
             name: 'horizontal line ' + Alignments.CENTER.toLowerCase(),
             lineHorizontalAlign: Alignments.CENTER,
-          })
+          }),
         );
       }
 
@@ -569,7 +532,7 @@ const setMeasurements = async (
             direction: 'vertical',
             name: 'vertical line ' + Alignments.CENTER.toLowerCase(),
             lineVerticalAlign: Alignments.CENTER,
-          })
+          }),
         );
       }
     }
@@ -593,7 +556,7 @@ const setMeasurements = async (
           //
           connectedNodes: connectedNodes.map(({ id }) => id),
           version: VERSION,
-        } as PluginNodeData)
+        } as PluginNodeData),
       );
 
       if (connectedNodes.length > 0) {
@@ -612,4 +575,44 @@ const setMeasurements = async (
   await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
   await figma.loadFontAsync({ family: 'Inter', style: 'Bold' });
   await figma.loadFontAsync({ family: 'Inter', style: 'Regular' });
+
+  await figma.loadAllPagesAsync();
+  figma.on('documentchange', async ({ documentChanges }) => {
+    if (
+      documentChanges.filter(
+        (change) =>
+          change.type === 'PROPERTY_CHANGE' &&
+          (change.node.removed ||
+            isPartOfAttachedGroup(change.node as SceneNode) ||
+            [GROUP_NAME_ATTACHED, GROUP_NAME_DETACHED].includes(
+              (change.node as SceneNode).name,
+            )),
+      ).length > 0
+    ) {
+      return;
+    }
+
+    const state = await getState();
+    const store: ExchangeStoreValues = {
+      labelsOutside: state.labelsOutside,
+      labels: state.labels,
+      color: state.color,
+      fill: state.fill,
+      opacity: state.opacity,
+      strokeCap: state.strokeCap,
+      strokeOffset: state.strokeOffset,
+      tooltipOffset: state.tooltipOffset,
+      tooltip: state.tooltip,
+      labelPattern: state.labelPattern,
+      fontPattern: state.fontPattern,
+      labelFontSize: state.labelFontSize,
+    };
+
+    await setMeasurements(store, true);
+  });
+
+  // events
+  figma.on('selectionchange', () => {
+    sendSelection();
+  });
 })();
