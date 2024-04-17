@@ -33,7 +33,6 @@ export const createLabel = ({
   // LABEL RECT
   labelFrame.cornerRadius = 3;
 
-  labelFrame.layoutMode = 'HORIZONTAL';
   labelFrame.paddingLeft = (6 * labelFontSize) / 10;
   labelFrame.paddingRight = (6 * labelFontSize) / 10;
   labelFrame.paddingTop = (3 * labelFontSize) / 10;
@@ -43,7 +42,10 @@ export const createLabel = ({
   if (baseNode) {
     labelFrame.x = baseNode.x;
     labelFrame.y = baseNode.y;
+  }
+  labelFrame.layoutMode = 'HORIZONTAL';
 
+  if (baseNode) {
     if (isVertical) {
       labelFrame.x -= labelFrame.width / 2;
       labelFrame.y += baseNode.height / 2 - labelFrame.height / 2;
@@ -64,7 +66,7 @@ export const getLineFrame = (node, data) => {
   lineFrame.name = name;
   lineFrame.resize(
     data.isHorizontal ? node.width : data.labelWidth,
-    data.isHorizontal ? data.labelHeight : node.height,
+    data.isHorizontal ? data.labelHeight : node.height
   );
   lineFrame.backgrounds = [];
   lineFrame.clipsContent = false;
@@ -272,7 +274,7 @@ export const createLine = (options) => {
     line.strokes = [].concat(mainColor);
     line.resize(
       isHorizontal ? node.width : line.strokeWeight,
-      isHorizontal ? line.strokeWeight : node.height,
+      isHorizontal ? line.strokeWeight : node.height
     );
 
     // STROKE CAP

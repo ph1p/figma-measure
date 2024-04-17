@@ -41,8 +41,8 @@ export const Spacing: FunctionComponent<{
   return (
     <Wrapper
       onClick={() => (props.hasSpacing ? removeSpacing() : addSpacing())}
-      enabled={props.showSpacing ? props.showSpacing : undefined}
-      active={props.hasSpacing ? props.hasSpacing : undefined}
+      enabled={props.showSpacing ? props.showSpacing.toString() : undefined}
+      active={props.hasSpacing ? props.hasSpacing.toString() : undefined}
     >
       <div></div>
       <div></div>
