@@ -92,6 +92,9 @@ export const getNearestParentNode = ({
   includingAutoLayout?: boolean;
   isGroupSearch?: boolean;
 }) => {
+  if(isGlobalGroup) {
+    return figma.currentPage;
+  }
   const parent = node.parent;
 
   if (isGroupSearch && !isPartOfInstance(node) && !isPartOfAutoLayout(node)) {
