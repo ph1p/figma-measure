@@ -6,7 +6,7 @@ export const isPartOfAttachedGroup = (node: SceneNode) => {
   }
 
   const parent = node.parent;
-  if (!parent || parent.type === 'PAGE' || parent.type === 'DOCUMENT') {
+  if (!parent || parent.type === 'DOCUMENT') {
     return false;
   } else if (parent.name === GROUP_NAME_ATTACHED && parent.type === 'GROUP') {
     return true;
@@ -15,15 +15,22 @@ export const isPartOfAttachedGroup = (node: SceneNode) => {
   }
 };
 
-export const getClosestAttachedGroup = (node: SceneNode, isGlobalGroup) => {
-  const parent = getNearestParentNode({
-    node,
-    isGroupSearch: true,
-    isGlobalGroup,
-  });
+export const getClosestAttachedGroup = (
+  node: SceneNode,
+  isGlobalGroup = false
+) => {
+  let parent;
+  if (isGlobalGroup) {
+    parent = figma.currentPage;
+  } else {
+    parent = getNearestParentNode({
+      node,
+      isGroupSearch: true,
+    });
+  }
 
   const foundGroup = parent.findChild(
-    (n) => n.type === 'GROUP' && n.name === GROUP_NAME_ATTACHED,
+    (n) => n.type === 'GROUP' && n.name === GROUP_NAME_ATTACHED
   );
 
   if (foundGroup) {
@@ -47,15 +54,20 @@ export const appendElementsToGroup = ({
   isGlobalGroup?: boolean;
 }) => {
   if (nodes.length > 0) {
-    const parent = getNearestParentNode({
-      node,
-      isGlobalGroup,
-      isGroupSearch: true,
-    });
+    let parent;
+    if (isGlobalGroup) {
+      parent = figma.currentPage;
+    } else {
+      parent = getNearestParentNode({
+        node,
+        isGroupSearch: true,
+      });
+    }
+
     let children = [];
 
     const foundGroup = parent.findChild(
-      (n) => n.type === 'GROUP' && n.name === name,
+      (n) => n.type === 'GROUP' && n.name === name
     );
 
     if (foundGroup) {
@@ -83,18 +95,13 @@ export const getRenderBoundsOfRectangle = (node) => {
 
 export const getNearestParentNode = ({
   node,
-  isGlobalGroup = false,
   includingAutoLayout = false,
   isGroupSearch = false,
 }: {
   node: SceneNode;
-  isGlobalGroup?: boolean;
   includingAutoLayout?: boolean;
   isGroupSearch?: boolean;
 }) => {
-  if (isGlobalGroup) {
-    return figma.currentPage;
-  }
   const parent = node.parent;
 
   if (isGroupSearch && !isPartOfInstance(node) && !isPartOfAutoLayout(node)) {
@@ -107,7 +114,6 @@ export const getNearestParentNode = ({
   } else {
     return getNearestParentNode({
       node: parent as SceneNode,
-      isGlobalGroup,
       isGroupSearch,
       includingAutoLayout,
     });
@@ -172,7 +178,7 @@ export const setTitleBold = (content) => {
 
 export const colorString = (color, opacity) => {
   return `rgba(${Math.round(color.r * 255)}, ${Math.round(
-    color.g * 255,
+    color.g * 255
   )}, ${Math.round(color.b * 255)}, ${opacity})`;
 };
 
@@ -220,14 +226,14 @@ export const isPartOfAutoLayout = (node: SceneNode | BaseNode): boolean => {
 };
 
 export const getFontNameData = async (
-  textNode: TextNode,
+  textNode: TextNode
 ): Promise<(FontName & { style: []; fontSize: number[] })[]> => {
   const fontNameData = [];
 
   const loadFontAndPush = async (font: FontName) => {
     if (
       fontNameData.some(
-        (f) => f.family === font.family && !f.style.includes(font.style),
+        (f) => f.family === font.family && !f.style.includes(font.style)
       )
     ) {
       fontNameData.find((f) => f.family === font.family).style.push(font.style);
@@ -262,7 +268,7 @@ type FontFill = Paint & {
 };
 
 export const getFillsByFillStyleId = async (
-  fillStyleId: string | typeof figma.mixed,
+  fillStyleId: string | typeof figma.mixed
 ) => {
   const fills: FontFill[] = [];
 
@@ -315,7 +321,7 @@ export const getFontFillsAndStyles = async (textNode: TextNode) => {
       !styles.some((s) => s.id === textStyleId)
     ) {
       const textStyle = (await figma.getStyleByIdAsync(
-        textStyleId,
+        textStyleId
       )) as TextStyle;
 
       if (textStyle.type === 'TEXT') {

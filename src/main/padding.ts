@@ -65,7 +65,7 @@ EventEmitter.on('remove padding', async ({ direction }) => {
 
           currentNode.setPluginData(
             'padding',
-            JSON.stringify(pluginDataPadding),
+            JSON.stringify(pluginDataPadding)
           );
           // eslint-disable-next-line no-empty
         } catch {}
@@ -82,11 +82,7 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
 
   const { lockDetachedGroup, lockAttachedGroup, ...nodeSettings } = settings;
 
-  const nodeData = getNodeAndParentNode(
-    currentNode,
-    undefined,
-    state.isGlobalGroup,
-  );
+  const nodeData = getNodeAndParentNode(currentNode, undefined);
 
   switch (nodeData.error) {
     case ParentNodeErrors.PARENT_NOT_FOUND:
@@ -111,12 +107,12 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
   if (nodeData && nodeData.node && nodeData.parentNode) {
     if (settings.detached) {
       const parent = await figma.getNodeByIdAsync(nodeData.parentNode.id);
+
       const paddingLine = createPaddingLine({
         ...nodeSettings,
         direction,
         parent,
         currentNode: nodeData.node,
-        isGlobalGroup: state.isGlobalGroup,
       });
 
       if (paddingLine) {
@@ -126,6 +122,8 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
       // Padding
       let pluginDataPadding = getPadding(nodeData.node);
 
+
+
       if (pluginDataPadding[direction]) {
         try {
           removePaddingGroup(nodeData.node, direction, state.isGlobalGroup);
@@ -134,7 +132,7 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
 
           nodeData.node.setPluginData(
             'padding',
-            JSON.stringify(pluginDataPadding),
+            JSON.stringify(pluginDataPadding)
           );
           // eslint-disable-next-line no-empty
         } catch {}
@@ -144,7 +142,7 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
           JSON.stringify({
             ...pluginDataPadding,
             [direction]: nodeData.parentNode.id,
-          }),
+          })
         );
 
         // pluginDataPadding = getPadding(nodeData.node);
@@ -159,7 +157,6 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
 
           const paddingLine = createPaddingLine({
             ...nodeSettings,
-            isGlobalGroup: state.isGlobalGroup,
             direction,
             currentNode: nodeData.node,
             parent,
@@ -172,7 +169,7 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
 
             nodeData.node.setPluginData(
               'padding',
-              JSON.stringify(pluginDataPadding),
+              JSON.stringify(pluginDataPadding)
             );
           }
         }
@@ -235,8 +232,7 @@ export enum ParentNodeErrors {
 
 export const getNodeAndParentNode = (
   node?: SceneNode,
-  parentNode?: SceneNode,
-  isGlobalGroup?: boolean,
+  parentNode?: SceneNode
 ): { node?: SceneNode; parentNode?: SceneNode; error: ParentNodeErrors } => {
   let currentNode = node ?? (figma.currentPage.selection[0] as SceneNode);
 
@@ -247,7 +243,6 @@ export const getNodeAndParentNode = (
   if (figma.currentPage.selection.length === 1 && !parentNode) {
     if (currentNode.parent && currentNode.parent.type !== 'PAGE') {
       parentNode = getNearestParentNode({
-        isGlobalGroup,
         node: currentNode,
         includingAutoLayout: true,
       });
@@ -316,7 +311,6 @@ export const createPaddingLine = ({
   detached = false,
   strokeCap = 'NONE',
   labelFontSize = 10,
-  isGlobalGroup,
 }: {
   direction: Alignments;
   parent?: SceneNode;
@@ -325,7 +319,7 @@ export const createPaddingLine = ({
 } & ExchangeStoreValues) => {
   const STROKE_WIDTH = labelFontSize / 10;
 
-  const nodeData = getNodeAndParentNode(currentNode, parent, isGlobalGroup);
+  const nodeData = getNodeAndParentNode(currentNode, parent);
   const mainColor = getColor(color);
 
   const IS_HORIZONTAL = direction === 'LEFT' || direction === 'RIGHT';
@@ -409,7 +403,7 @@ export const createPaddingLine = ({
 
         return curr;
       },
-      { xMin: 0, yMin: 0, xMax: 0, yMax: 0 },
+      { xMin: 0, yMin: 0, xMax: 0, yMax: 0 }
     );
   }
 
@@ -435,7 +429,7 @@ export const createPaddingLine = ({
           group.x,
           group.y,
           parentNodeX + shadowCoords.xMin * -1,
-          group.y,
+          group.y
         ) * -1;
       break;
     case Alignments.RIGHT:
@@ -445,7 +439,7 @@ export const createPaddingLine = ({
         group.x,
         group.y,
         parentNodeX + parentNodeWidth - shadowCoords.xMax,
-        group.y,
+        group.y
       );
       break;
     case Alignments.TOP:
@@ -454,7 +448,7 @@ export const createPaddingLine = ({
           group.x,
           group.y,
           group.x,
-          parentNodeY + shadowCoords.yMin * -1,
+          parentNodeY + shadowCoords.yMin * -1
         ) * -1;
 
       break;
@@ -465,7 +459,7 @@ export const createPaddingLine = ({
         group.x,
         group.y,
         group.x,
-        parentNodeY + parentNodeHeight - shadowCoords.yMax,
+        parentNodeY + parentNodeHeight - shadowCoords.yMax
       );
       break;
   }
@@ -602,7 +596,7 @@ export const createPaddingLine = ({
       JSON.stringify({
         direction,
         parentId: node.id,
-      }),
+      })
     );
   }
 

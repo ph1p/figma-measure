@@ -46,7 +46,7 @@ const getAllMeasurementNodes = async (
   node,
   pageId = '',
   pageName = '',
-  measureData = [],
+  measureData = []
 ) => {
   if (node.type === 'PAGE') {
     pageId = node.id;
@@ -104,7 +104,7 @@ const getAllMeasurementNodes = async (
 
 EventEmitter.answer(
   'file measurements',
-  async () => await getAllMeasurementNodes(figma.root),
+  async () => await getAllMeasurementNodes(figma.root)
 );
 
 EventEmitter.answer('remove all measurements', async () => {
@@ -154,11 +154,11 @@ const removeDataFromNode = async (node) => {
 };
 
 EventEmitter.on('remove node measurement', (nodeId) =>
-  removeDataFromNode(nodeId),
+  removeDataFromNode(nodeId)
 );
 
 EventEmitter.on('notify', ({ message, options }) =>
-  figma.notify(message, options),
+  figma.notify(message, options)
 );
 
 EventEmitter.on('focus node', async (payload) => {
@@ -182,7 +182,7 @@ EventEmitter.on('focus node', async (payload) => {
       spacing,
       toolData,
     },
-    node.getPluginDataKeys(),
+    node.getPluginDataKeys()
   );
 
   figma.currentPage.selection = [node];
@@ -256,23 +256,23 @@ const getSelectionArray = async (): Promise<NodeSelection> => {
 
 export const sendSelection = () =>
   getSelectionArray().then((selection) =>
-    EventEmitter.emit<NodeSelection>('selection', selection),
+    EventEmitter.emit<NodeSelection>('selection', selection)
   );
 
 EventEmitter.on('resize', ({ width, height }) =>
-  figma.ui.resize(width, height),
+  figma.ui.resize(width, height)
 );
 
 EventEmitter.answer('current selection', async () => getSelectionArray());
 
 EventEmitter.on('set measurements', async (store: ExchangeStoreValues) =>
-  setMeasurements(store),
+  setMeasurements(store)
 );
 
 const setMeasurements = async (
   store?: ExchangeStoreValues,
   shouldIncludeGroups = false,
-  nodes = figma.currentPage.selection,
+  nodes = figma.currentPage.selection
 ) => {
   const state = await getState();
 
@@ -282,8 +282,10 @@ const setMeasurements = async (
     ...store,
   };
 
-  for (const node of nodes) {
-    if (!node) continue;
+  for await (const node of nodes) {
+    const found = await figma.getNodeByIdAsync(node?.id);
+
+    if (!found) continue;
     let surrounding: SurroundingSettings = store.surrounding;
 
     if (!state.detached) {
@@ -341,7 +343,7 @@ const setMeasurements = async (
           Object.keys(spacing).filter(async (connectedNodeId) => {
             // check if group exists
             const foundGroup = await figma.getNodeByIdAsync(
-              spacing[connectedNodeId],
+              spacing[connectedNodeId]
             );
             if (!foundGroup) {
               delete spacing[connectedNodeId];
@@ -350,7 +352,7 @@ const setMeasurements = async (
 
             // get connected node
             const foundConnectedNode = (await figma.getNodeByIdAsync(
-              connectedNodeId,
+              connectedNodeId
             )) as unknown as SceneNode;
 
             // node removed
@@ -368,7 +370,7 @@ const setMeasurements = async (
               // check connected node group
               const connectedNodeSpacing = getSpacing(foundConnectedNode);
               const foundConnectedGroup = await figma.getNodeByIdAsync(
-                connectedNodeSpacing[node.id],
+                connectedNodeSpacing[node.id]
               );
               if (!foundConnectedGroup) {
                 delete connectedNodeSpacing[node.id];
@@ -377,14 +379,14 @@ const setMeasurements = async (
 
               return connectedNodeId;
             }
-          }),
+          })
         )
       ).forEach(async (connectedNodeId) => {
         drawSpacing(
           [
             node,
             (await figma.getNodeByIdAsync(
-              connectedNodeId,
+              connectedNodeId
             )) as unknown as SceneNode,
           ],
           {
@@ -394,7 +396,7 @@ const setMeasurements = async (
             labelPattern: settings.labelPattern,
             strokeCap: settings.strokeCap,
             // strokeOffset: settings.strokeOffset,
-          },
+          }
         );
       });
     }
@@ -405,7 +407,7 @@ const setMeasurements = async (
     const padding = getPadding(node);
     if (padding && !state.detached) {
       const elements = Object.keys(Alignments).filter(
-        (k) => k !== Alignments.CENTER && padding[k],
+        (k) => k !== Alignments.CENTER && padding[k]
       ) as Alignments[];
       for (const direction of elements) {
         removePaddingGroup(node, direction, state.isGlobalGroup);
@@ -415,7 +417,7 @@ const setMeasurements = async (
           direction,
           currentNode: node,
           parent: (await figma.getNodeByIdAsync(
-            padding[direction],
+            padding[direction]
           )) as SceneNode,
           labelFontSize: state.labelFontSize,
         });
@@ -448,7 +450,7 @@ const setMeasurements = async (
             labelPattern: settings.labelPattern,
             fontPattern: settings.fontPattern,
           },
-          node,
+          node
         );
 
         if (tooltip) {
@@ -464,7 +466,7 @@ const setMeasurements = async (
             direction: 'vertical',
             name: `vertical line ${Alignments.RIGHT.toLowerCase()}`,
             lineVerticalAlign: Alignments.RIGHT,
-          }),
+          })
         );
       }
 
@@ -476,7 +478,7 @@ const setMeasurements = async (
             direction: 'vertical',
             name: `vertical line ${Alignments.LEFT.toLowerCase()}`,
             lineVerticalAlign: Alignments.LEFT,
-          }),
+          })
         );
       }
 
@@ -488,7 +490,7 @@ const setMeasurements = async (
             direction: 'horizontal',
             name: `horizontal line ${Alignments.TOP.toLowerCase()}`,
             lineHorizontalAlign: Alignments.TOP,
-          }),
+          })
         );
       }
 
@@ -500,7 +502,7 @@ const setMeasurements = async (
             direction: 'horizontal',
             name: `horizontal line ${Alignments.BOTTOM.toLowerCase()}`,
             lineHorizontalAlign: Alignments.BOTTOM,
-          }),
+          })
         );
       }
 
@@ -512,7 +514,7 @@ const setMeasurements = async (
             direction: 'horizontal',
             name: 'horizontal line ' + Alignments.CENTER.toLowerCase(),
             lineHorizontalAlign: Alignments.CENTER,
-          }),
+          })
         );
       }
 
@@ -524,7 +526,7 @@ const setMeasurements = async (
             direction: 'vertical',
             name: 'vertical line ' + Alignments.CENTER.toLowerCase(),
             lineVerticalAlign: Alignments.CENTER,
-          }),
+          })
         );
       }
     }
@@ -548,7 +550,7 @@ const setMeasurements = async (
           //
           connectedNodes: connectedNodes.map(({ id }) => id),
           version: VERSION,
-        } as PluginNodeData),
+        } as PluginNodeData)
       );
 
       if (connectedNodes.length > 0) {
@@ -577,8 +579,8 @@ const setMeasurements = async (
           (change.node.removed ||
             isPartOfAttachedGroup(change.node as SceneNode) ||
             [GROUP_NAME_ATTACHED, GROUP_NAME_DETACHED].includes(
-              (change.node as SceneNode).name,
-            )),
+              (change.node as SceneNode).name
+            ))
       ).length > 0
     ) {
       return;
