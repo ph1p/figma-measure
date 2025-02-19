@@ -17,7 +17,7 @@ export const isPartOfAttachedGroup = (node: SceneNode) => {
 
 export const getClosestAttachedGroup = (
   node: SceneNode,
-  isGlobalGroup = false
+  isGlobalGroup = false,
 ) => {
   let parent;
   if (isGlobalGroup) {
@@ -30,7 +30,7 @@ export const getClosestAttachedGroup = (
   }
 
   const foundGroup = parent.findChild(
-    (n) => n.type === 'GROUP' && n.name === GROUP_NAME_ATTACHED
+    (n) => n.type === 'GROUP' && n.name === GROUP_NAME_ATTACHED,
   );
 
   if (foundGroup) {
@@ -67,7 +67,7 @@ export const appendElementsToGroup = ({
     let children = [];
 
     const foundGroup = parent.findChild(
-      (n) => n.type === 'GROUP' && n.name === name
+      (n) => n.type === 'GROUP' && n.name === name,
     );
 
     if (foundGroup) {
@@ -178,7 +178,7 @@ export const setTitleBold = (content) => {
 
 export const colorString = (color, opacity) => {
   return `rgba(${Math.round(color.r * 255)}, ${Math.round(
-    color.g * 255
+    color.g * 255,
   )}, ${Math.round(color.b * 255)}, ${opacity})`;
 };
 
@@ -226,14 +226,14 @@ export const isPartOfAutoLayout = (node: SceneNode | BaseNode): boolean => {
 };
 
 export const getFontNameData = async (
-  textNode: TextNode
+  textNode: TextNode,
 ): Promise<(FontName & { style: []; fontSize: number[] })[]> => {
   const fontNameData = [];
 
   const loadFontAndPush = async (font: FontName) => {
     if (
       fontNameData.some(
-        (f) => f.family === font.family && !f.style.includes(font.style)
+        (f) => f.family === font.family && !f.style.includes(font.style),
       )
     ) {
       fontNameData.find((f) => f.family === font.family).style.push(font.style);
@@ -268,7 +268,7 @@ type FontFill = Paint & {
 };
 
 export const getFillsByFillStyleId = async (
-  fillStyleId: string | typeof figma.mixed
+  fillStyleId: string | typeof figma.mixed,
 ) => {
   const fills: FontFill[] = [];
 
@@ -321,7 +321,7 @@ export const getFontFillsAndStyles = async (textNode: TextNode) => {
       !styles.some((s) => s.id === textStyleId)
     ) {
       const textStyle = (await figma.getStyleByIdAsync(
-        textStyleId
+        textStyleId,
       )) as TextStyle;
 
       if (textStyle.type === 'TEXT') {

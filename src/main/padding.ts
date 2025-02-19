@@ -65,7 +65,7 @@ EventEmitter.on('remove padding', async ({ direction }) => {
 
           currentNode.setPluginData(
             'padding',
-            JSON.stringify(pluginDataPadding)
+            JSON.stringify(pluginDataPadding),
           );
           // eslint-disable-next-line no-empty
         } catch {}
@@ -122,8 +122,6 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
       // Padding
       let pluginDataPadding = getPadding(nodeData.node);
 
-
-
       if (pluginDataPadding[direction]) {
         try {
           removePaddingGroup(nodeData.node, direction, state.isGlobalGroup);
@@ -132,7 +130,7 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
 
           nodeData.node.setPluginData(
             'padding',
-            JSON.stringify(pluginDataPadding)
+            JSON.stringify(pluginDataPadding),
           );
           // eslint-disable-next-line no-empty
         } catch {}
@@ -142,7 +140,7 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
           JSON.stringify({
             ...pluginDataPadding,
             [direction]: nodeData.parentNode.id,
-          })
+          }),
         );
 
         // pluginDataPadding = getPadding(nodeData.node);
@@ -169,7 +167,7 @@ EventEmitter.on('add padding', async ({ direction, settings }) => {
 
             nodeData.node.setPluginData(
               'padding',
-              JSON.stringify(pluginDataPadding)
+              JSON.stringify(pluginDataPadding),
             );
           }
         }
@@ -232,7 +230,7 @@ export enum ParentNodeErrors {
 
 export const getNodeAndParentNode = (
   node?: SceneNode,
-  parentNode?: SceneNode
+  parentNode?: SceneNode,
 ): { node?: SceneNode; parentNode?: SceneNode; error: ParentNodeErrors } => {
   let currentNode = node ?? (figma.currentPage.selection[0] as SceneNode);
 
@@ -403,7 +401,7 @@ export const createPaddingLine = ({
 
         return curr;
       },
-      { xMin: 0, yMin: 0, xMax: 0, yMax: 0 }
+      { xMin: 0, yMin: 0, xMax: 0, yMax: 0 },
     );
   }
 
@@ -429,7 +427,7 @@ export const createPaddingLine = ({
           group.x,
           group.y,
           parentNodeX + shadowCoords.xMin * -1,
-          group.y
+          group.y,
         ) * -1;
       break;
     case Alignments.RIGHT:
@@ -439,7 +437,7 @@ export const createPaddingLine = ({
         group.x,
         group.y,
         parentNodeX + parentNodeWidth - shadowCoords.xMax,
-        group.y
+        group.y,
       );
       break;
     case Alignments.TOP:
@@ -448,7 +446,7 @@ export const createPaddingLine = ({
           group.x,
           group.y,
           group.x,
-          parentNodeY + shadowCoords.yMin * -1
+          parentNodeY + shadowCoords.yMin * -1,
         ) * -1;
 
       break;
@@ -459,7 +457,7 @@ export const createPaddingLine = ({
         group.x,
         group.y,
         group.x,
-        parentNodeY + parentNodeHeight - shadowCoords.yMax
+        parentNodeY + parentNodeHeight - shadowCoords.yMax,
       );
       break;
   }
@@ -596,7 +594,7 @@ export const createPaddingLine = ({
       JSON.stringify({
         direction,
         parentId: node.id,
-      })
+      }),
     );
   }
 
