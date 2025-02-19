@@ -1,7 +1,4 @@
-import {
-  findAndReplaceNumberPattern,
-  toFixed,
-} from '../../../../shared/helpers';
+import { findAndReplaceNumberPattern } from '../../../../shared/helpers';
 import {
   createTooltipTextNode,
   getFontNameData,

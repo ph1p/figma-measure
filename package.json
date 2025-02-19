@@ -7,32 +7,36 @@
     "build": "webpack --mode=production && zip -r -X  Measure.zip ./Measure/ && rm ./Measure/ui.js*",
     "dev": "DEBUG=* webpack --watch",
     "version": "conventional-changelog -p karma -i CHANGELOG.md -s -r 0 && git add .",
-    "lint": "eslint 'src/*/**/*.{js,ts,tsx}' --fix"
+    "lint": "eslint . --fix"
   },
   "author": "Philip Stapelfeldt <me@ph1p.dev>",
   "license": "ISC",
   "devDependencies": {
-    "@figma/plugin-typings": "^1.91.0",
-    "@types/node": "^20.12.7",
-    "@types/react-dom": "^18.2.25",
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.20.0",
+    "@figma/plugin-typings": "^1.107.0",
+    "@types/node": "^22.13.4",
+    "@types/react-dom": "^19.0.4",
     "@types/react-router-dom": "^5.3.3",
-    "@typescript-eslint/eslint-plugin": "^7.7.0",
-    "@typescript-eslint/parser": "^7.7.0",
+    "@typescript-eslint/eslint-plugin": "^8.24.1",
+    "@typescript-eslint/parser": "^8.24.1",
     "create-file-webpack": "^1.0.2",
-    "css-loader": "^7.1.1",
-    "esbuild-loader": "^4.1.0",
-    "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-react": "^7.34.1",
-    "html-webpack-plugin": "^5.6.0",
+    "css-loader": "^7.1.2",
+    "esbuild-loader": "^4.3.0",
+    "eslint": "^9.20.1",
+    "eslint-import-resolver-typescript": "^3.8.2",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-react": "^7.37.4",
+    "html-webpack-plugin": "^5.6.3",
     "style-loader": "^4.0.0",
-    "styled-components": "^6.1.8",
-    "terser-webpack-plugin": "^5.3.10",
-    "typescript": "^5.4.5",
+    "styled-components": "^6.1.15",
+    "terser-webpack-plugin": "^5.3.11",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.24.1",
     "url-loader": "^4.1.1",
-    "webpack": "^5.91.0",
-    "webpack-cli": "^5.1.4"
+    "webpack": "^5.98.0",
+    "webpack-cli": "^6.0.1"
   },
   "figmaPlugin": {
     "documentAccess": "dynamic-page",
@@ -64,15 +68,16 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
-    "mobx": "^6.12.3",
-    "mobx-react": "^9.1.1",
+    "mobx": "^6.13.6",
+    "mobx-react": "^9.2.0",
     "mobx-sync": "^3.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "react-popper": "^2.3.0",
-    "react-router-dom": "^6.22.3"
+    "react-router-dom": "^7.2.0"
   },
   "prettier": {
     "singleQuote": true
-  }
+  },
+  "packageManager": "pnpm@10.2.0+sha512.0d27364e0139c6aadeed65ada153135e0ca96c8da42123bd50047f961339dc7a758fc2e944b428f52be570d1bd3372455c1c65fa2e7aa0bfbf931190f9552001"
 }

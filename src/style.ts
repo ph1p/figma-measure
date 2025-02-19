@@ -81,7 +81,7 @@ export const getColorByTypeAndSolidColor = (
   type: keyof typeof TOKENS.colors = 'solid',
 ) => {
   const foundColor = Object.entries(TOKENS.colors.solid).find(
-    ([_, data]) => data.value.toLowerCase() === color.toLowerCase(),
+    ([, data]) => data.value.toLowerCase() === color.toLowerCase(),
   );
 
   if (foundColor) {

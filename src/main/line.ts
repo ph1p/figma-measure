@@ -66,7 +66,7 @@ export const getLineFrame = (node, data) => {
   lineFrame.name = name;
   lineFrame.resize(
     data.isHorizontal ? node.width : data.labelWidth,
-    data.isHorizontal ? data.labelHeight : node.height
+    data.isHorizontal ? data.labelHeight : node.height,
   );
   lineFrame.backgrounds = [];
   lineFrame.clipsContent = false;
@@ -274,7 +274,7 @@ export const createLine = (options) => {
     line.strokes = [].concat(mainColor);
     line.resize(
       isHorizontal ? node.width : line.strokeWeight,
-      isHorizontal ? line.strokeWeight : node.height
+      isHorizontal ? line.strokeWeight : node.height,
     );
 
     // STROKE CAP

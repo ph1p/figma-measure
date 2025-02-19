@@ -1,5 +1,3 @@
-import './store';
-
 import EventEmitter from '../shared/EventEmitter';
 import {
   GROUP_NAME_ATTACHED,
@@ -18,13 +16,7 @@ import {
 import { createFill } from './fill';
 import { appendElementsToGroup, isPartOfAttachedGroup } from './helper';
 import { createLine } from './line';
-import {
-  ParentNodeErrors,
-  createPaddingLine,
-  getNodeAndParentNode,
-  getPadding,
-  removePaddingGroup,
-} from './padding';
+import { createPaddingLine, getPadding, removePaddingGroup } from './padding';
 import { drawSpacing, getSpacing, setSpacing } from './spacing';
 import { getState } from './store';
 import { setTooltip } from './tooltip';

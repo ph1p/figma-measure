@@ -33,7 +33,7 @@ EventEmitter.on('remove spacing', async () => {
       setSpacing(node, spacing);
       try {
         group.remove();
-      } catch (e) {
+      } catch {
         console.log('could not remove group');
       }
 

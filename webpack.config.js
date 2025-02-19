@@ -1,12 +1,14 @@
-const CreateFileWebpack = require('create-file-webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const path = require('path');
-const TerserPlugin = require('terser-webpack-plugin');
-const webpack = require('webpack');
+import CreateFileWebpack from 'create-file-webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import path from 'path';
+import TerserPlugin from 'terser-webpack-plugin';
+import webpack from 'webpack';
 
-const { figmaPlugin } = require('./package.json');
+import pkg from './package.json' with { type: 'json' };
 
-module.exports = (env, argv) => ({
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
+const webpackConfig = (env, argv) => ({
   mode: argv.mode === 'production' ? 'production' : 'development',
   devtool: argv.mode === 'production' ? false : 'inline-source-map',
   devServer: {
@@ -64,7 +66,7 @@ module.exports = (env, argv) => ({
   },
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, figmaPlugin.name.replace(/\s/g, '-')),
+    path: path.resolve(__dirname, pkg.figmaPlugin.name.replace(/\s/g, '-')),
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -96,9 +98,11 @@ module.exports = (env, argv) => ({
       },
     }),
     new CreateFileWebpack({
-      path: path.resolve(__dirname, figmaPlugin.name.replace(/\s/g, '-')),
+      path: path.resolve(__dirname, pkg.figmaPlugin.name.replace(/\s/g, '-')),
       fileName: 'manifest.json',
-      content: JSON.stringify(figmaPlugin),
+      content: JSON.stringify(pkg.figmaPlugin),
     }),
   ],
 });
+
+export default webpackConfig;

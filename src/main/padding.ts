@@ -37,7 +37,6 @@ export const removePaddingGroup = (currentNode, direction, isGlobalGroup) => {
         ) {
           node.remove();
         }
-        // eslint-disable-next-line no-empty
       } catch (e) {
         console.log(e);
       }
@@ -340,7 +339,6 @@ export const createPaddingLine = ({
         currentNode.setPluginData('padding', JSON.stringify(padding));
       }
       sendSelection();
-      // eslint-disable-next-line no-empty
     } catch (e) {
       console.log(e);
     }

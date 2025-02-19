@@ -9,6 +9,7 @@ You can find it here: https://www.figma.com/community/plugin/739918456607459153/
 ### Preview
 
 You can find some videos inside the `./docs` folder.
+
 ### How to use?
 
 - Open Figma
