@@ -1,5 +1,20 @@
+## <small>3.4.2 (2025-02-19)</small>
+
+* chore: update dependencies, migrate to newer eslint and use pnpm ([d774c9a](https://github.com/ph1p/figma-measure/commit/d774c9a))
+* fix(group): global group now works again ([1f81415](https://github.com/ph1p/figma-measure/commit/1f81415))
+* fix(parent): update search of parent nodes and add error option to notification ([fc0e2f7](https://github.com/ph1p/figma-measure/commit/fc0e2f7))
+* fix(rect): show rectangle as active in viewer ([9fbfc32](https://github.com/ph1p/figma-measure/commit/9fbfc32))
+* fix(spacing): correct labels in spacing ([9eb75fe](https://github.com/ph1p/figma-measure/commit/9eb75fe))
+* refactor: update dependencies switch to react and add new figma methods ([9d480b8](https://github.com/ph1p/figma-measure/commit/9d480b8))
+* build(deps): update dependencies and fix small bug ([af0a08d](https://github.com/ph1p/figma-measure/commit/af0a08d))
+* feat(events): add new documentchange event ([06d1780](https://github.com/ph1p/figma-measure/commit/06d1780))
+
+
+
 ## <small>3.4.1 (2022-10-07)</small>
 
+* 3.4.0 ([a71f7dc](https://github.com/ph1p/figma-measure/commit/a71f7dc)), closes [#42](https://github.com/ph1p/figma-measure/issues/42) [#43](https://github.com/ph1p/figma-measure/issues/43) [#34](https://github.com/ph1p/figma-measure/issues/34)
+* 3.4.1 ([46bc347](https://github.com/ph1p/figma-measure/commit/46bc347))
 * feat(effects): add effect information to tooltip ([26c792a](https://github.com/ph1p/figma-measure/commit/26c792a))
 * feat(groups): add the ability to put all measurements in one global group ([91e3365](https://github.com/ph1p/figma-measure/commit/91e3365))
 * feat(padding): fix bug with auto layout parents and replace render bounding with bounding box ([aa609b1](https://github.com/ph1p/figma-measure/commit/aa609b1))
@@ -21,7 +36,6 @@
 * chore(readme): update header image ([48cfc5b](https://github.com/ph1p/figma-measure/commit/48cfc5b))
 * build(deps): update dependencies ([ca6d52e](https://github.com/ph1p/figma-measure/commit/ca6d52e))
 * build(deps): update dependencies ([ea3d114](https://github.com/ph1p/figma-measure/commit/ea3d114))
-* 3.4.0 ([a71f7dc](https://github.com/ph1p/figma-measure/commit/a71f7dc)), closes [#42](https://github.com/ph1p/figma-measure/issues/42) [#43](https://github.com/ph1p/figma-measure/issues/43) [#34](https://github.com/ph1p/figma-measure/issues/34)
 * refactor(strokes): update font sizes ([b571d18](https://github.com/ph1p/figma-measure/commit/b571d18))
 
 
