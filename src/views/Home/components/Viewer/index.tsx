@@ -3,7 +3,6 @@ import React, { FunctionComponent, useMemo } from 'react';
 import styled from 'styled-components';
 
 import EventEmitter from '../../../../shared/EventEmitter';
-import { overlaps } from '../../../../shared/helpers';
 import { Alignments, TooltipPositions } from '../../../../shared/interfaces';
 import { useStore } from '../../../../store';
 
@@ -272,8 +271,8 @@ const Viewer: FunctionComponent = observer(() => {
   );
 });
 
-const OverlayRect = styled.div.attrs<{ active?: boolean }>((props) => ({
-  className: props.active ? 'active' : '',
+const OverlayRect = styled.div.attrs<{ $active?: boolean }>((props) => ({
+  className: props.$active ? 'active' : '',
 }))<{ active?: boolean }>`
   width: 45px;
   height: 45px;
